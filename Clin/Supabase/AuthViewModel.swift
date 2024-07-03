@@ -22,10 +22,10 @@ class AuthViewModel {
     private let supabase = SupabaseService.shared.client
     
      init()  {
-//         Task {
-//             await setupAuthStateListener()
-//             await verifySignInWithAppleAuthenticationState()
-//         }
+         Task {
+             await setupAuthStateListener()
+             await verifySignInWithAppleAuthenticationState()
+         }
     }
     
     func handleAppleSignInCompletion(result: Result<ASAuthorization, Error>) {

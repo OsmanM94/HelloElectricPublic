@@ -14,12 +14,14 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("In app name") {
-                    Text("Guest")
+                Section("Profile") {
+                    NavigationLink("User", destination: { ProfileView() })
                 }
 
                 Section("Manage") {
-                    NavigationLink("My listings", destination: {})
+                    NavigationLink("My listings", destination: {
+                        UserListingView()
+                    })
                     NavigationLink("Saved", destination: {})
                 }
 

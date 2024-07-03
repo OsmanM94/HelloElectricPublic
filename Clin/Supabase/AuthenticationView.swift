@@ -11,36 +11,32 @@ import AuthenticationServices
 struct AuthenticationView: View {
     
     @Environment(AuthViewModel.self) private var viewModel
-  
+   
     var body: some View {
         NavigationStack {
-            ScrollView(.vertical) {
-                VStack(spacing: 15) {
-                    
-                    Image(decorative: "ev")
-                        .resizable()
-                        .scaledToFit()
-                    
-                    WelcomeText()
-                        .padding([.bottom, .top])
-                    
-//                    if !viewModel.errorMessage.isEmpty {
-//                        Text(viewModel.errorMessage)
-//                            .foregroundColor(.red)
-//                            .padding()
-//                    }
-                    
-                    SignInWithAppleButton(.continue) { request in
-                        request.requestedScopes = [.email, .fullName]
-                    } onCompletion: { result in
-                        viewModel.handleAppleSignInCompletion(result: result)
+            Group {
+                ScrollView(.vertical) {
+                    VStack(spacing: 15) {
+                        
+                        Image(decorative: "ev")
+                            .resizable()
+                            .scaledToFit()
+                        
+                        WelcomeText()
+                            .padding([.bottom, .top])
+                        
+                        SignInWithAppleButton(.continue) { request in
+                            request.requestedScopes = [.email, .fullName]
+                        } onCompletion: { result in
+                            viewModel.handleAppleSignInCompletion(result: result)
+                        }
+                        .frame(maxWidth: .infinity, minHeight: 55)
+                        .padding(.horizontal)
                     }
-                    .frame(maxWidth: .infinity, minHeight: 55)
                     .padding(.horizontal)
                 }
-                .padding(.horizontal)
-                .navigationTitle("Sign in")
             }
+            .navigationTitle("Sign in to sell")
         }
     }
 }
@@ -70,11 +66,6 @@ struct WelcomeText: View {
             Text("Apple ensures that your personal information stays private and secure.")
                 .font(.subheadline)
             
-//            Text("Effortless Integration:")
-//                .font(.headline)
-//                .fontWeight(.semibold)
-//            Text("Enjoy an effortless experience across all your Apple devices.")
-//                .font(.subheadline)
         }
         .padding(.horizontal, 30)
     }

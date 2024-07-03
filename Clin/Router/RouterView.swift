@@ -7,14 +7,15 @@
 
 import SwiftUI
 
+
 struct RouterView: View {
     
     @Environment(AuthViewModel.self) private var viewModel
-    
+
     var body: some View {
         Group {
             if viewModel.authenticationState == .authenticated {
-                SettingsView()
+                UploadListingView()
             } else {
                 AuthenticationView()
             }

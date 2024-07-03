@@ -9,6 +9,7 @@ import SwiftUI
 
 @main
 struct ClinApp: App {
+
     var body: some Scene {
         WindowGroup {
             Tab()

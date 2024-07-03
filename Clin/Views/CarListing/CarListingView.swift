@@ -10,24 +10,14 @@ import SwiftUI
 struct CarListingView: View {
     
     @State private var viewModel = CarListingViewModel()
-    
+    @State private var text: String = ""
+  
     var body: some View {
         NavigationStack {
             Group {
                 VStack {
                     switch viewModel.state {
                     case .idle:
-                        ContentUnavailableView {
-                            Label("Connection issue", systemImage: "wifi.slash")
-                        } description: {
-                            Text("Check your internet connection")
-                        } actions: {
-                            Button("Refresh") {
-                                Task { await viewModel.fetchListings() }
-                            }
-                        }
-                        
-                    case .loading:
                         ProgressView()
                             .scaleEffect(1.5)
                         
@@ -35,36 +25,23 @@ struct CarListingView: View {
                         List {
                             ForEach(viewModel.listings, id: \.id) { item in
                                 Text(item.title)
-                                    .swipeActions {
-                                        Button(role: .destructive) {
-                                            Task {
-                                        if let id = item.id {
-                                            await viewModel.deleteListing(at: id)
-                                                }
-                                            }
-                                        } label: {
-                                            Label("Delete", systemImage: "trash")
-                                        }
-                                    }
                             }
+                        }
+                        .searchable(text: $text, placement: .navigationBarDrawer(displayMode: .always))
+                        .refreshable {
+                            await viewModel.fetchListings()
                         }
                         .toolbar {
-                            Button(action: { Task { await viewModel.createListing() } }) {
-                                Text("Add Listing")
-                            }
+                            Button("", systemImage: "line.3.horizontal.decrease.circle", action: {
+                                viewModel.showFilterSheet.toggle()
+                            })
                         }
-                        
-                        TextField("Add listing", text: $viewModel.title)
-                            .textFieldStyle(.roundedBorder)
-                            .padding()
-                        
-                    case .error(let message):
-                        Text(message)
-                            .foregroundColor(.red)
                     }
                 }
+                .sheet(isPresented: $viewModel.showFilterSheet, content: {})
             }
             .navigationTitle("Listings")
+            .navigationBarTitleDisplayMode(.inline)
         }
         .task {
             await viewModel.fetchListings()
@@ -75,3 +52,4 @@ struct CarListingView: View {
 #Preview {
     CarListingView()
 }
+

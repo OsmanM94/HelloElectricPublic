@@ -9,8 +9,11 @@ import Foundation
 
 
 struct CarListingService {
-
+    static let shared = CarListingService()
+    
     private let supabase = SupabaseService.shared.client
+    
+    private init() {}
     
     func fetchListings() async throws -> [CarListing] {
         do {
@@ -27,6 +30,22 @@ struct CarListingService {
         }
     }
     
+    func fetchUserListings(userID: UUID) async throws -> [CarListing] {
+        do {
+            let listings: [CarListing] = try await supabase
+                .from("CarListing")
+                .select()
+                .eq("user_id", value: userID)
+                .order("created_at", ascending: false)
+                .execute()
+                .value
+            return listings
+        } catch {
+            print("Error fetching user listings: \(error)")
+            throw error
+        }
+    }
+    
     func createListing(title: String, userID: UUID) async throws {
         do {
             let listing = CarListing(createdAt: Date(), title: title, userID: userID)
@@ -34,7 +53,7 @@ struct CarListingService {
                 .from("CarListing")
                 .insert(listing)
                 .execute()
-            print("Listing created successfully")
+            print("Listing created successfully.")
         } catch {
             print("Error creating listing: \(error)")
             throw error

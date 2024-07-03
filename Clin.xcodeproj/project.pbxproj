@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		629185B82C31614500DA4BAA /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 629185B72C31614500DA4BAA /* SDWebImageSwiftUI */; };
 		62C449052C26CDC4009650A3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 62C449042C26CDC4009650A3 /* Assets.xcassets */; };
 		62C449092C26CDC4009650A3 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 62C449082C26CDC4009650A3 /* Preview Assets.xcassets */; };
 		62C449D02C27469D009650A3 /* Auth in Frameworks */ = {isa = PBXBuildFile; productRef = 62C449CF2C27469D009650A3 /* Auth */; };
@@ -35,7 +36,10 @@
 		6217F3222C288A6100EF8B2D /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				AvatarTransfer.swift,
 				CarListing.swift,
+				DVLA.swift,
+				Profile.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
 		};
@@ -50,6 +54,8 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				CarListingService.swift,
+				DVLAService.swift,
+				ProfileService.swift,
 				SupabaseService.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
@@ -59,8 +65,15 @@
 			membershipExceptions = (
 				CarListing/CarListingView.swift,
 				CarListing/CarListingViewModel.swift,
-				Router/RouterView.swift,
 				Settings/SettingsView.swift,
+				UploadListing/UploadListingView.swift,
+				UploadListing/UploadViewModel.swift,
+				User/Profile/CircularProfileSize.swift,
+				User/Profile/CircularProfileView.swift,
+				User/Profile/ProfileView.swift,
+				User/Profile/ProfileViewModel.swift,
+				User/UserListingsViewModel.swift,
+				User/UserListingView.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
 		};
@@ -68,6 +81,20 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				ViewState.swift,
+			);
+			target = 62C448FC2C26CDC2009650A3 /* Clin */;
+		};
+		6291824B2C2AE5EB00DA4BAA /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				RouterView.swift,
+			);
+			target = 62C448FC2C26CDC2009650A3 /* Clin */;
+		};
+		629185BC2C3175A100DA4BAA /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				SDWebImage/ImageLoader.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
 		};
@@ -87,9 +114,11 @@
 		6217F30E2C2851D500EF8B2D /* App */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (6217F30F2C2851D900EF8B2D /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = App; sourceTree = "<group>"; };
 		6217F3102C28526400EF8B2D /* Models */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (6217F3222C288A6100EF8B2D /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Models; sourceTree = "<group>"; };
 		6217F3292C288EFC00EF8B2D /* Tab */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (6217F32A2C288F0200EF8B2D /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Tab; sourceTree = "<group>"; };
-		6217F3412C2977C700EF8B2D /* Managers */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (6217F3452C2977D200EF8B2D /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Managers; sourceTree = "<group>"; };
+		6217F3412C2977C700EF8B2D /* Service */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (6217F3452C2977D200EF8B2D /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Service; sourceTree = "<group>"; };
 		6217F3462C297DBD00EF8B2D /* Views */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (6217F3482C297DF500EF8B2D /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Views; sourceTree = "<group>"; };
-		6217F34D2C2986F000EF8B2D /* Shared */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (6217F3502C2986F800EF8B2D /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Shared; sourceTree = "<group>"; };
+		6217F34D2C2986F000EF8B2D /* ViewState */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (6217F3502C2986F800EF8B2D /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = ViewState; sourceTree = "<group>"; };
+		629182492C2AE5EB00DA4BAA /* Router */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (6291824B2C2AE5EB00DA4BAA /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Router; sourceTree = "<group>"; };
+		629185B42C3160F900DA4BAA /* Support */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (629185BC2C3175A100DA4BAA /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Support; sourceTree = "<group>"; };
 		62C4493C2C26E236009650A3 /* Supabase */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (62C4493D2C26E23C009650A3 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Supabase; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
@@ -98,6 +127,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				629185B82C31614500DA4BAA /* SDWebImageSwiftUI in Frameworks */,
 				62C449D42C27469D009650A3 /* PostgREST in Frameworks */,
 				62C449D22C27469D009650A3 /* Functions in Frameworks */,
 				62C449DA2C27469D009650A3 /* Supabase in Frameworks */,
@@ -132,12 +162,14 @@
 				6217F30E2C2851D500EF8B2D /* App */,
 				62C449042C26CDC4009650A3 /* Assets.xcassets */,
 				62C449062C26CDC4009650A3 /* Clin.entitlements */,
-				6217F3412C2977C700EF8B2D /* Managers */,
+				6217F3412C2977C700EF8B2D /* Service */,
 				6217F3102C28526400EF8B2D /* Models */,
-				6217F34D2C2986F000EF8B2D /* Shared */,
+				629182492C2AE5EB00DA4BAA /* Router */,
+				6217F34D2C2986F000EF8B2D /* ViewState */,
 				62C4493C2C26E236009650A3 /* Supabase */,
 				6217F3292C288EFC00EF8B2D /* Tab */,
 				6217F3462C297DBD00EF8B2D /* Views */,
+				629185B42C3160F900DA4BAA /* Support */,
 				62C449072C26CDC4009650A3 /* Preview Content */,
 			);
 			path = Clin;
@@ -174,6 +206,7 @@
 				62C449D52C27469D009650A3 /* Realtime */,
 				62C449D72C27469D009650A3 /* Storage */,
 				62C449D92C27469D009650A3 /* Supabase */,
+				629185B72C31614500DA4BAA /* SDWebImageSwiftUI */,
 			);
 			productName = Clin;
 			productReference = 62C448FD2C26CDC2009650A3 /* Clin.app */;
@@ -205,6 +238,7 @@
 			mainGroup = 62C448F42C26CDC2009650A3;
 			packageReferences = (
 				62C449CE2C27469D009650A3 /* XCRemoteSwiftPackageReference "supabase-swift" */,
+				629185B62C31614500DA4BAA /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
 			);
 			productRefGroup = 62C448FE2C26CDC2009650A3 /* Products */;
 			projectDirPath = "";
@@ -454,6 +488,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		629185B62C31614500DA4BAA /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SDWebImage/SDWebImageSwiftUI.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.1.0;
+			};
+		};
 		62C449CE2C27469D009650A3 /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/supabase/supabase-swift";
@@ -465,6 +507,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		629185B72C31614500DA4BAA /* SDWebImageSwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 629185B62C31614500DA4BAA /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
+			productName = SDWebImageSwiftUI;
+		};
 		62C449CF2C27469D009650A3 /* Auth */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 62C449CE2C27469D009650A3 /* XCRemoteSwiftPackageReference "supabase-swift" */;

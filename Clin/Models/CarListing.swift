@@ -19,3 +19,4 @@ struct CarListing: Identifiable, Codable, Hashable {
        case userID = "user_id"
     }
 }
+

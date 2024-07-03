@@ -18,15 +18,18 @@ struct Tab: View {
                     Label("Listings", systemImage: "bolt.car")
                 }
                 .tag(0)
+            
             RouterView()
                 .tabItem {
                     Label("Sell", systemImage: "plus")
                 }
                 .tag(1)
+            
             SettingsView()
                 .tabItem {
                     Label("Account", systemImage: "person.fill")
                 }
+                .tag(2)
         }
     }
 }
