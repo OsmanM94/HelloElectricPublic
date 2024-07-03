@@ -46,21 +46,18 @@ struct ProfileView: View {
                     }
                 }
                 
-                Section {
+                Section(footer: Text("Must be between 3-20 characters")) {
                     TextField("Username", text: $viewModel.username)
                         .textContentType(.username)
                         .textInputAutocapitalization(.never)
-                        .onSubmit {
-                            Task {
-                                await viewModel.getInitialProfile()
-                            }
-                        }
+                        .submitLabel(.done)
                 }
-                
+#warning("You need still need to work on validation form. Implement async button.")
                 Section {
                     Button {
                         Task {
                           await viewModel.updateProfileButtonTapped()
+                          await viewModel.getInitialProfile()
                         }
                     } label: {
                         if viewModel.isLoading {
@@ -68,9 +65,10 @@ struct ProfileView: View {
                         } else {
                             Text("Update profile")
                                 .fontWeight(.bold)
-                                .foregroundStyle(.green)
+                                .foregroundStyle(!viewModel.validateUsername ? .gray : .green)
                         }
                     }
+                    .disabled(!viewModel.validateUsername)
                 }
             }
             .navigationTitle("Profile")

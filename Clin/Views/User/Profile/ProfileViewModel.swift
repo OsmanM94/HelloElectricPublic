@@ -18,7 +18,7 @@ final class ProfileViewModel {
     var avatarImage: AvatarImage?
     var displayName: String = ""
     var profile: Profile? = nil
-    
+ 
     private let supabase = SupabaseService.shared.client
     private let profileService = ProfileService()
 
@@ -135,5 +135,14 @@ final class ProfileViewModel {
         } catch {
             print("Error deleting image from database: \(error)")
         }
+    }
+    
+    var validateUsername: Bool {
+        if username.count < 3 {
+            return false
+        } else if username.count > 20 {
+            return false
+        }
+        return true
     }
 }

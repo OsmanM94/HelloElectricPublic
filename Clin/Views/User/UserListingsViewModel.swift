@@ -11,7 +11,7 @@ import Foundation
 @Observable
 final class UserListingsViewModel {
     var userActiveListings: [CarListing] = []
-    var state: ViewState = .idle
+    var state: ViewState = .loading
     
     private let carListingService = CarListingService.shared
     private let supabase = SupabaseService.shared.client
@@ -19,7 +19,7 @@ final class UserListingsViewModel {
     
     @MainActor
     func fetchUserListings() async {
-        state = .idle
+        state = .loading
         do {
             guard let user = try? await supabase.auth.session.user else {
                 print("No authenticated user found")

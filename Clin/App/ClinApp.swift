@@ -9,11 +9,15 @@ import SwiftUI
 
 @main
 struct ClinApp: App {
-
+    
+    @State private var authViewModel = AuthViewModel()
+    @State private var networkMonitor = NetworkMonitor()
+    
     var body: some Scene {
         WindowGroup {
             Tab()
-                .environment(AuthViewModel())
+                .environment(authViewModel)
+                .environment(networkMonitor)
         }
     }
 }

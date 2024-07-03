@@ -87,13 +87,16 @@
 		6291824B2C2AE5EB00DA4BAA /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				RouterView.swift,
+				SettingsViewRouter.swift,
+				UploadViewRouter.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
 		};
 		629185BC2C3175A100DA4BAA /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				NetworkMonitor/NetworkMonitor.swift,
+				NetworkMonitor/NetworkMonitorView.swift,
 				SDWebImage/ImageLoader.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
@@ -119,7 +122,8 @@
 		6217F34D2C2986F000EF8B2D /* ViewState */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (6217F3502C2986F800EF8B2D /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = ViewState; sourceTree = "<group>"; };
 		629182492C2AE5EB00DA4BAA /* Router */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (6291824B2C2AE5EB00DA4BAA /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Router; sourceTree = "<group>"; };
 		629185B42C3160F900DA4BAA /* Support */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (629185BC2C3175A100DA4BAA /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Support; sourceTree = "<group>"; };
-		62C4493C2C26E236009650A3 /* Supabase */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (62C4493D2C26E23C009650A3 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Supabase; sourceTree = "<group>"; };
+		629188CB2C35BAE800DA4BAA /* Components */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Components; sourceTree = "<group>"; };
+		62C4493C2C26E236009650A3 /* Authentication */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (62C4493D2C26E23C009650A3 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Authentication; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -160,16 +164,17 @@
 			isa = PBXGroup;
 			children = (
 				6217F30E2C2851D500EF8B2D /* App */,
-				62C449042C26CDC4009650A3 /* Assets.xcassets */,
 				62C449062C26CDC4009650A3 /* Clin.entitlements */,
 				6217F3412C2977C700EF8B2D /* Service */,
 				6217F3102C28526400EF8B2D /* Models */,
 				629182492C2AE5EB00DA4BAA /* Router */,
 				6217F34D2C2986F000EF8B2D /* ViewState */,
-				62C4493C2C26E236009650A3 /* Supabase */,
+				62C4493C2C26E236009650A3 /* Authentication */,
 				6217F3292C288EFC00EF8B2D /* Tab */,
 				6217F3462C297DBD00EF8B2D /* Views */,
 				629185B42C3160F900DA4BAA /* Support */,
+				629188CB2C35BAE800DA4BAA /* Components */,
+				62C449042C26CDC4009650A3 /* Assets.xcassets */,
 				62C449072C26CDC4009650A3 /* Preview Content */,
 			);
 			path = Clin;

@@ -10,7 +10,7 @@ import Foundation
 
 @Observable
 class UploadViewModel {
-    var state: ViewState = .idle
+    var state: ViewState = .loading
     var title: String = ""
     var mileage: Double = 0.0
     var make: String = ""

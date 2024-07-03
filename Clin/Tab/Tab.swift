@@ -10,7 +10,7 @@ import SwiftUI
 struct Tab: View {
     
     @State private var selectedTab: Int = 0
-    
+   
     var body: some View {
         TabView(selection: $selectedTab) {
             CarListingView()
@@ -19,13 +19,13 @@ struct Tab: View {
                 }
                 .tag(0)
             
-            RouterView()
+            UploadViewRouter()
                 .tabItem {
                     Label("Sell", systemImage: "plus")
                 }
                 .tag(1)
             
-            SettingsView()
+            SettingsViewRouter()
                 .tabItem {
                     Label("Account", systemImage: "person.fill")
                 }

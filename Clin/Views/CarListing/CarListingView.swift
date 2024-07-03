@@ -11,15 +11,20 @@ struct CarListingView: View {
     
     @State private var viewModel = CarListingViewModel()
     @State private var text: String = ""
-  
+    
     var body: some View {
         NavigationStack {
             Group {
                 VStack {
                     switch viewModel.state {
-                    case .idle:
-                        ProgressView()
-                            .scaleEffect(1.5)
+                    case .loading:
+                        Button(action: {}) {
+                            ProgressView()
+                                .scaleEffect(1.5)
+                                .frame(width: 45, height: 45)
+                        }
+                        .buttonStyle(.bordered)
+                        .buttonBorderShape(.roundedRectangle(radius: 15))
                         
                     case .loaded:
                         List {
@@ -52,4 +57,5 @@ struct CarListingView: View {
 #Preview {
     CarListingView()
 }
+
 

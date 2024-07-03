@@ -36,7 +36,7 @@ struct AuthenticationView: View {
                     .padding(.horizontal)
                 }
             }
-            .navigationTitle("Sign in to sell")
+            .navigationTitle("Sign in")
         }
     }
 }

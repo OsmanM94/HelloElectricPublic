@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct UploadListingView: View {
+    @State private var text = ""
     var body: some View {
         NavigationStack {
             Group {
@@ -16,12 +17,12 @@ struct UploadListingView: View {
                         
                     }
                     Button(action: {
-                         
+                        
                     }) {
                         Text("Registration checker here")
                     }
                     
-//                    if let errorMessage = errorMessage {
+                    //                    if let errorMessage = errorMessage {
                     //                        Text(errorMessage)
                     //                            .foregroundStyle(.red)
                     //                    }
@@ -33,7 +34,7 @@ struct UploadListingView: View {
                     }
                     
                     Section("Title") {
-                        
+                        TextField("Title", text: $text)
                     }
                     Section("Mileage") {
                         
@@ -48,7 +49,7 @@ struct UploadListingView: View {
                         
                     }
                     Section("Colour") {
-                       
+                        
                     }
                     Section("Price") {
                         

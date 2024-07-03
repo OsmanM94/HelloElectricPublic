@@ -18,7 +18,7 @@ struct CarListingService {
     func fetchListings() async throws -> [CarListing] {
         do {
             let listings: [CarListing] = try await supabase
-                .from("CarListing")
+                .from("car_listing")
                 .select()
                 .order("created_at", ascending: false)
                 .execute()
@@ -33,7 +33,7 @@ struct CarListingService {
     func fetchUserListings(userID: UUID) async throws -> [CarListing] {
         do {
             let listings: [CarListing] = try await supabase
-                .from("CarListing")
+                .from("car_listing")
                 .select()
                 .eq("user_id", value: userID)
                 .order("created_at", ascending: false)
@@ -50,7 +50,7 @@ struct CarListingService {
         do {
             let listing = CarListing(createdAt: Date(), title: title, userID: userID)
             try await supabase
-                .from("CarListing")
+                .from("car_listing")
                 .insert(listing)
                 .execute()
             print("Listing created successfully.")
@@ -71,7 +71,7 @@ struct CarListingService {
         
         do {
             try await supabase
-                .from("CarListing")
+                .from("car_listing")
                 .update(toUpdate)
                 .eq("id", value: id)
                 .execute()
@@ -86,7 +86,7 @@ struct CarListingService {
     func deleteListing(at id: Int) async throws {
         do {
             try await supabase
-                .from("CarListing")
+                .from("car_listing")
                 .delete()
                 .eq("id", value: id)
                 .execute()
