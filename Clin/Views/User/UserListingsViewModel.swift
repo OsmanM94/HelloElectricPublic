@@ -11,7 +11,7 @@ import Foundation
 @Observable
 final class UserListingsViewModel {
     var userActiveListings: [CarListing] = []
-    var state: ViewState = .loading
+    var state: SharedViewState = .loading
     
     private let carListingService = CarListingService.shared
     private let supabase = SupabaseService.shared.client

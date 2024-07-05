@@ -11,7 +11,7 @@ import Foundation
 @Observable
 final class CarListingViewModel {
     var listings: [CarListing] = []
-    var state: ViewState = .loading
+    var state: SharedViewState = .loading
     var showFilterSheet: Bool = false
     var title: String = ""
    

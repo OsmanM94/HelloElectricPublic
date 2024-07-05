@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum ViewState {
+enum SharedViewState {
     case loading
     case loaded
 }

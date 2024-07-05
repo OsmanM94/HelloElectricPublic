@@ -18,14 +18,15 @@ final class ProfileViewModel {
     private(set) var displayName: String = ""
     private(set) var profile: Profile? = nil
     private(set) var cooldownTime: Int = 0
+    private(set) var lastUploadedImageURL: String?
     
     private let supabase = SupabaseService.shared.client
     private let profileService = ProfileService()
     private let contentAnalyzer = SensitiveContentAnalysis.shared
     
-    private(set) var profileViewState: ProfileViewState = .normal
-    private var cooldownTimer: Timer?
-    private var prohibitedWords: Set<String> = []
+    private(set) var profileViewState: ProfileViewState = .idle
+    private(set) var cooldownTimer: Timer?
+    private(set) var prohibitedWords: Set<String> = []
     
     init() {
         Task {
@@ -41,7 +42,7 @@ final class ProfileViewModel {
         username = ""
         imageSelection = nil
         avatarImage = nil
-        profileViewState = .normal
+        profileViewState = .idle
     }
     
     private func loadProhibitedWords() async {
@@ -81,34 +82,7 @@ final class ProfileViewModel {
     @MainActor
     func updateProfileButtonTapped() async {
         
-        guard cooldownTime == 0 else {
-            profileViewState = .error(ProfileError.cooldownActive.message)
-            return
-        }
-        
-        if containsProhibitedWords(username) {
-            profileViewState = .error(ProfileError.inappropriateUsername.message)
-            return
-        }
-        
-        profileViewState = .loading
-        
-        guard let data = avatarImage?.data else { return }
-     
-        await contentAnalyzer.analyze(image: data)
-        
-        switch contentAnalyzer.analysisState {
-        case .isSensitive:
-            profileViewState = .error(ProfileError.sensitiveContent.message)
-            return
-        case .error(let message):
-            profileViewState = .error(message)
-            return
-        case .notSensitive:
-            break
-        case .analyzing, .notStarted:
-            return
-        }
+        guard await canUpdateProfile() else { return }
         
         do {
             if let currentAvatarURL = profile?.avatarURL {
@@ -116,7 +90,10 @@ final class ProfileViewModel {
             }
                         
             let imageURLString = try await uploadImage()
-            guard let imageURL = URL(string: imageURLString ?? "") else { return }
+            guard let imageURL = URL(string: imageURLString ?? "") else {
+                profileViewState = .error(ProfileError.generalError.message)
+                return
+            }
             
             let currentUser = try await supabase.auth.session.user
             
@@ -136,6 +113,8 @@ final class ProfileViewModel {
             self.profile?.avatarURL = imageURL
             self.username = ""
             
+            self.lastUploadedImageURL = imageURL.absoluteString
+            
             startCooldownTimer()
             profileViewState = .success("Profile updated.")
             
@@ -145,6 +124,53 @@ final class ProfileViewModel {
         }
     }
     
+    @MainActor
+    private func canUpdateProfile() async -> Bool {
+        guard cooldownTime == 0 else {
+            profileViewState = .error(ProfileError.cooldownActive.message)
+            return false
+        }
+        
+        guard !containsProhibitedWords(username) else {
+            profileViewState = .error(ProfileError.inappropriateUsername.message)
+            return false
+        }
+        
+        profileViewState = .loading
+        
+        if let profileImageURL = profile?.avatarURL?.absoluteString, profileImageURL == lastUploadedImageURL {
+            profileViewState = .error(ProfileError.duplicateImage.message)
+            return false
+        }
+        
+        guard avatarImage?.data != nil else {
+            profileViewState = .error(ProfileError.generalError.message)
+            return false
+        }
+        
+        return await analyzeImage()
+    }
+    
+    @MainActor
+    private func analyzeImage() async -> Bool {
+        guard let data = avatarImage?.data else { return false }
+        
+        await contentAnalyzer.analyze(image: data)
+        
+        switch contentAnalyzer.analysisState {
+        case .isSensitive:
+            profileViewState = .error(ProfileError.sensitiveContent.message)
+            return false
+        case .error(let message):
+            profileViewState = .error(message)
+            return false
+        case .notSensitive:
+            return true
+        case .analyzing, .notStarted:
+            return false
+        }
+    }
+        
     func loadTransferable(from imageSelection: PhotosPickerItem) {
         Task {
             do {
@@ -160,7 +186,7 @@ final class ProfileViewModel {
         guard let data = avatarImage?.data else { return nil }
         
         guard let compressedData = compressImage(data: data) else {
-            print("Failed to compress image")
+            print("Failed to compress image.")
             return nil
         }
         

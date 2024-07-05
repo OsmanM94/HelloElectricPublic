@@ -8,7 +8,7 @@
 import Foundation
 
 enum ProfileViewState {
-        case normal
+        case idle
         case loading
         case error(String)
         case success(String)
