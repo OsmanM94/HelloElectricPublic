@@ -55,16 +55,9 @@ class AuthViewModel {
                 authenticationState = .authenticated
                 
                 if let userEmail = credential.email {
-                    
                     self.displayName = userEmail
                 }
-                
-//                if let fullName = credential.fullName {
-//                    let formatter = PersonNameComponentsFormatter()
-//                    displayName = formatter.string(from: fullName)
-//                }
-//                
-                
+                                
             } catch let error as AppleAuthError {
                 print("AppleAuthError encountered: \(error.localizedDescription)")
                 authenticationState = .unauthenticated

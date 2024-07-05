@@ -50,9 +50,10 @@ struct ProfileView: View {
                     TextField("Username", text: $viewModel.username)
                         .textContentType(.username)
                         .textInputAutocapitalization(.never)
+                        
                         .submitLabel(.done)
                 }
-#warning("You need still need to work on validation form. Implement async button.")
+
                 Section {
                     Button {
                         Task {
@@ -60,21 +61,43 @@ struct ProfileView: View {
                           await viewModel.getInitialProfile()
                         }
                     } label: {
-                        if viewModel.isLoading {
-                            ProgressView()
+                        if viewModel.profileViewState.isLoading {
+                            ProgressView("Analyzing...")
+                            
+                        } else if viewModel.cooldownTime > 0  {
+                            Text("Please wait \(viewModel.cooldownTime) seconds to update again")
+                                .monospacedDigit()
+                                .foregroundStyle(.gray)
                         } else {
                             Text("Update profile")
                                 .fontWeight(.bold)
-                                .foregroundStyle(!viewModel.validateUsername ? .gray : .green)
+                                .foregroundStyle(viewModel.validateUsername ? .green : .gray.opacity(0.8))
                         }
                     }
-                    .disabled(!viewModel.validateUsername)
+                    .disabled(viewModel.isInteractionBlocked)
+                }
+                
+                if let errorMessage = viewModel.profileViewState.errorMessage {
+                    Section {
+                        Text(errorMessage)
+                            .foregroundColor(.red)
+                    }
+                }
+                
+                if let isLoaded = viewModel.profileViewState.isLoaded {
+                    Section {
+                        Text(isLoaded)
+                            .foregroundStyle(.green)
+                    }
                 }
             }
             .navigationTitle("Profile")
             .onChange(of: viewModel.imageSelection) { _, newValue in
                 guard let newValue = newValue else { return }
                 viewModel.loadTransferable(from: newValue)
+            }
+            .onDisappear {
+                viewModel.resetState()
             }
         }
         .task {

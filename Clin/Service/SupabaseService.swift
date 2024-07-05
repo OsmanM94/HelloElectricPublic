@@ -8,7 +8,8 @@
 import Foundation
 import Supabase
 
-struct SupabaseService {
+
+final class SupabaseService {
     static let shared = SupabaseService()
     let client: SupabaseClient
 

@@ -9,7 +9,10 @@ import Foundation
 
 
 final class ProfileService {
-    private let supabase = SupabaseService.shared.client
-    
+//    static let shared = ProfileService()
+//    private let supabase = SupabaseService.shared.client
+//    private let contentAnalyzer = SensitiveContentAnalysis.shared
+//    
+//    private init () {}
     
 }

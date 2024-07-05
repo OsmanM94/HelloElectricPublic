@@ -13,15 +13,49 @@ import Storage
 @Observable
 final class ProfileViewModel {
     var username: String = ""
-    var isLoading: Bool = false
     var imageSelection: PhotosPickerItem?
-    var avatarImage: AvatarImage?
-    var displayName: String = ""
-    var profile: Profile? = nil
- 
+    private(set) var avatarImage: AvatarImage?
+    private(set) var displayName: String = ""
+    private(set) var profile: Profile? = nil
+    private(set) var cooldownTime: Int = 0
+    
     private let supabase = SupabaseService.shared.client
     private let profileService = ProfileService()
-
+    private let contentAnalyzer = SensitiveContentAnalysis.shared
+    
+    private(set) var profileViewState: ProfileViewState = .normal
+    private var cooldownTimer: Timer?
+    private var prohibitedWords: Set<String> = []
+    
+    init() {
+        Task {
+            await loadProhibitedWords()
+        }
+    }
+    
+    var isInteractionBlocked: Bool {
+        return cooldownTime > 0 || !validateUsername
+    }
+    
+    func resetState() {
+        username = ""
+        imageSelection = nil
+        avatarImage = nil
+        profileViewState = .normal
+    }
+    
+    private func loadProhibitedWords() async {
+        do {
+            let words: [String] = try await loadAsync("prohibited_words.json")
+            self.prohibitedWords = Set(words)
+            
+        } catch let error as JSONLoadingError {
+            print("Failed to load prohibited words: \(error.localizedDescription)")
+        } catch {
+            print("Unexpected error: \(error)")
+        }
+    }
+    
     @MainActor
     func getInitialProfile() async {
         do {
@@ -38,16 +72,43 @@ final class ProfileViewModel {
             self.displayName = profile.username ?? ""
             self.profile = profile
            
-            
         } catch {
             debugPrint(error)
+            profileViewState = .error(ProfileError.generalError.message)
         }
     }
     
     @MainActor
     func updateProfileButtonTapped() async {
-        isLoading = true
-        defer { isLoading = false }
+        
+        guard cooldownTime == 0 else {
+            profileViewState = .error(ProfileError.cooldownActive.message)
+            return
+        }
+        
+        if containsProhibitedWords(username) {
+            profileViewState = .error(ProfileError.inappropriateUsername.message)
+            return
+        }
+        
+        profileViewState = .loading
+        
+        guard let data = avatarImage?.data else { return }
+     
+        await contentAnalyzer.analyze(image: data)
+        
+        switch contentAnalyzer.analysisState {
+        case .isSensitive:
+            profileViewState = .error(ProfileError.sensitiveContent.message)
+            return
+        case .error(let message):
+            profileViewState = .error(message)
+            return
+        case .notSensitive:
+            break
+        case .analyzing, .notStarted:
+            return
+        }
         
         do {
             if let currentAvatarURL = profile?.avatarURL {
@@ -75,8 +136,12 @@ final class ProfileViewModel {
             self.profile?.avatarURL = imageURL
             self.username = ""
             
+            startCooldownTimer()
+            profileViewState = .success("Profile updated.")
+            
         } catch {
             debugPrint(error)
+            profileViewState = .error(ProfileError.generalError.message)
         }
     }
     
@@ -89,12 +154,6 @@ final class ProfileViewModel {
                 debugPrint(error)
             }
         }
-    }
-    
-    private func downloadImage(path: String) async throws {
-        let data = try await supabase.storage.from("avatars").download(path: path)
-        avatarImage = AvatarImage(data: data)
-        print("Image downloaded from Supabase Storage")
     }
     
     private func uploadImage() async throws -> String? {
@@ -135,6 +194,25 @@ final class ProfileViewModel {
         } catch {
             print("Error deleting image from database: \(error)")
         }
+    }
+    
+    private func startCooldownTimer() {
+        cooldownTime = 60 // 1 minute cooldown period, adjust as needed
+        cooldownTimer?.invalidate()
+        cooldownTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] timer in
+            guard let self = self else { return }
+            if self.cooldownTime > 0 {
+                self.cooldownTime -= 1
+            } else {
+                timer.invalidate()
+                self.cooldownTimer = nil
+            }
+        }
+    }
+    
+    private func containsProhibitedWords(_ text: String) -> Bool {
+        let words = text.lowercased().split(separator: " ")
+        return words.contains { prohibitedWords.contains(String($0)) }
     }
     
     var validateUsername: Bool {

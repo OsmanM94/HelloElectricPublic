@@ -26,7 +26,7 @@ struct AuthenticationView: View {
                             .padding([.bottom, .top])
                         
                         SignInWithAppleButton(.continue) { request in
-                            request.requestedScopes = [.email, .fullName]
+                            request.requestedScopes = [.email]
                         } onCompletion: { result in
                             viewModel.handleAppleSignInCompletion(result: result)
                         }

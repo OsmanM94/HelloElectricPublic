@@ -37,4 +37,5 @@ struct Tab: View {
 #Preview {
     Tab()
         .environment(AuthViewModel())
+        .environment(NetworkMonitor())
 }

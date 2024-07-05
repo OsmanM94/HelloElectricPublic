@@ -8,7 +8,7 @@
 import Foundation
 
 
-struct CarListingService {
+final class CarListingService {
     static let shared = CarListingService()
     
     private let supabase = SupabaseService.shared.client
