@@ -53,17 +53,6 @@ struct CreateListingView: View {
                             }
                         
                             Section {
-                                TextField("What are you selling?", text: $viewModel.title)
-                                    .autocorrectionDisabled()
-                                    .submitLabel(.done)
-                                    .characterLimit($viewModel.title, limit: 30)
-                            } header: {
-                                Text("Title")
-                            } footer: {
-                                Text("\(viewModel.title.count)/30")
-                            }
-
-                            Section {
                                 TextField("What make is your EV?", text: $viewModel.make)
                                     .autocorrectionDisabled()
                                     .submitLabel(.done)
@@ -151,7 +140,6 @@ struct CreateListingView: View {
                             Text(message)
                                 .foregroundStyle(.green)
                                 .fontWeight(.bold)
-                            
                         } description: {
                             Image(systemName: "checkmark.circle.fill")
                                 .font(.title)
@@ -164,7 +152,13 @@ struct CreateListingView: View {
                         
                     case .error(let message):
                         ContentUnavailableView {
-                            Label("\(message)", systemImage: "exclamationmark.circle")
+                            Label {
+                                Text(message)
+                                    .foregroundColor(.red)
+                            } icon: {
+                                Image(systemName: "exclamationmark.circle")
+                                    .foregroundColor(.red)
+                            }
                         } description: {
                             Text("Please try again.")
                         } actions: {

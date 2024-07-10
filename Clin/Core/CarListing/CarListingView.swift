@@ -29,7 +29,7 @@ struct CarListingView: View {
                     case .loaded:
                         List {
                             ForEach(viewModel.listings, id: \.id) { item in
-                                Text(item.title)
+                                Text(item.make)
                             }
                         }
                         .searchable(text: $text, placement:

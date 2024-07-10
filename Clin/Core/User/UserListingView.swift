@@ -28,7 +28,7 @@ struct UserListingView: View {
                     case .loaded:
                         List {
                             ForEach(viewModel.userActiveListings, id: \.id) { listing in
-                                Text(listing.title)
+                                Text(listing.make)
                             }
                             .listRowSeparator(.hidden, edges: .all)
                         }
@@ -36,7 +36,13 @@ struct UserListingView: View {
                      
                     case .error(let message):
                         ContentUnavailableView {
-                            Label("\(message)", systemImage: "exclamationmark.triangle.fill")
+                            Label {
+                                Text(message)
+                                    .foregroundColor(.red)
+                            } icon: {
+                                Image(systemName: "exclamationmark.circle")
+                                    .foregroundColor(.red)
+                            }
                         } actions: {
                             Button("Try again") {
                                 Task {

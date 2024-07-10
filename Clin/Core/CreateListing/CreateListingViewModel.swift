@@ -10,7 +10,6 @@ import Foundation
 
 @Observable
 final class CreateListingViewModel {
-    
     enum CreateListingViewState: Equatable {
         case idle
         case loading
@@ -19,19 +18,18 @@ final class CreateListingViewModel {
         case error(String)
     }
     
-    var viewState: CreateListingViewState = .success("Listing created successfully.")
+    var viewState: CreateListingViewState = .idle
     
-    var title: String = ""
     var make: String = ""
     var model: String = ""
     var mileage: Double = 0.0
     var yearOfManufacture: String = ""
     var price: Double = 0.0
-    var isPromoted: Bool = false
     var description: String = ""
+    var range: String = ""
+    var isPromoted: Bool = false
     
     ///EV Specific
-    var range: String = ""
     var publicChargingTime: String = ""
     var homeChargingTime: String = ""
     var warranty: String = ""
@@ -58,7 +56,7 @@ final class CreateListingViewModel {
                 return
             }
             
-            try await carListingService.createListing(title: title, userID: user.id)
+            try await carListingService.createListing(make: make, userID: user.id)
             viewState = .success("Listing created successfully.")
         } catch {
             self.viewState = .error("Error creating listing.")
@@ -87,7 +85,6 @@ final class CreateListingViewModel {
     
     func resetState() {
         registrationNumber = ""
-        title = ""
         make = ""
         model = ""
         yearOfManufacture = ""

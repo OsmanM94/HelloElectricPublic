@@ -36,6 +36,7 @@ final class ProfileViewModel {
         username = ""
         imageSelection = nil
         avatarImage = nil
+        lastUploadedImageURL = nil
         profileViewState = .idle
     }
     
@@ -110,7 +111,7 @@ final class ProfileViewModel {
             self.lastUploadedImageURL = imageURL.absoluteString
             
             startCooldownTimer()
-            profileViewState = .success("Profile updated.")
+            profileViewState = .success("Profile updated successfully.")
             
         } catch {
             debugPrint(error)

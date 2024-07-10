@@ -46,9 +46,9 @@ final class DatabaseService {
         }
     }
     
-    func createListing(title: String, userID: UUID) async throws {
+    func createListing(make: String, userID: UUID) async throws {
         do {
-            let listing = CarListing(createdAt: Date(), title: title, userID: userID)
+            let listing = CarListing(createdAt: Date(), make: make, userID: userID)
             try await supabase
                 .from("car_listing")
                 .insert(listing)
@@ -60,14 +60,14 @@ final class DatabaseService {
         }
     }
     
-    func updateListing(_ listing: CarListing, title: String) async throws {
+    func updateListing(_ listing: CarListing, make: String) async throws {
         guard let id = listing.id else {
             print("Listing ID is missing.")
             return
         }
         
         var toUpdate = listing
-        toUpdate.title = title
+        toUpdate.make = make
         
         do {
             try await supabase

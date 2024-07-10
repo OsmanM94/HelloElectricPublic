@@ -41,9 +41,9 @@ final class UserListingsViewModel {
     }
     
     @MainActor
-    func updateUserListing(_ listing: CarListing, title: String) async {
+    func updateUserListing(_ listing: CarListing, make: String) async {
         do {
-            try await carListingService.updateListing(listing, title: title)
+            try await carListingService.updateListing(listing, make: make)
             viewState = .loaded
             
             print("Listing updated succesfully.")

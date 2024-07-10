@@ -10,11 +10,11 @@ import Foundation
 struct CarListing: Identifiable, Codable, Hashable {
     var id: Int?
     var createdAt: Date
-    var title: String
+    var make: String
     var userID: UUID
     
     enum CodingKeys: String, CodingKey {
-       case id, title
+       case id, make
        case createdAt = "created_at"
        case userID = "user_id"
     }
