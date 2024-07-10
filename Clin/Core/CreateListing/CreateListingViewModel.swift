@@ -10,7 +10,7 @@ import Foundation
 
 @Observable
 final class CreateListingViewModel {
-    enum CreateListingViewState: Equatable {
+    enum CreateListingViewState {
         case idle
         case loading
         case loaded
@@ -18,7 +18,7 @@ final class CreateListingViewModel {
         case error(String)
     }
     
-    var viewState: CreateListingViewState = .idle
+    var viewState: CreateListingViewState = .loaded
     
     var make: String = ""
     var model: String = ""
@@ -65,7 +65,7 @@ final class CreateListingViewModel {
     }
     
     @MainActor
-     func sendRequest() async {
+    func sendRequest() async {
         viewState = .loading
         do {
             let decodedCar = try await dvlaService.fetchCarDetails(registrationNumber: registrationNumber)

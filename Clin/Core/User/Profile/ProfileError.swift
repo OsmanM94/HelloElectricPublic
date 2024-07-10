@@ -8,12 +8,9 @@
 import Foundation
 
 enum ProfileError: String, Error {
-    case cooldownActive = "Please wait for the cooldown period to end before updating again."
     case inappropriateUsername = "Please choose a different username."
-    case noAvatarImage = "No profile image selected."
     case sensitiveContent = "The selected image contains sensitive content. Please choose a different image."
     case generalError = "An error occurred. Please try again."
-    case duplicateImage = "Cannot upload the same image twice."
     
     var message: String {
         return self.rawValue

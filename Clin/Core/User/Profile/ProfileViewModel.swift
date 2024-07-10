@@ -12,19 +12,25 @@ import Storage
 
 @Observable
 final class ProfileViewModel {
+    enum ProfileViewState {
+        case idle
+        case loading
+        case error(String)
+        case success(String)
+    }
+    
     var username: String = ""
     var imageSelection: PhotosPickerItem?
     private(set) var avatarImage: AvatarImage?
     private(set) var displayName: String = ""
     private(set) var profile: Profile? = nil
     private(set) var cooldownTime: Int = 0
-    private(set) var lastUploadedImageURL: String?
     
     private let supabase = SupabaseService.shared.client
     private let imageService = ImageService.shared // Use ImageService
     private let contentAnalyzer = SensitiveContentAnalysis.shared
     
-    private(set) var profileViewState: ProfileViewState = .idle
+    private(set) var viewState: ProfileViewState = .idle
     private(set) var cooldownTimer: Timer?
     private(set) var prohibitedWords: Set<String> = []
         
@@ -36,8 +42,7 @@ final class ProfileViewModel {
         username = ""
         imageSelection = nil
         avatarImage = nil
-        lastUploadedImageURL = nil
-        profileViewState = .idle
+        viewState = .idle
     }
     
     func loadProhibitedWords() async {
@@ -70,7 +75,7 @@ final class ProfileViewModel {
            
         } catch {
             debugPrint(error)
-            profileViewState = .error(ProfileError.generalError.message)
+            viewState = .error(ProfileError.generalError.message)
         }
     }
     
@@ -86,7 +91,7 @@ final class ProfileViewModel {
                         
             let imageURLString = try await imageService.uploadImage(avatarImage!.data)
             guard let imageURL = URL(string: imageURLString ?? "") else {
-                profileViewState = .error(ProfileError.generalError.message)
+                viewState = .error(ProfileError.generalError.message)
                 return
             }
             
@@ -107,31 +112,29 @@ final class ProfileViewModel {
                        
             self.profile?.avatarURL = imageURL
             self.username = ""
-            
-            self.lastUploadedImageURL = imageURL.absoluteString
-            
+                        
             startCooldownTimer()
-            profileViewState = .success("Profile updated successfully.")
+            viewState = .success("Profile updated successfully.")
             
         } catch {
             debugPrint(error)
-            profileViewState = .error(ProfileError.generalError.message)
+            viewState = .error(ProfileError.generalError.message)
         }
     }
     
     @MainActor
     private func canUpdateProfile() async -> Bool {
         guard cooldownTime == 0 else {
-            profileViewState = .error(ProfileError.cooldownActive.message)
+            viewState = .error(ProfileError.generalError.message)
             return false
         }
         
         guard !containsProhibitedWords(username) else {
-            profileViewState = .error(ProfileError.inappropriateUsername.message)
+            viewState = .error(ProfileError.inappropriateUsername.message)
             return false
         }
         
-        profileViewState = .loading
+        viewState = .loading
         
         // Check if only the username needs to be updated
         if await !shouldProceedWithUpdate() {
@@ -139,7 +142,7 @@ final class ProfileViewModel {
         }
         
         guard avatarImage?.data != nil else {
-            profileViewState = .error(ProfileError.generalError.message)
+            viewState = .error(ProfileError.generalError.message)
             return false
         }
         
@@ -150,14 +153,9 @@ final class ProfileViewModel {
     private func shouldProceedWithUpdate() async -> Bool {
         if avatarImage == nil || avatarImage?.data == nil {
             await updateUsernameOnly()
+            print("Username updated.")
             return false
         }
-        
-        if let profileImageURL = profile?.avatarURL?.absoluteString, profileImageURL == lastUploadedImageURL {
-            profileViewState = .error(ProfileError.duplicateImage.message)
-            return false
-        }
-        
         return true
     }
     
@@ -181,12 +179,12 @@ final class ProfileViewModel {
             
             self.profile?.username = username
             self.username = ""
-            profileViewState = .success("Username updated.")
+            viewState = .success("Username updated.")
             startCooldownTimer()
             
         } catch {
             debugPrint(error)
-            profileViewState = .error(ProfileError.generalError.message)
+            viewState = .error(ProfileError.generalError.message)
         }
     }
     
@@ -198,10 +196,10 @@ final class ProfileViewModel {
        
         switch analysisResult {
         case .isSensitive:
-            profileViewState = .error(ProfileError.sensitiveContent.message)
+            viewState = .error(ProfileError.sensitiveContent.message)
             return false
         case .error(let message):
-            profileViewState = .error(message)
+            viewState = .error(message)
             return false
         case .notSensitive:
             return true

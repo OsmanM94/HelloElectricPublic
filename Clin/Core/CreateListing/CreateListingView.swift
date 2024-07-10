@@ -19,8 +19,14 @@ struct CreateListingView: View {
                     switch viewModel.viewState {
                     case .idle:
                         Form {
+                            Image(decorative: "ev3")
+                                .resizable()
+                                .scaledToFit()
+                            
                             Section("Registration") {
                                 TextField("Enter registration", text: $viewModel.registrationNumber)
+                                    .fontWeight(.bold)
+                                    .listRowBackground(Color.yellow)
                                     .textInputAutocapitalization(.characters)
                                     .autocorrectionDisabled()
                             }
@@ -29,7 +35,8 @@ struct CreateListingView: View {
                                     await viewModel.sendRequest()
                                 }
                             } label: {
-                                Text("Check")
+                                Text("Continue")
+                                    .font(.headline)
                             }
                             .disabled(viewModel.registrationNumber.isEmpty)
                         }
@@ -52,15 +59,9 @@ struct CreateListingView: View {
                                 .frame(height: 200)
                             }
                         
-                            Section {
-                                TextField("What make is your EV?", text: $viewModel.make)
-                                    .autocorrectionDisabled()
-                                    .submitLabel(.done)
-                                    .characterLimit($viewModel.make, limit: 30)
-                            } header: {
-                                Text("Make")
-                            } footer: {
-                                Text("\(viewModel.make.count)/30")
+                            Section("Make") {
+                                TextField("", text: $viewModel.make)
+                                    .disabled(true)
                             }
                             
                             Section {
@@ -118,13 +119,12 @@ struct CreateListingView: View {
                                     await viewModel.createListing()
                                 }
                             } label: {
-                                Text("Submit")
+                                Text("Create listing")
                                     .font(.headline)
                                     .foregroundStyle(.white)
                                     .frame(maxWidth: .infinity)
                             }
                             .listRowBackground(Color.green)
-                            .disabled(viewModel.viewState == .loading)
                         }
                         .toolbar {
                             ToolbarItem {
@@ -160,7 +160,7 @@ struct CreateListingView: View {
                                     .foregroundColor(.red)
                             }
                         } description: {
-                            Text("Please try again.")
+                            Text("")
                         } actions: {
                             Button("Try again") { viewModel.resetState() }
                         }

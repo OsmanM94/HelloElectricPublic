@@ -44,6 +44,17 @@ struct AccountView: View {
                 Section("Signed in as \(viewModel.displayName) ") {
                     SignOutButton(action: { Task { await viewModel.signOut() } }, description: "Sign out")
                 }
+                
+                HStack {
+                    Text("Made in")
+                        .italic()
+                    Image("uk")
+                        .resizable()
+                        .scaledToFit()
+                }
+                .frame(maxWidth: .infinity, maxHeight: 30)
+                .listRowBackground(Color(.systemGray6))
+                
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)

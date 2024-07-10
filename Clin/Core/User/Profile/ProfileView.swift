@@ -16,7 +16,7 @@ struct ProfileView: View {
         NavigationStack {
             Group {
                 VStack {
-                    switch viewModel.profileViewState {
+                    switch viewModel.viewState {
                     case .idle:
                         Form {
                             Section {

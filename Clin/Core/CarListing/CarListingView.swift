@@ -49,9 +49,7 @@ struct CarListingView: View {
             .navigationTitle("Listings")
             .navigationBarTitleDisplayMode(.inline)
         }
-        .task {
-            await viewModel.fetchListings()
-        }
+        .task { await viewModel.fetchListings() }
     }
 }
 

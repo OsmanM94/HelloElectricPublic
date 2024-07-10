@@ -75,7 +75,6 @@
 				User/Profile/ProfileError.swift,
 				User/Profile/ProfileView.swift,
 				User/Profile/ProfileViewModel.swift,
-				User/Profile/ProfileViewState.swift,
 				User/UserListingsViewModel.swift,
 				User/UserListingView.swift,
 			);
