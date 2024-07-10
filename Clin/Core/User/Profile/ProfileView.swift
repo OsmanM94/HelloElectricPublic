@@ -50,7 +50,6 @@ struct ProfileView: View {
                     TextField("Username", text: $viewModel.username)
                         .textContentType(.username)
                         .textInputAutocapitalization(.never)
-                        
                         .submitLabel(.done)
                 }
 
@@ -71,7 +70,7 @@ struct ProfileView: View {
                         } else {
                             Text("Update profile")
                                 .fontWeight(.bold)
-                                .foregroundStyle(viewModel.validateUsername ? .green : .gray.opacity(0.8))
+                                .foregroundStyle(viewModel.validateUsername ? .green : .gray.opacity(0.5))
                         }
                     }
                     .disabled(viewModel.isInteractionBlocked)
@@ -92,6 +91,7 @@ struct ProfileView: View {
                 }
             }
             .navigationTitle("Profile")
+            .navigationBarTitleDisplayMode(.inline)
             .onChange(of: viewModel.imageSelection) { _, newValue in
                 guard let newValue = newValue else { return }
                 viewModel.loadTransferable(from: newValue)
@@ -102,6 +102,7 @@ struct ProfileView: View {
         }
         .task {
             await viewModel.getInitialProfile()
+            await viewModel.loadProhibitedWords()
         }
     }
 }

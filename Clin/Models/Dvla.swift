@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct DVLA: Codable {
+struct Dvla: Codable {
     let fuelType: String
     let registrationNumber: String
     let yearOfManufacture: Int

@@ -10,16 +10,21 @@ import Foundation
 
 @Observable
 final class UserListingsViewModel {
+    enum UserListingsViewState {
+        case loading
+        case loaded
+        case error(String)
+    }
     var userActiveListings: [CarListing] = []
-    var state: SharedViewState = .loading
+    var viewState: UserListingsViewState = .loading
     
-    private let carListingService = CarListingService.shared
+    private let carListingService = DatabaseService.shared
     private let supabase = SupabaseService.shared.client
     private var userID: UUID?
     
     @MainActor
     func fetchUserListings() async {
-        state = .loading
+        viewState = .loading
         do {
             guard let user = try? await supabase.auth.session.user else {
                 print("No authenticated user found")
@@ -29,9 +34,9 @@ final class UserListingsViewModel {
             userID = user.id
             userActiveListings = try await carListingService.fetchUserListings(userID: user.id)
             
-            state = .loaded
+            viewState = .loaded
         } catch {
-            print("Error fetching user listings.")
+            viewState = .error("Error retrieving listings.")
         }
     }
     
@@ -39,11 +44,11 @@ final class UserListingsViewModel {
     func updateUserListing(_ listing: CarListing, title: String) async {
         do {
             try await carListingService.updateListing(listing, title: title)
-            state = .loaded
+            viewState = .loaded
             
             print("Listing updated succesfully.")
         } catch {
-            print("Error updating listing: \(error)")
+            viewState = .error("Error updating the listing, please try again.")
         }
     }
     
@@ -51,11 +56,11 @@ final class UserListingsViewModel {
     func deleteUserListing(at id: Int) async {
         do {
             try await carListingService.deleteListing(at: id)
-            state = .loaded
+            viewState = .loaded
             print("Listing deleted succesfully")
             
         } catch {
-            print("Error deleting listing: \(error)")
+            viewState = .error("Error deleting the listing, please try again.")
         }
     }
 }

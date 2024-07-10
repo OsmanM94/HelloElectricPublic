@@ -16,7 +16,7 @@ struct CarListingView: View {
         NavigationStack {
             Group {
                 VStack {
-                    switch viewModel.state {
+                    switch viewModel.viewState {
                     case .loading:
                         Button(action: {}) {
                             ProgressView()
@@ -32,7 +32,8 @@ struct CarListingView: View {
                                 Text(item.title)
                             }
                         }
-                        .searchable(text: $text, placement: .navigationBarDrawer(displayMode: .always))
+                        .searchable(text: $text, placement:
+                                .navigationBarDrawer(displayMode: .always))
                         .refreshable {
                             await viewModel.fetchListings()
                         }

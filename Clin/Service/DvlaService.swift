@@ -7,21 +7,21 @@
 
 import Foundation
 
-enum DVLAErrors: Error {
+enum DvlaAPIErrors: Error {
     case invalidURL
     case invalidParameters
     case invalidResponse
 }
 
-final class DVLAService {
+final class DvlaService {
     private let apiKey = "32ajeg6zif8hoBN6pASIJ93uAzx9erA34jAoyLxA"
     private let baseURL = "https://driver-vehicle-licensing.api.gov.uk/vehicle-enquiry/v1/vehicles"
 
-    func fetchCarDetails(registrationNumber: String) async throws -> DVLA {
+    func fetchCarDetails(registrationNumber: String) async throws -> Dvla {
         let parameters = ["registrationNumber": registrationNumber]
         
         guard let url = URL(string: baseURL) else {
-            throw DVLAErrors.invalidURL
+            throw DvlaAPIErrors.invalidURL
         }
         
         var request = URLRequest(url: url)
@@ -30,17 +30,17 @@ final class DVLAService {
         request.setValue(apiKey, forHTTPHeaderField: "x-api-key")
         
         guard let httpBody = try? JSONSerialization.data(withJSONObject: parameters) else {
-            throw DVLAErrors.invalidParameters
+            throw DvlaAPIErrors.invalidParameters
         }
         request.httpBody = httpBody
         
         let (data, response) = try await URLSession.shared.data(for: request)
         
         if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
-            let decodedCar = try JSONDecoder().decode(DVLA.self, from: data)
+            let decodedCar = try JSONDecoder().decode(Dvla.self, from: data)
             return decodedCar
         } else {
-            throw DVLAErrors.invalidResponse
+            throw DvlaAPIErrors.invalidResponse
         }
     }
 }

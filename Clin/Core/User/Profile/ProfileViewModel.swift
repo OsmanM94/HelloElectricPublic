@@ -21,19 +21,13 @@ final class ProfileViewModel {
     private(set) var lastUploadedImageURL: String?
     
     private let supabase = SupabaseService.shared.client
-    private let profileService = ProfileService()
+    private let imageService = ImageService.shared // Use ImageService
     private let contentAnalyzer = SensitiveContentAnalysis.shared
     
     private(set) var profileViewState: ProfileViewState = .idle
     private(set) var cooldownTimer: Timer?
     private(set) var prohibitedWords: Set<String> = []
-    
-    init() {
-        Task {
-            await loadProhibitedWords()
-        }
-    }
-    
+        
     var isInteractionBlocked: Bool {
         return cooldownTime > 0 || !validateUsername
     }
@@ -45,7 +39,7 @@ final class ProfileViewModel {
         profileViewState = .idle
     }
     
-    private func loadProhibitedWords() async {
+    func loadProhibitedWords() async {
         do {
             let words: [String] = try await loadAsync("prohibited_words.json")
             self.prohibitedWords = Set(words)
@@ -86,10 +80,10 @@ final class ProfileViewModel {
         
         do {
             if let currentAvatarURL = profile?.avatarURL {
-                try await deleteImage(path: currentAvatarURL.absoluteString)
+                try await imageService.deleteImage(path: currentAvatarURL.absoluteString)
             }
                         
-            let imageURLString = try await uploadImage()
+            let imageURLString = try await imageService.uploadImage(avatarImage!.data)
             guard let imageURL = URL(string: imageURLString ?? "") else {
                 profileViewState = .error(ProfileError.generalError.message)
                 return
@@ -138,8 +132,8 @@ final class ProfileViewModel {
         
         profileViewState = .loading
         
-        if let profileImageURL = profile?.avatarURL?.absoluteString, profileImageURL == lastUploadedImageURL {
-            profileViewState = .error(ProfileError.duplicateImage.message)
+        // Check if only the username needs to be updated
+        if await !shouldProceedWithUpdate() {
             return false
         }
         
@@ -152,12 +146,56 @@ final class ProfileViewModel {
     }
     
     @MainActor
+    private func shouldProceedWithUpdate() async -> Bool {
+        if avatarImage == nil || avatarImage?.data == nil {
+            await updateUsernameOnly()
+            return false
+        }
+        
+        if let profileImageURL = profile?.avatarURL?.absoluteString, profileImageURL == lastUploadedImageURL {
+            profileViewState = .error(ProfileError.duplicateImage.message)
+            return false
+        }
+        
+        return true
+    }
+    
+    @MainActor
+    private func updateUsernameOnly() async {
+        do {
+            let currentUser = try await supabase.auth.session.user
+            
+            let updatedProfile = Profile(
+                username: username,
+                avatarURL: profile?.avatarURL, // Keep the existing avatar URL
+                updatedAt: Date.now,
+                userID: currentUser.id
+            )
+            
+            try await supabase
+                .from("profiles")
+                .update(updatedProfile)
+                .eq("user_id", value: currentUser.id)
+                .execute()
+            
+            self.profile?.username = username
+            self.username = ""
+            profileViewState = .success("Username updated.")
+            startCooldownTimer()
+            
+        } catch {
+            debugPrint(error)
+            profileViewState = .error(ProfileError.generalError.message)
+        }
+    }
+    
+    @MainActor
     private func analyzeImage() async -> Bool {
         guard let data = avatarImage?.data else { return false }
         
-        await contentAnalyzer.analyze(image: data)
-        
-        switch contentAnalyzer.analysisState {
+        let analysisResult = await imageService.analyzeImage(data)
+       
+        switch analysisResult {
         case .isSensitive:
             profileViewState = .error(ProfileError.sensitiveContent.message)
             return false
@@ -179,46 +217,6 @@ final class ProfileViewModel {
             } catch {
                 debugPrint(error)
             }
-        }
-    }
-    
-    private func uploadImage() async throws -> String? {
-        guard let data = avatarImage?.data else { return nil }
-        
-        guard let compressedData = compressImage(data: data) else {
-            print("Failed to compress image.")
-            return nil
-        }
-        
-        let filePath = "\(UUID().uuidString).jpeg"
-
-        try await supabase.storage
-            .from("avatars")
-            .upload(
-                path: filePath,
-                file: compressedData,
-                options: FileOptions(contentType: "image/jpeg")
-            )
-
-        print("Image uploaded to Supabase Storage at path: \(filePath)")
-
-        let url = try supabase.storage.from("avatars").getPublicURL(path: filePath, download: true)
-        return url.absoluteString
-    
-    }
-    
-    private func compressImage(data: Data) -> Data? {
-        guard let image = UIImage(data: data) else { return nil }
-        return image.jpegData(compressionQuality: 0.1)
-    }
-    
-    private func deleteImage(path: String) async throws {
-        do {
-            let fileName = URL(string: path)?.lastPathComponent ?? ""
-            _ = try await supabase.storage.from("avatars").remove(paths: [fileName])
-            print("Image deleted from Supabase Storage at path: \(path)")
-        } catch {
-            print("Error deleting image from database: \(error)")
         }
     }
     

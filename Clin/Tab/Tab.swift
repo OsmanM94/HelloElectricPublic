@@ -19,13 +19,13 @@ struct Tab: View {
                 }
                 .tag(0)
             
-            UploadViewRouter()
+            CreateListingViewRouter()
                 .tabItem {
                     Label("Sell", systemImage: "plus")
                 }
                 .tag(1)
             
-            SettingsViewRouter()
+            AccountViewRouter()
                 .tabItem {
                     Label("Account", systemImage: "person.fill")
                 }

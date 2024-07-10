@@ -1,13 +1,13 @@
 //
-//  SettingsViewRouter.swift
+//  ContentView.swift
 //  Clin
 //
-//  Created by asia on 03/07/2024.
+//  Created by asia on 22/06/2024.
 //
 
 import SwiftUI
 
-struct SettingsViewRouter: View {
+struct CreateListingViewRouter: View {
     
     @Environment(AuthViewModel.self) private var authViewModel
     @Environment(NetworkMonitor.self) private var networkMonitor
@@ -15,7 +15,7 @@ struct SettingsViewRouter: View {
     var body: some View {
         Group {
             if authViewModel.authenticationState == .authenticated {
-                SettingsView()
+                CreateListingView()
                     .overlay(
                         !networkMonitor.isConnected ? NetworkMonitorView().background(Color.white.opacity(0.8)) : nil
                     )

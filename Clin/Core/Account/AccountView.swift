@@ -7,26 +7,38 @@
 
 import SwiftUI
 
-struct SettingsView: View {
+struct AccountView: View {
     
     @Environment(AuthViewModel.self) private var viewModel
  
     var body: some View {
         NavigationStack {
             Form {
-                Section("Profile") {
-                    NavigationLink("User", destination: { ProfileView() })
-                }
-                
                 Section("Manage") {
+                    NavigationLink("Profile", destination: { ProfileView() })
                     NavigationLink("My listings", destination: {
                         UserListingView()
                     })
                     NavigationLink("Saved", destination: {})
                 }
                 
+                Section("Safety") {
+                    NavigationLink("How to buy and sell", destination: {
+                        SafetyView()
+                    })
+                }
+                
+                DisclosureGroup("Legal") {
+                    NavigationLink("Terms and Conditions", destination: TermsAndConditionsView())
+                    NavigationLink("Privacy Policy", destination: PrivacyPolicyView())
+                }
+                
                 Section("Notifications") {
                     Text("Notify me")
+                }
+                
+                Section("Haptic feedback") {
+                    Text("Turn on")
                 }
                 
                 Section("Signed in as \(viewModel.displayName) ") {
@@ -40,7 +52,7 @@ struct SettingsView: View {
 }
 
 #Preview {
-    SettingsView()
+    AccountView()
         .environment(AuthViewModel())
 }
 

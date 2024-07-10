@@ -15,7 +15,7 @@ struct UserListingView: View {
         NavigationStack {
             Group {
                 VStack {
-                    switch viewModel.state {
+                    switch viewModel.viewState {
                     case .loading:
                         Button(action: {}) {
                             ProgressView()
@@ -33,14 +33,23 @@ struct UserListingView: View {
                             .listRowSeparator(.hidden, edges: .all)
                         }
                         .listStyle(.plain)
+                     
+                    case .error(let message):
+                        ContentUnavailableView {
+                            Label("\(message)", systemImage: "exclamationmark.triangle.fill")
+                        } actions: {
+                            Button("Try again") {
+                                Task {
+                                    await viewModel.fetchUserListings()
+                                }
+                            }
+                        }
                     }
                 }
             }
             .navigationTitle("Active listings")
         }
-        .task {
-            await viewModel.fetchUserListings()
-        }
+        .task { await viewModel.fetchUserListings() }
     }
 }
 

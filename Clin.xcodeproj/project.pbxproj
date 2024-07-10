@@ -38,7 +38,7 @@
 			membershipExceptions = (
 				AvatarTransfer.swift,
 				CarListing.swift,
-				DVLA.swift,
+				Dvla.swift,
 				Profile.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
@@ -53,9 +53,9 @@
 		6217F3452C2977D200EF8B2D /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				CarListingService.swift,
-				DVLAService.swift,
-				ProfileService.swift,
+				DatabaseService.swift,
+				DvlaService.swift,
+				ImageService.swift,
 				SupabaseService.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
@@ -63,12 +63,14 @@
 		6217F3482C297DF500EF8B2D /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Account/AccountView.swift,
+				Account/Legal/PrivacyPolicyView.swift,
+				Account/Legal/TermsAndConditionsView.swift,
+				Account/Safety/SafetyView.swift,
 				CarListing/CarListingView.swift,
 				CarListing/CarListingViewModel.swift,
-				Settings/SettingsView.swift,
-				UploadListing/UploadListingView.swift,
-				UploadListing/UploadViewModel.swift,
-				User/Profile/CircularProfileSize.swift,
+				CreateListing/CreateListingView.swift,
+				CreateListing/CreateListingViewModel.swift,
 				User/Profile/CircularProfileView.swift,
 				User/Profile/ProfileError.swift,
 				User/Profile/ProfileView.swift,
@@ -79,18 +81,18 @@
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
 		};
-		6217F3502C2986F800EF8B2D /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+		622369BA2C3D6B7100576FF4 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				SharedViewState.swift,
+				CharactersLimitModifier.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
 		};
 		6291824B2C2AE5EB00DA4BAA /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				SettingsViewRouter.swift,
-				UploadViewRouter.swift,
+				AccountViewRouter.swift,
+				CreateListingViewRouter.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
 		};
@@ -130,11 +132,10 @@
 		6217F3102C28526400EF8B2D /* Models */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (6217F3222C288A6100EF8B2D /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Models; sourceTree = "<group>"; };
 		6217F3292C288EFC00EF8B2D /* Tab */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (6217F32A2C288F0200EF8B2D /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Tab; sourceTree = "<group>"; };
 		6217F3412C2977C700EF8B2D /* Service */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (6217F3452C2977D200EF8B2D /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Service; sourceTree = "<group>"; };
-		6217F3462C297DBD00EF8B2D /* Views */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (6217F3482C297DF500EF8B2D /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Views; sourceTree = "<group>"; };
-		6217F34D2C2986F000EF8B2D /* SharedViewState */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (6217F3502C2986F800EF8B2D /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = SharedViewState; sourceTree = "<group>"; };
+		6217F3462C297DBD00EF8B2D /* Core */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (6217F3482C297DF500EF8B2D /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Core; sourceTree = "<group>"; };
 		629182492C2AE5EB00DA4BAA /* Router */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (6291824B2C2AE5EB00DA4BAA /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Router; sourceTree = "<group>"; };
 		629185B42C3160F900DA4BAA /* Support */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (629185BC2C3175A100DA4BAA /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Support; sourceTree = "<group>"; };
-		629188CB2C35BAE800DA4BAA /* Components */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Components; sourceTree = "<group>"; };
+		629188CB2C35BAE800DA4BAA /* Components */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (622369BA2C3D6B7100576FF4 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Components; sourceTree = "<group>"; };
 		629189ED2C36FEB400DA4BAA /* Resources */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (629189F02C36FEC800DA4BAA /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Resources; sourceTree = "<group>"; };
 		62C4493C2C26E236009650A3 /* Authentication */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (62C4493D2C26E23C009650A3 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Authentication; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -181,10 +182,9 @@
 				6217F3412C2977C700EF8B2D /* Service */,
 				6217F3102C28526400EF8B2D /* Models */,
 				629182492C2AE5EB00DA4BAA /* Router */,
-				6217F34D2C2986F000EF8B2D /* SharedViewState */,
 				62C4493C2C26E236009650A3 /* Authentication */,
 				6217F3292C288EFC00EF8B2D /* Tab */,
-				6217F3462C297DBD00EF8B2D /* Views */,
+				6217F3462C297DBD00EF8B2D /* Core */,
 				629185B42C3160F900DA4BAA /* Support */,
 				629188CB2C35BAE800DA4BAA /* Components */,
 				629189ED2C36FEB400DA4BAA /* Resources */,
