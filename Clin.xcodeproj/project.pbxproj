@@ -36,9 +36,9 @@
 		6217F3222C288A6100EF8B2D /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Avatar.swift,
 				Dvla.swift,
 				Listing.swift,
+				PickedImage.swift,
 				Profile.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
@@ -68,6 +68,7 @@
 				Account/User/UserListingView.swift,
 				CreateListing/CreateListingView.swift,
 				CreateListing/CreateListingViewModel.swift,
+				CreateListing/DeleteAlertModifier.swift,
 				CreateListing/PhotosPickerCell.swift,
 				Listing/ListingCell.swift,
 				Listing/ListingView.swift,
@@ -79,6 +80,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				CharactersLimitModifier.swift,
+				CustomProgressView.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
 		};

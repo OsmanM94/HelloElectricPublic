@@ -11,8 +11,7 @@ import PhotosUI
 struct CreateListingView: View {
     
     @State private var viewModel = CreateListingViewModel()
-    @State private var text = ""
-    
+  
     var body: some View {
         NavigationStack {
             Group {
@@ -43,50 +42,18 @@ struct CreateListingView: View {
                         }
                         
                     case .loading:
-                        Button(action: {}) {
-                            ProgressView()
-                                .scaleEffect(1.5)
-                                .frame(width: 45, height: 45)
-                        }
-                        .buttonStyle(.bordered)
-                        .buttonBorderShape(.roundedRectangle(radius: 15))
+                        CustomProgressView()
                         
                     case .loaded:
                         Form {
-                            Section {
-                                PhotosPicker("Select photos", selection: $viewModel.imageSelections, maxSelectionCount: 20, selectionBehavior: .ordered ,matching: .any(of: [.images, .screenshots]))
-                                    .onChange(of: viewModel.imageSelections) { _, newItems in
-                                        viewModel.imageSelections = newItems
-                                        viewModel.loadTransferable(from: newItems)
-                                    }
-                                    .alert(isPresented: $viewModel.showDeleteAlert) {
-                                        Alert(
-                                            title: Text("Delete Photo"),
-                                            message: Text("Are you sure you want to delete this photo?"),
-                                            primaryButton: .destructive(Text("Delete")) {
-                                                if let imageToDelete = viewModel.imageToDelete {
-                                                    viewModel.deleteImage(imageToDelete)
-                                                }
-                                            },
-                                            secondaryButton: .cancel()
-                                        )
-                                    }
-                            }
                             Section(header: Text("\(viewModel.imageSelections.count)/20")) {
                                     switch viewModel.imageLoadingState {
                                     case .idle:
                                         NoPhotosView()
                                     case .loading:
-                                        ProgressView("Loading images...")
-                                            .padding()
+                                        ImageLoadingPlaceHolders(viewModel: viewModel)
                                     case .loaded:
-                                        ScrollView(.horizontal) {
-                                            HStack {
-                                                SelectedPhotosView(viewModel: viewModel)
-                                                    .padding([.top, .bottom])
-                                            }
-                                        }
-                                        .scrollIndicators(.hidden)
+                                        SelectedPhotosView(viewModel: viewModel)
                                     }
                             }
                             
@@ -229,6 +196,22 @@ struct CreateListingView: View {
                             ToolbarItem {
                                 Button("Cancel", action: viewModel.resetState)
                             }
+                            ToolbarItem(placement: .topBarLeading) {
+                                PhotosPicker(selection: $viewModel.imageSelections, maxSelectionCount: 20, selectionBehavior: .ordered ,matching: .any(of: [.images, .screenshots]), photoLibrary: .shared()) {
+                                    Image(systemName: "camera")
+                                        .symbolRenderingMode(.multicolor)
+                                        .font(.system(size: 20))
+                                }
+                                .onChange(of: viewModel.imageSelections) { _, newItems in
+                                    viewModel.imageSelections = newItems
+                                    viewModel.loadTransferable(from: newItems)
+                                }
+                                .deleteAlert(
+                                    isPresented: $viewModel.showDeleteAlert,
+                                    imageToDelete: $viewModel.imageToDelete,
+                                    deleteAction: viewModel.deleteImage
+                                )
+                            }
                         }
                         
                     case .success(let message):
@@ -246,8 +229,6 @@ struct CreateListingView: View {
                         } actions: {
                             Button("Go back") { viewModel.resetState() }
                         }
-                        
-                        Spacer(minLength: 250)
                         
                     case .error(let message):
                         ContentUnavailableView {
@@ -288,12 +269,40 @@ struct SelectedPhotosView: View {
     var viewModel: CreateListingViewModel
     
     var body: some View {
-        ForEach(viewModel.listingImages, id: \.self) { avatarImage in
-            if let uiImage = UIImage(data: avatarImage.data) {
-            PhotosPickerCell(action: {
-                viewModel.imageToDelete = avatarImage
-                viewModel.showDeleteAlert = true
-            }, image: uiImage)
+        ScrollView(.horizontal) {
+            HStack {
+                ForEach(viewModel.pickedImages, id: \.self) { pickedImage in
+                    if let uiImage = UIImage(data: pickedImage.data) {
+                        PhotosPickerCell(action: {
+                            viewModel.imageToDelete = pickedImage
+                            viewModel.showDeleteAlert.toggle()
+                        }, image: uiImage)
+                    }
+                }
+            }
+            .padding([.top, .bottom])
+        }
+        .scrollIndicators(.hidden)
+    }
+}
+
+struct ImageLoadingPlaceHolders: View {
+    var viewModel: CreateListingViewModel
+    
+    var body: some View {
+        HStack {
+            ForEach(viewModel.imageSelections, id: \.self) { _ in
+                Rectangle()
+                    .foregroundStyle(.gray.opacity(0.5))
+                    .frame(width: 100, height: 100)
+                    .clipped()
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                    .redacted(reason: .placeholder)
+                    .overlay {
+                        ProgressView()
+                            .scaleEffect(1.2)
+                    }
+                    .padding([.top, .bottom])
             }
         }
     }

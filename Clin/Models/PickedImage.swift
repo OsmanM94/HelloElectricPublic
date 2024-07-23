@@ -8,21 +8,21 @@
 import Foundation
 import SwiftUI
 
-struct AvatarImage: Transferable, Equatable, Hashable, Identifiable {
+struct PickedImage: Transferable, Equatable, Hashable, Identifiable {
     let id = UUID()
     let image: Image
     let data: Data
     
     static var transferRepresentation: some TransferRepresentation {
         DataRepresentation(importedContentType: .image) { data in
-            guard let image = AvatarImage(data: data) else {
+            guard let image = PickedImage(data: data) else {
                 throw TransferError.importFailed
             }
             
             return image
         }
     }
-    static func == (lhs: AvatarImage, rhs: AvatarImage) -> Bool {
+    static func == (lhs: PickedImage, rhs: PickedImage) -> Bool {
         lhs.data == rhs.data
     }
     
@@ -31,7 +31,7 @@ struct AvatarImage: Transferable, Equatable, Hashable, Identifiable {
     }
 }
 
-extension AvatarImage {
+extension PickedImage {
     init?(data: Data) {
         guard let uiImage = UIImage(data: data) else {
             return nil

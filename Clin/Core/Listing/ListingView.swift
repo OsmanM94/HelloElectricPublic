@@ -18,14 +18,7 @@ struct ListingView: View {
                 VStack {
                     switch viewModel.viewState {
                     case .loading:
-                        Button(action: {}) {
-                            ProgressView()
-                                .scaleEffect(1.5)
-                                .frame(width: 45, height: 45)
-                        }
-                        .buttonStyle(.bordered)
-                        .buttonBorderShape(.roundedRectangle(radius: 15))
-                        
+                        CustomProgressView()
                     case .loaded:
                         List {
                             ForEach(viewModel.listings, id: \.id) { item in

@@ -24,14 +24,17 @@ final class CreateListingViewModel {
         case loading
         case loaded
     }
-    
+        
     var viewState: CreateListingViewState = .loaded
     var imageLoadingState: ImageLoadingState = .idle
-    var listingImages: [AvatarImage] = []
-    var imageSelections: [PhotosPickerItem] = []
+    var pickedImages: [PickedImage] = []
+    var imageSelections: [PhotosPickerItem] = [] 
     var isLoadingImages: Bool = false
     var showDeleteAlert: Bool = false
-    var imageToDelete: AvatarImage?
+    var imageToDelete: PickedImage?
+    
+    ///DVLA checks
+    var registrationNumber: String = ""
     
     var make: String = ""
     var model: String = ""
@@ -42,7 +45,6 @@ final class CreateListingViewModel {
     var description: String = ""
     var range: String = ""
     var colour: String = ""
-    var isPromoted: Bool = false
     var publicChargingTime: String = ""
     var homeChargingTime: String = ""
     var batteryCapacity: String = ""
@@ -51,9 +53,7 @@ final class CreateListingViewModel {
     var warranty: String = "Yes"
     var serviceHistory: String = "Yes"
     var numberOfOwners: String = "1"
-    
-    ///DVLA checks
-    var registrationNumber: String = ""
+    var isPromoted: Bool = false
     
     private let carListingService = ListingService.shared
     private let dvlaService = DvlaService()
@@ -83,8 +83,8 @@ final class CreateListingViewModel {
             }
             
             var imagesURLs: [URL] = []
-            for image in listingImages {
-                let imageURLString = try await imageService.uploadImage(image.data, to: "car_images", compressionQuality: 0.8)
+            for image in pickedImages {
+                let imageURLString = try await imageService.uploadImage(image.data, to: "car_images", compressionQuality: 0.5)
                 if let urlString = imageURLString, let url = URL(string: urlString) {
                     imagesURLs.append(url)
                 }
@@ -149,13 +149,26 @@ final class CreateListingViewModel {
         registrationNumber = ""
         make = ""
         model = ""
-        yearOfManufacture = ""
-        colour = ""
-        price = 0
         mileage = 0
+        yearOfManufacture = ""
+        price = 0
+        description = ""
+        range = ""
+        colour = ""
+        publicChargingTime = ""
+        homeChargingTime = ""
+        batteryCapacity = ""
+        powerBhp = ""
+        regenBraking = ""
+        warranty = ""
+        serviceHistory = ""
         numberOfOwners = ""
-        listingImages = []
+        pickedImages = []
         imageSelections = []
+        isLoadingImages = false
+        showDeleteAlert = false
+        imageToDelete = nil
+        imageLoadingState = .idle
         viewState = .idle
     }
 
@@ -163,17 +176,17 @@ final class CreateListingViewModel {
         imageLoadingState = .loading
         Task {
             do {
-                listingImages = try await withThrowingTaskGroup(of: AvatarImage?.self) { group in
+                pickedImages = try await withThrowingTaskGroup(of: PickedImage?.self) { group in
                     for selection in imageSelections {
                         group.addTask {
-                            let avatarImage = try await selection.loadTransferable(type: AvatarImage.self)
-                            if let data = avatarImage?.data, await self.analyzeImage(data) {
-                                return avatarImage
+                            let pickedImage = try await selection.loadTransferable(type: PickedImage.self)
+                            if let data = pickedImage?.data, await self.analyzeImage(data) {
+                                return pickedImage
                             }
                             return nil
                         }
                     }
-                    return try await group.reduce(into: [AvatarImage]()) { result, image in
+                    return try await group.reduce(into: [PickedImage]()) { result, image in
                         if let image = image {
                             result.append(image)
                         }
@@ -181,8 +194,13 @@ final class CreateListingViewModel {
                 }
                 print("Images loaded and analyzed from PhotosPicker")
                 imageLoadingState = .loaded
+                
+                if pickedImages.isEmpty {
+                    imageLoadingState = .idle
+                }
             } catch {
                 debugPrint(error)
+                imageLoadingState = .idle
             }
         }
     }
@@ -221,10 +239,11 @@ final class CreateListingViewModel {
         return prohibitedWordsService.containsProhibitedWords(text)
     }
     
-    func deleteImage(_ image: AvatarImage) {
-        if let index = listingImages.firstIndex(of: image) {
-            listingImages.remove(at: index)
+    func deleteImage(_ image: PickedImage) {
+        if let index = pickedImages.firstIndex(of: image) {
+            pickedImages.remove(at: index)
             imageSelections.remove(at: index)
         }
     }
+    
 }

@@ -45,9 +45,7 @@ struct AccountView: View {
                     SignOutButton(action: { Task { await viewModel.signOut() } }, description: "Sign out")
                 }
                 
-                HStack {
-                    Text("Made in")
-                        .italic()
+                VStack {
                     Image("uk")
                         .resizable()
                         .scaledToFit()

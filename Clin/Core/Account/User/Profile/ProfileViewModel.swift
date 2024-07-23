@@ -21,7 +21,7 @@ final class ProfileViewModel {
     
     var username: String = ""
     var imageSelection: PhotosPickerItem?
-    private(set) var avatarImage: AvatarImage?
+    private(set) var avatarImage: PickedImage?
     private(set) var displayName: String = ""
     private(set) var profile: Profile? = nil
     private(set) var cooldownTime: Int = 0
@@ -208,7 +208,7 @@ final class ProfileViewModel {
     func loadTransferable(from imageSelection: PhotosPickerItem) {
         Task {
             do {
-                avatarImage = try await imageSelection.loadTransferable(type: AvatarImage.self)
+                avatarImage = try await imageSelection.loadTransferable(type: PickedImage.self)
                 print("Image loaded from PhotosPicker")
             } catch {
                 debugPrint(error)
