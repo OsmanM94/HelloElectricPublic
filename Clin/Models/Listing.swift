@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct CarListing: Identifiable, Codable, Hashable {
+struct Listing: Identifiable, Codable, Hashable {
     var id: Int?
     var createdAt: Date
     var imagesURL: [URL]
@@ -32,24 +32,24 @@ struct CarListing: Identifiable, Codable, Hashable {
     
     enum CodingKeys: String, CodingKey {
         case id
-        case imagesURL
+        case imagesURL = "images"
         case make
         case model
         case condition
         case mileage
-        case yearOfManufacture
+        case yearOfManufacture = "year"
         case price
         case description
         case range
         case colour
-        case publicChargingTime
-        case homeChargingTime
-        case batteryCapacity
-        case powerBhp
-        case regenBraking
+        case publicChargingTime = "public_charging"
+        case homeChargingTime = "home_charging"
+        case batteryCapacity = "battery_capacity"
+        case powerBhp = "power_bhp"
+        case regenBraking = "regen_braking"
         case warranty
-        case serviceHistory
-        case numberOfOwners
+        case serviceHistory = "service_history"
+        case numberOfOwners = "owners"
         case createdAt = "created_at"
         case userID = "user_id"
     }

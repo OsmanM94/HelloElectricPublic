@@ -15,9 +15,9 @@ final class ListingService {
     
     private init() {}
     
-    func fetchListings() async throws -> [CarListing] {
+    func fetchListings() async throws -> [Listing] {
         do {
-            let listings: [CarListing] = try await supabase
+            let listings: [Listing] = try await supabase
                 .from("car_listing")
                 .select()
                 .order("created_at", ascending: false)
@@ -30,9 +30,9 @@ final class ListingService {
         }
     }
     
-    func fetchUserListings(userID: UUID) async throws -> [CarListing] {
+    func fetchUserListings(userID: UUID) async throws -> [Listing] {
         do {
-            let listings: [CarListing] = try await supabase
+            let listings: [Listing] = try await supabase
                 .from("car_listing")
                 .select()
                 .eq("user_id", value: userID)
@@ -49,7 +49,7 @@ final class ListingService {
     func createListing(imagesURL: [URL], make: String, model: String, condition: String, mileage: Double, yearOfManufacture: String, price: Double, description: String, range: String, colour: String, publicChargingTime: String, homeChargingTime: String, batteryCapacity: String, powerBhp: String, regenBraking: String, warranty: String, serviceHistory: String, numberOfOwners: String, userID: UUID) async throws {
         
         do {
-            let listing = CarListing(
+            let listing = Listing(
                 createdAt: Date(),
                 imagesURL: imagesURL,
                 make: make,
@@ -82,7 +82,7 @@ final class ListingService {
         }
     }
     
-    func updateListing(_ listing: CarListing, make: String) async throws {
+    func updateListing(_ listing: Listing, make: String) async throws {
         guard let id = listing.id else {
             print("Listing ID is missing.")
             return

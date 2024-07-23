@@ -15,7 +15,7 @@ final class UserListingsViewModel {
         case loaded
         case error(String)
     }
-    var userActiveListings: [CarListing] = []
+    var userActiveListings: [Listing] = []
     var viewState: UserListingsViewState = .loading
     
     private let carListingService = ListingService.shared
@@ -41,7 +41,7 @@ final class UserListingsViewModel {
     }
     
     @MainActor
-    func updateUserListing(_ listing: CarListing, make: String) async {
+    func updateUserListing(_ listing: Listing, make: String) async {
         do {
             try await carListingService.updateListing(listing, make: make)
             viewState = .loaded

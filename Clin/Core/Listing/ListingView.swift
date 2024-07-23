@@ -7,9 +7,9 @@
 
 import SwiftUI
 
-struct CarListingView: View {
+struct ListingView: View {
     
-    @State private var viewModel = CarListingViewModel()
+    @State private var viewModel = ListingViewModel()
     @State private var text: String = ""
     
     var body: some View {
@@ -54,7 +54,7 @@ struct CarListingView: View {
 }
 
 #Preview {
-    CarListingView()
+    ListingView()
 }
 
 

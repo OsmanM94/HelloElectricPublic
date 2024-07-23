@@ -30,6 +30,8 @@ final class CreateListingViewModel {
     var listingImages: [AvatarImage] = []
     var imageSelections: [PhotosPickerItem] = []
     var isLoadingImages: Bool = false
+    var showDeleteAlert: Bool = false
+    var imageToDelete: AvatarImage?
     
     var make: String = ""
     var model: String = ""
@@ -217,5 +219,12 @@ final class CreateListingViewModel {
     
     private func containsProhibitedWords(_ text: String) -> Bool {
         return prohibitedWordsService.containsProhibitedWords(text)
+    }
+    
+    func deleteImage(_ image: AvatarImage) {
+        if let index = listingImages.firstIndex(of: image) {
+            listingImages.remove(at: index)
+            imageSelections.remove(at: index)
+        }
     }
 }

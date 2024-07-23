@@ -37,8 +37,8 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Avatar.swift,
-				CarListing.swift,
 				Dvla.swift,
+				Listing.swift,
 				Profile.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
@@ -66,10 +66,12 @@
 				Account/User/Profile/ProfileViewModel.swift,
 				Account/User/UserListingsViewModel.swift,
 				Account/User/UserListingView.swift,
-				CarListing/CarListingView.swift,
-				CarListing/CarListingViewModel.swift,
 				CreateListing/CreateListingView.swift,
 				CreateListing/CreateListingViewModel.swift,
+				CreateListing/PhotosPickerCell.swift,
+				Listing/ListingCell.swift,
+				Listing/ListingView.swift,
+				Listing/ListingViewModel.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
 		};

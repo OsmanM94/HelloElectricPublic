@@ -59,6 +59,18 @@ struct CreateListingView: View {
                                         viewModel.imageSelections = newItems
                                         viewModel.loadTransferable(from: newItems)
                                     }
+                                    .alert(isPresented: $viewModel.showDeleteAlert) {
+                                        Alert(
+                                            title: Text("Delete Photo"),
+                                            message: Text("Are you sure you want to delete this photo?"),
+                                            primaryButton: .destructive(Text("Delete")) {
+                                                if let imageToDelete = viewModel.imageToDelete {
+                                                    viewModel.deleteImage(imageToDelete)
+                                                }
+                                            },
+                                            secondaryButton: .cancel()
+                                        )
+                                    }
                             }
                             Section(header: Text("\(viewModel.imageSelections.count)/20")) {
                                     switch viewModel.imageLoadingState {
@@ -70,7 +82,8 @@ struct CreateListingView: View {
                                     case .loaded:
                                         ScrollView(.horizontal) {
                                             HStack {
-                                                SelectedPhotosView(images: viewModel.listingImages)
+                                                SelectedPhotosView(viewModel: viewModel)
+                                                    .padding([.top, .bottom])
                                             }
                                         }
                                         .scrollIndicators(.hidden)
@@ -251,7 +264,6 @@ struct CreateListingView: View {
                             Button("Try again") { viewModel.resetState() }
                         }
                     }
-                    
                 }
             }
             .navigationTitle("Selling")
@@ -273,17 +285,15 @@ struct NoPhotosView: View {
 }
 
 struct SelectedPhotosView: View {
-    var images: [AvatarImage]
- 
+    var viewModel: CreateListingViewModel
+    
     var body: some View {
-        ForEach(images, id: \.self) { avatarImage in
+        ForEach(viewModel.listingImages, id: \.self) { avatarImage in
             if let uiImage = UIImage(data: avatarImage.data) {
-                Image(uiImage: uiImage)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 100, height: 100)
-                    .clipped()
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
+            PhotosPickerCell(action: {
+                viewModel.imageToDelete = avatarImage
+                viewModel.showDeleteAlert = true
+            }, image: uiImage)
             }
         }
     }

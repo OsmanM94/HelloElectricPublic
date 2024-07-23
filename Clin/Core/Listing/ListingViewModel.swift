@@ -8,23 +8,23 @@
 import Foundation
 
 @Observable
-final class CarListingViewModel {
-    enum CarListingViewState {
+final class ListingViewModel {
+    enum ListingViewState {
         case loading
         case loaded
     }
     
-    var listings: [CarListing] = []
-    var viewState: CarListingViewState = .loading
+    var listings: [Listing] = []
+    var viewState: ListingViewState = .loading
     var showFilterSheet: Bool = false
     
-    private let carListingService = ListingService.shared
+    private let listingService = ListingService.shared
     private let supabase = SupabaseService.shared.client
     
     @MainActor
     func fetchListings() async {
         do {
-            listings = try await carListingService.fetchListings()
+            listings = try await listingService.fetchListings()
             viewState = .loaded
         } catch {
             print("Error fetching listings: \(error)")

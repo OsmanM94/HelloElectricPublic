@@ -8,7 +8,8 @@
 import Foundation
 import SwiftUI
 
-struct AvatarImage: Transferable, Equatable, Hashable {
+struct AvatarImage: Transferable, Equatable, Hashable, Identifiable {
+    let id = UUID()
     let image: Image
     let data: Data
     

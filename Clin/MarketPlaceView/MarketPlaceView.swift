@@ -13,7 +13,7 @@ struct MarketPlaceView: View {
    
     var body: some View {
         TabView(selection: $selectedTab) {
-            CarListingView()
+            ListingView()
                 .tabItem {
                     Label("Listings", systemImage: "bolt.car")
                 }
