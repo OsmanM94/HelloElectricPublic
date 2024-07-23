@@ -18,7 +18,7 @@ final class UserListingsViewModel {
     var userActiveListings: [CarListing] = []
     var viewState: UserListingsViewState = .loading
     
-    private let carListingService = DatabaseService.shared
+    private let carListingService = ListingService.shared
     private let supabase = SupabaseService.shared.client
     private var userID: UUID?
     

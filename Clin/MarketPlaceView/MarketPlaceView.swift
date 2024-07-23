@@ -1,13 +1,13 @@
 //
-//  Tab.swift
+//  MarketPlaceView.swift
 //  Clin
 //
-//  Created by asia on 23/06/2024.
+//  Created by asia on 10/07/2024.
 //
 
 import SwiftUI
 
-struct Tab: View {
+struct MarketPlaceView: View {
     
     @State private var selectedTab: Int = 0
    
@@ -35,7 +35,7 @@ struct Tab: View {
 }
 
 #Preview {
-    Tab()
+    MarketPlaceView()
         .environment(AuthViewModel())
         .environment(NetworkMonitor())
 }

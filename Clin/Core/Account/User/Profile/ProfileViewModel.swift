@@ -27,8 +27,9 @@ final class ProfileViewModel {
     private(set) var cooldownTime: Int = 0
     
     private let supabase = SupabaseService.shared.client
-    private let imageService = ImageService.shared // Use ImageService
+    private let imageService = ImageManager.shared // Use ImageService
     private let contentAnalyzer = SensitiveContentAnalysis.shared
+    private let prohibitedWordsService = ProhibitedWordsService.shared
     
     private(set) var viewState: ProfileViewState = .idle
     private(set) var cooldownTimer: Timer?
@@ -47,13 +48,9 @@ final class ProfileViewModel {
     
     func loadProhibitedWords() async {
         do {
-            let words: [String] = try await loadAsync("prohibited_words.json")
-            self.prohibitedWords = Set(words)
-            
-        } catch let error as JSONLoadingError {
-            print("Failed to load prohibited words: \(error.localizedDescription)")
+            try await prohibitedWordsService.loadProhibitedWords()
         } catch {
-            print("Unexpected error: \(error)")
+            print("Failed to load prohibited words: \(error.localizedDescription)")
         }
     }
     
@@ -86,10 +83,10 @@ final class ProfileViewModel {
         
         do {
             if let currentAvatarURL = profile?.avatarURL {
-                try await imageService.deleteImage(path: currentAvatarURL.absoluteString)
+                try await imageService.deleteImage(path: currentAvatarURL.absoluteString, from: "avatars")
             }
-                        
-            let imageURLString = try await imageService.uploadImage(avatarImage!.data)
+           
+            let imageURLString = try await imageService.uploadImage(avatarImage!.data, to: "avatars", compressionQuality: 0.1)
             guard let imageURL = URL(string: imageURLString ?? "") else {
                 viewState = .error(ProfileError.generalError.message)
                 return
@@ -129,7 +126,7 @@ final class ProfileViewModel {
             return false
         }
         
-        guard !containsProhibitedWords(username) else {
+        guard !prohibitedWordsService.containsProhibitedWords(username) else {
             viewState = .error(ProfileError.inappropriateUsername.message)
             return false
         }
@@ -232,12 +229,7 @@ final class ProfileViewModel {
             }
         }
     }
-    
-    private func containsProhibitedWords(_ text: String) -> Bool {
-        let words = text.lowercased().split(separator: " ")
-        return words.contains { prohibitedWords.contains(String($0)) }
-    }
-    
+        
     var validateUsername: Bool {
         if username.count < 3 {
             return false

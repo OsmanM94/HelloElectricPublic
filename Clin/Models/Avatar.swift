@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-struct AvatarImage: Transferable, Equatable {
+struct AvatarImage: Transferable, Equatable, Hashable {
     let image: Image
     let data: Data
     
@@ -20,6 +20,13 @@ struct AvatarImage: Transferable, Equatable {
             
             return image
         }
+    }
+    static func == (lhs: AvatarImage, rhs: AvatarImage) -> Bool {
+        lhs.data == rhs.data
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(data)
     }
 }
 

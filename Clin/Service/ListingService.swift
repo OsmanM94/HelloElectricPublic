@@ -8,8 +8,8 @@
 import Foundation
 
 
-final class DatabaseService {
-    static let shared = DatabaseService()
+final class ListingService {
+    static let shared = ListingService()
     
     private let supabase = SupabaseService.shared.client
     
@@ -46,9 +46,31 @@ final class DatabaseService {
         }
     }
     
-    func createListing(make: String, userID: UUID) async throws {
+    func createListing(imagesURL: [URL], make: String, model: String, condition: String, mileage: Double, yearOfManufacture: String, price: Double, description: String, range: String, colour: String, publicChargingTime: String, homeChargingTime: String, batteryCapacity: String, powerBhp: String, regenBraking: String, warranty: String, serviceHistory: String, numberOfOwners: String, userID: UUID) async throws {
+        
         do {
-            let listing = CarListing(createdAt: Date(), make: make, userID: userID)
+            let listing = CarListing(
+                createdAt: Date(),
+                imagesURL: imagesURL,
+                make: make,
+                model: model,
+                condition: condition,
+                mileage: mileage,
+                yearOfManufacture: yearOfManufacture,
+                price: price,
+                description: description,
+                range: range,
+                colour: colour,
+                publicChargingTime: publicChargingTime,
+                homeChargingTime: homeChargingTime,
+                batteryCapacity: batteryCapacity,
+                powerBhp: powerBhp,
+                regenBraking: regenBraking,
+                warranty: warranty,
+                serviceHistory: serviceHistory,
+                numberOfOwners: numberOfOwners,
+                userID: userID
+            )
             try await supabase
                 .from("car_listing")
                 .insert(listing)

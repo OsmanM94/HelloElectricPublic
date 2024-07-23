@@ -12,7 +12,7 @@ import CryptoKit
 
 
 @Observable
-class AuthViewModel {
+final class AuthViewModel {
     var flow: AuthenticationFlow = .login
     var authenticationState: AuthenticationState = .unauthenticated
     var errorMessage: String = ""

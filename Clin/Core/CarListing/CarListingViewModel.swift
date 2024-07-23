@@ -18,7 +18,7 @@ final class CarListingViewModel {
     var viewState: CarListingViewState = .loading
     var showFilterSheet: Bool = false
     
-    private let carListingService = DatabaseService.shared
+    private let carListingService = ListingService.shared
     private let supabase = SupabaseService.shared.client
     
     @MainActor

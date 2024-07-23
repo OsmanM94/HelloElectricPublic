@@ -15,7 +15,7 @@ struct ClinApp: App {
     
     var body: some Scene {
         WindowGroup {
-            Tab()
+            MarketPlaceView()
                 .environment(authViewModel)
                 .environment(networkMonitor)
         }

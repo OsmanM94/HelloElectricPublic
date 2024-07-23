@@ -17,13 +17,11 @@ struct AuthenticationView: View {
             Group {
                 ScrollView(.vertical) {
                     VStack(spacing: 15) {
-                        
                         Image(decorative: "ev")
                             .resizable()
                             .scaledToFit()
-                        
                         WelcomeText()
-                            .padding([.bottom, .top])
+                            .padding(.bottom)
                         
                         SignInWithAppleButton(.continue) { request in
                             request.requestedScopes = [.email]
@@ -33,7 +31,6 @@ struct AuthenticationView: View {
                         .frame(maxWidth: .infinity, minHeight: 55)
                         .padding(.horizontal)
                     }
-                    .padding(.horizontal)
                 }
             }
             .navigationTitle("Sign in")
