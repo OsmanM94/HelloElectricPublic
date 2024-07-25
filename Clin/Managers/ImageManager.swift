@@ -23,16 +23,15 @@ final class ImageManager {
         return contentAnalyzer.analysisState
     }
     
-    func uploadImage(_ data: Data, to folder: String, compressionQuality: CGFloat = 0.1) async throws -> String? {
+    func uploadImage(_ data: Data,from bucket: String ,to folder: String, compressionQuality: CGFloat = 0.1) async throws -> String? {
         guard let compressedData = compressImage(data: data, compressionQuality: compressionQuality) else {
             print("Failed to compress image.")
             return nil
         }
         
-        let filePath = "\(UUID().uuidString).jpeg"
-        
+        let filePath = "\(folder)/\(UUID().uuidString).jpeg"
         try await supabase.storage
-            .from(folder)
+            .from(bucket)
             .upload(
                 path: filePath,
                 file: compressedData,
@@ -41,7 +40,7 @@ final class ImageManager {
         
         print("Image uploaded to Supabase Storage at path: \(filePath)")
         
-        let url = try supabase.storage.from(folder).getPublicURL(path: filePath, download: true)
+        let url = try supabase.storage.from(bucket).getPublicURL(path: filePath, download: true)
         return url.absoluteString
     }
     

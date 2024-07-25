@@ -37,6 +37,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Dvla.swift,
+				FavouriteListing.swift,
 				Listing.swift,
 				PickedImage.swift,
 				Profile.swift,
@@ -64,12 +65,16 @@
 				Account/User/Profile/ProfileError.swift,
 				Account/User/Profile/ProfileView.swift,
 				Account/User/Profile/ProfileViewModel.swift,
-				Account/User/UserListingsViewModel.swift,
-				Account/User/UserListingView.swift,
+				Account/User/UserListings/UserListingsViewModel.swift,
+				Account/User/UserListings/UserListingView.swift,
 				CreateListing/CreateListingView.swift,
 				CreateListing/CreateListingViewModel.swift,
 				CreateListing/DeleteAlertModifier.swift,
 				CreateListing/PhotosPickerCell.swift,
+				Favourites/AddToFavouritesButton.swift,
+				Favourites/FavouriteCell.swift,
+				Favourites/FavouriteListingView.swift,
+				Favourites/FavouriteViewModel.swift,
 				Listing/ListingCell.swift,
 				Listing/ListingView.swift,
 				Listing/ListingViewModel.swift,
@@ -81,6 +86,10 @@
 			membershipExceptions = (
 				CharactersLimitModifier.swift,
 				CustomProgressView.swift,
+				CustomProgressViewBar.swift,
+				EmptyContentView.swift,
+				ErrorView.swift,
+				SuccessView.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
 		};
@@ -106,8 +115,10 @@
 				JSONDecoder/JSONLoadingError.swift,
 				NetworkMonitor/NetworkMonitor.swift,
 				NetworkMonitor/NetworkMonitorView.swift,
+				PhotosPicker/PhotosPickerView.swift,
 				SDWebImage/ImageLoader.swift,
 				SensitiveContentAnalysis/SensitiveContentAnalysis.swift,
+				TimeElapsed/TimeElapsed.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
 		};

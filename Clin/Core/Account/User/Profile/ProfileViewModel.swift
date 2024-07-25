@@ -78,21 +78,17 @@ final class ProfileViewModel {
     
     @MainActor
     func updateProfileButtonTapped() async {
-        
         guard await canUpdateProfile() else { return }
         
         do {
-            if let currentAvatarURL = profile?.avatarURL {
-                try await imageService.deleteImage(path: currentAvatarURL.absoluteString, from: "avatars")
-            }
-           
-            let imageURLString = try await imageService.uploadImage(avatarImage!.data, to: "avatars", compressionQuality: 0.1)
+            let currentUser = try await supabase.auth.session.user //1
+            let folderPath = "\(currentUser.id)"
+            let bucketName = "avatars"
+            let imageURLString = try await imageService.uploadImage(avatarImage!.data, from: bucketName, to: folderPath, compressionQuality: 0.1)
             guard let imageURL = URL(string: imageURLString ?? "") else {
                 viewState = .error(ProfileError.generalError.message)
                 return
             }
-            
-            let currentUser = try await supabase.auth.session.user
             
             let updatedProfile = Profile(
                 username: username,
@@ -112,7 +108,6 @@ final class ProfileViewModel {
                         
             startCooldownTimer()
             viewState = .success("Profile updated successfully.")
-            
         } catch {
             debugPrint(error)
             viewState = .error(ProfileError.generalError.message)

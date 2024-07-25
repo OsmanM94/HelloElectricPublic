@@ -16,33 +16,21 @@ struct UserListingView: View {
             Group {
                 VStack {
                     switch viewModel.viewState {
-                    case .loading:
-                        CustomProgressView()
+                    case .empty:
+                        EmptyContentView(message: "No active listings found", systemImage: "tray.fill")
                     case .loaded:
                         List {
                             ForEach(viewModel.userActiveListings, id: \.id) { listing in
-                                Text(listing.make)
+                                ListingCell(listing: listing)
                             }
                             .listRowSeparator(.hidden, edges: .all)
                         }
                         .listStyle(.plain)
                      
                     case .error(let message):
-                        ContentUnavailableView {
-                            Label {
-                                Text(message)
-                                    .foregroundColor(.red)
-                            } icon: {
-                                Image(systemName: "exclamationmark.circle")
-                                    .foregroundColor(.red)
-                            }
-                        } actions: {
-                            Button("Try again") {
-                                Task {
-                                    await viewModel.fetchUserListings()
-                                }
-                            }
-                        }
+                        ErrorView(message: message, retryAction: {
+                            Task { await viewModel.fetchUserListings() }
+                        })
                     }
                 }
             }

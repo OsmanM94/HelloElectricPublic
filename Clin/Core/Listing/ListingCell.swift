@@ -8,45 +8,56 @@
 import SwiftUI
 
 struct ListingCell: View {
+    @State private var startTimer: Date = Date()
     var listing: Listing
     
     var body: some View {
-        HStack {
-            // Display the first image using SDWebImage
-            if let firstImageURL = listing.imagesURL.first {
-                ImageLoader(url: firstImageURL, contentMode: .fill)
-                    .frame(width: 150, height: 150)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-            } else {
-                Rectangle()
-                    .foregroundColor(.gray.opacity(0.5))
-                    .frame(width: 100, height: 100)
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                    .overlay {
-                        ProgressView()
-                            .scaleEffect(1.2)
-                    }
+        HStack(spacing: 0) {
+            VStack(spacing: 0) {
+                if let firstImageURL = listing.imagesURL.first {
+                    ImageLoader(url: firstImageURL, contentMode: .fill)
+                        .frame(maxWidth: 120, maxHeight: 120)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                } else {
+                    Rectangle()
+                        .foregroundColor(.gray.opacity(0.5))
+                        .frame(width: 120, height: 120)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                        .overlay {
+                            ProgressView()
+                                .scaleEffect(1.2)
+                        }
+                }
+            }
+            .overlay(alignment: .topTrailing) {
+                AddToFavouritesButton(listing: listing)
             }
             
             VStack(alignment: .leading) {
                 Text("\(listing.make) \(listing.model)")
                     .font(.headline)
-                Text(listing.yearOfManufacture)
+                    .lineLimit(2, reservesSpace: true)
+                Text("\(listing.condition)")
                     .font(.subheadline)
-                Text("Condition: \(listing.condition)")
+                Text("\(listing.mileage, format: .number) miles")
                     .font(.subheadline)
-                Text("Mileage: \(listing.mileage, specifier: "%.0f") miles")
+                Text(listing.price, format: .currency(code: Locale.current.currency?.identifier ?? "GBP"))
                     .font(.subheadline)
-                Text("Price: \(listing.price, specifier: "%.2f") GBP")
+                Text("added \(timeElapsedString(since: listing.createdAt))")
                     .font(.subheadline)
-                    .foregroundColor(.green)
-            }
-            .padding(.leading, 10)
-            
-            Spacer()
+                    .foregroundStyle(.secondary)
+            }  
+            .padding(.leading, 5)
         }
-        .padding()
-        .background(RoundedRectangle(cornerRadius: 10).fill(Color(.systemBackground)).shadow(radius: 2))
+        .onAppear {
+            startListingTimer()
+        }
+    }
+    
+    private func startListingTimer() {
+        Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { _ in
+            startTimer = Date()
+        }
     }
 }
 
@@ -56,7 +67,7 @@ struct ListingCell: View {
            createdAt: Date(),
            imagesURL: [URL(string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/avatars/15ECE008-ABF5-43CF-8DAF-1A26A342FFAF.jpeg?download=")!],
            make: "Tesla",
-           model: "Model S",
+           model: "Model S supercharger 2024",
            condition: "Used",
            mileage: 100000,
            yearOfManufacture: "2023",
@@ -73,7 +84,8 @@ struct ListingCell: View {
            serviceHistory: "Full",
            numberOfOwners: "1",
            userID: UUID()
-       ))
+    ))
+    .environmentObject(FavouriteViewModel())
 }
 
 

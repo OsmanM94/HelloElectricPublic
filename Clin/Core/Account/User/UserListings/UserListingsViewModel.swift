@@ -11,12 +11,13 @@ import Foundation
 @Observable
 final class UserListingsViewModel {
     enum UserListingsViewState {
-        case loading
+        case empty
         case loaded
         case error(String)
     }
+    
     var userActiveListings: [Listing] = []
-    var viewState: UserListingsViewState = .loading
+    var viewState: UserListingsViewState = .empty
     
     private let carListingService = ListingService.shared
     private let supabase = SupabaseService.shared.client
@@ -24,7 +25,6 @@ final class UserListingsViewModel {
     
     @MainActor
     func fetchUserListings() async {
-        viewState = .loading
         do {
             guard let user = try? await supabase.auth.session.user else {
                 print("No authenticated user found")
@@ -38,6 +38,7 @@ final class UserListingsViewModel {
         } catch {
             viewState = .error("Error retrieving listings.")
         }
+        updateViewState()
     }
     
     @MainActor
@@ -60,7 +61,16 @@ final class UserListingsViewModel {
             print("Listing deleted succesfully")
             
         } catch {
-            viewState = .error("Error deleting the listing, please try again.")
+            viewState = .error("Error deleting listing, please try again.")
+        }
+        updateViewState()
+    }
+    
+    private func updateViewState() {
+        if userActiveListings.isEmpty {
+            viewState = .empty
+        } else {
+            viewState = .loaded
         }
     }
 }

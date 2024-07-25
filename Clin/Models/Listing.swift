@@ -55,3 +55,53 @@ struct Listing: Identifiable, Codable, Hashable {
     }
 }
 
+extension Listing {
+    static var sampleData: [Listing] = [Listing(
+        id: 1,
+        createdAt: Date(),
+        imagesURL: [URL(string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/avatars/15ECE008-ABF5-43CF-8DAF-1A26A342FFAF.jpeg?download=")!],
+        make: "Tesla",
+        model: "Model S supercharger 2024",
+        condition: "Used",
+        mileage: 100000,
+        yearOfManufacture: "2023",
+        price: 8900,
+        description: "A great electric vehicle with long range.",
+        range: "396 miles",
+        colour: "Red",
+        publicChargingTime: "1 hour",
+        homeChargingTime: "10 hours",
+        batteryCapacity: "100 kWh",
+        powerBhp: "1020",
+        regenBraking: "Yes",
+        warranty: "4 years",
+        serviceHistory: "Full",
+        numberOfOwners: "1",
+        userID: UUID()
+    ),
+    
+    Listing(
+        id: 2,
+        createdAt: Date(),
+        imagesURL: [URL(string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/avatars/15ECE008-ABF5-43CF-8DAF-1A26A342FFAF.jpeg?download=")!],
+        make: "Mercedes",
+        model: "Mercedes-Benz EQA Class",
+        condition: "Used",
+        mileage: 120000,
+        yearOfManufacture: "2024",
+        price: 9900,
+        description: "A great electric vehicle with long range.",
+        range: "396 miles",
+        colour: "Red",
+        publicChargingTime: "1 hour",
+        homeChargingTime: "10 hours",
+        batteryCapacity: "100 kWh",
+        powerBhp: "1020",
+        regenBraking: "Yes",
+        warranty: "4 years",
+        serviceHistory: "Full",
+        numberOfOwners: "1",
+        userID: UUID()
+    )]
+}
+

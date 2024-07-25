@@ -22,9 +22,13 @@ struct ListingView: View {
                     case .loaded:
                         List {
                             ForEach(viewModel.listings, id: \.id) { item in
-                                Text(item.make)
+                                ListingCell(listing: item)
+                            }
+                            .alignmentGuide(.listRowSeparatorLeading) { _ in
+                                0
                             }
                         }
+                        .listStyle(.plain)
                         .searchable(text: $text, placement:
                                 .navigationBarDrawer(displayMode: .always))
                         .refreshable {
@@ -46,8 +50,28 @@ struct ListingView: View {
     }
 }
 
-#Preview {
+#Preview("API") {
     ListingView()
+        .environmentObject(FavouriteViewModel())
+}
+
+#Preview("SampleData") {
+    Group {
+        List(0 ..< 5) { _ in
+            ForEach(Listing.sampleData, id: \.id) { listing in
+                ListingCell(listing: listing)
+                    .environmentObject(FavouriteViewModel())
+            }
+            .alignmentGuide(.listRowSeparatorLeading) { _ in
+                0
+            }
+        }
+        .listStyle(.plain)
+    }
+}
+
+#Preview("Loading") {
+    CustomProgressView()
 }
 
 

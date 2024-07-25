@@ -10,7 +10,7 @@ import SwiftUI
 struct CustomProgressView: View {
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 15)
+            RoundedRectangle(cornerRadius: 12)
                 .foregroundStyle(.placeholder.opacity(0.5))
                 .frame(width: 60, height: 60)
             ProgressView()

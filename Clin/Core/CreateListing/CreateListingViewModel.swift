@@ -14,6 +14,7 @@ final class CreateListingViewModel {
     enum CreateListingViewState {
         case idle
         case loading
+        case uploading
         case loaded
         case success(String)
         case error(String)
@@ -25,13 +26,15 @@ final class CreateListingViewModel {
         case loaded
     }
         
-    var viewState: CreateListingViewState = .loaded
+    var viewState: CreateListingViewState = .idle
     var imageLoadingState: ImageLoadingState = .idle
+    
     var pickedImages: [PickedImage] = []
     var imageSelections: [PhotosPickerItem] = [] 
     var isLoadingImages: Bool = false
     var showDeleteAlert: Bool = false
     var imageToDelete: PickedImage?
+    var uploadingProgress: Double = 0.0
     
     ///DVLA checks
     var registrationNumber: String = ""
@@ -70,8 +73,8 @@ final class CreateListingViewModel {
     
     @MainActor
     func createListing() async {
-        viewState = .loading
-        
+        viewState = .uploading
+        uploadingProgress = 0.0
         do {
             guard let user = try? await supabase.auth.session.user else {
                 print("No authenticated user found")
@@ -83,18 +86,18 @@ final class CreateListingViewModel {
             }
             
             var imagesURLs: [URL] = []
+            
             for image in pickedImages {
-                let imageURLString = try await imageService.uploadImage(image.data, to: "car_images", compressionQuality: 0.5)
+                let folderPath = "\(user.id)"
+                let bucketName = "car_images"
+                
+                let imageURLString = try await imageService.uploadImage(image.data, from: bucketName, to: folderPath, compressionQuality: 0.5)
                 if let urlString = imageURLString, let url = URL(string: urlString) {
                     imagesURLs.append(url)
                 }
+                uploadingProgress += 1.0 / Double(pickedImages.count)
             }
-            
-            if imagesURLs.isEmpty {
-                viewState = .error("Error creating listing.")
-                return
-            }
-            
+                        
             try await carListingService.createListing(
                 imagesURL: imagesURLs,
                 make: make,
@@ -120,7 +123,7 @@ final class CreateListingViewModel {
             resetState()
             viewState = .success("Listing created successfully.")
         } catch {
-            self.viewState = .error("Error creating listing.")
+            self.viewState = .error("Error creating listing, Please try again.")
             print(error)
         }
     }
@@ -168,40 +171,36 @@ final class CreateListingViewModel {
         isLoadingImages = false
         showDeleteAlert = false
         imageToDelete = nil
+        uploadingProgress = 0.0
         imageLoadingState = .idle
         viewState = .idle
     }
 
-    func loadTransferable(from imageSelections: [PhotosPickerItem]) {
+    @MainActor
+    func loadItem(item: PhotosPickerItem) async {
         imageLoadingState = .loading
-        Task {
-            do {
-                pickedImages = try await withThrowingTaskGroup(of: PickedImage?.self) { group in
-                    for selection in imageSelections {
-                        group.addTask {
-                            let pickedImage = try await selection.loadTransferable(type: PickedImage.self)
-                            if let data = pickedImage?.data, await self.analyzeImage(data) {
-                                return pickedImage
-                            }
-                            return nil
-                        }
-                    }
-                    return try await group.reduce(into: [PickedImage]()) { result, image in
-                        if let image = image {
-                            result.append(image)
-                        }
-                    }
-                }
-                print("Images loaded and analyzed from PhotosPicker")
-                imageLoadingState = .loaded
-                
-                if pickedImages.isEmpty {
-                    imageLoadingState = .idle
-                }
-            } catch {
-                debugPrint(error)
-                imageLoadingState = .idle
+        do {
+            let data = try await item.loadTransferable(type: Data.self)
+            guard let data = data else { return }
+
+            guard let _ = UIImage(data: data) else { return }
+
+            if await analyzeImage(data) {
+                guard let pickedImage = PickedImage(data: data) else { return  }
+                self.pickedImages.append(pickedImage)
             }
+            
+            print("Images loaded and analyzed from PhotosPicker")
+            imageLoadingState = .loaded
+        } catch {
+            print("Error loading image: \(error.localizedDescription)")
+        }
+    }
+    
+    @MainActor
+    func checkImageState() {
+        if pickedImages.isEmpty {
+            imageLoadingState = .idle
         }
     }
     
@@ -239,11 +238,15 @@ final class CreateListingViewModel {
         return prohibitedWordsService.containsProhibitedWords(text)
     }
     
-    func deleteImage(_ image: PickedImage) {
+    @MainActor
+    func deleteImage(_ image: PickedImage) async {
         if let index = pickedImages.firstIndex(of: image) {
             pickedImages.remove(at: index)
             imageSelections.remove(at: index)
         }
     }
     
+    func hideKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
 }

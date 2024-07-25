@@ -9,7 +9,7 @@ import SwiftUI
 
 struct AccountView: View {
     
-    @Environment(AuthViewModel.self) private var viewModel
+    @Environment(AuthViewModel.self) private var authViewModel
  
     var body: some View {
         NavigationStack {
@@ -19,7 +19,9 @@ struct AccountView: View {
                     NavigationLink("My listings", destination: {
                         UserListingView()
                     })
-                    NavigationLink("Saved", destination: {})
+                    NavigationLink("Saved", destination: {
+                        FavouriteListingView()
+                    })
                 }
                 
                 Section("Safety") {
@@ -41,8 +43,8 @@ struct AccountView: View {
                     Text("Turn on")
                 }
                 
-                Section("Signed in as \(viewModel.displayName) ") {
-                    SignOutButton(action: { Task { await viewModel.signOut() } }, description: "Sign out")
+                Section("Signed in as \(authViewModel.displayName) ") {
+                    SignOutButton(action: { Task { await authViewModel.signOut() } }, description: "Sign out")
                 }
                 
                 VStack {
@@ -63,6 +65,7 @@ struct AccountView: View {
 #Preview {
     AccountView()
         .environment(AuthViewModel())
+        .environmentObject(FavouriteViewModel())
 }
 
 struct SignOutButton: View {

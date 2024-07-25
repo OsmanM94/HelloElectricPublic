@@ -23,7 +23,6 @@ struct ImageLoader: View {
 }
 
 fileprivate struct SDWebImageLoader: View {
-    
     let url: URL
     var contentMode: ContentMode = .fit
     
@@ -58,7 +57,6 @@ fileprivate struct SDWebImageLoader: View {
 }
 
 final class ImagePrefetcher {
-    
     static let instance = ImagePrefetcher()
     private let prefetcher = SDWebImagePrefetcher()
     

@@ -87,34 +87,14 @@ struct ProfileView: View {
                             .scaleEffect(1.5)
                         
                     case .error(let message):
-                        ContentUnavailableView {
-                            Label {
-                                Text(message)
-                                    .foregroundColor(.red)
-                            } icon: {
-                                Image(systemName: "exclamationmark.circle")
-                                    .foregroundColor(.red)
-                            }
-                        } description: {
-                            Text("")
-                        } actions: {
-                            Button("Try again") { viewModel.resetState() }
-                        }
+                        ErrorView(message: message, retryAction: {
+                            viewModel.resetState()
+                        })
                         
                     case .success(let message):
-                        ContentUnavailableView {
-                            Label {
-                                Text(message)
-                                    .foregroundColor(.green)
-                            } icon: {
-                                Image(systemName: "checkmark.circle.fill")
-                                    .foregroundColor(.green)
-                            }
-                        } description: {
-                            Text("")
-                        } actions: {
-                            Button("Go back") { viewModel.resetState() }
-                        }
+                        SuccessView(message: message, doneAction: {
+                            viewModel.resetState()
+                        })
                     }
                 }
             }
