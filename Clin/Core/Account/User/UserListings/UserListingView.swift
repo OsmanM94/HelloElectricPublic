@@ -21,7 +21,16 @@ struct UserListingView: View {
                     case .loaded:
                         List {
                             ForEach(viewModel.userActiveListings, id: \.id) { listing in
-                                ListingCell(listing: listing)
+                                UserListingCell(listing: listing)
+                                    .swipeActions(allowsFullSwipe: false) {
+                                        Button("Delete", role: .destructive) {
+                                            
+                                        }
+                                        Button("Edit") {
+                                            
+                                        }
+                                        .tint(.yellow)
+                                    }
                             }
                             .listRowSeparator(.hidden, edges: .all)
                         }
@@ -43,3 +52,6 @@ struct UserListingView: View {
 #Preview {
     UserListingView()
 }
+
+
+

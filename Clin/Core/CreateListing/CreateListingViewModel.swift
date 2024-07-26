@@ -198,13 +198,6 @@ final class CreateListingViewModel {
     }
     
     @MainActor
-    func checkImageState() {
-        if pickedImages.isEmpty {
-            imageLoadingState = .idle
-        }
-    }
-    
-    @MainActor
     private func analyzeImage(_ data: Data) async -> Bool {
         let analysisResult = await imageService.analyzeImage(data)
         
@@ -221,6 +214,15 @@ final class CreateListingViewModel {
             return false
         }
     }
+    
+    @MainActor
+    func checkImageState() {
+        if pickedImages.isEmpty {
+            imageLoadingState = .idle
+        }
+    }
+    
+   
     
     private func containsProhibitedWordsInInputs() -> Bool {
         let fieldsToCheck = [model, description]

@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import PhotosUI
+
 
 struct CreateListingView: View {
     @State private var viewModel = CreateListingViewModel()
@@ -17,7 +17,7 @@ struct CreateListingView: View {
                 VStack(spacing: 0) {
                     switch viewModel.viewState {
                     case .idle:
-                        IdleStateView(
+                        IdleCreateListingView(
                         registrationNumber: $viewModel.registrationNumber,
                         sendDvlaRequest: { await viewModel.sendDvlaRequest() })
                         
@@ -57,7 +57,7 @@ struct CreateListingView: View {
     }
 }
 
-private struct IdleStateView: View {
+private struct IdleCreateListingView: View {
     @Binding var registrationNumber: String
     var sendDvlaRequest: () async -> Void
     
@@ -247,14 +247,17 @@ private struct LoadedCreateListingView: View {
                     selections: $viewModel.imageSelections,
                     maxSelectionCount: 10,
                     selectionBehavior: .ordered,
+                    icon: "camera",
+                    size: 20,
+                    colour: .accentColor,
                     onSelect: { newItems in
                         viewModel.pickedImages.removeAll()
                         Task { for item in newItems {
                             await viewModel.loadItem(item: item)
-                            }
+                        }
                         }
                         viewModel.checkImageState()
-                })
+                    })
                 .deleteAlert(isPresented: $viewModel.showDeleteAlert, imageToDelete: $viewModel.imageToDelete) { imageToDelete in
                      await viewModel.deleteImage(imageToDelete)
                 }

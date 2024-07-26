@@ -65,6 +65,8 @@
 				Account/User/Profile/ProfileError.swift,
 				Account/User/Profile/ProfileView.swift,
 				Account/User/Profile/ProfileViewModel.swift,
+				Account/User/UserListings/EditListingViewModel.swift,
+				Account/User/UserListings/UserListingCell.swift,
 				Account/User/UserListings/UserListingsViewModel.swift,
 				Account/User/UserListings/UserListingView.swift,
 				CreateListing/CreateListingView.swift,

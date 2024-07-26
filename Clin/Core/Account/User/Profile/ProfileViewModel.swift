@@ -20,7 +20,7 @@ final class ProfileViewModel {
     }
     
     var username: String = ""
-    var imageSelection: PhotosPickerItem?
+    var imageSelection: [PhotosPickerItem] = []
     private(set) var avatarImage: PickedImage?
     private(set) var displayName: String = ""
     private(set) var profile: Profile? = nil
@@ -41,7 +41,7 @@ final class ProfileViewModel {
     
     func resetState() {
         username = ""
-        imageSelection = nil
+        imageSelection = []
         avatarImage = nil
         viewState = .idle
     }
