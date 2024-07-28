@@ -8,7 +8,7 @@
 import Foundation
 
 
-enum AppleAuthError: Error, LocalizedError {
+enum AuthenticationErrors: Error, LocalizedError {
     case invalidCredential
     case missingIDToken
     case credentialRevoked

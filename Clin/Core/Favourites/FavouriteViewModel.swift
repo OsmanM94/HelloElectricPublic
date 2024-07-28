@@ -9,12 +9,12 @@ import Foundation
 
 
 final class FavouriteViewModel: ObservableObject {
-    enum FavouriteViewState {
+    enum ViewState {
         case loaded
         case empty
     }
     
-    @Published var viewState: FavouriteViewState = .empty
+    @Published var viewState: ViewState = .empty
     @Published var favourite = [FavouriteListing]()
     
     func addToFavorites(listing: Listing) {

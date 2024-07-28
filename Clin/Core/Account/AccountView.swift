@@ -68,7 +68,7 @@ struct AccountView: View {
         .environmentObject(FavouriteViewModel())
 }
 
-struct SignOutButton: View {
+fileprivate struct SignOutButton: View {
     
     let action: () -> Void
     let description: String

@@ -8,16 +8,16 @@
 import SwiftUI
 
 
-struct CreateListingView: View {
-    @State private var viewModel = CreateListingViewModel()
+struct ListingFormView: View {
+    @State private var viewModel = ListingFormViewModel()
   
     var body: some View {
         NavigationStack {
             Group {
                 VStack(spacing: 0) {
-                    switch viewModel.viewState {
+                    switch viewModel.formViewState {
                     case .idle:
-                        IdleCreateListingView(
+                        DvlaCheckView(
                         registrationNumber: $viewModel.registrationNumber,
                         sendDvlaRequest: { await viewModel.sendDvlaRequest() })
                         
@@ -25,7 +25,7 @@ struct CreateListingView: View {
                         CustomProgressView()
                         
                     case .loaded:
-                        LoadedCreateListingView(viewModel: viewModel)
+                        ListingFormSubview(viewModel: viewModel)
                         
                     case .uploading:
                         CustomProgressViewBar(progress: viewModel.uploadingProgress)
@@ -47,30 +47,38 @@ struct CreateListingView: View {
 }
 
 #Preview {
-    CreateListingView()
+    ListingFormView()
 }
 
-#Preview("Loaded") {
-    let viewModel = CreateListingViewModel()
-    NavigationStack {
-        LoadedCreateListingView(viewModel: viewModel)
-    }
-}
+//#Preview("Loaded") {
+//    NavigationStack {
+//        ListingFormSubview(viewModel: ListingFormViewModel())
+//    }
+//}
 
-private struct IdleCreateListingView: View {
+fileprivate struct DvlaCheckView: View {
     @Binding var registrationNumber: String
     var sendDvlaRequest: () async -> Void
     
     var body: some View {
         Form {
             Section("UK Registration") {
-                TextField("Enter registration", text: $registrationNumber)
-                    .fontWeight(.bold)
+                TextField("", text: $registrationNumber, prompt: Text("Enter registration"))
+                    .font(.system(size: 24, weight: .bold))
                     .submitLabel(.done)
                     .listRowBackground(Color.yellow)
+                    .multilineTextAlignment(.center)
                     .textInputAutocapitalization(.characters)
                     .autocorrectionDisabled()
+                    .overlay(alignment: .leading) {
+                        Rectangle()
+                            .foregroundStyle(.green)
+                            .frame(width: 35)
+                            .scaledToFill()
+                            .offset(x: -20, y: 0)
+                    }
             }
+            
             Button {
                 Task {
                     await sendDvlaRequest()
@@ -79,12 +87,13 @@ private struct IdleCreateListingView: View {
                 Text("Continue")
             }
             .disabled(registrationNumber.isEmpty)
+            .frame(maxWidth: .infinity)
         }
     }
 }
 
-private struct LoadedCreateListingView: View {
-    @Bindable var viewModel: CreateListingViewModel
+fileprivate struct ListingFormSubview: View {
+    @Bindable var viewModel: ListingFormViewModel
     
     var body: some View {
         Form {
@@ -258,43 +267,46 @@ private struct LoadedCreateListingView: View {
                         }
                         viewModel.checkImageState()
                     })
-                .deleteAlert(isPresented: $viewModel.showDeleteAlert, imageToDelete: $viewModel.imageToDelete) { imageToDelete in
-                     await viewModel.deleteImage(imageToDelete)
+                .deleteAlert(
+                    isPresented: $viewModel.showDeleteAlert,
+                    itemToDelete: $viewModel.imageToDelete
+                ) { imageToDelete in
+                    await viewModel.deleteImage(imageToDelete)
                 }
             }
         }
     }
 }
 
-private struct NoPhotosView: View {
+fileprivate struct NoPhotosView: View {
     var body: some View {
         EmptyContentView(message: "No selected photos", systemImage: "tray.fill")
     }
 }
 
-private struct SelectedPhotosView: View {
-    var viewModel: CreateListingViewModel
+fileprivate struct SelectedPhotosView: View {
+    @Bindable var viewModel: ListingFormViewModel
     
     var body: some View {
         ScrollView(.horizontal) {
             HStack(spacing: 15) {
                 ForEach(viewModel.pickedImages, id: \.self) { pickedImage in
                     if let uiImage = UIImage(data: pickedImage.data) {
-                        PhotosPickerCell(action: {
+                        LoadedImageCell(action: {
                             viewModel.imageToDelete = pickedImage
                             viewModel.showDeleteAlert.toggle()
                         }, image: uiImage)
                     }
                 }
             }
-            .padding(.all)
+            .padding()
         }
         .scrollIndicators(.hidden)
     }
 }
 
-private struct ImageLoadingPlaceHolders: View {
-    var viewModel: CreateListingViewModel
+fileprivate struct ImageLoadingPlaceHolders: View {
+    @Bindable var viewModel: ListingFormViewModel
     
     var body: some View {
         ScrollView(.horizontal) {

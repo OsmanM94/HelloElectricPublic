@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct PhotosPickerCell: View {
+struct LoadedImageCell: View {
     let action: () -> Void
     var image: UIImage
     
@@ -38,5 +38,5 @@ struct PhotosPickerCell: View {
 }
 
 #Preview {
-    PhotosPickerCell(action: {}, image: UIImage(named: "ev")!)
+    LoadedImageCell(action: {}, image: UIImage(named: "ev")!)
 }

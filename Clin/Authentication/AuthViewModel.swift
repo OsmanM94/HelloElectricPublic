@@ -58,7 +58,7 @@ final class AuthViewModel {
                     self.displayName = userEmail
                 }
                                 
-            } catch let error as AppleAuthError {
+            } catch let error as AuthenticationErrors {
                 print("AppleAuthError encountered: \(error.localizedDescription)")
                 authenticationState = .unauthenticated
                 self.errorMessage = error.localizedDescription
@@ -88,17 +88,17 @@ final class AuthViewModel {
                    break // The Apple ID credential is valid.
                case .revoked:
                    // The Apple ID credential is revoked, so show the sign-in UI.
-                   self.errorMessage = AppleAuthError.credentialRevoked.localizedDescription
+                   self.errorMessage = AuthenticationErrors.credentialRevoked.localizedDescription
                    await signOut()
                case .notFound:
                    // The Apple ID credential was not found, so show the sign-in UI.
-                   self.errorMessage = AppleAuthError.credentialNotFound.localizedDescription
+                   self.errorMessage = AuthenticationErrors.credentialNotFound.localizedDescription
                    await signOut()
                default:
                    break
                }
            } catch {
-               self.errorMessage = AppleAuthError.unknownError(error).localizedDescription
+               self.errorMessage = AuthenticationErrors.unknownError(error).localizedDescription
            }
        }
     

@@ -20,14 +20,14 @@ struct Listing: Identifiable, Codable, Hashable {
     var description: String
     var range: String
     var colour: String
-    var publicChargingTime: String?
-    var homeChargingTime: String?
-    var batteryCapacity: String?
-    var powerBhp: String?
-    var regenBraking: String?
-    var warranty: String?
-    var serviceHistory: String?
-    var numberOfOwners: String?
+    var publicChargingTime: String
+    var homeChargingTime: String
+    var batteryCapacity: String
+    var powerBhp: String
+    var regenBraking: String
+    var warranty: String
+    var serviceHistory: String
+    var numberOfOwners: String
     var userID: UUID
     
     enum CodingKeys: String, CodingKey {

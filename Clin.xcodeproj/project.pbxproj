@@ -65,14 +65,9 @@
 				Account/User/Profile/ProfileError.swift,
 				Account/User/Profile/ProfileView.swift,
 				Account/User/Profile/ProfileViewModel.swift,
-				Account/User/UserListings/EditListingViewModel.swift,
 				Account/User/UserListings/UserListingCell.swift,
 				Account/User/UserListings/UserListingsViewModel.swift,
 				Account/User/UserListings/UserListingView.swift,
-				CreateListing/CreateListingView.swift,
-				CreateListing/CreateListingViewModel.swift,
-				CreateListing/DeleteAlertModifier.swift,
-				CreateListing/PhotosPickerCell.swift,
 				Favourites/AddToFavouritesButton.swift,
 				Favourites/FavouriteCell.swift,
 				Favourites/FavouriteListingView.swift,
@@ -80,6 +75,11 @@
 				Listing/ListingCell.swift,
 				Listing/ListingView.swift,
 				Listing/ListingViewModel.swift,
+				ListingForm/ListingFormEditView.swift,
+				ListingForm/ListingFormEditViewModel.swift,
+				ListingForm/ListingFormView.swift,
+				ListingForm/ListingFormViewModel.swift,
+				ListingForm/LoadedImageCell.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
 		};
@@ -89,6 +89,7 @@
 				CharactersLimitModifier.swift,
 				CustomProgressView.swift,
 				CustomProgressViewBar.swift,
+				DeleteAlertModifier.swift,
 				EmptyContentView.swift,
 				ErrorView.swift,
 				SuccessView.swift,
@@ -141,7 +142,7 @@
 		62C4493D2C26E23C009650A3 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				AppleAuthError.swift,
+				AuthenticationErrors.swift,
 				AuthenticationState.swift,
 				AuthenticationView.swift,
 				AuthViewModel.swift,

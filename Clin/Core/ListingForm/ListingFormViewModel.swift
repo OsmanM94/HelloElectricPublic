@@ -10,8 +10,8 @@ import PhotosUI
 import SwiftUI
 
 @Observable
-final class CreateListingViewModel {
-    enum CreateListingViewState {
+final class ListingFormViewModel {
+    enum ViewState {
         case idle
         case loading
         case uploading
@@ -20,18 +20,17 @@ final class CreateListingViewModel {
         case error(String)
     }
     
-    enum ImageLoadingState {
+     enum ImageLoadingState {
         case idle
         case loading
         case loaded
     }
-        
-    var viewState: CreateListingViewState = .idle
+    
+    var formViewState: ViewState = .idle
     var imageLoadingState: ImageLoadingState = .idle
     
     var pickedImages: [PickedImage] = []
-    var imageSelections: [PhotosPickerItem] = [] 
-    var isLoadingImages: Bool = false
+    var imageSelections: [PhotosPickerItem] = []
     var showDeleteAlert: Bool = false
     var imageToDelete: PickedImage?
     var uploadingProgress: Double = 0.0
@@ -58,11 +57,7 @@ final class CreateListingViewModel {
     var numberOfOwners: String = "1"
     var isPromoted: Bool = false
     
-    private let carListingService = ListingService.shared
     private let dvlaService = DvlaService()
-    private let supabase = SupabaseService.shared.client
-    private let imageService = ImageManager.shared
-    private let prohibitedWordsService = ProhibitedWordsService.shared
     
     let yearsOfmanufacture: [String] = Array(2010...2030).map { String($0) }
     let vehicleCondition: [String] = ["New", "Used"]
@@ -73,11 +68,11 @@ final class CreateListingViewModel {
     
     @MainActor
     func createListing() async {
-        viewState = .uploading
+        formViewState = .uploading
         uploadingProgress = 0.0
         do {
-            guard let user = try? await supabase.auth.session.user else {
-                print("No authenticated user found")
+            guard let user = try? await SupabaseService.shared.client.auth.session.user else {
+                formViewState = .error("No authenticated user found")
                 return
             }
             
@@ -91,14 +86,14 @@ final class CreateListingViewModel {
                 let folderPath = "\(user.id)"
                 let bucketName = "car_images"
                 
-                let imageURLString = try await imageService.uploadImage(image.data, from: bucketName, to: folderPath, compressionQuality: 0.5)
+                let imageURLString = try await ImageManager.shared.uploadImage(image.data, from: bucketName, to: folderPath, compressionQuality: 0.5)
                 if let urlString = imageURLString, let url = URL(string: urlString) {
                     imagesURLs.append(url)
                 }
                 uploadingProgress += 1.0 / Double(pickedImages.count)
             }
-                        
-            try await carListingService.createListing(
+            
+            try await ListingService.shared.createListing(
                 imagesURL: imagesURLs,
                 make: make,
                 model: model,
@@ -121,16 +116,18 @@ final class CreateListingViewModel {
             )
             
             resetState()
-            viewState = .success("Listing created successfully.")
+            formViewState = .success("Listing created successfully.")
         } catch {
-            self.viewState = .error("Error creating listing, Please try again.")
+            self.formViewState = .error("Error creating listing, Please try again.")
             print(error)
         }
     }
     
+    
+    
     @MainActor
     func sendDvlaRequest() async {
-        viewState = .loading
+        formViewState = .loading
         do {
             let decodedCar = try await dvlaService.fetchCarDetails(registrationNumber: registrationNumber)
             
@@ -138,12 +135,12 @@ final class CreateListingViewModel {
                 self.make = decodedCar.make
                 self.yearOfManufacture = "\(decodedCar.yearOfManufacture)"
                 self.colour = decodedCar.colour
-                viewState = .loaded
+                formViewState = .loaded
             } else {
-                self.viewState = .error("Your vehicle is not electric.")
+                self.formViewState = .error("Your vehicle is not electric.")
             }
         } catch {
-            self.viewState = .error("Invalid registration number.")
+            self.formViewState = .error("Invalid registration number.")
             print(error)
         }
     }
@@ -168,23 +165,22 @@ final class CreateListingViewModel {
         numberOfOwners = ""
         pickedImages = []
         imageSelections = []
-        isLoadingImages = false
         showDeleteAlert = false
         imageToDelete = nil
         uploadingProgress = 0.0
         imageLoadingState = .idle
-        viewState = .idle
+        formViewState = .idle
     }
-
+    
     @MainActor
     func loadItem(item: PhotosPickerItem) async {
         imageLoadingState = .loading
         do {
             let data = try await item.loadTransferable(type: Data.self)
             guard let data = data else { return }
-
+            
             guard let _ = UIImage(data: data) else { return }
-
+            
             if await analyzeImage(data) {
                 guard let pickedImage = PickedImage(data: data) else { return  }
                 self.pickedImages.append(pickedImage)
@@ -199,14 +195,14 @@ final class CreateListingViewModel {
     
     @MainActor
     private func analyzeImage(_ data: Data) async -> Bool {
-        let analysisResult = await imageService.analyzeImage(data)
+        let analysisResult = await ImageManager.shared.analyzeImage(data)
         
         switch analysisResult {
         case .isSensitive:
-            viewState = .error("One or more images contains sensitive content.")
+            formViewState = .error("One or more images contains sensitive content.")
             return false
         case .error(let message):
-            viewState = .error(message)
+            formViewState = .error(message)
             return false
         case .notSensitive:
             return true
@@ -222,14 +218,12 @@ final class CreateListingViewModel {
         }
     }
     
-   
-    
     private func containsProhibitedWordsInInputs() -> Bool {
         let fieldsToCheck = [model, description]
         
         for field in fieldsToCheck {
             if containsProhibitedWords(field) {
-                viewState = .error("The field '\(field)' contains prohibited words.")
+                formViewState = .error("The field '\(field)' contains prohibited words.")
                 return true
             }
         }
@@ -237,7 +231,7 @@ final class CreateListingViewModel {
     }
     
     private func containsProhibitedWords(_ text: String) -> Bool {
-        return prohibitedWordsService.containsProhibitedWords(text)
+        return ProhibitedWordsService.shared.containsProhibitedWords(text)
     }
     
     @MainActor
@@ -251,4 +245,5 @@ final class CreateListingViewModel {
     func hideKeyboard() {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
+    
 }

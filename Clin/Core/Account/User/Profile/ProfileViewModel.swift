@@ -200,6 +200,7 @@ final class ProfileViewModel {
         }
     }
         
+    @MainActor
     func loadTransferable(from imageSelection: PhotosPickerItem) {
         Task {
             do {

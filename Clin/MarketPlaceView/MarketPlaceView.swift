@@ -38,4 +38,5 @@ struct MarketPlaceView: View {
     MarketPlaceView()
         .environment(AuthViewModel())
         .environment(NetworkMonitor())
+        .environmentObject(FavouriteViewModel())
 }

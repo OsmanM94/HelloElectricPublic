@@ -15,7 +15,7 @@ struct FavouriteCell: View {
             VStack(spacing: 0) {
                 if let firstImageURL = favouriteListing.listing.imagesURL.first {
                     ImageLoader(url: firstImageURL, contentMode: .fill)
-                        .frame(maxWidth: 120, maxHeight: 120)
+                        .frame(width: 120, height: 120)
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                 } else {
                     Rectangle()

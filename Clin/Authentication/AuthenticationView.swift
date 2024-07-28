@@ -43,7 +43,7 @@ struct AuthenticationView: View {
         .environment(AuthViewModel())
 }
 
-struct WelcomeText: View {
+private struct WelcomeText: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             

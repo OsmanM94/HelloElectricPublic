@@ -15,7 +15,7 @@ struct UserListingCell: View {
             VStack(spacing: 0) {
                 if let firstImageURL = listing.imagesURL.first {
                     ImageLoader(url: firstImageURL, contentMode: .fill)
-                        .frame(maxWidth: 120, maxHeight: 120)
+                        .frame(width: 120, height: 120)
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                 } else {
                     Rectangle()
@@ -27,12 +27,20 @@ struct UserListingCell: View {
                                 .scaleEffect(1.2)
                         }
                 }
+            }.overlay(alignment: .topTrailing) {
+                VStack(spacing: 0) {
+                    Circle()
+                        .frame(width: 10, height: 10)
+                        .foregroundStyle(.green.gradient)
+                }
+                .padding(.trailing, 5)
+                .padding(.top, 5)
             }
             
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 3) {
                 Text("\(listing.make) \(listing.model)")
                     .font(.headline)
-                    .lineLimit(2, reservesSpace: true)
+                    .lineLimit(2, reservesSpace: false)
                 Text("\(listing.condition)")
                     .font(.subheadline)
                 Text("\(listing.mileage, format: .number) miles")

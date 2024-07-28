@@ -16,7 +16,7 @@ struct ListingCell: View {
             VStack(spacing: 0) {
                 if let firstImageURL = listing.imagesURL.first {
                     ImageLoader(url: firstImageURL, contentMode: .fill)
-                        .frame(maxWidth: 120, maxHeight: 120)
+                        .frame(width: 120, height: 120)
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                 } else {
                     Rectangle()
@@ -54,7 +54,7 @@ struct ListingCell: View {
         }
     }
     
-    private func startListingTimer() {
+    fileprivate func startListingTimer() {
         Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { _ in
             startTimer = Date()
         }

@@ -46,7 +46,27 @@ final class ListingService {
         }
     }
     
-    func createListing(imagesURL: [URL], make: String, model: String, condition: String, mileage: Double, yearOfManufacture: String, price: Double, description: String, range: String, colour: String, publicChargingTime: String, homeChargingTime: String, batteryCapacity: String, powerBhp: String, regenBraking: String, warranty: String, serviceHistory: String, numberOfOwners: String, userID: UUID) async throws {
+    func createListing(
+        imagesURL: [URL],
+        make: String,
+        model: String,
+        condition: String,
+        mileage: Double,
+        yearOfManufacture: String,
+        price: Double,
+        description: String,
+        range: String,
+        colour: String,
+        publicChargingTime: String,
+        homeChargingTime: String,
+        batteryCapacity: String,
+        powerBhp: String,
+        regenBraking: String,
+        warranty: String,
+        serviceHistory: String,
+        numberOfOwners: String,
+        userID: UUID
+    ) async throws {
         
         do {
             let listing = Listing(
@@ -82,14 +102,53 @@ final class ListingService {
         }
     }
     
-    func updateListing(_ listing: Listing, make: String) async throws {
+    func updateListing(
+        _ listing: Listing,
+        imagesURL: [URL],
+        make: String,
+        model: String,
+        condition: String,
+        mileage: Double,
+        yearOfManufacture: String,
+        price: Double,
+        description: String,
+        range: String,
+        colour: String,
+        publicChargingTime: String,
+        homeChargingTime: String,
+        batteryCapacity: String,
+        powerBhp: String,
+        regenBraking: String,
+        warranty: String,
+        serviceHistory: String,
+        numberOfOwners: String,
+        userID: UUID
+    ) async throws {
         guard let id = listing.id else {
             print("Listing ID is missing.")
             return
         }
         
         var toUpdate = listing
+        toUpdate.imagesURL = imagesURL
         toUpdate.make = make
+        toUpdate.model = model
+        toUpdate.condition = condition
+        toUpdate.mileage = mileage
+        toUpdate.yearOfManufacture = yearOfManufacture
+        toUpdate.price = price
+        toUpdate.description = description
+        toUpdate.range = range
+        toUpdate.colour = colour
+        toUpdate.publicChargingTime = publicChargingTime
+        toUpdate.homeChargingTime = homeChargingTime
+        toUpdate.batteryCapacity = batteryCapacity
+        toUpdate.powerBhp = powerBhp
+        toUpdate.regenBraking = regenBraking
+        toUpdate.warranty = warranty
+        toUpdate.serviceHistory = serviceHistory
+        toUpdate.numberOfOwners = numberOfOwners
+        toUpdate.userID = userID
         
         do {
             try await supabase
@@ -97,14 +156,12 @@ final class ListingService {
                 .update(toUpdate)
                 .eq("id", value: id)
                 .execute()
-            print("Listing updated successfully")
-            
         } catch {
             print("Error updating listing: \(error)")
             throw error
         }
     }
-    
+        
     func deleteListing(at id: Int) async throws {
         do {
             try await supabase
@@ -112,7 +169,6 @@ final class ListingService {
                 .delete()
                 .eq("id", value: id)
                 .execute()
-            
         } catch {
             print("Error deleting listing: \(error)")
             throw error

@@ -27,7 +27,7 @@ struct AddToFavouritesButton: View {
                             .foregroundStyle(.green)
                             .fontWeight(.bold)
                             .symbolEffect(.bounce, value: favouriteViewModel.isFavorite(listing: listing))
-                            .sensoryFeedback(.success, trigger: favouriteViewModel.isFavorite(listing: listing))
+                            .sensoryFeedback(.impact(flexibility: .soft), trigger: favouriteViewModel.isFavorite(listing: listing))
                     }
             }
             .padding(.trailing, 5)
@@ -40,4 +40,5 @@ struct AddToFavouritesButton: View {
 #Preview {
     AddToFavouritesButton(listing: Listing.sampleData[0])
         .environmentObject(FavouriteViewModel())
+        .preferredColorScheme(.dark)
 }
