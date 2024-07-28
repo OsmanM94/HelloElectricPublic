@@ -48,7 +48,9 @@ private struct LoadedFavouriteView: View {
                         }
                     }
             }
-            .listRowSeparator(.hidden, edges: .all)
+            .alignmentGuide(.listRowSeparatorLeading) { _ in
+                0
+            }
         }
         .listStyle(.plain)
         .padding(.top)

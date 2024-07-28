@@ -27,14 +27,21 @@ struct UserListingCell: View {
                                 .scaleEffect(1.2)
                         }
                 }
-            }.overlay(alignment: .topTrailing) {
-                VStack(spacing: 0) {
+            }
+            .overlay(alignment: .topTrailing) {
+                HStack(spacing: 2) {
                     Circle()
-                        .frame(width: 10, height: 10)
+                        .frame(width: 8, height: 8)
                         .foregroundStyle(.green.gradient)
+                    Text("Active")
+                        .font(.caption2)
                 }
-                .padding(.trailing, 5)
-                .padding(.top, 5)
+                .padding(.trailing, 3)
+                .padding(.bottom, 3)
+                .padding(.top, 3)
+                .padding(.leading, 3)
+                .background(.white.opacity(0.5), in: RoundedRectangle(cornerRadius: 5))
+                .padding(.all, 4)
             }
             
             VStack(alignment: .leading, spacing: 3) {

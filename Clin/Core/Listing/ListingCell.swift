@@ -20,9 +20,9 @@ struct ListingCell: View {
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                 } else {
                     Rectangle()
-                        .foregroundColor(.gray.opacity(0.5))
+                        .foregroundStyle(.gray.opacity(0.5))
                         .frame(width: 120, height: 120)
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
                         .overlay {
                             ProgressView()
                                 .scaleEffect(1.2)
@@ -36,8 +36,9 @@ struct ListingCell: View {
             VStack(alignment: .leading) {
                 Text("\(listing.make) \(listing.model)")
                     .font(.headline)
-                    .lineLimit(2, reservesSpace: true)
+                    .lineLimit(2, reservesSpace: false)
                 Text("\(listing.condition)")
+                    .foregroundStyle(.secondary)
                     .font(.subheadline)
                 Text("\(listing.mileage, format: .number) miles")
                     .font(.subheadline)

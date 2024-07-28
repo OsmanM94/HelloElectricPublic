@@ -43,7 +43,6 @@ final class ListingFormEditViewModel {
     let vehicleServiceHistory: [String] = ["Yes", "No"]
     let vehicleNumberOfOwners: [String] = ["1", "2", "3", "4+"]
     
-    
     @MainActor
     func updateUserListing(_ listing: Listing) async {
         formEditViewState = .uploading

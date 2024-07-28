@@ -9,8 +9,6 @@ import SwiftUI
 struct UserListingView: View {
     
     @State private var viewModel = UserListingsViewModel()
-    
-    @State private var showingEditView = false
     @State private var selectedListing: Listing?
     
     var body: some View {
@@ -20,21 +18,9 @@ struct UserListingView: View {
                     switch viewModel.viewState {
                     case .empty:
                         EmptyContentView(message: "No active listings found", systemImage: "tray.fill")
+                        
                     case .loaded:
-                        List {
-                            ForEach(viewModel.userActiveListings, id: \.id) { listing in
-                                UserListingCell(listing: listing)
-                                    .swipeActions(allowsFullSwipe: false) {
-                                        Button("Edit") {
-                                            selectedListing = listing
-                                            showingEditView = true
-                                        }
-                                        .tint(.yellow)
-                                    }
-                            }
-                            .listRowSeparator(.hidden, edges: .all)
-                        }
-                        .listStyle(.plain)
+                        UserListingSubview(viewModel: viewModel)
                         
                     case .error(let message):
                         ErrorView(message: message, retryAction: {
@@ -58,5 +44,29 @@ struct UserListingView: View {
     UserListingView()
 }
 
+fileprivate struct UserListingSubview: View {
+    @State private var showingEditView = false
+    @State private var selectedListing: Listing?
+    @Bindable var viewModel: UserListingsViewModel
+    
+    var body: some View {
+        List {
+            ForEach(viewModel.userActiveListings, id: \.id) { listing in
+                UserListingCell(listing: listing)
+                    .swipeActions(allowsFullSwipe: false) {
+                        Button("Edit") {
+                            selectedListing = listing
+                            showingEditView = true
+                        }
+                        .tint(.yellow)
+                    }
+            }
+            .alignmentGuide(.listRowSeparatorLeading) { _ in
+                0
+            }
+        }
+        .listStyle(.plain)
+    }
+}
 
 
