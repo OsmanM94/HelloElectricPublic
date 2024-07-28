@@ -9,8 +9,7 @@ import SwiftUI
 struct UserListingView: View {
     
     @State private var viewModel = UserListingsViewModel()
-    @State private var selectedListing: Listing?
-    
+   
     var body: some View {
         NavigationStack {
             Group {
@@ -30,10 +29,6 @@ struct UserListingView: View {
                 }
                 .padding(.top)
                 .navigationTitle("Active listings")
-                .sheet(item: $selectedListing, onDismiss: {
-                Task { await viewModel.fetchUserListings() } }) { listing in
-                        ListingFormEditView(listing: listing)
-                }
             }
         }
         .task { await viewModel.fetchUserListings() }
@@ -66,6 +61,10 @@ fileprivate struct UserListingSubview: View {
             }
         }
         .listStyle(.plain)
+        .sheet(item: $selectedListing, onDismiss: {
+        Task { await viewModel.fetchUserListings() } }) { listing in
+                ListingFormEditView(listing: listing)
+        }
     }
 }
 
