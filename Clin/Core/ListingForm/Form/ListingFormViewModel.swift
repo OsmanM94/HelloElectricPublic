@@ -20,13 +20,14 @@ final class ListingFormViewModel {
         case error(String)
     }
     
-     enum ImageLoadingState {
+    enum ImageLoadingState {
         case idle
         case loading
+        case deleting
         case loaded
     }
     
-    var formViewState: ViewState = .idle
+    var viewState: ViewState = .idle
     var imageLoadingState: ImageLoadingState = .idle
     
     var pickedImages: [PickedImage] = []
@@ -68,15 +69,17 @@ final class ListingFormViewModel {
     
     @MainActor
     func createListing() async {
-        formViewState = .uploading
+        viewState = .uploading
         uploadingProgress = 0.0
         do {
             guard let user = try? await SupabaseService.shared.client.auth.session.user else {
-                formViewState = .error("No authenticated user found")
+                viewState = .error(ListingFormViewStateMessages.noAuthUserFound.message)
                 return
             }
             
-            guard !containsProhibitedWordsInInputs() else {
+            let fieldsToCheck = [model, description]
+            guard !ProhibitedWordsService.shared.containsProhibitedWords(in: fieldsToCheck) else {
+                viewState = .error(ListingFormViewStateMessages.inappropriateField.message)
                 return
             }
             
@@ -116,18 +119,16 @@ final class ListingFormViewModel {
             )
             
             resetState()
-            formViewState = .success("Listing created successfully.")
+            viewState = .success(ListingFormViewStateMessages.createSucess.message)
         } catch {
-            self.formViewState = .error("Error creating listing, Please try again.")
+            self.viewState = .error(ListingFormViewStateMessages.generalError.message)
             print(error)
         }
     }
     
-    
-    
     @MainActor
     func sendDvlaRequest() async {
-        formViewState = .loading
+        viewState = .loading
         do {
             let decodedCar = try await dvlaService.fetchCarDetails(registrationNumber: registrationNumber)
             
@@ -135,12 +136,12 @@ final class ListingFormViewModel {
                 self.make = decodedCar.make
                 self.yearOfManufacture = "\(decodedCar.yearOfManufacture)"
                 self.colour = decodedCar.colour
-                formViewState = .loaded
+                viewState = .loaded
             } else {
-                self.formViewState = .error("Your vehicle is not electric.")
+                self.viewState = .error(ListingFormViewStateMessages.notElectric.message)
             }
         } catch {
-            self.formViewState = .error("Invalid registration number.")
+            self.viewState = .error(ListingFormViewStateMessages.invalidRegistration.message)
             print(error)
         }
     }
@@ -169,45 +170,19 @@ final class ListingFormViewModel {
         imageToDelete = nil
         uploadingProgress = 0.0
         imageLoadingState = .idle
-        formViewState = .idle
+        viewState = .idle
     }
     
     @MainActor
     func loadItem(item: PhotosPickerItem) async {
         imageLoadingState = .loading
-        do {
-            let data = try await item.loadTransferable(type: Data.self)
-            guard let data = data else { return }
-            
-            guard let _ = UIImage(data: data) else { return }
-            
-            if await analyzeImage(data) {
-                guard let pickedImage = PickedImage(data: data) else { return  }
-                self.pickedImages.append(pickedImage)
-            }
-            
-            print("Images loaded and analyzed from PhotosPicker")
-            imageLoadingState = .loaded
-        } catch {
-            print("Error loading image: \(error.localizedDescription)")
-        }
-    }
-    
-    @MainActor
-    private func analyzeImage(_ data: Data) async -> Bool {
-        let analysisResult = await ImageManager.shared.analyzeImage(data)
         
-        switch analysisResult {
-        case .isSensitive:
-            formViewState = .error("One or more images contains sensitive content.")
-            return false
-        case .error(let message):
-            formViewState = .error(message)
-            return false
-        case .notSensitive:
-            return true
-        case .analyzing, .notStarted:
-            return false
+        if let pickedImage = await ImageManager.shared.loadItem(item: item) {
+            pickedImages.append(pickedImage)
+         
+            imageLoadingState = .loaded
+        } else {
+            viewState = .error(ListingFormViewStateMessages.sensitiveContent.message)
         }
     }
     
@@ -218,32 +193,26 @@ final class ListingFormViewModel {
         }
     }
     
-    private func containsProhibitedWordsInInputs() -> Bool {
-        let fieldsToCheck = [model, description]
-        
-        for field in fieldsToCheck {
-            if containsProhibitedWords(field) {
-                formViewState = .error("The field '\(field)' contains prohibited words.")
-                return true
-            }
-        }
-        return false
-    }
-    
-    private func containsProhibitedWords(_ text: String) -> Bool {
-        return ProhibitedWordsService.shared.containsProhibitedWords(text)
-    }
-    
     @MainActor
     func deleteImage(_ image: PickedImage) async {
+        imageLoadingState = .deleting
         if let index = pickedImages.firstIndex(of: image) {
             pickedImages.remove(at: index)
             imageSelections.remove(at: index)
         }
+        checkImageState()
     }
     
     func hideKeyboard() {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+    
+    func loadProhibitedWords() async {
+        do {
+            try await ProhibitedWordsService.shared.loadProhibitedWords()
+        } catch {
+            print("Failed to load prohibited words: \(error)")
+        }
     }
     
 }

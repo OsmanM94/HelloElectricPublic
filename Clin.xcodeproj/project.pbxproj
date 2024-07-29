@@ -62,9 +62,9 @@
 				Account/Legal/TermsAndConditionsView.swift,
 				Account/Safety/SafetyView.swift,
 				Account/User/Profile/CircularProfileView.swift,
-				Account/User/Profile/ProfileError.swift,
 				Account/User/Profile/ProfileView.swift,
 				Account/User/Profile/ProfileViewModel.swift,
+				Account/User/Profile/ProfileViewStatesMessages.swift,
 				Account/User/UserListings/UserListingCell.swift,
 				Account/User/UserListings/UserListingsViewModel.swift,
 				Account/User/UserListings/UserListingView.swift,
@@ -75,11 +75,12 @@
 				Listing/ListingCell.swift,
 				Listing/ListingView.swift,
 				Listing/ListingViewModel.swift,
-				ListingForm/ListingFormEditView.swift,
-				ListingForm/ListingFormEditViewModel.swift,
-				ListingForm/ListingFormView.swift,
-				ListingForm/ListingFormViewModel.swift,
-				ListingForm/LoadedImageCell.swift,
+				ListingForm/Edit/ListingFormEditView.swift,
+				ListingForm/Edit/ListingFormEditViewModel.swift,
+				ListingForm/Form/ListingFormView.swift,
+				ListingForm/Form/ListingFormViewModel.swift,
+				ListingForm/Shared/ListingFormViewStatesMessages.swift,
+				ListingForm/Shared/LoadedImageCell.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
 		};

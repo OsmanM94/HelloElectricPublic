@@ -39,4 +39,5 @@ struct LoadedImageCell: View {
 
 #Preview {
     LoadedImageCell(action: {}, image: UIImage(named: "ev")!)
+        .preferredColorScheme(.dark)
 }

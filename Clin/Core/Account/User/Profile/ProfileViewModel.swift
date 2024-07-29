@@ -12,7 +12,7 @@ import Storage
 
 @Observable
 final class ProfileViewModel {
-    enum ProfileViewState {
+    enum ViewState {
         case idle
         case loading
         case error(String)
@@ -26,15 +26,9 @@ final class ProfileViewModel {
     private(set) var profile: Profile? = nil
     private(set) var cooldownTime: Int = 0
     
-    private let supabase = SupabaseService.shared.client
-    private let imageService = ImageManager.shared // Use ImageService
-    private let contentAnalyzer = SensitiveContentAnalysis.shared
-    private let prohibitedWordsService = ProhibitedWordsService.shared
-    
-    private(set) var viewState: ProfileViewState = .idle
+    private(set) var viewState: ViewState = .idle
     private(set) var cooldownTimer: Timer?
-    private(set) var prohibitedWords: Set<String> = []
-        
+    
     var isInteractionBlocked: Bool {
         return cooldownTime > 0 || !validateUsername
     }
@@ -48,7 +42,7 @@ final class ProfileViewModel {
     
     func loadProhibitedWords() async {
         do {
-            try await prohibitedWordsService.loadProhibitedWords()
+            try await ProhibitedWordsService.shared.loadProhibitedWords()
         } catch {
             print("Failed to load prohibited words: \(error.localizedDescription)")
         }
@@ -57,9 +51,9 @@ final class ProfileViewModel {
     @MainActor
     func getInitialProfile() async {
         do {
-            let currentUser = try await supabase.auth.session.user
+            let currentUser = try await SupabaseService.shared.client.auth.session.user
             
-            let profile: Profile = try await supabase
+            let profile: Profile = try await SupabaseService.shared.client
                 .from("profiles")
                 .select()
                 .eq("user_id", value: currentUser.id)
@@ -72,7 +66,7 @@ final class ProfileViewModel {
            
         } catch {
             debugPrint(error)
-            viewState = .error(ProfileError.generalError.message)
+            viewState = .error(ProfileViewStatesMessages.generalError.message)
         }
     }
     
@@ -81,12 +75,13 @@ final class ProfileViewModel {
         guard await canUpdateProfile() else { return }
         
         do {
-            let currentUser = try await supabase.auth.session.user //1
+            let currentUser = try await SupabaseService.shared.client.auth.session.user //1
             let folderPath = "\(currentUser.id)"
             let bucketName = "avatars"
-            let imageURLString = try await imageService.uploadImage(avatarImage!.data, from: bucketName, to: folderPath, compressionQuality: 0.1)
+            
+            let imageURLString = try await ImageManager.shared.uploadImage(avatarImage!.data, from: bucketName, to: folderPath, compressionQuality: 0.1)
             guard let imageURL = URL(string: imageURLString ?? "") else {
-                viewState = .error(ProfileError.generalError.message)
+                viewState = .error(ProfileViewStatesMessages.generalError.message)
                 return
             }
             
@@ -97,7 +92,7 @@ final class ProfileViewModel {
                 userID: currentUser.id
             )
             
-            try await supabase
+            try await SupabaseService.shared.client
                 .from("profiles")
                 .update(updatedProfile)
                 .eq("user_id", value: currentUser.id)
@@ -107,22 +102,22 @@ final class ProfileViewModel {
             self.username = ""
                         
             startCooldownTimer()
-            viewState = .success("Profile updated successfully.")
+            viewState = .success(ProfileViewStatesMessages.success.message)
         } catch {
             debugPrint(error)
-            viewState = .error(ProfileError.generalError.message)
+            viewState = .error(ProfileViewStatesMessages.generalError.message)
         }
     }
     
     @MainActor
     private func canUpdateProfile() async -> Bool {
         guard cooldownTime == 0 else {
-            viewState = .error(ProfileError.generalError.message)
+            viewState = .error(ProfileViewStatesMessages.generalError.message)
             return false
         }
         
-        guard !prohibitedWordsService.containsProhibitedWords(username) else {
-            viewState = .error(ProfileError.inappropriateUsername.message)
+        guard !ProhibitedWordsService.shared.containsProhibitedWord(username) else {
+            viewState = .error(ProfileViewStatesMessages.inappropriateUsername.message)
             return false
         }
         
@@ -134,11 +129,10 @@ final class ProfileViewModel {
         }
         
         guard avatarImage?.data != nil else {
-            viewState = .error(ProfileError.generalError.message)
+            viewState = .error(ProfileViewStatesMessages.generalError.message)
             return false
         }
-        
-        return await analyzeImage()
+        return true
     }
     
     @MainActor
@@ -154,7 +148,7 @@ final class ProfileViewModel {
     @MainActor
     private func updateUsernameOnly() async {
         do {
-            let currentUser = try await supabase.auth.session.user
+            let currentUser = try await SupabaseService.shared.client.auth.session.user
             
             let updatedProfile = Profile(
                 username: username,
@@ -163,7 +157,7 @@ final class ProfileViewModel {
                 userID: currentUser.id
             )
             
-            try await supabase
+            try await SupabaseService.shared.client
                 .from("profiles")
                 .update(updatedProfile)
                 .eq("user_id", value: currentUser.id)
@@ -171,44 +165,21 @@ final class ProfileViewModel {
             
             self.profile?.username = username
             self.username = ""
-            viewState = .success("Username updated.")
+            viewState = .success(ProfileViewStatesMessages.success.message)
             startCooldownTimer()
             
         } catch {
             debugPrint(error)
-            viewState = .error(ProfileError.generalError.message)
+            viewState = .error(ProfileViewStatesMessages.generalError.message)
         }
     }
     
     @MainActor
-    private func analyzeImage() async -> Bool {
-        guard let data = avatarImage?.data else { return false }
-        
-        let analysisResult = await imageService.analyzeImage(data)
-       
-        switch analysisResult {
-        case .isSensitive:
-            viewState = .error(ProfileError.sensitiveContent.message)
-            return false
-        case .error(let message):
-            viewState = .error(message)
-            return false
-        case .notSensitive:
-            return true
-        case .analyzing, .notStarted:
-            return false
-        }
-    }
-        
-    @MainActor
-    func loadTransferable(from imageSelection: PhotosPickerItem) {
-        Task {
-            do {
-                avatarImage = try await imageSelection.loadTransferable(type: PickedImage.self)
-                print("Image loaded from PhotosPicker")
-            } catch {
-                debugPrint(error)
-            }
+    func loadItem(item: PhotosPickerItem) async {
+        if let pickedImage = await ImageManager.shared.loadItem(item: item) {
+            avatarImage = pickedImage
+        } else {
+            viewState = .error(ProfileViewStatesMessages.sensitiveContent.message)
         }
     }
     

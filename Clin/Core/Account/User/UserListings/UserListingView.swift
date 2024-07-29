@@ -16,7 +16,7 @@ struct UserListingView: View {
                 VStack(spacing: 0) {
                     switch viewModel.viewState {
                     case .empty:
-                        EmptyContentView(message: "No active listings found", systemImage: "tray.fill")
+                        CustomProgressView()
                         
                     case .loaded:
                         UserListingSubview(viewModel: viewModel)

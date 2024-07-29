@@ -24,9 +24,10 @@ final class ListingFormEditViewModel {
        case idle
        case loading
        case loaded
+       case deleting
    }
     
-    var formEditViewState: ViewState = .idle
+    var viewState: ViewState = .idle
     var imageLoadingState: ImageLoadingState = .idle
     
     var pickedImages: [PickedImage] = []
@@ -43,13 +44,20 @@ final class ListingFormEditViewModel {
     let vehicleServiceHistory: [String] = ["Yes", "No"]
     let vehicleNumberOfOwners: [String] = ["1", "2", "3", "4+"]
     
+    
     @MainActor
     func updateUserListing(_ listing: Listing) async {
-        formEditViewState = .uploading
+        viewState = .uploading
         uploadingProgress = 0.0
         do {
             guard let user = try? await SupabaseService.shared.client.auth.session.user else {
-                formEditViewState = .error("No authenticated user found.")
+                viewState = .error(ListingFormViewStateMessages.noAuthUserFound.message)
+                return
+            }
+            
+            let fieldsToCheck = [listing.model, listing.description]
+            guard !ProhibitedWordsService.shared.containsProhibitedWords(in: fieldsToCheck) else {
+                viewState = .error(ListingFormViewStateMessages.inappropriateField.message)
                 return
             }
             
@@ -89,27 +97,27 @@ final class ListingFormEditViewModel {
                 userID: listing.userID
             )
             
-            formEditViewState = .success("Listing updated successfully.")
+            viewState = .success(ListingFormViewStateMessages.updateSuccess.message)
             print("Listing updated succesfully.")
         } catch {
-            formEditViewState = .error("Error updating the listing, please try again.")
+            viewState = .error(ListingFormViewStateMessages.generalError.message)
         }
     }
     
     @MainActor
     func deleteUserListing(_ listing: Listing) async {
-        formEditViewState = .loading
+        viewState = .loading
         do {
             guard let id = listing.id else {
-                formEditViewState = .error("No authenticated user found.")
+                viewState = .error(ListingFormViewStateMessages.noAuthUserFound.message)
                 return
             }
             
             try await ListingService.shared.deleteListing(at: id)
-            formEditViewState = .success("Listing deleted successfully.")
+            viewState = .success(ListingFormViewStateMessages.deleteSuccess.message)
             print("Listing deleted succesfully")
         } catch {
-            formEditViewState = .error("Error deleting listing, please try again.")
+            viewState = .error(ListingFormViewStateMessages.deleteError.message)
         }
     }
     
@@ -120,45 +128,19 @@ final class ListingFormEditViewModel {
         imageToDelete = nil
         uploadingProgress = 0.0
         imageLoadingState = .idle
-        formEditViewState = .idle
+        viewState = .idle
     }
     
     @MainActor
     func loadItem(item: PhotosPickerItem) async {
         imageLoadingState = .loading
-        do {
-            let data = try await item.loadTransferable(type: Data.self)
-            guard let data = data else { return }
-            
-            guard let _ = UIImage(data: data) else { return }
-            
-            if await analyzeImage(data) {
-                guard let pickedImage = PickedImage(data: data) else { return  }
-                self.pickedImages.append(pickedImage)
-            }
-            
-            print("Images loaded and analyzed from PhotosPicker")
-            imageLoadingState = .loaded
-        } catch {
-            print("Error loading image: \(error.localizedDescription)")
-        }
-    }
-    
-    @MainActor
-    private func analyzeImage(_ data: Data) async -> Bool {
-        let analysisResult = await ImageManager.shared.analyzeImage(data)
         
-        switch analysisResult {
-        case .isSensitive:
-            formEditViewState = .error("One or more images contains sensitive content.")
-            return false
-        case .error(let message):
-            formEditViewState = .error(message)
-            return false
-        case .notSensitive:
-            return true
-        case .analyzing, .notStarted:
-            return false
+        if let pickedImage = await ImageManager.shared.loadItem(item: item) {
+            pickedImages.append(pickedImage)
+         
+            imageLoadingState = .loaded
+        } else {
+            viewState = .error(ListingFormViewStateMessages.sensitiveContent.message)
         }
     }
     
@@ -171,13 +153,26 @@ final class ListingFormEditViewModel {
     
     @MainActor
     func deleteImage(_ image: PickedImage) async {
+        imageLoadingState = .deleting
         if let index = pickedImages.firstIndex(of: image) {
             pickedImages.remove(at: index)
             imageSelections.remove(at: index)
         }
+        checkImageState()
     }
     
     func hideKeyboard() {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
+    
+    func loadProhibitedWords() async {
+        do {
+            try await ProhibitedWordsService.shared.loadProhibitedWords()
+        } catch {
+            print("Failed to load prohibited words: \(error)")
+        }
+    }
+    
 }
+
+

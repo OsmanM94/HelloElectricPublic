@@ -17,7 +17,7 @@ struct ProfileView: View {
                 VStack(spacing: 0) {
                     switch viewModel.viewState {
                     case .idle:
-                        IdleProfileView(viewModel: viewModel)
+                        ProfileSubview(viewModel: viewModel)
                     
                     case .loading:
                         ProgressView("Analyzing...").scaleEffect(1.5)
@@ -50,7 +50,7 @@ struct ProfileView: View {
         .environment(AuthViewModel())
 }
 
-private struct IdleProfileView: View {
+private struct ProfileSubview: View {
     @Bindable var viewModel: ProfileViewModel
     
     var body: some View {
@@ -85,10 +85,11 @@ private struct IdleProfileView: View {
                         size: 30,
                         colour: .green,
                         onSelect: { newItems in
-                            guard let newValue = newItems.first else {
-                                return
+                            if let newValue = newItems.first {
+                                Task {
+                                    await viewModel.loadItem(item: newValue)
+                                }
                             }
-                            viewModel.loadTransferable(from: newValue)
                         })
                     
                 }

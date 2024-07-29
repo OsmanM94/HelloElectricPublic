@@ -23,8 +23,17 @@ final class ProhibitedWordsService {
         }
     }
     
-    func containsProhibitedWords(_ text: String) -> Bool {
+    func containsProhibitedWord(_ text: String) -> Bool {
         let words = text.lowercased().split(separator: " ")
         return words.contains { prohibitedWords.contains(String($0)) }
     }    
+    
+    func containsProhibitedWords(in fields: [String]) -> Bool {
+        for field in fields {
+            if containsProhibitedWord(field) {
+                return true
+            }
+        }
+        return false
+    }
 }

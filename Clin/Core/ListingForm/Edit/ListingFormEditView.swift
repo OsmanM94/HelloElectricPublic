@@ -18,9 +18,9 @@ struct ListingFormEditView: View {
         NavigationStack {
             Group {
                 VStack {
-                    switch viewModel.formEditViewState {
+                    switch viewModel.viewState {
                     case .idle:
-                        IdleFormEditSubview(viewModel: viewModel, listing: listing)
+                        ListingFormEditSubview(viewModel: viewModel, listing: listing)
                         
                     case .loading:
                         CustomProgressView()
@@ -39,6 +39,7 @@ struct ListingFormEditView: View {
             .navigationTitle("Edit Listing")
             .navigationBarTitleDisplayMode(.inline)
         }
+        .task { await viewModel.loadProhibitedWords() }
     }
 }
 
@@ -46,7 +47,7 @@ struct ListingFormEditView: View {
     ListingFormEditView(listing: Listing.sampleData[0])
 }
 
-fileprivate struct IdleFormEditSubview: View {
+fileprivate struct ListingFormEditSubview: View {
     @Environment(\.dismiss) private var dismiss
     
     @Bindable var viewModel: ListingFormEditViewModel
@@ -59,6 +60,8 @@ fileprivate struct IdleFormEditSubview: View {
                 case .idle:
                     EmptyContentView(message: "No selected photos", systemImage: "tray.fill")
                 case .loading:
+                    ImageLoadingPlaceHolders(viewModel: viewModel)
+                case .deleting:
                     ImageLoadingPlaceHolders(viewModel: viewModel)
                 case .loaded:
                     SelectedPhotosView(viewModel: viewModel)
@@ -224,9 +227,8 @@ fileprivate struct IdleFormEditSubview: View {
                         viewModel.pickedImages.removeAll()
                         Task { for item in newItems {
                             await viewModel.loadItem(item: item)
+                          }
                         }
-                        }
-                        viewModel.checkImageState()
                     })
                 .deleteAlert(
                     isPresented: $viewModel.showDeleteAlert,

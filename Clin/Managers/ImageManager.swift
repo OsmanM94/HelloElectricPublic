@@ -55,9 +55,34 @@ final class ImageManager {
         }
     }
     
+    func loadItem(item: PhotosPickerItem, analyze: Bool = true) async -> PickedImage? {
+        do {
+            let data = try await item.loadTransferable(type: Data.self)
+            guard let data = data, UIImage(data: data) != nil else { return nil }
+            
+            if analyze {
+                let analysisState = await analyzeImage(data)
+                switch analysisState {
+                case .isSensitive, .error:
+                    print("Image contains sensitive content or there was an error analyzing the image.")
+                    return nil
+                default:
+                    break
+                }
+            }
+            
+            print("Image loaded and analyzed from PhotosPicker")
+            return PickedImage(data: data)
+        } catch {
+            print("Error loading image: \(error.localizedDescription)")
+            return nil
+        }
+    }
+    
     private func compressImage(data: Data, compressionQuality: CGFloat) -> Data? {
         guard let image = UIImage(data: data) else { return nil }
         return image.jpegData(compressionQuality: compressionQuality)
     }
+    
 }
 

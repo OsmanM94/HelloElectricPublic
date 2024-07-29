@@ -15,11 +15,12 @@ struct ListingFormView: View {
         NavigationStack {
             Group {
                 VStack(spacing: 0) {
-                    switch viewModel.formViewState {
+                    switch viewModel.viewState {
                     case .idle:
                         DvlaCheckView(
                         registrationNumber: $viewModel.registrationNumber,
-                        sendDvlaRequest: { await viewModel.sendDvlaRequest() })
+                        sendDvlaRequest: { 
+                            await viewModel.sendDvlaRequest() })
                         
                     case .loading:
                         CustomProgressView()
@@ -43,6 +44,7 @@ struct ListingFormView: View {
             .navigationTitle("Selling")
             .navigationBarTitleDisplayMode(.inline)
         }
+        .task {  await viewModel.loadProhibitedWords() }
     }
 }
 
@@ -50,11 +52,11 @@ struct ListingFormView: View {
     ListingFormView()
 }
 
-//#Preview("Loaded") {
-//    NavigationStack {
-//        ListingFormSubview(viewModel: ListingFormViewModel())
-//    }
-//}
+#Preview("Loaded") {
+    NavigationStack {
+        ListingFormSubview(viewModel: ListingFormViewModel())
+    }
+}
 
 fileprivate struct DvlaCheckView: View {
     @Binding var registrationNumber: String
@@ -100,8 +102,10 @@ fileprivate struct ListingFormSubview: View {
             Section(header: Text("\(viewModel.imageSelections.count)/10")) {
                     switch viewModel.imageLoadingState {
                     case .idle:
-                        NoPhotosView()
+                        EmptyContentView(message: "No selected photos", systemImage: "tray.fill")
                     case .loading:
+                        ImageLoadingPlaceHolders(viewModel: viewModel)
+                    case .deleting:
                         ImageLoadingPlaceHolders(viewModel: viewModel)
                     case .loaded:
                         SelectedPhotosView(viewModel: viewModel)
@@ -263,9 +267,8 @@ fileprivate struct ListingFormSubview: View {
                         viewModel.pickedImages.removeAll()
                         Task { for item in newItems {
                             await viewModel.loadItem(item: item)
+                          }
                         }
-                        }
-                        viewModel.checkImageState()
                     })
                 .deleteAlert(
                     isPresented: $viewModel.showDeleteAlert,
@@ -275,12 +278,6 @@ fileprivate struct ListingFormSubview: View {
                 }
             }
         }
-    }
-}
-
-fileprivate struct NoPhotosView: View {
-    var body: some View {
-        EmptyContentView(message: "No selected photos", systemImage: "tray.fill")
     }
 }
 
