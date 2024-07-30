@@ -17,7 +17,7 @@ struct ListingFormEditView: View {
     var body: some View {
         NavigationStack {
             Group {
-                VStack {
+                VStack(spacing: 0) {
                     switch viewModel.viewState {
                     case .idle:
                         ListingFormEditSubview(viewModel: viewModel, listing: listing)

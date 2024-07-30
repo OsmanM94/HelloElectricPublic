@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23173.10" systemVersion="24A5289g" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+    <entity name="ListingEntity" representedClassName="ListingEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="batteryCapacity" optional="YES" attributeType="String"/>
+        <attribute name="colour" optional="YES" attributeType="String"/>
+        <attribute name="condition" optional="YES" attributeType="String"/>
+        <attribute name="homeCharge" optional="YES" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="make" optional="YES" attributeType="String"/>
+        <attribute name="mileage" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="model" optional="YES" attributeType="String"/>
+        <attribute name="owners" optional="YES" attributeType="String"/>
+        <attribute name="powerBhp" optional="YES" attributeType="String"/>
+        <attribute name="price" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="publicCharge" optional="YES" attributeType="String"/>
+        <attribute name="range" optional="YES" attributeType="String"/>
+        <attribute name="regenBraking" optional="YES" attributeType="String"/>
+        <attribute name="serviceHistory" optional="YES" attributeType="String"/>
+        <attribute name="textDescription" optional="YES" attributeType="String"/>
+        <attribute name="warranty" optional="YES" attributeType="String"/>
+        <attribute name="year" optional="YES" attributeType="String"/>
+        <relationship name="images" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ListingImage" inverseName="images" inverseEntity="ListingImage"/>
+    </entity>
+    <entity name="ListingImage" representedClassName="ListingImage" syncable="YES" codeGenerationType="class">
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="imageData" optional="YES" attributeType="Binary"/>
+        <attribute name="url" optional="YES" attributeType="String"/>
+        <relationship name="images" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ListingEntity" inverseName="images" inverseEntity="ListingEntity"/>
+    </entity>
+</model>

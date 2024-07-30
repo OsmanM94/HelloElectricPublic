@@ -31,7 +31,10 @@ struct UserListingView: View {
                 .navigationTitle("Active listings")
             }
         }
-        .task { await viewModel.fetchUserListings() }
+        .task { if viewModel.userActiveListings.isEmpty {
+                await viewModel.fetchUserListings()
+            }
+        }
     }
 }
 

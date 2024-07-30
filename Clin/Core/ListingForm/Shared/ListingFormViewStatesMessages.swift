@@ -13,7 +13,7 @@ enum ListingFormViewStateMessages: String, Error {
     case generalError = "An error occurred. Please try again."
     case noAuthUserFound = "No authenticated user found."
     case updateSuccess = "Listing updated successfully."
-    case createSucess = "Listing created successfully."
+    case createSuccess = "Listing created successfully."
     case deleteSuccess = "Listing deleted successfully."
     case deleteError = "Error deleting listing, please try again."
     case notElectric = "Your vehicle is not electric."

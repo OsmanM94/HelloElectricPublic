@@ -18,9 +18,9 @@ struct ListingFormView: View {
                     switch viewModel.viewState {
                     case .idle:
                         DvlaCheckView(
-                        registrationNumber: $viewModel.registrationNumber,
-                        sendDvlaRequest: { 
-                            await viewModel.sendDvlaRequest() })
+                            registrationNumber: $viewModel.registrationNumber,
+                            sendDvlaRequest:
+                                { await viewModel.sendDvlaRequest() })
                         
                     case .loading:
                         CustomProgressView()

@@ -119,7 +119,7 @@ final class ListingFormViewModel {
             )
             
             resetState()
-            viewState = .success(ListingFormViewStateMessages.createSucess.message)
+            viewState = .success(ListingFormViewStateMessages.createSuccess.message)
         } catch {
             self.viewState = .error(ListingFormViewStateMessages.generalError.message)
             print(error)
