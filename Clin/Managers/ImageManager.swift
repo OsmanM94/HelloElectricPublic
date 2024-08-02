@@ -13,7 +13,7 @@ import Storage
 
 final class ImageManager {
     static let shared = ImageManager()
-    private let supabase = SupabaseService.shared.client
+    private let supabase = Supabase.shared.client
     private let contentAnalyzer = SensitiveContentAnalysis.shared
     
     private init() {}

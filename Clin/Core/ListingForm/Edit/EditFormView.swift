@@ -7,20 +7,23 @@
 
 import SwiftUI
 
-struct ListingFormEditView: View {
+struct EditFormView: View {
     @Environment(\.dismiss) private var dismiss
-    
-    @State private var viewModel = ListingFormEditViewModel()
-        
     @State var listing: Listing
-
+    @State private var viewModel: EditFormViewModel
+    
+    init(listing: Listing, viewModel: @autoclosure @escaping () -> EditFormViewModel) {
+        self._listing = State(initialValue: listing)
+        self._viewModel = State(wrappedValue: viewModel())
+    }
+    
     var body: some View {
         NavigationStack {
             Group {
                 VStack(spacing: 0) {
                     switch viewModel.viewState {
                     case .idle:
-                        ListingFormEditSubview(viewModel: viewModel, listing: listing)
+                        EditFormSubview(viewModel: viewModel, listing: listing)
                         
                     case .loading:
                         CustomProgressView()
@@ -39,23 +42,25 @@ struct ListingFormEditView: View {
             .navigationTitle("Edit Listing")
             .navigationBarTitleDisplayMode(.inline)
         }
-        .task { await viewModel.loadProhibitedWords() }
+        .task {
+            await viewModel.loadProhibitedWords()
+        }
     }
 }
 
 #Preview {
-    ListingFormEditView(listing: Listing.sampleData[0])
+    EditFormView(listing: MockListingService.sampleData[0], viewModel: EditFormViewModel(listingService: ListingService()))
 }
 
-fileprivate struct ListingFormEditSubview: View {
+fileprivate struct EditFormSubview: View {
     @Environment(\.dismiss) private var dismiss
     
-    @Bindable var viewModel: ListingFormEditViewModel
+    @Bindable var viewModel: EditFormViewModel
     @State var listing: Listing
     
     var body: some View {
         Form {
-            Section(header: Text("\(viewModel.imageSelections.count)/10")) {
+            Section(header: Text("\(viewModel.totalImageCount)/10")) {
                 switch viewModel.imageLoadingState {
                 case .idle:
                     EmptyContentView(message: "No selected photos", systemImage: "tray.fill")
@@ -112,13 +117,13 @@ fileprivate struct ListingFormEditSubview: View {
             }
             
             Section {
-                TextEditor(text: $listing.description)
+                TextEditor(text: $listing.textDescription)
                     .frame(minHeight: 150)
-                    .characterLimit($listing.description, limit: 500)
+                    .characterLimit($listing.textDescription, limit: 500)
             } header: {
                 Text("Description")
             } footer: {
-                Text("\(listing.description.count)/500")
+                Text("\(listing.textDescription.count)/500")
             }
             
             Section("Features") {
@@ -190,32 +195,22 @@ fileprivate struct ListingFormEditSubview: View {
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                 }
-                .listRowBackground(Color.yellow)
-            }
-            Section {
-                Button(role: .destructive) {
-                    viewModel.showDeleteAlert.toggle()
-                } label: {
-                    Text("Delete")
-                        .frame(maxWidth: .infinity)
-                }
-                .deleteAlert(
-                    isPresented: $viewModel.showDeleteAlert,
-                    itemToDelete: .constant(listing)
-                ) { listingToDelete in
-                    await viewModel.deleteUserListing(listingToDelete)
-                }
+                .listRowBackground(Color.green)
             }
         }
         .toolbar {
-            ToolbarItem {
-                Button { dismiss() } label: { Text("Cancel") }
+            ToolbarItem(placement: .topBarLeading) {
+                Button(role: .cancel) { dismiss() } label: {
+                    Text("Cancel")
+                }
             }
             ToolbarItemGroup(placement: .keyboard) {
                 Spacer(minLength: 0)
-                Button { viewModel.hideKeyboard() } label: { Text("Done") }
+                Button { viewModel.hideKeyboard() } label: {
+                    Text("Done")
+                }
             }
-            ToolbarItem(placement: .topBarLeading) {
+            ToolbarItem(placement: .topBarTrailing) {
                 PhotosPickerView(
                     selections: $viewModel.imageSelections,
                     maxSelectionCount: 10,
@@ -242,7 +237,7 @@ fileprivate struct ListingFormEditSubview: View {
 }
 
 fileprivate struct ImageLoadingPlaceHolders: View {
-    @Bindable var viewModel: ListingFormEditViewModel
+    @Bindable var viewModel: EditFormViewModel
     
     var body: some View {
         ScrollView(.horizontal)  {
@@ -267,21 +262,21 @@ fileprivate struct ImageLoadingPlaceHolders: View {
 }
 
 fileprivate struct SelectedPhotosView: View {
-    @Bindable var viewModel: ListingFormEditViewModel
-    
+    @Bindable var viewModel: EditFormViewModel
+   
     var body: some View {
         ScrollView(.horizontal) {
             HStack(spacing: 15) {
                 ForEach(viewModel.pickedImages, id: \.self) { pickedImage in
                     if let uiImage = UIImage(data: pickedImage.data) {
-                        LoadedImageCell(action: {
+                        SelectedImageCell(action: {
                             viewModel.imageToDelete = pickedImage
                             viewModel.showDeleteAlert.toggle()
                         }, image: uiImage)
                     }
                 }
             }
-            .padding(.all)
+            .padding()
         }
         .scrollIndicators(.hidden)
     }

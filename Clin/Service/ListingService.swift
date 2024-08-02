@@ -7,17 +7,21 @@
 
 import Foundation
 
+protocol ListingServiceProtocol {
+    func fetchListings() async throws -> [Listing]
+    func fetchUserListings(userID: UUID) async throws -> [Listing]
+    func createListing(_ listing: Listing) async throws
+    func updateListing(_ listing: Listing) async throws
+    func deleteListing(at id: Int) async throws
+}
 
-final class ListingService {
-    static let shared = ListingService()
+struct ListingService: ListingServiceProtocol {
     
-    private let supabase = SupabaseService.shared.client
-    
-    private init() {}
+    init() {}
     
     func fetchListings() async throws -> [Listing] {
         do {
-            let listings: [Listing] = try await supabase
+            let listings: [Listing] = try await Supabase.shared.client
                 .from("car_listing")
                 .select()
                 .order("created_at", ascending: false)
@@ -32,7 +36,7 @@ final class ListingService {
     
     func fetchUserListings(userID: UUID) async throws -> [Listing] {
         do {
-            let listings: [Listing] = try await supabase
+            let listings: [Listing] = try await Supabase.shared.client
                 .from("car_listing")
                 .select()
                 .eq("user_id", value: userID)
@@ -45,53 +49,10 @@ final class ListingService {
             throw error
         }
     }
-    
-    func createListing(
-        imagesURL: [URL],
-        make: String,
-        model: String,
-        condition: String,
-        mileage: Double,
-        yearOfManufacture: String,
-        price: Double,
-        description: String,
-        range: String,
-        colour: String,
-        publicChargingTime: String,
-        homeChargingTime: String,
-        batteryCapacity: String,
-        powerBhp: String,
-        regenBraking: String,
-        warranty: String,
-        serviceHistory: String,
-        numberOfOwners: String,
-        userID: UUID
-    ) async throws {
         
+    func createListing(_ listing: Listing) async throws {
         do {
-            let listing = Listing(
-                createdAt: Date(),
-                imagesURL: imagesURL,
-                make: make,
-                model: model,
-                condition: condition,
-                mileage: mileage,
-                yearOfManufacture: yearOfManufacture,
-                price: price,
-                description: description,
-                range: range,
-                colour: colour,
-                publicChargingTime: publicChargingTime,
-                homeChargingTime: homeChargingTime,
-                batteryCapacity: batteryCapacity,
-                powerBhp: powerBhp,
-                regenBraking: regenBraking,
-                warranty: warranty,
-                serviceHistory: serviceHistory,
-                numberOfOwners: numberOfOwners,
-                userID: userID
-            )
-            try await supabase
+            try await Supabase.shared.client
                 .from("car_listing")
                 .insert(listing)
                 .execute()
@@ -102,58 +63,15 @@ final class ListingService {
         }
     }
     
-    func updateListing(
-        _ listing: Listing,
-        imagesURL: [URL],
-        make: String,
-        model: String,
-        condition: String,
-        mileage: Double,
-        yearOfManufacture: String,
-        price: Double,
-        description: String,
-        range: String,
-        colour: String,
-        publicChargingTime: String,
-        homeChargingTime: String,
-        batteryCapacity: String,
-        powerBhp: String,
-        regenBraking: String,
-        warranty: String,
-        serviceHistory: String,
-        numberOfOwners: String,
-        userID: UUID
-    ) async throws {
+    func updateListing(_ listing: Listing) async throws {
         guard let id = listing.id else {
             print("Listing ID is missing.")
             return
         }
-        
-        var toUpdate = listing
-        toUpdate.imagesURL = imagesURL
-        toUpdate.make = make
-        toUpdate.model = model
-        toUpdate.condition = condition
-        toUpdate.mileage = mileage
-        toUpdate.yearOfManufacture = yearOfManufacture
-        toUpdate.price = price
-        toUpdate.description = description
-        toUpdate.range = range
-        toUpdate.colour = colour
-        toUpdate.publicChargingTime = publicChargingTime
-        toUpdate.homeChargingTime = homeChargingTime
-        toUpdate.batteryCapacity = batteryCapacity
-        toUpdate.powerBhp = powerBhp
-        toUpdate.regenBraking = regenBraking
-        toUpdate.warranty = warranty
-        toUpdate.serviceHistory = serviceHistory
-        toUpdate.numberOfOwners = numberOfOwners
-        toUpdate.userID = userID
-        
         do {
-            try await supabase
+            try await Supabase.shared.client
                 .from("car_listing")
-                .update(toUpdate)
+                .update(listing)
                 .eq("id", value: id)
                 .execute()
         } catch {
@@ -161,10 +79,10 @@ final class ListingService {
             throw error
         }
     }
-        
+    
     func deleteListing(at id: Int) async throws {
         do {
-            try await supabase
+            try await Supabase.shared.client
                 .from("car_listing")
                 .delete()
                 .eq("id", value: id)

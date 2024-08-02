@@ -10,7 +10,7 @@ import PhotosUI
 import SwiftUI
 
 @Observable
-final class ListingFormViewModel {
+final class CreateFormViewModel {
     enum ViewState {
         case idle
         case loading
@@ -42,23 +42,21 @@ final class ListingFormViewModel {
     var make: String = ""
     var model: String = ""
     var condition: String = "Used"
-    var mileage: Double = 0.0
+    var mileage: Double = 1.0
     var yearOfManufacture: String = "2015"
-    var price: Double = 0.0
+    var price: Double = 1.0
     var description: String = ""
-    var range: String = ""
+    var range: String = "300"
     var colour: String = ""
-    var publicChargingTime: String = ""
-    var homeChargingTime: String = ""
-    var batteryCapacity: String = ""
-    var powerBhp: String = ""
+    var publicChargingTime: String = "30mins"
+    var homeChargingTime: String = "1hr"
+    var batteryCapacity: String = "40kWh"
+    var powerBhp: String = "40"
     var regenBraking: String = "Yes"
     var warranty: String = "Yes"
     var serviceHistory: String = "Yes"
     var numberOfOwners: String = "1"
     var isPromoted: Bool = false
-    
-    private let dvlaService = DvlaService()
     
     let yearsOfmanufacture: [String] = Array(2010...2030).map { String($0) }
     let vehicleCondition: [String] = ["New", "Used"]
@@ -67,12 +65,19 @@ final class ListingFormViewModel {
     let vehicleServiceHistory: [String] = ["Yes", "No"]
     let vehicleNumberOfOwners: [String] = ["1", "2", "3", "4+"]
     
+    private let dvlaService = DvlaService()
+    private let listingService: ListingServiceProtocol
+    
+    init(listingService: ListingServiceProtocol) {
+        self.listingService = listingService
+    }
+    
     @MainActor
     func createListing() async {
         viewState = .uploading
         uploadingProgress = 0.0
         do {
-            guard let user = try? await SupabaseService.shared.client.auth.session.user else {
+            guard let user = try? await Supabase.shared.client.auth.session.user else {
                 viewState = .error(ListingFormViewStateMessages.noAuthUserFound.message)
                 return
             }
@@ -90,33 +95,15 @@ final class ListingFormViewModel {
                 let bucketName = "car_images"
                 
                 let imageURLString = try await ImageManager.shared.uploadImage(image.data, from: bucketName, to: folderPath, compressionQuality: 0.5)
+                
                 if let urlString = imageURLString, let url = URL(string: urlString) {
                     imagesURLs.append(url)
                 }
                 uploadingProgress += 1.0 / Double(pickedImages.count)
             }
+            let listingToCreate = Listing(createdAt: Date(), imagesURL: imagesURLs, make: make, model: model, condition: condition, mileage: mileage, yearOfManufacture: yearOfManufacture, price: price, textDescription: description, range: range, colour: colour, publicChargingTime: publicChargingTime, homeChargingTime: homeChargingTime, batteryCapacity: batteryCapacity, powerBhp: powerBhp, regenBraking: regenBraking, warranty: warranty, serviceHistory: serviceHistory, numberOfOwners: numberOfOwners, userID: user.id)
             
-            try await ListingService.shared.createListing(
-                imagesURL: imagesURLs,
-                make: make,
-                model: model,
-                condition: condition,
-                mileage: mileage,
-                yearOfManufacture: yearOfManufacture,
-                price: price,
-                description: description,
-                range: range,
-                colour: colour,
-                publicChargingTime: publicChargingTime,
-                homeChargingTime: homeChargingTime,
-                batteryCapacity: batteryCapacity,
-                powerBhp: powerBhp,
-                regenBraking: regenBraking,
-                warranty: warranty,
-                serviceHistory: serviceHistory,
-                numberOfOwners: numberOfOwners,
-                userID: user.id
-            )
+            try await listingService.createListing(listingToCreate)
             
             resetState()
             viewState = .success(ListingFormViewStateMessages.createSuccess.message)
@@ -179,7 +166,7 @@ final class ListingFormViewModel {
         
         if let pickedImage = await ImageManager.shared.loadItem(item: item) {
             pickedImages.append(pickedImage)
-         
+            
             imageLoadingState = .loaded
         } else {
             viewState = .error(ListingFormViewStateMessages.sensitiveContent.message)
@@ -214,5 +201,5 @@ final class ListingFormViewModel {
             print("Failed to load prohibited words: \(error)")
         }
     }
-    
 }
+

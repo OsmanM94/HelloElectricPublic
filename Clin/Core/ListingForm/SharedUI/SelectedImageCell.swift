@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct LoadedImageCell: View {
+struct SelectedImageCell: View {
     let action: () -> Void
     var image: UIImage
     
@@ -38,6 +38,6 @@ struct LoadedImageCell: View {
 }
 
 #Preview {
-    LoadedImageCell(action: {}, image: UIImage(named: "ev")!)
+    SelectedImageCell(action: {}, image: UIImage(named: "ev")!)
         .preferredColorScheme(.dark)
 }

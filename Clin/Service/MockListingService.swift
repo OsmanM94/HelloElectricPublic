@@ -1,0 +1,152 @@
+//
+//  MockListingService.swift
+//  Clin
+//
+//  Created by asia on 02/08/2024.
+//
+
+import Foundation
+
+struct MockListingService: ListingServiceProtocol {
+    static let mockUserID = UUID(uuidString: "123e4567-e89b-12d3-a456-426614174000")!
+    
+    static var sampleData: [Listing] = [
+        Listing(
+            id: 1,
+            createdAt: Date(),
+            imagesURL: [URL(string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/mock_data/tesla2.jpg")!],
+            make: "Tesla",
+            model: "Model S supercharger 2024",
+            condition: "Used",
+            mileage: 100000,
+            yearOfManufacture: "2023",
+            price: 8900,
+            textDescription: "A great electric vehicle with long range.",
+            range: "396 miles",
+            colour: "Red",
+            publicChargingTime: "1 hour",
+            homeChargingTime: "10 hours",
+            batteryCapacity: "100 kWh",
+            powerBhp: "1020",
+            regenBraking: "Yes",
+            warranty: "4 years",
+            serviceHistory: "Full",
+            numberOfOwners: "1",
+            userID: mockUserID
+        ),
+        Listing(
+            id: 2,
+            createdAt: Date(),
+            imagesURL: [URL(string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/mock_data/tesla1.jpg")!],
+            make: "Mercedes",
+            model: "Mercedes-Benz EQA Class",
+            condition: "Used",
+            mileage: 120000,
+            yearOfManufacture: "2024",
+            price: 9900,
+            textDescription: "A great electric vehicle with long range.",
+            range: "396 miles",
+            colour: "Red",
+            publicChargingTime: "1 hour",
+            homeChargingTime: "10 hours",
+            batteryCapacity: "100 kWh",
+            powerBhp: "1020",
+            regenBraking: "Yes",
+            warranty: "4 years",
+            serviceHistory: "Full",
+            numberOfOwners: "1",
+            userID: mockUserID
+        ),
+        Listing(
+            id: 3,
+            createdAt: Date(),
+            imagesURL: [URL(string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/mock_data/tesla3.jpg")!],
+            make: "BMW",
+            model: "i4 M50",
+            condition: "New",
+            mileage: 5000,
+            yearOfManufacture: "2022",
+            price: 70000,
+            textDescription: "A sleek and powerful electric sedan with excellent performance.",
+            range: "300 miles",
+            colour: "Blue",
+            publicChargingTime: "45 mins",
+            homeChargingTime: "9 hours",
+            batteryCapacity: "80 kWh",
+            powerBhp: "536",
+            regenBraking: "Yes",
+            warranty: "3 years",
+            serviceHistory: "Full",
+            numberOfOwners: "1",
+            userID: mockUserID
+        ),
+        Listing(
+            id: 4,
+            createdAt: Date(),
+            imagesURL: [URL(string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/mock_data/tesla4.jpg")!],
+            make: "Audi",
+            model: "e-tron GT",
+            condition: "Used",
+            mileage: 25000,
+            yearOfManufacture: "2021",
+            price: 85000,
+            textDescription: "An electric grand tourer with stunning design and performance.",
+            range: "238 miles",
+            colour: "Black",
+            publicChargingTime: "30 mins",
+            homeChargingTime: "8 hours",
+            batteryCapacity: "93 kWh",
+            powerBhp: "637",
+            regenBraking: "Yes",
+            warranty: "4 years",
+            serviceHistory: "Full",
+            numberOfOwners: "2",
+            userID: mockUserID
+        ),
+        Listing(
+            id: 5,
+            createdAt: Date(),
+            imagesURL: [URL(string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/mock_data/tesla5.jpg")!],
+            make: "Nissan",
+            model: "Leaf",
+            condition: "Used",
+            mileage: 80000,
+            yearOfManufacture: "2020",
+            price: 15000,
+            textDescription: "A reliable and affordable electric hatchback.",
+            range: "150 miles",
+            colour: "White",
+            publicChargingTime: "1 hour",
+            homeChargingTime: "7 hours",
+            batteryCapacity: "40 kWh",
+            powerBhp: "147",
+            regenBraking: "Yes",
+            warranty: "2 years",
+            serviceHistory: "Full",
+            numberOfOwners: "1",
+            userID: mockUserID
+        )
+    ]
+    
+    func fetchListings() async throws -> [Listing] {
+        return MockListingService.sampleData
+    }
+    
+    func fetchUserListings(userID: UUID) async throws -> [Listing] {
+        return MockListingService.sampleData.filter { $0.userID == userID }
+    }
+    
+    func createListing(_ listing: Listing) async throws {
+        MockListingService.sampleData.append(listing)
+    }
+    
+    func updateListing(_ listing: Listing) async throws {
+        if let index = MockListingService.sampleData.firstIndex(where: { $0.id == listing.id }) {
+            MockListingService.sampleData[index] = listing
+        }
+    }
+    
+    func deleteListing(at id: Int) async throws {
+        MockListingService.sampleData.removeAll { $0.id == id }
+    }
+}

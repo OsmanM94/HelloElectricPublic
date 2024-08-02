@@ -12,14 +12,26 @@ final class ListingViewModel {
     enum ListingViewState {
         case loading
         case loaded
+        case error(String)
+    }
+    
+    enum ListingViewStateMessages: String, Error {
+        case generalError = "An error occurred. Please try again."
+        case noAuthUserFound = "No authenticated user found."
+
+        var message: String {
+            return self.rawValue
+        }
+    }
+    private let listingService: ListingServiceProtocol
+    
+    init(listingService: ListingServiceProtocol) {
+        self.listingService = listingService
     }
     
     var listings: [Listing] = []
     var viewState: ListingViewState = .loading
     var showFilterSheet: Bool = false
-    
-    private let listingService = ListingService.shared
-    private let supabase = SupabaseService.shared.client
     
     @MainActor
     func fetchListings() async {
@@ -27,7 +39,7 @@ final class ListingViewModel {
             listings = try await listingService.fetchListings()
             viewState = .loaded
         } catch {
-            print("Error fetching listings: \(error)")
+            viewState = .error(ListingViewStateMessages.generalError.message)
         }
     }
 }

@@ -19,8 +19,8 @@ struct AddToFavouritesButton: View {
             } label: {
                 Circle()
                     .frame(width: 30, height: 30)
-                    .opacity(0.6)
-                    .foregroundStyle(Color(.systemGray6))
+                    .opacity(0.5)
+                    .foregroundStyle(Color(.white))
                     .overlay {
                         Image(systemName: favouriteViewModel.isFavorite(listing: listing) ? "heart.fill" : "heart")
                             .font(.system(size: 18))
@@ -38,7 +38,6 @@ struct AddToFavouritesButton: View {
 }
 
 #Preview {
-    AddToFavouritesButton(listing: Listing.sampleData[0])
+    AddToFavouritesButton(listing: MockListingService.sampleData[0])
         .environmentObject(FavouriteViewModel())
-        .preferredColorScheme(.dark)
 }

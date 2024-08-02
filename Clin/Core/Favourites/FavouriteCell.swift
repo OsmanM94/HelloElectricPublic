@@ -46,5 +46,5 @@ struct FavouriteCell: View {
 }
 
 #Preview {
-    FavouriteCell(favouriteListing: FavouriteListing(listing: Listing.sampleData[0]))
+    FavouriteCell(favouriteListing: FavouriteListing(listing: MockListingService.sampleData[0]))
 }

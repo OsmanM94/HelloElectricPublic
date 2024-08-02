@@ -22,10 +22,7 @@ struct UserListingCell: View {
                         .foregroundColor(.gray.opacity(0.5))
                         .frame(width: 120, height: 120)
                         .clipShape(RoundedRectangle(cornerRadius: 10))
-                        .overlay {
-                            ProgressView()
-                                .scaleEffect(1.2)
-                        }
+                        .overlay { ProgressView().scaleEffect(1.2) }
                 }
             }
             .overlay(alignment: .topTrailing) {
@@ -49,6 +46,7 @@ struct UserListingCell: View {
                     .font(.headline)
                     .lineLimit(2, reservesSpace: false)
                 Text("\(listing.condition)")
+                    .foregroundStyle(.secondary)
                     .font(.subheadline)
                 Text("\(listing.mileage, format: .number) miles")
                     .font(.subheadline)
@@ -61,27 +59,5 @@ struct UserListingCell: View {
 }
 
 #Preview {
-    UserListingCell(listing: Listing(
-        id: 1,
-        createdAt: Date(),
-        imagesURL: [URL(string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/avatars/15ECE008-ABF5-43CF-8DAF-1A26A342FFAF.jpeg?download=")!],
-        make: "Tesla",
-        model: "Model S supercharger 2024",
-        condition: "Used",
-        mileage: 100000,
-        yearOfManufacture: "2023",
-        price: 8900,
-        description: "A great electric vehicle with long range.",
-        range: "396 miles",
-        colour: "Red",
-        publicChargingTime: "1 hour",
-        homeChargingTime: "10 hours",
-        batteryCapacity: "100 kWh",
-        powerBhp: "1020",
-        regenBraking: "Yes",
-        warranty: "4 years",
-        serviceHistory: "Full",
-        numberOfOwners: "1",
-        userID: UUID()
- ))
+    UserListingCell(listing: MockListingService.sampleData[0])
 }

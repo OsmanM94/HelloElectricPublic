@@ -7,9 +7,12 @@
 
 import SwiftUI
 
-
-struct ListingFormView: View {
-    @State private var viewModel = ListingFormViewModel()
+struct CreateFormView: View {
+    @State private var viewModel: CreateFormViewModel
+    
+    init(viewModel: @autoclosure @escaping () -> CreateFormViewModel) {
+        self._viewModel = State(wrappedValue: viewModel())
+    }
   
     var body: some View {
         NavigationStack {
@@ -26,7 +29,7 @@ struct ListingFormView: View {
                         CustomProgressView()
                         
                     case .loaded:
-                        ListingFormSubview(viewModel: viewModel)
+                        CreateFormSubview(viewModel: viewModel)
                         
                     case .uploading:
                         CustomProgressViewBar(progress: viewModel.uploadingProgress)
@@ -49,12 +52,12 @@ struct ListingFormView: View {
 }
 
 #Preview {
-    ListingFormView()
+    CreateFormView(viewModel: CreateFormViewModel(listingService: ListingService()))
 }
 
 #Preview("Loaded") {
     NavigationStack {
-        ListingFormSubview(viewModel: ListingFormViewModel())
+        CreateFormSubview(viewModel: CreateFormViewModel(listingService: ListingService()))
     }
 }
 
@@ -94,8 +97,8 @@ fileprivate struct DvlaCheckView: View {
     }
 }
 
-fileprivate struct ListingFormSubview: View {
-    @Bindable var viewModel: ListingFormViewModel
+fileprivate struct CreateFormSubview: View {
+    @Bindable var viewModel: CreateFormViewModel
     
     var body: some View {
         Form {
@@ -282,14 +285,14 @@ fileprivate struct ListingFormSubview: View {
 }
 
 fileprivate struct SelectedPhotosView: View {
-    @Bindable var viewModel: ListingFormViewModel
+    @Bindable var viewModel: CreateFormViewModel
     
     var body: some View {
         ScrollView(.horizontal) {
             HStack(spacing: 15) {
                 ForEach(viewModel.pickedImages, id: \.self) { pickedImage in
                     if let uiImage = UIImage(data: pickedImage.data) {
-                        LoadedImageCell(action: {
+                        SelectedImageCell(action: {
                             viewModel.imageToDelete = pickedImage
                             viewModel.showDeleteAlert.toggle()
                         }, image: uiImage)
@@ -303,7 +306,7 @@ fileprivate struct SelectedPhotosView: View {
 }
 
 fileprivate struct ImageLoadingPlaceHolders: View {
-    @Bindable var viewModel: ListingFormViewModel
+    @Bindable var viewModel: CreateFormViewModel
     
     var body: some View {
         ScrollView(.horizontal) {

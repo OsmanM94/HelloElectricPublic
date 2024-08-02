@@ -9,8 +9,8 @@ import Foundation
 import Supabase
 
 
-final class SupabaseService {
-    static let shared = SupabaseService()
+final class Supabase {
+    static let shared = Supabase()
     let client: SupabaseClient
 
     private init() {

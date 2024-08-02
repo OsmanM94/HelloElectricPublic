@@ -51,9 +51,9 @@ final class ProfileViewModel {
     @MainActor
     func getInitialProfile() async {
         do {
-            let currentUser = try await SupabaseService.shared.client.auth.session.user
+            let currentUser = try await Supabase.shared.client.auth.session.user
             
-            let profile: Profile = try await SupabaseService.shared.client
+            let profile: Profile = try await Supabase.shared.client
                 .from("profiles")
                 .select()
                 .eq("user_id", value: currentUser.id)
@@ -75,7 +75,7 @@ final class ProfileViewModel {
         guard await canUpdateProfile() else { return }
         
         do {
-            let currentUser = try await SupabaseService.shared.client.auth.session.user //1
+            let currentUser = try await Supabase.shared.client.auth.session.user
             let folderPath = "\(currentUser.id)"
             let bucketName = "avatars"
             
@@ -92,7 +92,7 @@ final class ProfileViewModel {
                 userID: currentUser.id
             )
             
-            try await SupabaseService.shared.client
+            try await Supabase.shared.client
                 .from("profiles")
                 .update(updatedProfile)
                 .eq("user_id", value: currentUser.id)
@@ -148,7 +148,7 @@ final class ProfileViewModel {
     @MainActor
     private func updateUsernameOnly() async {
         do {
-            let currentUser = try await SupabaseService.shared.client.auth.session.user
+            let currentUser = try await Supabase.shared.client.auth.session.user
             
             let updatedProfile = Profile(
                 username: username,
@@ -157,7 +157,7 @@ final class ProfileViewModel {
                 userID: currentUser.id
             )
             
-            try await SupabaseService.shared.client
+            try await Supabase.shared.client
                 .from("profiles")
                 .update(updatedProfile)
                 .eq("user_id", value: currentUser.id)

@@ -19,8 +19,6 @@ final class AuthViewModel {
     var displayName: String = ""
     var user: User? = nil
    
-    private let supabase = SupabaseService.shared.client
-    
      init()  {
          Task {
              await setupAuthStateListener()
@@ -45,7 +43,7 @@ final class AuthViewModel {
                     return
                 }
                 
-                try await supabase.auth.signInWithIdToken(
+                try await Supabase.shared.client.auth.signInWithIdToken(
                     credentials: .init(
                         provider: .apple,
                         idToken: idToken
@@ -87,11 +85,9 @@ final class AuthViewModel {
                case .authorized:
                    break // The Apple ID credential is valid.
                case .revoked:
-                   // The Apple ID credential is revoked, so show the sign-in UI.
                    self.errorMessage = AuthenticationErrors.credentialRevoked.localizedDescription
                    await signOut()
                case .notFound:
-                   // The Apple ID credential was not found, so show the sign-in UI.
                    self.errorMessage = AuthenticationErrors.credentialNotFound.localizedDescription
                    await signOut()
                default:
@@ -105,7 +101,7 @@ final class AuthViewModel {
     @MainActor
     func signOut() async {
         do {
-            try await supabase.auth.signOut()
+            try await Supabase.shared.client.auth.signOut()
             authenticationState = .unauthenticated
         } catch {
             self.errorMessage = error.localizedDescription
@@ -113,7 +109,7 @@ final class AuthViewModel {
     }
     
     private func setupAuthStateListener() async {
-        await supabase.auth.onAuthStateChange { event, user in
+        await Supabase.shared.client.auth.onAuthStateChange { event, user in
             Task { @MainActor in
                 self.user = user?.user
                 self.authenticationState = user?.user == nil ? .unauthenticated : .authenticated

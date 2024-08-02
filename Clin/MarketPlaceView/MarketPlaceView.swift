@@ -10,10 +10,10 @@ import SwiftUI
 struct MarketPlaceView: View {
     
     @State private var selectedTab: Int = 0
-   
+       
     var body: some View {
         TabView(selection: $selectedTab) {
-            ListingView()
+            ListingView(viewModel: ListingViewModel(listingService: ListingService()))
                 .tabItem {
                     Label("Listings", systemImage: "bolt.car")
                 }

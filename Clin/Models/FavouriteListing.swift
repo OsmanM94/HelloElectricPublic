@@ -13,5 +13,5 @@ struct FavouriteListing: Identifiable {
 }
 
 extension FavouriteListing {
-    static var sampleData: [FavouriteListing] = Listing.sampleData.map { FavouriteListing(listing: $0) }
+    static var sampleData: [FavouriteListing] = MockListingService.sampleData.map { FavouriteListing(listing: $0) }
 }

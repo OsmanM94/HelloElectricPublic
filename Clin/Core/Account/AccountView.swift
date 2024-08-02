@@ -17,7 +17,7 @@ struct AccountView: View {
                 Section("Manage") {
                     NavigationLink("Profile", destination: { ProfileView() })
                     NavigationLink("My listings", destination: {
-                        UserListingView()
+                        UserListingView(viewModel: UserListingViewModel(listingService: ListingService()))
                     })
                     NavigationLink("Saved", destination: {
                         FavouriteListingView()

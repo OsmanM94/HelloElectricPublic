@@ -11,7 +11,7 @@ import PhotosUI
 
 
 @Observable
-final class ListingFormEditViewModel {
+final class EditFormViewModel {
     enum ViewState {
         case idle
         case loading
@@ -44,17 +44,23 @@ final class ListingFormEditViewModel {
     let vehicleServiceHistory: [String] = ["Yes", "No"]
     let vehicleNumberOfOwners: [String] = ["1", "2", "3", "4+"]
     
+    private let listingService: ListingServiceProtocol
+    
+    init(listingService: ListingServiceProtocol) {
+        self.listingService = listingService
+    }
+    
     @MainActor
     func updateUserListing(_ listing: Listing) async {
         viewState = .uploading
         uploadingProgress = 0.0
         do {
-            guard let user = try? await SupabaseService.shared.client.auth.session.user else {
+            guard let user = try? await Supabase.shared.client.auth.session.user else {
                 viewState = .error(ListingFormViewStateMessages.noAuthUserFound.message)
                 return
             }
             
-            let fieldsToCheck = [listing.model, listing.description]
+            let fieldsToCheck = [listing.model, listing.textDescription]
             guard !ProhibitedWordsService.shared.containsProhibitedWords(in: fieldsToCheck) else {
                 viewState = .error(ListingFormViewStateMessages.inappropriateField.message)
                 return
@@ -73,28 +79,9 @@ final class ListingFormEditViewModel {
                 uploadingProgress += 1.0 / Double(pickedImages.count)
             }
             
-            try await ListingService.shared.updateListing(
-                listing,
-                imagesURL: imagesURLs,
-                make: listing.make,
-                model: listing.model,
-                condition: listing.condition,
-                mileage: listing.mileage,
-                yearOfManufacture: listing.yearOfManufacture,
-                price: listing.price,
-                description: listing.description,
-                range: listing.range,
-                colour: listing.colour,
-                publicChargingTime: listing.publicChargingTime,
-                homeChargingTime: listing.homeChargingTime,
-                batteryCapacity: listing.batteryCapacity,
-                powerBhp: listing.powerBhp,
-                regenBraking: listing.regenBraking,
-                warranty: listing.warranty,
-                serviceHistory: listing.serviceHistory,
-                numberOfOwners: listing.numberOfOwners,
-                userID: listing.userID
-            )
+            let listingToUpdate = Listing(id: listing.id, createdAt: Date(), imagesURL: imagesURLs, make: listing.make, model: listing.model, condition: listing.condition, mileage: listing.mileage, yearOfManufacture: listing.yearOfManufacture, price: listing.price, textDescription: listing.textDescription, range: listing.range, colour: listing.colour, publicChargingTime: listing.publicChargingTime, homeChargingTime: listing.homeChargingTime, batteryCapacity: listing.batteryCapacity, powerBhp: listing.powerBhp, regenBraking: listing.regenBraking, warranty: listing.warranty, serviceHistory: listing.serviceHistory, numberOfOwners: listing.numberOfOwners, userID: listing.userID)
+           
+            try await listingService.updateListing(listingToUpdate)
             
             viewState = .success(ListingFormViewStateMessages.updateSuccess.message)
             print("Listing updated succesfully.")
@@ -102,24 +89,7 @@ final class ListingFormEditViewModel {
             viewState = .error(ListingFormViewStateMessages.generalError.message)
         }
     }
-    
-    @MainActor
-    func deleteUserListing(_ listing: Listing) async {
-        viewState = .loading
-        do {
-            guard let id = listing.id else {
-                viewState = .error(ListingFormViewStateMessages.noAuthUserFound.message)
-                return
-            }
-            
-            try await ListingService.shared.deleteListing(at: id)
-            viewState = .success(ListingFormViewStateMessages.deleteSuccess.message)
-            print("Listing deleted succesfully")
-        } catch {
-            viewState = .error(ListingFormViewStateMessages.deleteError.message)
-        }
-    }
-    
+       
     func resetState() {
         pickedImages = []
         imageSelections = []
@@ -136,7 +106,7 @@ final class ListingFormEditViewModel {
         
         if let pickedImage = await ImageManager.shared.loadItem(item: item) {
             pickedImages.append(pickedImage)
-         
+            
             imageLoadingState = .loaded
         } else {
             viewState = .error(ListingFormViewStateMessages.sensitiveContent.message)
@@ -149,7 +119,7 @@ final class ListingFormEditViewModel {
             imageLoadingState = .idle
         }
     }
-    
+        
     @MainActor
     func deleteImage(_ image: PickedImage) async {
         imageLoadingState = .deleting
@@ -172,6 +142,31 @@ final class ListingFormEditViewModel {
         }
     }
     
+    var totalImageCount: Int {
+        imageSelections.count
+    }
+    
 }
 
 
+
+
+/// IN REVIEW
+///
+/// //    @MainActor
+//    func loadImagesFromListing(_ listing: Listing) async {
+//        imageLoadingState = .loading
+//        pickedImages = []
+//
+//        for imageURL in listing.imagesURL {
+//            do {
+//                let (data, _) = try await URLSession.shared.data(from: imageURL)
+//                guard let pickedImage = PickedImage(data: data) else { return }
+//                pickedImages.append(pickedImage)
+//            } catch {
+//                viewState = .error("Failed to load images.")
+//                return
+//            }
+//        }
+//        imageLoadingState = .loaded
+//    }

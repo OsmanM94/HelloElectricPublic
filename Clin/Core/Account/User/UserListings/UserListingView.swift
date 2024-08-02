@@ -7,54 +7,68 @@
 import SwiftUI
 
 struct UserListingView: View {
+    @State private var viewModel: UserListingViewModel
+        
+    init(viewModel: @autoclosure @escaping () -> UserListingViewModel) {
+        self._viewModel = State(wrappedValue: viewModel())
+    }
     
-    @State private var viewModel = UserListingsViewModel()
-   
     var body: some View {
         NavigationStack {
             Group {
-                VStack(spacing: 0) {
-                    switch viewModel.viewState {
-                    case .empty:
-                        CustomProgressView()
-                        
-                    case .loaded:
-                        UserListingSubview(viewModel: viewModel)
-                        
-                    case .error(let message):
-                        ErrorView(message: message, retryAction: {
-                            Task { await viewModel.fetchUserListings() }
-                        })
-                    }
+                switch viewModel.viewState {
+                case .empty:
+                    EmptyContentView(message: "No active listings found", systemImage: "tray.fill")
+                case .success:
+                    UserListingSubview(viewModel: viewModel)
+                    
+                case .error(let message):
+                    ErrorView(message: message, retryAction: { Task {
+                         await viewModel.fetchUserListings() } })
                 }
-                .padding(.top)
-                .navigationTitle("Active listings")
+            }
+            .navigationTitle("Active listings")
+            .deleteAlert(
+                isPresented: $viewModel.showDeleteAlert,
+                itemToDelete: $viewModel.listingToDelete
+            ) { listing in
+                Task {
+                    await viewModel.deleteUserListing(listing)
+                    await viewModel.fetchUserListings()
+                }
             }
         }
-        .task { if viewModel.userActiveListings.isEmpty {
-                await viewModel.fetchUserListings()
-            }
+        .task {
+            await viewModel.fetchUserListings()
         }
     }
 }
 
-#Preview {
-    UserListingView()
+#Preview("API") {
+    UserListingView(viewModel: UserListingViewModel(listingService: ListingService()))
+}
+
+#Preview("MockData") {
+    UserListingView(viewModel: UserListingViewModel(listingService: MockListingService()))
 }
 
 fileprivate struct UserListingSubview: View {
-    @State private var showingEditView = false
-    @State private var selectedListing: Listing?
-    @Bindable var viewModel: UserListingsViewModel
+    @Bindable var viewModel: UserListingViewModel
     
     var body: some View {
         List {
             ForEach(viewModel.userActiveListings, id: \.id) { listing in
                 UserListingCell(listing: listing)
                     .swipeActions(allowsFullSwipe: false) {
+                        Button("Delete") {
+                            viewModel.listingToDelete = listing
+                            viewModel.showDeleteAlert.toggle()
+                        }
+                        .tint(.red)
+                
                         Button("Edit") {
-                            selectedListing = listing
-                            showingEditView = true
+                            viewModel.selectedListing = listing
+                            viewModel.showingEditView = true
                         }
                         .tint(.yellow)
                     }
@@ -64,11 +78,12 @@ fileprivate struct UserListingSubview: View {
             }
         }
         .listStyle(.plain)
-        .sheet(item: $selectedListing, onDismiss: {
-        Task { await viewModel.fetchUserListings() } }) { listing in
-                ListingFormEditView(listing: listing)
+        .sheet(item: $viewModel.selectedListing, onDismiss: {
+            Task { await viewModel.fetchUserListings() }
+        }) { listing in
+            EditFormView(listing: listing, viewModel: EditFormViewModel(listingService: ListingService()))
         }
+        .padding(.top)
     }
 }
-
 

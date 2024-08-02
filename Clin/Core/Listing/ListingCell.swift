@@ -14,7 +14,7 @@ struct ListingCell: View {
     var body: some View {
         HStack(spacing: 0) {
             VStack(spacing: 0) {
-                if let firstImageURL = listing.imagesURL.first {
+                if let firstImageURL = listing.imagesURL.first  {
                     ImageLoader(url: firstImageURL, contentMode: .fill)
                         .frame(width: 120, height: 120)
                         .clipShape(RoundedRectangle(cornerRadius: 12))
@@ -63,30 +63,8 @@ struct ListingCell: View {
 }
 
 #Preview {
-    ListingCell(listing: Listing(
-           id: 1,
-           createdAt: Date(),
-           imagesURL: [URL(string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/avatars/15ECE008-ABF5-43CF-8DAF-1A26A342FFAF.jpeg?download=")!],
-           make: "Tesla",
-           model: "Model S supercharger 2024",
-           condition: "Used",
-           mileage: 100000,
-           yearOfManufacture: "2023",
-           price: 8900,
-           description: "A great electric vehicle with long range.",
-           range: "396 miles",
-           colour: "Red",
-           publicChargingTime: "1 hour",
-           homeChargingTime: "10 hours",
-           batteryCapacity: "100 kWh",
-           powerBhp: "1020",
-           regenBraking: "Yes",
-           warranty: "4 years",
-           serviceHistory: "Full",
-           numberOfOwners: "1",
-           userID: UUID()
-    ))
-    .environmentObject(FavouriteViewModel())
+    ListingCell(listing: MockListingService.sampleData[0])
+        .environmentObject(FavouriteViewModel())
 }
 
 
