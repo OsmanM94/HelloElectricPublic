@@ -16,7 +16,7 @@ protocol ListingServiceProtocol {
 }
 
 struct ListingService: ListingServiceProtocol {
-    
+  
     init() {}
     
     func fetchListings() async throws -> [Listing] {
@@ -93,3 +93,21 @@ struct ListingService: ListingServiceProtocol {
         }
     }
 }
+
+
+
+//func fetchListings() async throws -> [Listing] {
+//    do {
+//        let listings: [Listing] = try await Supabase.shared.client
+//            .from("car_listing")
+//            .select()
+//            .order("created_at", ascending: false)
+//            .limit(50)
+//            .execute()
+//            .value
+//        return listings
+//    } catch {
+//        print("Error fetching listings: \(error)")
+//        throw error
+//    }
+//}

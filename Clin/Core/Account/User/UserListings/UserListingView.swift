@@ -28,6 +28,7 @@ struct UserListingView: View {
                 }
             }
             .navigationTitle("Active listings")
+            .navigationBarTitleDisplayMode(.inline)
             .deleteAlert(
                 isPresented: $viewModel.showDeleteAlert,
                 itemToDelete: $viewModel.listingToDelete

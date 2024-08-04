@@ -31,6 +31,7 @@ final class CreateFormViewModel {
     var imageLoadingState: ImageLoadingState = .idle
     
     var pickedImages: [PickedImage] = []
+    var pickedImages2: [PickedImage] = []
     var imageSelections: [PhotosPickerItem] = []
     var showDeleteAlert: Bool = false
     var imageToDelete: PickedImage?
@@ -42,9 +43,9 @@ final class CreateFormViewModel {
     var make: String = ""
     var model: String = ""
     var condition: String = "Used"
-    var mileage: Double = 1.0
+    var mileage: Double = 500
     var yearOfManufacture: String = "2015"
-    var price: Double = 1.0
+    var price: Double = 500
     var description: String = ""
     var range: String = "300"
     var colour: String = ""
@@ -65,6 +66,8 @@ final class CreateFormViewModel {
     let vehicleServiceHistory: [String] = ["Yes", "No"]
     let vehicleNumberOfOwners: [String] = ["1", "2", "3", "4+"]
     
+    var imagesURLs: [URL] = []
+    
     private let dvlaService = DvlaService()
     private let listingService: ListingServiceProtocol
     
@@ -75,7 +78,7 @@ final class CreateFormViewModel {
     @MainActor
     func createListing() async {
         viewState = .uploading
-        uploadingProgress = 0.0
+        self.uploadingProgress = 0.0
         do {
             guard let user = try? await Supabase.shared.client.auth.session.user else {
                 viewState = .error(ListingFormViewStateMessages.noAuthUserFound.message)
@@ -88,19 +91,8 @@ final class CreateFormViewModel {
                 return
             }
             
-            var imagesURLs: [URL] = []
-            
-            for image in pickedImages {
-                let folderPath = "\(user.id)"
-                let bucketName = "car_images"
-                
-                let imageURLString = try await ImageManager.shared.uploadImage(image.data, from: bucketName, to: folderPath, compressionQuality: 0.5)
-                
-                if let urlString = imageURLString, let url = URL(string: urlString) {
-                    imagesURLs.append(url)
-                }
-                uploadingProgress += 1.0 / Double(pickedImages.count)
-            }
+            try await uploadPickedImages(for: user.id)
+        
             let listingToCreate = Listing(createdAt: Date(), imagesURL: imagesURLs, make: make, model: model, condition: condition, mileage: mileage, yearOfManufacture: yearOfManufacture, price: price, textDescription: description, range: range, colour: colour, publicChargingTime: publicChargingTime, homeChargingTime: homeChargingTime, batteryCapacity: batteryCapacity, powerBhp: powerBhp, regenBraking: regenBraking, warranty: warranty, serviceHistory: serviceHistory, numberOfOwners: numberOfOwners, userID: user.id)
             
             try await listingService.createListing(listingToCreate)
@@ -110,6 +102,22 @@ final class CreateFormViewModel {
         } catch {
             self.viewState = .error(ListingFormViewStateMessages.generalError.message)
             print(error)
+        }
+    }
+    
+    @MainActor
+    private func uploadPickedImages(for userId: UUID) async throws {
+        imagesURLs.removeAll()
+        for image in pickedImages {
+            let folderPath = "\(userId)"
+            let bucketName = "car_images"
+            
+            let imageURLString = try await ImageManager.shared.uploadImage(image.data, from: bucketName, to: folderPath, compressionQuality: 0.5)
+            
+            if let urlString = imageURLString, let url = URL(string: urlString) {
+                self.imagesURLs.append(url)
+            }
+            self.uploadingProgress += 1.0 / Double(pickedImages.count)
         }
     }
     
@@ -166,7 +174,6 @@ final class CreateFormViewModel {
         
         if let pickedImage = await ImageManager.shared.loadItem(item: item) {
             pickedImages.append(pickedImage)
-            
             imageLoadingState = .loaded
         } else {
             viewState = .error(ListingFormViewStateMessages.sensitiveContent.message)

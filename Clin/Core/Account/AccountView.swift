@@ -44,10 +44,11 @@ struct AccountView: View {
                 }
                 
                 Section("Signed in as \(authViewModel.displayName) ") {
-                    SignOutButton(action: { Task { await authViewModel.signOut() } }, description: "Sign out")
+                    SignOutButton(action: { Task {
+                        await authViewModel.signOut() } }, description: "Sign out")
                 }
                 
-                VStack {
+                VStack(spacing: 0) {
                     Image("uk")
                         .resizable()
                         .scaledToFit()

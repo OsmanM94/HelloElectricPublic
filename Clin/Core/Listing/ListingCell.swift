@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ListingCell: View {
-    @State private var startTimer: Date = Date()
+    @State private var timerManager = TimerManager()
     var listing: Listing
     
     var body: some View {
@@ -33,7 +33,7 @@ struct ListingCell: View {
                 AddToFavouritesButton(listing: listing)
             }
             
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 2) {
                 Text("\(listing.make) \(listing.model)")
                     .font(.headline)
                     .lineLimit(2, reservesSpace: false)
@@ -42,7 +42,7 @@ struct ListingCell: View {
                     .font(.subheadline)
                 Text("\(listing.mileage, format: .number) miles")
                     .font(.subheadline)
-                Text(listing.price, format: .currency(code: Locale.current.currency?.identifier ?? "GBP"))
+                Text(listing.price, format: .currency(code: Locale.current.currency?.identifier ?? "GBP").precision(.fractionLength(0)))
                     .font(.subheadline)
                 Text("added \(timeElapsedString(since: listing.createdAt))")
                     .font(.subheadline)
@@ -51,13 +51,7 @@ struct ListingCell: View {
             .padding(.leading, 5)
         }
         .onAppear {
-            startListingTimer()
-        }
-    }
-    
-    fileprivate func startListingTimer() {
-        Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { _ in
-            startTimer = Date()
+            timerManager.startListingTimer(interval: 60)
         }
     }
 }

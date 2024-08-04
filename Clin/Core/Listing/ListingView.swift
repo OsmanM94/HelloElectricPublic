@@ -37,7 +37,11 @@ struct ListingView: View {
             .navigationTitle("Listings")
             .navigationBarTitleDisplayMode(.inline)
         }
-        .task { await viewModel.fetchListings() }
+        .task {
+            if viewModel.listings.isEmpty {
+                await viewModel.fetchListings()
+            }
+        }
     }
 }
 
@@ -72,7 +76,9 @@ fileprivate struct ListingSubview: View {
         .listStyle(.plain)
         .searchable(text: $text, placement:
                 .navigationBarDrawer(displayMode: .always))
-        .refreshable { await viewModel.fetchListings() }
+        .refreshable {
+            await viewModel.fetchListings()
+        }
         .toolbar {
             Button("", systemImage: "line.3.horizontal.decrease.circle", action: {
                 viewModel.showFilterSheet.toggle()

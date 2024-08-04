@@ -36,6 +36,7 @@ final class EditFormViewModel {
     var showDeleteAlert: Bool = false
     var imageToDelete: PickedImage?
     var uploadingProgress: Double = 0.0
+    var imagesURLs: [URL] = []
     
     let yearsOfmanufacture: [String] = Array(2010...2030).map { String($0) }
     let vehicleCondition: [String] = ["New", "Used"]
@@ -66,18 +67,7 @@ final class EditFormViewModel {
                 return
             }
             
-            var imagesURLs: [URL] = []
-            
-            for image in pickedImages {
-                let folderPath = "\(user.id)"
-                let bucketName = "car_images"
-                
-                let imageURLString = try await ImageManager.shared.uploadImage(image.data, from: bucketName, to: folderPath, compressionQuality: 0.5)
-                if let urlString = imageURLString, let url = URL(string: urlString) {
-                    imagesURLs.append(url)
-                }
-                uploadingProgress += 1.0 / Double(pickedImages.count)
-            }
+            try await uploadPickedImages(for: user.id)
             
             let listingToUpdate = Listing(id: listing.id, createdAt: Date(), imagesURL: imagesURLs, make: listing.make, model: listing.model, condition: listing.condition, mileage: listing.mileage, yearOfManufacture: listing.yearOfManufacture, price: listing.price, textDescription: listing.textDescription, range: listing.range, colour: listing.colour, publicChargingTime: listing.publicChargingTime, homeChargingTime: listing.homeChargingTime, batteryCapacity: listing.batteryCapacity, powerBhp: listing.powerBhp, regenBraking: listing.regenBraking, warranty: listing.warranty, serviceHistory: listing.serviceHistory, numberOfOwners: listing.numberOfOwners, userID: listing.userID)
            
@@ -87,6 +77,22 @@ final class EditFormViewModel {
             print("Listing updated succesfully.")
         } catch {
             viewState = .error(ListingFormViewStateMessages.generalError.message)
+        }
+    }
+    
+    @MainActor
+    private func uploadPickedImages(for userId: UUID) async throws {
+        imagesURLs.removeAll()
+        for image in pickedImages {
+            let folderPath = "\(userId)"
+            let bucketName = "car_images"
+            
+            let imageURLString = try await ImageManager.shared.uploadImage(image.data, from: bucketName, to: folderPath, compressionQuality: 0.5)
+            
+            if let urlString = imageURLString, let url = URL(string: urlString) {
+                self.imagesURLs.append(url)
+            }
+            self.uploadingProgress += 1.0 / Double(pickedImages.count)
         }
     }
        

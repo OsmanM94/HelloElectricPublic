@@ -50,7 +50,7 @@ struct UserListingCell: View {
                     .font(.subheadline)
                 Text("\(listing.mileage, format: .number) miles")
                     .font(.subheadline)
-                Text(listing.price, format: .currency(code: Locale.current.currency?.identifier ?? "GBP"))
+                Text(listing.price, format: .currency(code: Locale.current.currency?.identifier ?? "GBP").precision(.fractionLength(0)))
                     .font(.subheadline)
             }
             .padding(.leading, 5)

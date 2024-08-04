@@ -85,6 +85,11 @@ fileprivate struct PreviewTest: View {
     
     var body: some View {
         VStack(spacing: 5) {
+            Image(decorative: "ev4")
+                .resizable()
+                .scaledToFit()
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .frame(width: 350, height: 350)
             ForEach(progressText.indices, id: \.self) { index in
                 HStack(spacing: 0) {
                     Text(progressText[index])

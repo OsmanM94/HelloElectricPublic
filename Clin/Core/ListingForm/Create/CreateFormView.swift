@@ -166,7 +166,7 @@ fileprivate struct CreateFormSubview: View {
             }
 
             Section("Price") {
-                TextField("Asking price", value: $viewModel.price, format: .currency(code: "GBP"))
+                TextField("Asking price", value: $viewModel.price, format: .currency(code: "GBP").precision(.fractionLength(0)))
                     .keyboardType(.decimalPad)
             }
 
@@ -251,21 +251,21 @@ fileprivate struct CreateFormSubview: View {
             .listRowBackground(Color.green)
         }
         .toolbar {
-            ToolbarItem {
+            ToolbarItem(placement: .topBarLeading) {
                 Button("Cancel", action: viewModel.resetState)
             }
             ToolbarItemGroup(placement: .keyboard) {
                 Spacer(minLength: 0)
                 Button { viewModel.hideKeyboard() } label: { Text("Done") }
             }
-            ToolbarItem(placement: .topBarLeading) {
+            ToolbarItem(placement: .topBarTrailing) {
                 PhotosPickerView(
                     selections: $viewModel.imageSelections,
-                    maxSelectionCount: 10,
+                    maxSelectionCount: 1,
                     selectionBehavior: .ordered,
                     icon: "camera",
                     size: 20,
-                    colour: .accentColor,
+                    colour: .green,
                     onSelect: { newItems in
                         viewModel.pickedImages.removeAll()
                         Task { for item in newItems {
@@ -291,6 +291,14 @@ fileprivate struct SelectedPhotosView: View {
         ScrollView(.horizontal) {
             HStack(spacing: 15) {
                 ForEach(viewModel.pickedImages, id: \.self) { pickedImage in
+                    if let uiImage = UIImage(data: pickedImage.data) {
+                        SelectedImageCell(action: {
+                            viewModel.imageToDelete = pickedImage
+                            viewModel.showDeleteAlert.toggle()
+                        }, image: uiImage)
+                    }
+                }
+                ForEach(viewModel.pickedImages2, id: \.self) { pickedImage in
                     if let uiImage = UIImage(data: pickedImage.data) {
                         SelectedImageCell(action: {
                             viewModel.imageToDelete = pickedImage

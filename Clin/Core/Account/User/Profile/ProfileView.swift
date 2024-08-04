@@ -52,7 +52,7 @@ struct ProfileView: View {
 
 private struct ProfileSubview: View {
     @Bindable var viewModel: ProfileViewModel
-    
+   
     var body: some View {
         Form {
             Section {
@@ -119,6 +119,20 @@ private struct ProfileSubview: View {
                 }
                 .disabled(viewModel.isInteractionBlocked)
             }
+        }
+        .alert(isPresented: $viewModel.showAlert) {
+            Alert(
+                title: Text("Enable Sensitive Content Analysis"),
+                message: Text("\(viewModel.alertMessage)\n\nTo enable: Go to Settings > Privacy & Security > Sensitive Content Warning."),
+                primaryButton: .default(Text("Go to Settings")) {
+                    if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
+                        if UIApplication.shared.canOpenURL(settingsURL) {
+                            UIApplication.shared.open(settingsURL)
+                        }
+                    }
+                },
+                secondaryButton: .cancel()
+            )
         }
     }
 }

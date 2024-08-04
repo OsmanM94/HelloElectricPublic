@@ -112,7 +112,7 @@ fileprivate struct EditFormSubview: View {
             }
             
             Section("Price") {
-                TextField("Asking price", value: $listing.price, format: .currency(code: "GBP"))
+                TextField("Asking price", value: $listing.price, format: .currency(code: "GBP").precision(.fractionLength(0)))
                     .keyboardType(.decimalPad)
             }
             

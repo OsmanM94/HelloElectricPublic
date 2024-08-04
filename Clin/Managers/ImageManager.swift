@@ -13,14 +13,12 @@ import Storage
 
 final class ImageManager {
     static let shared = ImageManager()
-    private let supabase = Supabase.shared.client
-    private let contentAnalyzer = SensitiveContentAnalysis.shared
     
     private init() {}
     
     func analyzeImage(_ data: Data) async -> AnalysisState {
-        await contentAnalyzer.analyze(image: data)
-        return contentAnalyzer.analysisState
+        await SensitiveContentAnalysis.shared.analyze(image: data)
+        return SensitiveContentAnalysis.shared.analysisState
     }
     
     func uploadImage(_ data: Data,from bucket: String ,to folder: String, compressionQuality: CGFloat = 0.1) async throws -> String? {
@@ -30,7 +28,7 @@ final class ImageManager {
         }
         
         let filePath = "\(folder)/\(UUID().uuidString).jpeg"
-        try await supabase.storage
+        try await Supabase.shared.client.storage
             .from(bucket)
             .upload(
                 path: filePath,
@@ -40,14 +38,14 @@ final class ImageManager {
         
         print("Image uploaded to Supabase Storage at path: \(filePath)")
         
-        let url = try supabase.storage.from(bucket).getPublicURL(path: filePath, download: true)
+        let url = try Supabase.shared.client.storage.from(bucket).getPublicURL(path: filePath, download: true)
         return url.absoluteString
     }
     
     func deleteImage(path: String, from folder: String) async throws {
         do {
             let fileName = URL(string: path)?.lastPathComponent ?? ""
-            _ = try await supabase.storage.from(folder).remove(paths: [fileName])
+            _ = try await Supabase.shared.client.storage.from(folder).remove(paths: [fileName])
             print("Image deleted from Supabase Storage at path: \(path)")
         } catch {
             print("Error deleting image from database: \(error)")
@@ -70,7 +68,6 @@ final class ImageManager {
                     break
                 }
             }
-            
             print("Image loaded and analyzed from PhotosPicker")
             return PickedImage(data: data)
         } catch {
@@ -83,6 +80,5 @@ final class ImageManager {
         guard let image = UIImage(data: data) else { return nil }
         return image.jpegData(compressionQuality: compressionQuality)
     }
-    
 }
 

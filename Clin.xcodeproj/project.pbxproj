@@ -79,8 +79,8 @@
 				ListingForm/Create/CreateFormViewModel.swift,
 				ListingForm/Edit/EditFormView.swift,
 				ListingForm/Edit/EditFormViewModel.swift,
-				ListingForm/SharedUI/ListingFormViewStatesMessages.swift,
-				ListingForm/SharedUI/SelectedImageCell.swift,
+				ListingForm/SharedComponents/ListingFormViewStatesMessages.swift,
+				ListingForm/SharedComponents/SelectedImageCell.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
 		};
@@ -101,6 +101,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				ImageManager.swift,
+				TimerManager.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
 		};

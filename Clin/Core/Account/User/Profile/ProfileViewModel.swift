@@ -25,6 +25,8 @@ final class ProfileViewModel {
     private(set) var displayName: String = ""
     private(set) var profile: Profile? = nil
     private(set) var cooldownTime: Int = 0
+    var showAlert: Bool = false
+    var alertMessage: String = ""
     
     private(set) var viewState: ViewState = .idle
     private(set) var cooldownTimer: Timer?
@@ -174,6 +176,7 @@ final class ProfileViewModel {
         }
     }
     
+    #warning("WE need to show the user an alert if the Sensitive API is disabled.")
     @MainActor
     func loadItem(item: PhotosPickerItem) async {
         if let pickedImage = await ImageManager.shared.loadItem(item: item) {
@@ -182,6 +185,7 @@ final class ProfileViewModel {
             viewState = .error(ProfileViewStatesMessages.sensitiveContent.message)
         }
     }
+    
     
     private func startCooldownTimer() {
         cooldownTime = 60 // 1 minute cooldown period, adjust as needed
@@ -206,3 +210,5 @@ final class ProfileViewModel {
         return true
     }
 }
+
+
