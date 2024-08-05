@@ -15,7 +15,7 @@ struct ListingCell: View {
         HStack(spacing: 0) {
             VStack(spacing: 0) {
                 if let firstImageURL = listing.imagesURL.first  {
-                    ImageLoader(url: firstImageURL, contentMode: .fill)
+                    ImageLoader(url: firstImageURL, contentMode: .fill, targetSize: CGSize(width: 120, height: 120))
                         .frame(width: 120, height: 120)
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                 } else {

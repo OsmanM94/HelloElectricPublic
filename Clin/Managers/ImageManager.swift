@@ -21,9 +21,26 @@ final class ImageManager {
         return SensitiveContentAnalysis.shared.analysisState
     }
     
-    func uploadImage(_ data: Data,from bucket: String ,to folder: String, compressionQuality: CGFloat = 0.1) async throws -> String? {
-        guard let compressedData = compressImage(data: data, compressionQuality: compressionQuality) else {
-            print("Failed to compress image.")
+    func uploadImage(_ data: Data,from bucket: String ,to folder: String, targetWidth: Int, targetHeight: Int, compressionQuality: CGFloat = 0.1) async throws -> String? {
+        
+        guard let uiImage = UIImage(data: data) else {
+            print("DEBUG: Failed to create UIImage from data.")
+            return nil
+        }
+                
+        guard let resizedImage = uiImage.resize(targetWidth, targetHeight) else {
+            print("DEBUG: Failed to resize image.")
+            return nil
+        }
+        
+        guard let resizedData = resizedImage.jpegData(compressionQuality: 1.0) else {
+            print("DEBUG: Failed to convert resized image to data.")
+            return nil
+        }
+        
+        // Compress the resized image
+        guard let compressedData = compressImage(data: resizedData, compressionQuality: compressionQuality) else {
+            print("DEBUG: Failed to compress image.")
             return nil
         }
         
@@ -36,7 +53,7 @@ final class ImageManager {
                 options: FileOptions(contentType: "image/jpeg")
             )
         
-        print("Image uploaded to Supabase Storage at path: \(filePath)")
+        print("DEBUG: Image uploaded to Supabase Storage at path: \(filePath)")
         
         let url = try Supabase.shared.client.storage.from(bucket).getPublicURL(path: filePath, download: true)
         return url.absoluteString
@@ -46,9 +63,9 @@ final class ImageManager {
         do {
             let fileName = URL(string: path)?.lastPathComponent ?? ""
             _ = try await Supabase.shared.client.storage.from(folder).remove(paths: [fileName])
-            print("Image deleted from Supabase Storage at path: \(path)")
+            print("DEBUG: Image deleted from Supabase Storage at path: \(path)")
         } catch {
-            print("Error deleting image from database: \(error)")
+            print("DEBUG: Error deleting image from database: \(error)")
             throw error
         }
     }
@@ -62,16 +79,15 @@ final class ImageManager {
                 let analysisState = await analyzeImage(data)
                 switch analysisState {
                 case .isSensitive, .error:
-                    print("Image contains sensitive content or there was an error analyzing the image.")
+                    print("DEBUG: Image contains sensitive content or there was an error analyzing the image.")
                     return nil
                 default:
                     break
                 }
             }
-            print("Image loaded and analyzed from PhotosPicker")
             return PickedImage(data: data)
         } catch {
-            print("Error loading image: \(error.localizedDescription)")
+            print("DEBUG: Error loading image: \(error.localizedDescription)")
             return nil
         }
     }
@@ -81,4 +97,5 @@ final class ImageManager {
         return image.jpegData(compressionQuality: compressionQuality)
     }
 }
+
 

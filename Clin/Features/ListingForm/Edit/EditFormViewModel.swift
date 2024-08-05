@@ -20,7 +20,7 @@ final class EditFormViewModel {
         case error(String)
     }
     
-    enum ImageLoadingState {
+    enum ImageViewState {
        case idle
        case loading
        case loaded
@@ -28,11 +28,12 @@ final class EditFormViewModel {
    }
     
     var viewState: ViewState = .idle
-    var imageLoadingState: ImageLoadingState = .idle
+    var imageViewState: ImageViewState = .idle
     
     var pickedImages: [PickedImage] = []
     var imageSelections: [PhotosPickerItem] = []
-
+    var savedImageIdentifiers: [String] = []
+    
     var showDeleteAlert: Bool = false
     var imageToDelete: PickedImage?
     var uploadingProgress: Double = 0.0
@@ -74,7 +75,7 @@ final class EditFormViewModel {
             try await listingService.updateListing(listingToUpdate)
             
             viewState = .success(ListingFormViewStateMessages.updateSuccess.message)
-            print("Listing updated succesfully.")
+            print("DEBUG: Listing updated succesfully.")
         } catch {
             viewState = .error(ListingFormViewStateMessages.generalError.message)
         }
@@ -87,7 +88,7 @@ final class EditFormViewModel {
             let folderPath = "\(userId)"
             let bucketName = "car_images"
             
-            let imageURLString = try await ImageManager.shared.uploadImage(image.data, from: bucketName, to: folderPath, compressionQuality: 0.5)
+            let imageURLString = try await ImageManager.shared.uploadImage(image.data, from: bucketName, to: folderPath, targetWidth: 120, targetHeight: 120, compressionQuality: 0.5)
             
             if let urlString = imageURLString, let url = URL(string: urlString) {
                 self.imagesURLs.append(url)
@@ -102,18 +103,17 @@ final class EditFormViewModel {
         showDeleteAlert = false
         imageToDelete = nil
         uploadingProgress = 0.0
-        imageLoadingState = .idle
+        imageViewState = .idle
         viewState = .idle
     }
     
     @MainActor
     func loadItem(item: PhotosPickerItem) async {
-        imageLoadingState = .loading
+        imageViewState = .loading
         
         if let pickedImage = await ImageManager.shared.loadItem(item: item) {
             pickedImages.append(pickedImage)
-            
-            imageLoadingState = .loaded
+            imageViewState = .loaded
         } else {
             viewState = .error(ListingFormViewStateMessages.sensitiveContent.message)
         }
@@ -122,13 +122,13 @@ final class EditFormViewModel {
     @MainActor
     func checkImageState() {
         if pickedImages.isEmpty {
-            imageLoadingState = .idle
+            imageViewState = .idle
         }
     }
         
     @MainActor
     func deleteImage(_ image: PickedImage) async {
-        imageLoadingState = .deleting
+        imageViewState = .deleting
         if let index = pickedImages.firstIndex(of: image) {
             pickedImages.remove(at: index)
             imageSelections.remove(at: index)
@@ -144,35 +144,11 @@ final class EditFormViewModel {
         do {
             try await ProhibitedWordsService.shared.loadProhibitedWords()
         } catch {
-            print("Failed to load prohibited words: \(error)")
+            print("DEBUG: Failed to load prohibited words: \(error)")
         }
     }
     
     var totalImageCount: Int {
         imageSelections.count
     }
-    
 }
-
-
-
-
-/// IN REVIEW
-///
-/// //    @MainActor
-//    func loadImagesFromListing(_ listing: Listing) async {
-//        imageLoadingState = .loading
-//        pickedImages = []
-//
-//        for imageURL in listing.imagesURL {
-//            do {
-//                let (data, _) = try await URLSession.shared.data(from: imageURL)
-//                guard let pickedImage = PickedImage(data: data) else { return }
-//                pickedImages.append(pickedImage)
-//            } catch {
-//                viewState = .error("Failed to load images.")
-//                return
-//            }
-//        }
-//        imageLoadingState = .loaded
-//    }

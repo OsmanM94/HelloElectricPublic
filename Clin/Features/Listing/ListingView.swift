@@ -59,7 +59,6 @@ struct ListingView: View {
     CustomProgressView()
 }
 
-
 fileprivate struct ListingSubview: View {
     @Bindable var viewModel: ListingViewModel
     @State private var text: String = ""

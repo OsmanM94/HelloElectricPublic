@@ -61,7 +61,7 @@ fileprivate struct EditFormSubview: View {
     var body: some View {
         Form {
             Section(header: Text("\(viewModel.totalImageCount)/10")) {
-                switch viewModel.imageLoadingState {
+                switch viewModel.imageViewState {
                 case .idle:
                     EmptyContentView(message: "No selected photos", systemImage: "tray.fill")
                 case .loading:
@@ -219,8 +219,9 @@ fileprivate struct EditFormSubview: View {
                     size: 20,
                     colour: .accentColor,
                     onSelect: { newItems in
-                        viewModel.pickedImages.removeAll()
-                        Task { for item in newItems {
+                        Task {
+                            viewModel.pickedImages.removeAll()
+                            for item in newItems {
                             await viewModel.loadItem(item: item)
                           }
                         }

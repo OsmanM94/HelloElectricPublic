@@ -103,7 +103,7 @@ fileprivate struct CreateFormSubview: View {
     var body: some View {
         Form {
             Section(header: Text("\(viewModel.imageSelections.count)/10")) {
-                    switch viewModel.imageLoadingState {
+                switch viewModel.imageViewState {
                     case .idle:
                         EmptyContentView(message: "No selected photos", systemImage: "tray.fill")
                     case .loading:
@@ -258,17 +258,18 @@ fileprivate struct CreateFormSubview: View {
                 Spacer(minLength: 0)
                 Button { viewModel.hideKeyboard() } label: { Text("Done") }
             }
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItemGroup(placement: .topBarTrailing) {
                 PhotosPickerView(
                     selections: $viewModel.imageSelections,
-                    maxSelectionCount: 1,
+                    maxSelectionCount: 10,
                     selectionBehavior: .ordered,
                     icon: "camera",
                     size: 20,
                     colour: .green,
                     onSelect: { newItems in
-                        viewModel.pickedImages.removeAll()
-                        Task { for item in newItems {
+                        Task {
+                            viewModel.pickedImages.removeAll()
+                            for item in newItems {
                             await viewModel.loadItem(item: item)
                           }
                         }
@@ -291,14 +292,6 @@ fileprivate struct SelectedPhotosView: View {
         ScrollView(.horizontal) {
             HStack(spacing: 15) {
                 ForEach(viewModel.pickedImages, id: \.self) { pickedImage in
-                    if let uiImage = UIImage(data: pickedImage.data) {
-                        SelectedImageCell(action: {
-                            viewModel.imageToDelete = pickedImage
-                            viewModel.showDeleteAlert.toggle()
-                        }, image: uiImage)
-                    }
-                }
-                ForEach(viewModel.pickedImages2, id: \.self) { pickedImage in
                     if let uiImage = UIImage(data: pickedImage.data) {
                         SelectedImageCell(action: {
                             viewModel.imageToDelete = pickedImage

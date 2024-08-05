@@ -9,7 +9,7 @@ import Foundation
 
 enum ListingFormViewStateMessages: String, Error {
     case inappropriateField = "One of the fields contains prohibited words."
-    case sensitiveContent = "One or more images contains sensitive content."
+    case sensitiveContent = "Image contains sensitive content or there was an error analyzing the image."
     case generalError = "An error occurred. Please try again."
     case noAuthUserFound = "No authenticated user found."
     case updateSuccess = "Listing updated successfully."

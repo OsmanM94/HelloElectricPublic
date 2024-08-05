@@ -46,7 +46,7 @@ struct CircularProfileView: View {
             Group {
                 ZStack {
                     if let imageUrl = profile?.avatarURL {
-                        ImageLoader(url: imageUrl, contentMode: .fill)
+                        ImageLoader(url: imageUrl, contentMode: .fill, targetSize: CGSize(width: 80, height: 80))
                     } else {
                         Image(systemName: "person.circle")
                             .resizable()

@@ -29,7 +29,7 @@ struct ListingService: ListingServiceProtocol {
                 .value
             return listings
         } catch {
-            print("Error fetching listings: \(error)")
+            print("DEBUG: Error fetching listings: \(error)")
             throw error
         }
     }
@@ -56,16 +56,16 @@ struct ListingService: ListingServiceProtocol {
                 .from("car_listing")
                 .insert(listing)
                 .execute()
-            print("Listing created successfully.")
+            print("DEBUG: Listing created successfully.")
         } catch {
-            print("Error creating listing: \(error)")
+            print("DEBUG: Error creating listing: \(error)")
             throw error
         }
     }
     
     func updateListing(_ listing: Listing) async throws {
         guard let id = listing.id else {
-            print("Listing ID is missing.")
+            print("DEBUG: Listing ID is missing.")
             return
         }
         do {
@@ -75,7 +75,7 @@ struct ListingService: ListingServiceProtocol {
                 .eq("id", value: id)
                 .execute()
         } catch {
-            print("Error updating listing: \(error)")
+            print("DEBUG: Error updating listing: \(error)")
             throw error
         }
     }

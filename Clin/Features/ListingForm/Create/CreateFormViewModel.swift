@@ -20,7 +20,7 @@ final class CreateFormViewModel {
         case error(String)
     }
     
-    enum ImageLoadingState {
+    enum ImageViewState {
         case idle
         case loading
         case deleting
@@ -28,11 +28,11 @@ final class CreateFormViewModel {
     }
     
     var viewState: ViewState = .idle
-    var imageLoadingState: ImageLoadingState = .idle
+    var imageViewState: ImageViewState = .idle
     
     var pickedImages: [PickedImage] = []
-    var pickedImages2: [PickedImage] = []
     var imageSelections: [PhotosPickerItem] = []
+ 
     var showDeleteAlert: Bool = false
     var imageToDelete: PickedImage?
     var uploadingProgress: Double = 0.0
@@ -104,7 +104,7 @@ final class CreateFormViewModel {
             print(error)
         }
     }
-    
+        
     @MainActor
     private func uploadPickedImages(for userId: UUID) async throws {
         imagesURLs.removeAll()
@@ -112,8 +112,8 @@ final class CreateFormViewModel {
             let folderPath = "\(userId)"
             let bucketName = "car_images"
             
-            let imageURLString = try await ImageManager.shared.uploadImage(image.data, from: bucketName, to: folderPath, compressionQuality: 0.5)
-            
+            let imageURLString = try await ImageManager.shared.uploadImage(image.data, from: bucketName, to: folderPath, targetWidth: 120, targetHeight: 120, compressionQuality: 0.5)
+        
             if let urlString = imageURLString, let url = URL(string: urlString) {
                 self.imagesURLs.append(url)
             }
@@ -164,17 +164,17 @@ final class CreateFormViewModel {
         showDeleteAlert = false
         imageToDelete = nil
         uploadingProgress = 0.0
-        imageLoadingState = .idle
+        imageViewState = .idle
         viewState = .idle
     }
     
     @MainActor
     func loadItem(item: PhotosPickerItem) async {
-        imageLoadingState = .loading
+        imageViewState = .loading
         
         if let pickedImage = await ImageManager.shared.loadItem(item: item) {
             pickedImages.append(pickedImage)
-            imageLoadingState = .loaded
+            imageViewState = .loaded
         } else {
             viewState = .error(ListingFormViewStateMessages.sensitiveContent.message)
         }
@@ -183,13 +183,13 @@ final class CreateFormViewModel {
     @MainActor
     func checkImageState() {
         if pickedImages.isEmpty {
-            imageLoadingState = .idle
+            imageViewState = .idle
         }
     }
     
     @MainActor
     func deleteImage(_ image: PickedImage) async {
-        imageLoadingState = .deleting
+        imageViewState = .deleting
         if let index = pickedImages.firstIndex(of: image) {
             pickedImages.remove(at: index)
             imageSelections.remove(at: index)
@@ -208,5 +208,6 @@ final class CreateFormViewModel {
             print("Failed to load prohibited words: \(error)")
         }
     }
+    
 }
 

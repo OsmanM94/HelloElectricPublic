@@ -12,7 +12,7 @@ struct PickedImage: Transferable, Equatable, Hashable, Identifiable {
     let id = UUID()
     let image: Image
     let data: Data
-    
+   
     static var transferRepresentation: some TransferRepresentation {
         DataRepresentation(importedContentType: .image) { data in
             guard let image = PickedImage(data: data) else {
