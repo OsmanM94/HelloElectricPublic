@@ -47,15 +47,6 @@ struct AccountView: View {
                     SignOutButton(action: { Task {
                         await authViewModel.signOut() } }, description: "Sign out")
                 }
-                
-                VStack(spacing: 0) {
-                    Image("uk")
-                        .resizable()
-                        .scaledToFit()
-                }
-                .frame(maxWidth: .infinity, maxHeight: 30)
-                .listRowBackground(Color(.systemGray6))
-                
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)

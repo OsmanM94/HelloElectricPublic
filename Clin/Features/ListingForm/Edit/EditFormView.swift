@@ -29,8 +29,7 @@ struct EditFormView: View {
                         CustomProgressView()
                         
                     case .uploading:
-//                        CircularProgressBar(progress: viewModel.uploadingProgress)
-                        EmptyView()
+                        CircularProgressBar(progress: viewModel.uploadingProgress)
                         
                     case .success(let message):
                         SuccessView(message: message, doneAction: { viewModel.resetState(); dismiss() })

@@ -8,12 +8,13 @@
 import SwiftUI
 
 struct MarketPlaceView: View {
+    @State private var viewModel = MarketPlaceViewModel()
     
-    @State private var selectedTab: Int = 0
-       
     var body: some View {
-        TabView(selection: $selectedTab) {
-            ListingView(viewModel: ListingViewModel(listingService: ListingService()))
+        TabView(selection: $viewModel.selectedTab.onUpdate { newValue in
+            viewModel.handleTabSelection(newValue)
+        }) {
+            ListingView(viewModel: ListingViewModel(listingService: ListingService()), isDoubleTap: $viewModel.isDoubleTap)
                 .tabItem {
                     Label("Listings", systemImage: "bolt.car")
                 }
