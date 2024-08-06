@@ -11,6 +11,7 @@ struct Listing: Identifiable, Codable, Hashable {
     var id: Int?
     var createdAt: Date
     var imagesURL: [URL]
+    var thumbnailsURL: [URL]
     var make: String
     var model: String
     var condition: String
@@ -33,6 +34,7 @@ struct Listing: Identifiable, Codable, Hashable {
     enum CodingKeys: String, CodingKey {
         case id
         case imagesURL = "images"
+        case thumbnailsURL = "thumbnails"
         case make
         case model
         case condition

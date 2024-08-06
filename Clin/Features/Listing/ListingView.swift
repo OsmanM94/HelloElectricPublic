@@ -66,12 +66,17 @@ fileprivate struct ListingSubview: View {
     var body: some View {
         List {
             ForEach(viewModel.listings, id: \.id) { item in
-                ListingCell(listing: item)
+                NavigationLink(value: item) {
+                    ListingCell(listing: item)
+                }
             }
             .alignmentGuide(.listRowSeparatorLeading) { _ in
                 0
             }
         }
+        .navigationDestination(for: Listing.self, destination: { item in
+            ListingDetailView(listing: item)
+        })
         .listStyle(.plain)
         .searchable(text: $text, placement:
                 .navigationBarDrawer(displayMode: .always))

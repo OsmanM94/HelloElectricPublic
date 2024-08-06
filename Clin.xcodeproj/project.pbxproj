@@ -75,6 +75,7 @@
 				Listing/ListingCell.swift,
 				Listing/ListingView.swift,
 				Listing/ListingViewModel.swift,
+				ListingDetail/ListingDetailView.swift,
 				ListingForm/Create/CreateFormView.swift,
 				ListingForm/Create/CreateFormViewModel.swift,
 				ListingForm/Edit/EditFormView.swift,
@@ -94,6 +95,7 @@
 				EmptyContentView.swift,
 				ErrorView.swift,
 				SuccessView.swift,
+				ZoomImages.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
 		};

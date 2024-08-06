@@ -92,7 +92,7 @@ public extension UIImage {
 
         // Set scale of renderer so that 1pt == 1px
         let format = UIGraphicsImageRendererFormat()
-        format.scale = UIScreen.main.scale
+        format.scale = 3.0
         let renderer = UIGraphicsImageRenderer(size: targetSize, format: format)
 
         // Resize the image
@@ -101,10 +101,22 @@ public extension UIImage {
         }
         return resized
     }
+    
+    func heicData(compressionQuality: CGFloat = 1.0) -> Data? {
+        let options: NSDictionary = [
+            kCGImageDestinationLossyCompressionQuality: compressionQuality
+        ]
+        let data = NSMutableData()
+        guard let imageDestination = CGImageDestinationCreateWithData(data as CFMutableData, AVFileType.heic as CFString, 1, nil) else {
+            return nil
+        }
+        CGImageDestinationAddImage(imageDestination, self.cgImage!, options)
+        CGImageDestinationFinalize(imageDestination)
+        return data as Data
+    }
 }
 
-/// Image transformer for resizing images using SDWebImage
-class ResizingImageTransformer: NSObject, SDImageTransformer {
+final class ResizingImageTransformer: NSObject, SDImageTransformer {
     let targetSize: CGSize
     
     init(targetSize: CGSize) {

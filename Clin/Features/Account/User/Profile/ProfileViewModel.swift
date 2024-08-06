@@ -81,7 +81,7 @@ final class ProfileViewModel {
             let folderPath = "\(currentUser.id)"
             let bucketName = "avatars"
             
-            let imageURLString = try await ImageManager.shared.uploadImage(avatarImage!.data, from: bucketName, to: folderPath,targetWidth: 80, targetHeight: 80, compressionQuality: 0.1)
+            let imageURLString = try await ImageManager.shared.uploadImage(avatarImage!.data, from: bucketName, to: folderPath,targetWidth: 80, targetHeight: 80, compressionQuality: 0.5)
             
             guard let imageURL = URL(string: imageURLString ?? "") else {
                 viewState = .error(ProfileViewStatesMessages.generalError.message)

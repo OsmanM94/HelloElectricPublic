@@ -13,7 +13,7 @@ struct UserListingCell: View {
     var body: some View {
         HStack(spacing: 0) {
             VStack(spacing: 0) {
-                if let firstImageURL = listing.imagesURL.first {
+                if let firstImageURL = listing.thumbnailsURL.first {
                     ImageLoader(url: firstImageURL, contentMode: .fill, targetSize: CGSize(width: 120, height: 120))
                         .frame(width: 120, height: 120)
                         .clipShape(RoundedRectangle(cornerRadius: 12))

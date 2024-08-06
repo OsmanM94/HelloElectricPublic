@@ -67,6 +67,7 @@ final class CreateFormViewModel {
     let vehicleNumberOfOwners: [String] = ["1", "2", "3", "4+"]
     
     var imagesURLs: [URL] = []
+    var thumbnailsURLs: [URL] = []
     
     private let dvlaService = DvlaService()
     private let listingService: ListingServiceProtocol
@@ -79,6 +80,7 @@ final class CreateFormViewModel {
     func createListing() async {
         viewState = .uploading
         self.uploadingProgress = 0.0
+        
         do {
             guard let user = try? await Supabase.shared.client.auth.session.user else {
                 viewState = .error(ListingFormViewStateMessages.noAuthUserFound.message)
@@ -93,7 +95,7 @@ final class CreateFormViewModel {
             
             try await uploadPickedImages(for: user.id)
         
-            let listingToCreate = Listing(createdAt: Date(), imagesURL: imagesURLs, make: make, model: model, condition: condition, mileage: mileage, yearOfManufacture: yearOfManufacture, price: price, textDescription: description, range: range, colour: colour, publicChargingTime: publicChargingTime, homeChargingTime: homeChargingTime, batteryCapacity: batteryCapacity, powerBhp: powerBhp, regenBraking: regenBraking, warranty: warranty, serviceHistory: serviceHistory, numberOfOwners: numberOfOwners, userID: user.id)
+            let listingToCreate = Listing(createdAt: Date(), imagesURL: imagesURLs, thumbnailsURL: thumbnailsURLs, make: make, model: model, condition: condition, mileage: mileage, yearOfManufacture: yearOfManufacture, price: price, textDescription: description, range: range, colour: colour, publicChargingTime: publicChargingTime, homeChargingTime: homeChargingTime, batteryCapacity: batteryCapacity, powerBhp: powerBhp, regenBraking: regenBraking, warranty: warranty, serviceHistory: serviceHistory, numberOfOwners: numberOfOwners, userID: user.id)
             
             try await listingService.createListing(listingToCreate)
             
@@ -108,16 +110,30 @@ final class CreateFormViewModel {
     @MainActor
     private func uploadPickedImages(for userId: UUID) async throws {
         imagesURLs.removeAll()
-        for image in pickedImages {
-            let folderPath = "\(userId)"
-            let bucketName = "car_images"
-            
-            let imageURLString = try await ImageManager.shared.uploadImage(image.data, from: bucketName, to: folderPath, targetWidth: 120, targetHeight: 120, compressionQuality: 0.5)
+        thumbnailsURLs.removeAll()
         
+        guard !pickedImages.isEmpty else {
+            return
+        }
+        
+        let folderPath = "\(userId)"
+        let bucketName = "car_images"
+        
+        // Upload all images to imagesURLs
+        for image in pickedImages {
+            let imageURLString = try await ImageManager.shared.uploadImage(image.data, from: bucketName, to: folderPath, targetWidth: 350, targetHeight: 350, compressionQuality: 1.0)
             if let urlString = imageURLString, let url = URL(string: urlString) {
                 self.imagesURLs.append(url)
             }
             self.uploadingProgress += 1.0 / Double(pickedImages.count)
+        }
+        
+        // Only upload the first image to thumbnailsURLs
+        if let firstImage = pickedImages.first {
+            let thumbnailURLString = try await ImageManager.shared.uploadImage(firstImage.data, from: bucketName, to: folderPath, targetWidth: 120, targetHeight: 120, compressionQuality: 0.3)
+            if let thumbUrlString = thumbnailURLString, let url = URL(string: thumbUrlString) {
+                self.thumbnailsURLs.append(url)
+            }
         }
     }
     
@@ -210,4 +226,3 @@ final class CreateFormViewModel {
     }
     
 }
-

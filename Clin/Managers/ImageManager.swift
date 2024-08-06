@@ -14,6 +14,10 @@ import Storage
 final class ImageManager {
     static let shared = ImageManager()
     
+    var isHeicSupported: Bool {
+        (CGImageDestinationCopyTypeIdentifiers() as! [String]).contains("public.heic")
+    }
+    
     private init() {}
     
     func analyzeImage(_ data: Data) async -> AnalysisState {
@@ -21,36 +25,47 @@ final class ImageManager {
         return SensitiveContentAnalysis.shared.analysisState
     }
     
-    func uploadImage(_ data: Data,from bucket: String ,to folder: String, targetWidth: Int, targetHeight: Int, compressionQuality: CGFloat = 0.1) async throws -> String? {
-        
+    func uploadImage(_ data: Data, from bucket: String, to folder: String, targetWidth: Int, targetHeight: Int, compressionQuality: CGFloat = 0.1) async throws -> String? {
         guard let uiImage = UIImage(data: data) else {
             print("DEBUG: Failed to create UIImage from data.")
             return nil
         }
-                
-        guard let resizedImage = uiImage.resize(targetWidth, targetHeight) else {
+        
+        let resizedImage: UIImage
+        if let resized = uiImage.resize(targetWidth, targetHeight) {
+            resizedImage = resized
+        } else {
             print("DEBUG: Failed to resize image.")
             return nil
         }
         
-        guard let resizedData = resizedImage.jpegData(compressionQuality: 1.0) else {
-            print("DEBUG: Failed to convert resized image to data.")
-            return nil
+        let compressedData: Data?
+        let filePath: String
+        let contentType: String
+        
+        if isHeicSupported {
+            compressedData = resizedImage.heicData(compressionQuality: compressionQuality)
+            filePath = "\(folder)/\(UUID().uuidString).heic"
+            contentType = "image/heic"
+            print("DEBUG: HEIC is supported.")
+        } else {
+            compressedData = resizedImage.jpegData(compressionQuality: compressionQuality)
+            filePath = "\(folder)/\(UUID().uuidString).jpeg"
+            contentType = "image/jpeg"
+            print("DEBUG: JPEG is supported.")
         }
         
-        // Compress the resized image
-        guard let compressedData = compressImage(data: resizedData, compressionQuality: compressionQuality) else {
+        guard let finalData = compressedData else {
             print("DEBUG: Failed to compress image.")
             return nil
         }
         
-        let filePath = "\(folder)/\(UUID().uuidString).jpeg"
         try await Supabase.shared.client.storage
             .from(bucket)
             .upload(
                 path: filePath,
-                file: compressedData,
-                options: FileOptions(contentType: "image/jpeg")
+                file: finalData,
+                options: FileOptions(contentType: contentType)
             )
         
         print("DEBUG: Image uploaded to Supabase Storage at path: \(filePath)")
@@ -91,11 +106,5 @@ final class ImageManager {
             return nil
         }
     }
-    
-    private func compressImage(data: Data, compressionQuality: CGFloat) -> Data? {
-        guard let image = UIImage(data: data) else { return nil }
-        return image.jpegData(compressionQuality: compressionQuality)
-    }
 }
-
 

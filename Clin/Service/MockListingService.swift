@@ -14,7 +14,7 @@ struct MockListingService: ListingServiceProtocol {
         Listing(
             id: 1,
             createdAt: Date(),
-            imagesURL: [URL(string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/mock_data/tesla2.jpg")!],
+            imagesURL: [URL(string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/mock_data/tesla2.jpg")!], thumbnailsURL: [URL(string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/mock_data/tesla2.jpg")!],
             make: "Tesla",
             model: "Model S supercharger 2024",
             condition: "Used",
@@ -37,7 +37,7 @@ struct MockListingService: ListingServiceProtocol {
         Listing(
             id: 2,
             createdAt: Date(),
-            imagesURL: [URL(string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/mock_data/tesla1.jpg")!],
+            imagesURL: [URL(string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/mock_data/tesla1.jpg")!], thumbnailsURL: [URL(string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/mock_data/tesla1.jpg")!],
             make: "Mercedes",
             model: "Mercedes-Benz EQA Class",
             condition: "Used",
@@ -60,7 +60,7 @@ struct MockListingService: ListingServiceProtocol {
         Listing(
             id: 3,
             createdAt: Date(),
-            imagesURL: [URL(string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/mock_data/tesla3.jpg")!],
+            imagesURL: [URL(string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/mock_data/tesla3.jpg")!], thumbnailsURL: [URL(string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/mock_data/tesla3.jpg")!],
             make: "BMW",
             model: "i4 M50",
             condition: "New",
@@ -83,7 +83,7 @@ struct MockListingService: ListingServiceProtocol {
         Listing(
             id: 4,
             createdAt: Date(),
-            imagesURL: [URL(string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/mock_data/tesla4.jpg")!],
+            imagesURL: [URL(string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/mock_data/tesla4.jpg")!], thumbnailsURL: [URL(string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/mock_data/tesla4.jpg")!],
             make: "Audi",
             model: "e-tron GT",
             condition: "Used",
@@ -106,7 +106,7 @@ struct MockListingService: ListingServiceProtocol {
         Listing(
             id: 5,
             createdAt: Date(),
-            imagesURL: [URL(string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/mock_data/tesla5.jpg")!],
+            imagesURL: [URL(string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/mock_data/tesla5.jpg")!], thumbnailsURL: [URL(string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/mock_data/tesla5.jpg")!],
             make: "Nissan",
             model: "Leaf",
             condition: "Used",

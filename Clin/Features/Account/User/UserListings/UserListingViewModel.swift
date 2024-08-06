@@ -37,23 +37,7 @@ final class UserListingViewModel {
     init(listingService: ListingServiceProtocol) {
         self.listingService = listingService
     }
-    
-//    @MainActor
-//    func fetchUserListings() async {
-//        do {
-//            guard let user = try? await Supabase.shared.client.auth.session.user else {
-//                viewState = .error(UserListingsViewStateMessages.generalError.message)
-//                return
-//            }
-//            userActiveListings = try await listingService.fetchUserListings(userID: user.id)
-//            
-//            viewState = .success
-//        } catch {
-//            viewState = .error(UserListingsViewStateMessages.noAuthUserFound.message)
-//        }
-//        checkViewState()
-//    }
-    
+        
     @MainActor
     func fetchUserListings() async {
         do {
