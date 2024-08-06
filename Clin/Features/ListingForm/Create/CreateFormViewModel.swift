@@ -113,13 +113,13 @@ final class CreateFormViewModel {
         thumbnailsURLs.removeAll()
         
         guard !pickedImages.isEmpty else {
+            print("DEBUG: No picked images.")
             return
         }
         
         let folderPath = "\(userId)"
         let bucketName = "car_images"
         
-        // Upload all images to imagesURLs
         for image in pickedImages {
             let imageURLString = try await ImageManager.shared.uploadImage(image.data, from: bucketName, to: folderPath, targetWidth: 350, targetHeight: 350, compressionQuality: 1.0)
             if let urlString = imageURLString, let url = URL(string: urlString) {
@@ -128,9 +128,8 @@ final class CreateFormViewModel {
             self.uploadingProgress += 1.0 / Double(pickedImages.count)
         }
         
-        // Only upload the first image to thumbnailsURLs
         if let firstImage = pickedImages.first {
-            let thumbnailURLString = try await ImageManager.shared.uploadImage(firstImage.data, from: bucketName, to: folderPath, targetWidth: 120, targetHeight: 120, compressionQuality: 0.3)
+            let thumbnailURLString = try await ImageManager.shared.uploadImage(firstImage.data, from: bucketName, to: folderPath, targetWidth: 120, targetHeight: 120, compressionQuality: 0.4)
             if let thumbUrlString = thumbnailURLString, let url = URL(string: thumbUrlString) {
                 self.thumbnailsURLs.append(url)
             }
@@ -224,5 +223,4 @@ final class CreateFormViewModel {
             print("Failed to load prohibited words: \(error)")
         }
     }
-    
 }

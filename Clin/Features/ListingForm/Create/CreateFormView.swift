@@ -32,7 +32,8 @@ struct CreateFormView: View {
                         CreateFormSubview(viewModel: viewModel)
                         
                     case .uploading:
-                        CustomProgressViewBar(progress: viewModel.uploadingProgress)
+//                        CircularProgressBar(progress: viewModel.uploadingProgress)
+                        EmptyView()
                         
                     case .success(let message):
                         SuccessView(message: message, doneAction: { viewModel.resetState() })

@@ -17,7 +17,7 @@ struct SuccessView: View {
                 Text(message)
                     .foregroundStyle(.green)
             } icon: {
-                Image(systemName: "checkmark.circle")
+                Image(systemName: "checkmark.circle.fill")
                     
                     .foregroundStyle(.green)
             }

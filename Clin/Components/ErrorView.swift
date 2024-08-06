@@ -17,7 +17,7 @@ struct ErrorView: View {
                 Text(message)
                     .foregroundColor(.red)
             } icon: {
-                Image(systemName: "exclamationmark.circle")
+                Image(systemName: "exclamationmark.circle.fill")
                     .foregroundColor(.red)
             }
         } description: {

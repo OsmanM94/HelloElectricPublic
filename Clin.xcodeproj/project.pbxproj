@@ -89,8 +89,8 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				CharactersLimitModifier.swift,
+				CircularProgressBar.swift,
 				CustomProgressView.swift,
-				CustomProgressViewBar.swift,
 				DeleteAlertModifier.swift,
 				EmptyContentView.swift,
 				ErrorView.swift,

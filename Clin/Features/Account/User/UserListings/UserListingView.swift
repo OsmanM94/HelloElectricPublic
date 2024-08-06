@@ -40,7 +40,9 @@ struct UserListingView: View {
             }
         }
         .task {
-            await viewModel.fetchUserListings()
+            if viewModel.userActiveListings.isEmpty {
+                await viewModel.fetchUserListings()
+            }
         }
     }
 }
@@ -78,6 +80,7 @@ fileprivate struct UserListingSubview: View {
                 0
             }
         }
+        .refreshable { await viewModel.fetchUserListings() }
         .listStyle(.plain)
         .sheet(item: $viewModel.selectedListing, onDismiss: {
             Task { await viewModel.fetchUserListings() }

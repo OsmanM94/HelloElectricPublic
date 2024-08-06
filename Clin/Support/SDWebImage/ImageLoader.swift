@@ -11,7 +11,7 @@ import AVFoundation
 
 struct ImageLoader: View {
     let url: URL
-    var contentMode: ContentMode = .fit
+    var contentMode: ContentMode = .fill
     var targetSize: CGSize
     
     var body: some View {
@@ -26,7 +26,7 @@ struct ImageLoader: View {
 
 fileprivate struct SDWebImageLoader: View {
     let url: URL
-    var contentMode: ContentMode = .fit
+    var contentMode: ContentMode = .fill
     var targetSize: CGSize
     
     var body: some View {
