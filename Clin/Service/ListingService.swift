@@ -9,6 +9,7 @@ import Foundation
 
 protocol ListingServiceProtocol {
     func fetchListings(from: Int, to: Int) async throws -> [Listing]
+    func refreshListings() async throws -> [Listing]
     func fetchUserListings(userID: UUID) async throws -> [Listing]
     func createListing(_ listing: Listing) async throws
     func updateListing(_ listing: Listing) async throws
@@ -26,6 +27,21 @@ struct ListingService: ListingServiceProtocol {
                 .select()
                 .order("created_at", ascending: false)
                 .range(from: from, to: to)
+                .execute()
+                .value
+            return listings
+        } catch {
+            print("DEBUG: Error fetching listings: \(error)")
+            throw error
+        }
+    }
+    
+    func refreshListings() async throws -> [Listing] {
+        do {
+            let listings: [Listing] = try await Supabase.shared.client
+                .from("car_listing")
+                .select()
+                .order("created_at", ascending: false)
                 .execute()
                 .value
             return listings
@@ -95,20 +111,3 @@ struct ListingService: ListingServiceProtocol {
     }
 }
 
-
-
-//func fetchListings() async throws -> [Listing] {
-//    do {
-//        let listings: [Listing] = try await Supabase.shared.client
-//            .from("car_listing")
-//            .select()
-//            .order("created_at", ascending: false)
-//            .limit(50)
-//            .execute()
-//            .value
-//        return listings
-//    } catch {
-//        print("Error fetching listings: \(error)")
-//        throw error
-//    }
-//}

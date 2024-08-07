@@ -19,10 +19,10 @@ final class ListingViewModel {
         case generalError = "An error occurred. Please try again."
         case noAuthUserFound = "No authenticated user found."
 
-        var message: String {
-            return self.rawValue
-        }
+    var message: String {
+        return self.rawValue
     }
+}
     private let listingService: ListingServiceProtocol
     
     init(listingService: ListingServiceProtocol) {
@@ -37,12 +37,14 @@ final class ListingViewModel {
     
     @MainActor
     func fetchListings() async {
+        let from = currentPage * pageSize
+        let to = from + pageSize - 1
+        
         do {
-            let newListings = try await listingService.fetchListings(from: currentPage * pageSize, to: (currentPage + 1) * pageSize - 1)
-            
+            let newListings = try await listingService.fetchListings(from: from, to: to)
             listings.append(contentsOf: newListings)
             viewState = .loaded
-            currentPage += 1
+            self.currentPage += 1
             
             print("DEBUG2: Fetching 10 more listings...")
         } catch {
@@ -52,11 +54,18 @@ final class ListingViewModel {
     
     @MainActor
     func refreshListings() async {
-        currentPage = 0
-        listings.removeAll()
-        print("DEBUG2: Refreshing list...")
+        do {
+            let newListings = try await listingService.refreshListings()
+            self.listings = newListings
+            self.currentPage = 1
+            
+            print("DEBUG2: Refreshing list...")
+        } catch {
+            viewState = .error(ListingViewStateMessages.generalError.message)
+        }
     }
 }
+
 
 
 

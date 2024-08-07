@@ -72,12 +72,12 @@ fileprivate struct ListingSubview: View {
                 ForEach(viewModel.listings, id: \.id) { item in
                     NavigationLink(value: item) {
                         ListingCell(listing: item)
+                            
                     }
                 }
                 .alignmentGuide(.listRowSeparatorLeading) { _ in
                     0
                 }
-                
                 ProgressView()
                     .scaleEffect(1.0)
                     .frame(maxWidth: .infinity, alignment: .center)

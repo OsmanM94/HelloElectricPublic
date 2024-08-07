@@ -8,8 +8,6 @@
 
 #warning("WE need to show the user an alert if the Sensitive API is disabled")
 
-#warning("We need to implement listings pagination using .range or .limit")
-
 #warning("We need to link favourite listings to Supabase and retrieve them in a view")
 
 #warning("We need to limit external dependencies via protocols, start with Supabase")

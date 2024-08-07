@@ -8,6 +8,7 @@
 import Foundation
 
 struct MockListingService: ListingServiceProtocol {
+    
     static let mockUserID = UUID(uuidString: "123e4567-e89b-12d3-a456-426614174000")!
     
     static var sampleData: [Listing] = [
@@ -129,6 +130,10 @@ struct MockListingService: ListingServiceProtocol {
     ]
     
     func fetchListings(from: Int, to: Int) async throws -> [Listing] {
+        return MockListingService.sampleData
+    }
+    
+    func refreshListings() async throws -> [Listing] {
         return MockListingService.sampleData
     }
     
