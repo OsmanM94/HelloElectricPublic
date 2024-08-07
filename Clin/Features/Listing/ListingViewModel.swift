@@ -32,15 +32,29 @@ final class ListingViewModel {
     var listings: [Listing] = []
     var viewState: ListingViewState = .loading
     var showFilterSheet: Bool = false
+    private var currentPage: Int = 0
+    private let pageSize: Int = 10
     
     @MainActor
     func fetchListings() async {
         do {
-            listings = try await listingService.fetchListings()
+            let newListings = try await listingService.fetchListings(from: currentPage * pageSize, to: (currentPage + 1) * pageSize - 1)
+            
+            listings.append(contentsOf: newListings)
             viewState = .loaded
+            currentPage += 1
+            
+            print("DEBUG2: Fetching 10 more listings...")
         } catch {
             viewState = .error(ListingViewStateMessages.generalError.message)
         }
+    }
+    
+    @MainActor
+    func refreshListings() async {
+        currentPage = 0
+        listings.removeAll()
+        print("DEBUG2: Refreshing list...")
     }
 }
 

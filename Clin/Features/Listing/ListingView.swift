@@ -77,6 +77,14 @@ fileprivate struct ListingSubview: View {
                 .alignmentGuide(.listRowSeparatorLeading) { _ in
                     0
                 }
+                
+                ProgressView()
+                    .scaleEffect(1.0)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .listRowSeparator(.hidden)
+                    .task {
+                        await viewModel.fetchListings()
+                    }
             }
             .navigationDestination(for: Listing.self, destination: { item in
                 ListingDetailView(listing: item)
@@ -84,7 +92,7 @@ fileprivate struct ListingSubview: View {
             .listStyle(.plain)
             .searchable(text: $text, placement:
                     .navigationBarDrawer(displayMode: .always))
-            .refreshable { await viewModel.fetchListings() }
+            .refreshable { await viewModel.refreshListings() }
             .toolbar {
                 Button("", systemImage: "line.3.horizontal.decrease.circle", action: {
                     viewModel.showFilterSheet.toggle()

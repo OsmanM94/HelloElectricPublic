@@ -69,6 +69,6 @@ struct CircularProfileView: View {
     }
 }
 
-//#Preview {
-//    CircularProfileView()
-//}
+#Preview {
+    CircularProfileView(size: ProfileImageSize.xLarge)
+}

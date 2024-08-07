@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		623B8F572C62DC0700A5BD60 /* ToDo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 623B8F562C62DC0700A5BD60 /* ToDo.swift */; };
 		629185B82C31614500DA4BAA /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 629185B72C31614500DA4BAA /* SDWebImageSwiftUI */; };
 		62C449052C26CDC4009650A3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 62C449042C26CDC4009650A3 /* Assets.xcassets */; };
 		62C449092C26CDC4009650A3 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 62C449082C26CDC4009650A3 /* Preview Assets.xcassets */; };
@@ -19,6 +20,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		623B8F562C62DC0700A5BD60 /* ToDo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDo.swift; sourceTree = "<group>"; };
 		62C448FD2C26CDC2009650A3 /* Clin.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Clin.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		62C449042C26CDC4009650A3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		62C449062C26CDC4009650A3 /* Clin.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Clin.entitlements; sourceTree = "<group>"; };
@@ -239,6 +241,7 @@
 				629189ED2C36FEB400DA4BAA /* Resources */,
 				62C449042C26CDC4009650A3 /* Assets.xcassets */,
 				62C449072C26CDC4009650A3 /* Preview Content */,
+				623B8F562C62DC0700A5BD60 /* ToDo.swift */,
 			);
 			path = Clin;
 			sourceTree = "<group>";
@@ -334,6 +337,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				623B8F572C62DC0700A5BD60 /* ToDo.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

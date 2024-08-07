@@ -23,9 +23,13 @@ struct ErrorView: View {
         } description: {
             Text("")
         } actions: {
-            Button("Try again") {
+            Button {
                 retryAction()
+            } label: {
+                Text("Retry")
+                    .font(.title2)
             }
+
         }
     }
 }

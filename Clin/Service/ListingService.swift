@@ -8,7 +8,7 @@
 import Foundation
 
 protocol ListingServiceProtocol {
-    func fetchListings() async throws -> [Listing]
+    func fetchListings(from: Int, to: Int) async throws -> [Listing]
     func fetchUserListings(userID: UUID) async throws -> [Listing]
     func createListing(_ listing: Listing) async throws
     func updateListing(_ listing: Listing) async throws
@@ -19,12 +19,13 @@ struct ListingService: ListingServiceProtocol {
   
     init() {}
     
-    func fetchListings() async throws -> [Listing] {
+    func fetchListings(from: Int, to: Int) async throws -> [Listing] {
         do {
             let listings: [Listing] = try await Supabase.shared.client
                 .from("car_listing")
                 .select()
                 .order("created_at", ascending: false)
+                .range(from: from, to: to)
                 .execute()
                 .value
             return listings

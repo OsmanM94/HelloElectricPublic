@@ -19,9 +19,6 @@ struct CharacterLimitModifier: ViewModifier {
                         text = String(text.prefix(limit))
                     }
                 }
-//            Text("\(limit - text.count) characters remaining")
-//                .font(.caption)
-//                .foregroundColor(.gray)
         }
     }
 }

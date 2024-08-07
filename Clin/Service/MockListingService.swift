@@ -128,7 +128,7 @@ struct MockListingService: ListingServiceProtocol {
         )
     ]
     
-    func fetchListings() async throws -> [Listing] {
+    func fetchListings(from: Int, to: Int) async throws -> [Listing] {
         return MockListingService.sampleData
     }
     

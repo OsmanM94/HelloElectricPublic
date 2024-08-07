@@ -24,9 +24,13 @@ struct SuccessView: View {
         } description: {
             Text("")
         } actions: {
-            Button("Done") {
+            Button {
                 doneAction()
+            } label: {
+                Text("Done")
+                    .font(.title2)
             }
+
         }
     }
 }

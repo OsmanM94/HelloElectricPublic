@@ -81,7 +81,7 @@ final class ProfileViewModel {
             let folderPath = "\(currentUser.id)"
             let bucketName = "avatars"
             
-            let imageURLString = try await ImageManager.shared.uploadImage(avatarImage!.data, from: bucketName, to: folderPath,targetWidth: 80, targetHeight: 80, compressionQuality: 0.5)
+            let imageURLString = try await ImageManager.shared.uploadImage(avatarImage!.data, from: bucketName, to: folderPath,targetWidth: 80, targetHeight: 80, compressionQuality: 0.3)
             
             guard let imageURL = URL(string: imageURLString ?? "") else {
                 viewState = .error(ProfileViewStatesMessages.generalError.message)
@@ -177,7 +177,6 @@ final class ProfileViewModel {
         }
     }
     
-    #warning("WE need to show the user an alert if the Sensitive API is disabled.")
     @MainActor
     func loadItem(item: PhotosPickerItem) async {
         if let pickedImage = await ImageManager.shared.loadItem(item: item) {
@@ -186,7 +185,6 @@ final class ProfileViewModel {
             viewState = .error(ProfileViewStatesMessages.sensitiveContent.message)
         }
     }
-    
     
     private func startCooldownTimer() {
         cooldownTime = 60 // 1 minute cooldown period, adjust as needed

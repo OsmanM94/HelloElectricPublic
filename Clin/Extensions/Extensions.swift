@@ -50,7 +50,7 @@ public extension UIImage {
 
 
 /// Purpose: The onUpdate extension on Binding is used to run a specified closure whenever the binding value changes.
-extension Binding {
+public extension Binding {
     func onUpdate(_ closure: @escaping (Value) -> Void) -> Binding<Value> {
         Binding(
             get: { wrappedValue },

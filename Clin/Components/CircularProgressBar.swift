@@ -23,7 +23,7 @@ struct CircularProgressBar: View {
                 .stroke(style: StrokeStyle(lineWidth: lineWidth, lineCap: .round, lineJoin: .round))
                 .foregroundStyle(.green.gradient)
                 .rotationEffect(Angle(degrees: 270.0))
-                .animation(.linear, value: progress)
+                .animation(.linear(duration: 1.5), value: progress)
                 .shadow(color: .gray, radius: 1)
             
             Text(String(format: "%.0f%%", min(progress, 1.0) * 100.0))
@@ -36,6 +36,22 @@ struct CircularProgressBar: View {
     }
 }
 
+//#Preview {
+//    CircularProgressBar(progress: 0.5)
+//}
+struct CircularProgressBarPreview: View {
+    @State private var progress: Double = 0.0
+
+    var body: some View {
+        CircularProgressBar(progress: progress)
+            .onAppear {
+                withAnimation(.linear(duration: 0).repeatForever(autoreverses: false)) {
+                    progress = 1.0
+                }
+            }
+    }
+}
+
 #Preview {
-    CircularProgressBar(progress: 0.5)
+    CircularProgressBarPreview()
 }

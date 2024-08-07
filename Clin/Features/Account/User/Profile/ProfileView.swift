@@ -50,7 +50,7 @@ struct ProfileView: View {
         .environment(AuthViewModel())
 }
 
-private struct ProfileSubview: View {
+fileprivate struct ProfileSubview: View {
     @Bindable var viewModel: ProfileViewModel
    
     var body: some View {
@@ -91,7 +91,6 @@ private struct ProfileSubview: View {
                                 }
                             }
                         })
-                    
                 }
             }
             Section(footer: Text("Must be between 3-20 characters")) {
@@ -136,3 +135,6 @@ private struct ProfileSubview: View {
         }
     }
 }
+
+
+
