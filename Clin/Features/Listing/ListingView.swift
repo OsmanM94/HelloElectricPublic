@@ -21,6 +21,7 @@ struct ListingView: View {
         NavigationStack {
             Group {
                 VStack(spacing: 0) {
+                    Text("\(viewModel.listings.count)")
                     switch viewModel.viewState {
                     case .loading:
                         CustomProgressView()
@@ -92,7 +93,9 @@ fileprivate struct ListingSubview: View {
             .listStyle(.plain)
             .searchable(text: $text, placement:
                     .navigationBarDrawer(displayMode: .always))
-            .refreshable { await viewModel.refreshListings() }
+            .refreshable {
+                await viewModel.refreshListings()
+            }
             .toolbar {
                 Button("", systemImage: "line.3.horizontal.decrease.circle", action: {
                     viewModel.showFilterSheet.toggle()

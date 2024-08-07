@@ -55,9 +55,13 @@ final class ListingViewModel {
     @MainActor
     func refreshListings() async {
         do {
-            let newListings = try await listingService.refreshListings()
+            self.currentPage = 0
+            let from = currentPage * pageSize
+            let to = from + pageSize - 1
+            
+            let newListings = try await listingService.fetchListings(from: from, to: to)
             self.listings = newListings
-            self.currentPage = 1
+            self.currentPage += 1
             
             print("DEBUG2: Refreshing list...")
         } catch {

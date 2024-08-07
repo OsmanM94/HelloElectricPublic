@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct FavouriteCell: View {
-    let favouriteListing: FavouriteListing
+    let favouriteListing: Favourite
     
     var body: some View {
         HStack(spacing: 0) {
@@ -46,5 +46,5 @@ struct FavouriteCell: View {
 }
 
 #Preview {
-    FavouriteCell(favouriteListing: FavouriteListing(listing: MockListingService.sampleData[0]))
+    FavouriteCell(favouriteListing: Favourite(listing: MockListingService.sampleData[0]))
 }

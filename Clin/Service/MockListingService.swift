@@ -133,10 +133,6 @@ struct MockListingService: ListingServiceProtocol {
         return MockListingService.sampleData
     }
     
-    func refreshListings() async throws -> [Listing] {
-        return MockListingService.sampleData
-    }
-    
     func fetchUserListings(userID: UUID) async throws -> [Listing] {
         return MockListingService.sampleData.filter { $0.userID == userID }
     }

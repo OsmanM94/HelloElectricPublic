@@ -39,7 +39,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Dvla.swift,
-				FavouriteListing.swift,
+				Favourite.swift,
 				Listing.swift,
 				PickedImage.swift,
 				Profile.swift,
@@ -123,6 +123,13 @@
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
 		};
+		623B8FF92C64283500A5BD60 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Protocols.swift,
+			);
+			target = 62C448FC2C26CDC2009650A3 /* Clin */;
+		};
 		6291824B2C2AE5EB00DA4BAA /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -181,6 +188,7 @@
 		62259D172C40187D005197C9 /* Managers */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (62259D192C401890005197C9 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Managers; sourceTree = "<group>"; };
 		623B88892C5D15F100A5BD60 /* Supabase */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (623B888B2C5D163800A5BD60 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Supabase; sourceTree = "<group>"; };
 		623B8F4F2C62D39400A5BD60 /* Extensions */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (623B8F532C62D3A100A5BD60 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Extensions; sourceTree = "<group>"; };
+		623B8FF72C64283500A5BD60 /* Protocols */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (623B8FF92C64283500A5BD60 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Protocols; sourceTree = "<group>"; };
 		629182492C2AE5EB00DA4BAA /* Router */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (6291824B2C2AE5EB00DA4BAA /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Router; sourceTree = "<group>"; };
 		629185B42C3160F900DA4BAA /* Support */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (629185BC2C3175A100DA4BAA /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Support; sourceTree = "<group>"; };
 		629188CB2C35BAE800DA4BAA /* Components */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (622369BA2C3D6B7100576FF4 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Components; sourceTree = "<group>"; };
@@ -229,6 +237,7 @@
 				6217F30E2C2851D500EF8B2D /* App */,
 				62C449062C26CDC4009650A3 /* Clin.entitlements */,
 				6217F3412C2977C700EF8B2D /* Service */,
+				623B8FF72C64283500A5BD60 /* Protocols */,
 				62259D172C40187D005197C9 /* Managers */,
 				6217F3102C28526400EF8B2D /* Models */,
 				629182492C2AE5EB00DA4BAA /* Router */,

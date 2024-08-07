@@ -68,9 +68,9 @@ fileprivate struct DvlaCheckView: View {
     var body: some View {
         Form {
             Section("UK Registration") {
-                TextField("", text: $registrationNumber, prompt: Text("Enter registration").foregroundStyle(.black))
+                TextField("", text: $registrationNumber, prompt: Text("Enter registration").foregroundStyle(.gray))
                     .foregroundStyle(.black)
-                    .font(.system(size: 24, weight: .bold))
+                    .font(.system(size: 24, weight: .semibold))
                     .submitLabel(.done)
                     .listRowBackground(Color.yellow)
                     .multilineTextAlignment(.center)

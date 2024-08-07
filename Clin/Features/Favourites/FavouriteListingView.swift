@@ -31,7 +31,7 @@ struct FavouriteListingView: View {
         .environmentObject(FavouriteViewModel())
 }
 
-private struct LoadedFavouriteView: View {
+fileprivate struct LoadedFavouriteView: View {
     @EnvironmentObject private var favouriteViewModel: FavouriteViewModel
     
     var body: some View {

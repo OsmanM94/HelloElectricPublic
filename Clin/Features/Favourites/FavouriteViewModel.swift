@@ -15,13 +15,13 @@ final class FavouriteViewModel: ObservableObject {
     }
     
     @Published var viewState: ViewState = .empty
-    @Published var favourite = [FavouriteListing]()
+    @Published var favourite = [Favourite]()
     
     func addToFavorites(listing: Listing) {
         if let index = favourite.firstIndex(where: { $0.listing.id == listing.id }) {
             favourite.remove(at: index)
         } else {
-            let favoriteProduct = FavouriteListing(listing: listing)
+            let favoriteProduct = Favourite(listing: listing)
             favourite.append(favoriteProduct)
         }
         updateViewState()
