@@ -30,9 +30,8 @@ struct ListingView: View {
                         ListingSubview(viewModel: viewModel, isDoubleTap: $isDoubleTap)
                         
                     case .error(let message):
-                        ErrorView(message: message, retryAction: { Task {
-                            await viewModel.fetchListings()
-                        } })
+                        ErrorView(message: message, retryAction: {
+                            Task { await viewModel.fetchListings() } })
                     }
                 }
                 .sheet(isPresented: $viewModel.showFilterSheet, content: {})
@@ -79,13 +78,15 @@ fileprivate struct ListingSubview: View {
                 .alignmentGuide(.listRowSeparatorLeading) { _ in
                     0
                 }
-                ProgressView()
-                    .scaleEffect(1.0)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .listRowSeparator(.hidden)
-                    .task {
-                        await viewModel.fetchListings()
-                    }
+                if viewModel.listings.last != nil && viewModel.hasMoreListings {
+                    ProgressView()
+                        .scaleEffect(1.0)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .listRowSeparator(.hidden)
+                        .task {
+                            await viewModel.fetchListings()
+                        }
+                }
             }
             .navigationDestination(for: Listing.self, destination: { item in
                 ListingDetailView(listing: item)

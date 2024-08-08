@@ -19,8 +19,7 @@ struct ListingDetailView: View {
                 TabView {
                     ForEach(listing.imagesURL, id: \.self) { imageURL in
                         ImageLoader(url: imageURL, contentMode: .fill, targetSize: CGSize(width: 350, height: 350))
-                        //                            .frame(maxWidth: .infinity, maxHeight: 350)
-                            .frame(width: 350, height: 350)
+                            .frame(maxWidth: .infinity, maxHeight: 350)
                             .clipped()
                             .onTapGesture {
                                 showSheet.toggle()
@@ -31,11 +30,11 @@ struct ListingDetailView: View {
                     SheetImages(listing: listing)
                 })
                 .tabViewStyle(.page)
-                .frame(height: 350)
+                .frame(maxWidth: .infinity, maxHeight: 350)
             } else {
                 Rectangle()
                     .foregroundStyle(.gray.opacity(0.5))
-                    .frame(maxWidth: .infinity, maxHeight: 300)
+                    .frame(maxWidth: .infinity, maxHeight: 350)
                     .overlay {
                         Text("No Images Available")
                             .foregroundStyle(.secondary)
@@ -85,13 +84,13 @@ fileprivate struct SheetImages: View {
                         ForEach(listing.imagesURL, id: \.self) { imageURL in
                             ZoomImages {
                                 ImageLoader(url: imageURL, contentMode: .fill, targetSize: CGSize(width: 350, height: 350))
-                                    .frame(maxWidth: .infinity, maxHeight: 350)
+                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                                     .clipped()
                             }
                         }
                     }
                     .tabViewStyle(.page)
-                    .frame(height: 350)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
                     Rectangle()
                         .foregroundStyle(.gray.opacity(0.5))

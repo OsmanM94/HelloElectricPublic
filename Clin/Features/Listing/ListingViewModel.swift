@@ -34,19 +34,25 @@ final class ListingViewModel {
     var showFilterSheet: Bool = false
     private var currentPage: Int = 0
     private let pageSize: Int = 10
+    var hasMoreListings: Bool = true
     
     @MainActor
     func fetchListings() async {
+        guard hasMoreListings else { return }
+        
         let from = currentPage * pageSize
         let to = from + pageSize - 1
         
         do {
             let newListings = try await listingService.fetchListings(from: from, to: to)
+            if newListings.count < pageSize {
+                self.hasMoreListings = false // No more listings to fetch
+            }
             listings.append(contentsOf: newListings)
             viewState = .loaded
             self.currentPage += 1
             
-            print("DEBUG2: Fetching 10 more listings...")
+            print("DEBUG1: Fetching 10 listings...")
         } catch {
             viewState = .error(ListingViewStateMessages.generalError.message)
         }
@@ -56,14 +62,18 @@ final class ListingViewModel {
     func refreshListings() async {
         do {
             self.currentPage = 0
+            self.hasMoreListings = true // Reset the flag
             let from = currentPage * pageSize
             let to = from + pageSize - 1
             
             let newListings = try await listingService.fetchListings(from: from, to: to)
+            if newListings.count < pageSize {
+                self.hasMoreListings = false // No more listings to fetch
+            }
             self.listings = newListings
             self.currentPage += 1
             
-            print("DEBUG2: Refreshing list...")
+            print("DEBUG1: Refreshing list...")
         } catch {
             viewState = .error(ListingViewStateMessages.generalError.message)
         }
