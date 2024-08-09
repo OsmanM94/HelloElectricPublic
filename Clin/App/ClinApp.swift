@@ -12,11 +12,11 @@ struct ClinApp: App {
     
     @State private var authViewModel = AuthViewModel()
     @State private var networkMonitor = NetworkMonitor()
-    @StateObject private var favouriteViewModel = FavouriteViewModel()
+    @StateObject private var favouriteViewModel = FavouriteViewModel(favouriteService: FavouriteService())
     
     var body: some Scene {
         WindowGroup {
-            MarketPlaceView()
+            MarketView()
                 .environment(authViewModel)
                 .environment(networkMonitor)
                 .environmentObject(favouriteViewModel)

@@ -49,12 +49,12 @@ struct ListingView: View {
 
 #Preview("API") {
     ListingView(viewModel: ListingViewModel(listingService: ListingService()), isDoubleTap: .constant(false))
-        .environmentObject(FavouriteViewModel())
+        .environmentObject(FavouriteViewModel(favouriteService: FavouriteService()))
 }
 
 #Preview("MockData") {
     ListingView(viewModel: ListingViewModel(listingService: MockListingService()), isDoubleTap: .constant(false))
-        .environmentObject(FavouriteViewModel())
+        .environmentObject(FavouriteViewModel(favouriteService: FavouriteService()))
 }
 
 #Preview("Loading") {
@@ -94,9 +94,7 @@ fileprivate struct ListingSubview: View {
             .listStyle(.plain)
             .searchable(text: $text, placement:
                     .navigationBarDrawer(displayMode: .always))
-            .refreshable {
-                await viewModel.refreshListings()
-            }
+            .refreshable { await viewModel.refreshListings() }
             .toolbar {
                 Button("", systemImage: "line.3.horizontal.decrease.circle", action: {
                     viewModel.showFilterSheet.toggle()

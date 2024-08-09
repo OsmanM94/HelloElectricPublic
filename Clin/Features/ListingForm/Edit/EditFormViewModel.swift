@@ -76,7 +76,6 @@ final class EditFormViewModel {
             try await listingService.updateListing(listingToUpdate)
             
             viewState = .success(ListingFormViewStateMessages.updateSuccess.message)
-            print("DEBUG: Listing updated succesfully.")
         } catch {
             viewState = .error(ListingFormViewStateMessages.generalError.message)
         }

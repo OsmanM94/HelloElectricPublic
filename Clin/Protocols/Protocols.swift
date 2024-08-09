@@ -14,3 +14,9 @@ protocol ListingServiceProtocol {
     func updateListing(_ listing: Listing) async throws
     func deleteListing(at id: Int) async throws
 }
+
+protocol FavouriteServiceProtocol {
+    func fetchUserFavourites(userID: UUID) async throws -> [Favourite]
+    func addToFavorites(_ favourite: Favourite) async throws
+    func removeFromFavorites(_ favourite: Favourite, for userID: UUID) async throws
+}

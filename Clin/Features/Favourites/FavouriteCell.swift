@@ -8,12 +8,12 @@
 import SwiftUI
 
 struct FavouriteCell: View {
-    let favouriteListing: Favourite
+    var favourite: Favourite
     
     var body: some View {
         HStack(spacing: 0) {
             VStack(spacing: 0) {
-                if let firstImageURL = favouriteListing.listing.imagesURL.first {
+                if let firstImageURL = favourite.thumbnailsURL.first {
                     ImageLoader(url: firstImageURL, contentMode: .fill, targetSize: CGSize(width: 120, height: 120))
                         .frame(width: 120, height: 120)
                         .clipShape(RoundedRectangle(cornerRadius: 12))
@@ -30,14 +30,14 @@ struct FavouriteCell: View {
             }
         
             VStack(alignment: .leading) {
-                Text("\(favouriteListing.listing.make) \(favouriteListing.listing.model)")
+                Text("\(favourite.make) \(favourite.model)")
                     .font(.headline)
                     .lineLimit(2, reservesSpace: true)
-                Text("\(favouriteListing.listing.condition)")
+                Text("\(favourite.condition)")
                     .font(.subheadline)
-                Text("\(favouriteListing.listing.mileage, format: .number) miles")
+                Text("\(favourite.mileage, format: .number) miles")
                     .font(.subheadline)
-                Text(favouriteListing.listing.price, format: .currency(code: Locale.current.currency?.identifier ?? "GBP"))
+                Text(favourite.price, format: .currency(code: Locale.current.currency?.identifier ?? "GBP"))
                     .font(.subheadline)
             }
             .padding(.leading, 5)
@@ -46,5 +46,5 @@ struct FavouriteCell: View {
 }
 
 #Preview {
-    FavouriteCell(favouriteListing: Favourite(listing: MockListingService.sampleData[0]))
+    FavouriteCell(favourite: MockFavouriteService.sampleData[0])
 }

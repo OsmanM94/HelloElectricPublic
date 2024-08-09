@@ -18,11 +18,11 @@ final class ListingViewModel {
     enum ListingViewStateMessages: String, Error {
         case generalError = "An error occurred. Please try again."
         case noAuthUserFound = "No authenticated user found."
-
-    var message: String {
-        return self.rawValue
+        
+        var message: String {
+            return self.rawValue
+        }
     }
-}
     private let listingService: ListingServiceProtocol
     
     init(listingService: ListingServiceProtocol) {
@@ -31,10 +31,14 @@ final class ListingViewModel {
     
     var listings: [Listing] = []
     var viewState: ListingViewState = .loading
+    
     var showFilterSheet: Bool = false
+    var hasMoreListings: Bool = true
+    
     private var currentPage: Int = 0
     private let pageSize: Int = 10
-    var hasMoreListings: Bool = true
+    private var lastRefreshTime: Date? = nil
+    private let refreshCooldown: TimeInterval = 10
     
     @MainActor
     func fetchListings() async {
@@ -60,9 +64,24 @@ final class ListingViewModel {
     
     @MainActor
     func refreshListings() async {
+//        if let lastRefreshTime = lastRefreshTime {
+//            let timeSinceLastRefresh = Date().timeIntervalSince(lastRefreshTime)
+//            if timeSinceLastRefresh < refreshCooldown {
+//                return
+//            }
+//        }
+//        if let lastRefreshTime = lastRefreshTime {
+//            let timeSinceLastRefresh = Date().timeIntervalSince(lastRefreshTime)
+//            if timeSinceLastRefresh < refreshCooldown {
+//                let elapsedTimeString = timeElapsedString(since: lastRefreshTime)
+//                print("DEBUG: Refresh attempted too soon, please wait.")
+//                viewState = .error("Last refreshed \(elapsedTimeString). Please wait 10 seconds before refreshing again.")
+//                return
+//            }
+//        }
         do {
             self.currentPage = 0
-            self.hasMoreListings = true // Reset the flag
+            self.hasMoreListings = true
             let from = currentPage * pageSize
             let to = from + pageSize - 1
             
@@ -73,6 +92,7 @@ final class ListingViewModel {
             self.listings = newListings
             self.currentPage += 1
             
+//            lastRefreshTime = Date()
             print("DEBUG1: Refreshing list...")
         } catch {
             viewState = .error(ListingViewStateMessages.generalError.message)

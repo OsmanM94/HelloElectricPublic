@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-struct MarketPlaceView: View {
-    @State private var viewModel = MarketPlaceViewModel()
+struct MarketView: View {
+    @State private var viewModel = MarketViewModel()
     
     var body: some View {
         TabView(selection: $viewModel.selectedTab.onUpdate { newValue in
@@ -36,8 +36,8 @@ struct MarketPlaceView: View {
 }
 
 #Preview {
-    MarketPlaceView()
+    MarketView()
         .environment(AuthViewModel())
         .environment(NetworkMonitor())
-        .environmentObject(FavouriteViewModel())
+        .environmentObject(FavouriteViewModel(favouriteService: MockFavouriteService()))
 }

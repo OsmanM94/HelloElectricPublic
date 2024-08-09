@@ -67,7 +67,6 @@ final class UserListingViewModel {
                 return
             }
             try await listingService.deleteListing(at: id)
-            print("DEBUG: Listing deleted successfully")
         } catch {
             viewState = .error(UserListingsViewStateMessages.generalError.message)
         }

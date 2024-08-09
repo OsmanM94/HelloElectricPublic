@@ -14,7 +14,7 @@ struct ImageLoader: View {
     var targetSize: CGSize
     
     var body: some View {
-       Rectangle()
+        Rectangle()
             .opacity(0)
             .overlay {
                 SDWebImageLoader(url: url, contentMode: contentMode, targetSize: targetSize)
@@ -38,15 +38,15 @@ fileprivate struct SDWebImageLoader: View {
         .onSuccess { image, data, cacheType in
             switch cacheType {
             case .none:
-                print("DEBUG: Image downloaded from network")
+                print(" Image downloaded from network")
             case .disk:
-                print("DEBUG: Image loaded from disk cache")
+                print(" Image loaded from disk cache")
             case .memory:
-                print("DEBUG: Image loaded from memory cache")
+                print(" Image loaded from memory cache")
             case .all:
-                print("DEBUG: all")
+                print(" all")
             @unknown default:
-                print("DEBUG: Unknown cache type")
+                print(" Unknown cache type")
             }
         }
         .onFailure { error in

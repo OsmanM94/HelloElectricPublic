@@ -57,7 +57,7 @@ struct AccountView: View {
 #Preview {
     AccountView()
         .environment(AuthViewModel())
-        .environmentObject(FavouriteViewModel())
+        .environmentObject(FavouriteViewModel(favouriteService: MockFavouriteService()))
 }
 
 fileprivate struct SignOutButton: View {

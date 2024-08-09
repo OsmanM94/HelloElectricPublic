@@ -58,7 +58,7 @@ struct ListingCell: View {
 
 #Preview {
     ListingCell(listing: MockListingService.sampleData[0])
-        .environmentObject(FavouriteViewModel())
+        .environmentObject(FavouriteViewModel(favouriteService: MockFavouriteService()))
 }
 
 

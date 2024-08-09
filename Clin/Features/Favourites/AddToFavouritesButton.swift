@@ -8,26 +8,27 @@
 import SwiftUI
 
 struct AddToFavouritesButton: View {
-    @EnvironmentObject private var favouriteViewModel: FavouriteViewModel
-    @State private var isFavorite: Bool = false
-    let listing: Listing
+    @EnvironmentObject private var viewModel: FavouriteViewModel
+    var listing: Listing
     
     var body: some View {
         VStack(spacing: 0) {
             Button {
-                favouriteViewModel.addToFavorites(listing: listing)
+                Task {
+                    try await viewModel.toggleFavourite(for: listing)
+                }
             } label: {
                 Circle()
                     .frame(width: 30, height: 30)
-                    .opacity(0.7)
-                    .foregroundStyle(Color(.gray))
+                    .opacity(0.8)
+                    .foregroundStyle(Color(.white))
                     .overlay {
-                        Image(systemName: favouriteViewModel.isFavorite(listing: listing) ? "heart.fill" : "heart")
+                        Image(systemName: viewModel.isFavourite(listing: listing) ? "heart.fill" : "heart")
                             .font(.system(size: 18))
                             .foregroundStyle(.green)
                             .fontWeight(.bold)
-                            .symbolEffect(.bounce, value: favouriteViewModel.isFavorite(listing: listing))
-                            .sensoryFeedback(.impact(flexibility: .soft), trigger: favouriteViewModel.isFavorite(listing: listing))
+                            .symbolEffect(.bounce, value: viewModel.isFavourite(listing: listing))
+                            .sensoryFeedback(.impact(flexibility: .soft), trigger: viewModel.isFavourite(listing: listing))
                     }
             }
             .padding(.trailing, 5)
@@ -39,6 +40,6 @@ struct AddToFavouritesButton: View {
 
 #Preview {
     AddToFavouritesButton(listing: MockListingService.sampleData[0])
-        .environmentObject(FavouriteViewModel())
+        .environmentObject(FavouriteViewModel(favouriteService: MockFavouriteService()))
         .preferredColorScheme(.dark)
 }

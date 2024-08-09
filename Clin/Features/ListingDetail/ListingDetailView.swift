@@ -7,10 +7,8 @@
 
 import SwiftUI
 
-
 struct ListingDetailView: View {
     @State private var showSheet: Bool = false
-   
     var listing: Listing
     
     var body: some View {
@@ -83,18 +81,18 @@ fileprivate struct SheetImages: View {
                     TabView {
                         ForEach(listing.imagesURL, id: \.self) { imageURL in
                             ZoomImages {
-                                ImageLoader(url: imageURL, contentMode: .fill, targetSize: CGSize(width: 350, height: 350))
+                                ImageLoader(url: imageURL, contentMode: .fit, targetSize: CGSize(width: 350, height: 350))
                                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                    .clipped()
                             }
                         }
                     }
                     .tabViewStyle(.page)
+                    .indexViewStyle(.page(backgroundDisplayMode: .always))
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
                     Rectangle()
                         .foregroundStyle(.gray.opacity(0.5))
-                        .frame(maxWidth: .infinity, maxHeight: 350)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .overlay {
                             Text("No Images Available")
                                 .foregroundStyle(.secondary)
@@ -114,3 +112,4 @@ fileprivate struct SheetImages: View {
         }
     }
 }
+

@@ -8,40 +8,54 @@
 import SwiftUI
 
 struct FavouriteListingView: View {
-    @EnvironmentObject private var favouriteViewModel: FavouriteViewModel
+    
+    @EnvironmentObject private var viewModel: FavouriteViewModel
     
     var body: some View {
         NavigationStack {
             Group {
-                switch favouriteViewModel.viewState {
+                switch viewModel.viewState {
                 case .loaded:
-                    LoadedFavouriteView()
+                    FavouriteListingSubview()
+                      
                 case .empty:
-                    EmptyContentView(message: "No listings saved", systemImage: "heart.slash.fill")
+                    EmptyContentView(message: "You haven't saved any listings yet.", systemImage: "heart.slash.fill")
+                    
+                case .error(let message):
+                    ErrorView(message: message, retryAction: {
+                        Task {
+                            await viewModel.fetchUserFavorites()
+                        }
+                    })
                 }
             }
             .navigationTitle("Saved")
             .navigationBarTitleDisplayMode(.inline)
+        }
+        .task {
+            await viewModel.fetchUserFavorites()
+            print("DEBUG: Fetching user favourites via task modifier...")
         }
     }
 }
 
 #Preview("Empty View") {
     FavouriteListingView()
-        .environmentObject(FavouriteViewModel())
+        .environmentObject(FavouriteViewModel(favouriteService: MockFavouriteService()))
 }
 
-fileprivate struct LoadedFavouriteView: View {
-    @EnvironmentObject private var favouriteViewModel: FavouriteViewModel
+fileprivate struct FavouriteListingSubview: View {
+    @EnvironmentObject private var viewModel: FavouriteViewModel
     
     var body: some View {
         List {
-            ForEach(favouriteViewModel.favourite, id: \.listing.id) { listing in
-                FavouriteCell(favouriteListing: listing)
+            ForEach(viewModel.favoriteListings, id: \.id) { favourite in
+                FavouriteCell(favourite: favourite)
                     .swipeActions(allowsFullSwipe: false) {
                         Button(role: .destructive) {
-                            withAnimation {
-                                favouriteViewModel.removeFromFavorites(listing: listing.listing)
+                            Task {
+                              await viewModel.removeFromFavorites(favourite: favourite)
+                              await viewModel.fetchUserFavorites()
                             }
                         } label: {
                             Image(systemName: "trash")
@@ -54,6 +68,10 @@ fileprivate struct LoadedFavouriteView: View {
         }
         .listStyle(.plain)
         .padding(.top)
-        .refreshable {}
+        .refreshable { await viewModel.fetchUserFavorites() }
     }
 }
+
+
+
+

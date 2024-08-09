@@ -7,10 +7,9 @@
 
 import Foundation
 
+
 struct ListingService: ListingServiceProtocol {
   
-    init() {}
-    
     func fetchListings(from: Int, to: Int) async throws -> [Listing] {
         do {
             let listings: [Listing] = try await Supabase.shared.client
@@ -20,9 +19,9 @@ struct ListingService: ListingServiceProtocol {
                 .range(from: from, to: to)
                 .execute()
                 .value
+            print("DEBUG: Public listings retrieved succesfully.")
             return listings
         } catch {
-            print("DEBUG: Error fetching listings: \(error)")
             throw error
         }
     }
@@ -36,9 +35,9 @@ struct ListingService: ListingServiceProtocol {
                 .order("created_at", ascending: false)
                 .execute()
                 .value
+            print("DEBUG: User listings retrieved succesfully.")
             return listings
         } catch {
-            print("Error fetching user listings: \(error)")
             throw error
         }
     }
@@ -51,7 +50,6 @@ struct ListingService: ListingServiceProtocol {
                 .execute()
             print("DEBUG: Listing created successfully.")
         } catch {
-            print("DEBUG: Error creating listing: \(error)")
             throw error
         }
     }
@@ -67,8 +65,8 @@ struct ListingService: ListingServiceProtocol {
                 .update(listing)
                 .eq("id", value: id)
                 .execute()
+            print("DEBUG: Listing updated succesfully.")
         } catch {
-            print("DEBUG: Error updating listing: \(error)")
             throw error
         }
     }
@@ -80,8 +78,8 @@ struct ListingService: ListingServiceProtocol {
                 .delete()
                 .eq("id", value: id)
                 .execute()
+            print("DEBUG: Listing deleted successfully.")
         } catch {
-            print("Error deleting listing: \(error)")
             throw error
         }
     }
