@@ -32,6 +32,11 @@ struct ListingView: View {
                     case .error(let message):
                         ErrorView(message: message, retryAction: {
                             Task { await viewModel.fetchListings() } })
+                        
+                    case .refreshCooldown(let message):
+                        CooldownView(message: message, retryAction: {
+                            viewModel.resetState()
+                        })
                     }
                 }
                 .sheet(isPresented: $viewModel.showFilterSheet, content: {})
@@ -61,6 +66,10 @@ struct ListingView: View {
     CustomProgressView()
 }
 
+#Preview("Refresh") {
+    CooldownView(message: "Please wait 10 seconds before refreshing again. ", retryAction: {})
+}
+
 fileprivate struct ListingSubview: View {
     @Bindable var viewModel: ListingViewModel
     @State private var text: String = ""
@@ -72,7 +81,6 @@ fileprivate struct ListingSubview: View {
                 ForEach(viewModel.listings, id: \.id) { item in
                     NavigationLink(value: item) {
                         ListingCell(listing: item)
-                            
                     }
                 }
                 .alignmentGuide(.listRowSeparatorLeading) { _ in

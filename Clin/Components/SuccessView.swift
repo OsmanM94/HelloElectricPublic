@@ -30,7 +30,6 @@ struct SuccessView: View {
                 Text("Done")
                     .font(.title2)
             }
-
         }
     }
 }

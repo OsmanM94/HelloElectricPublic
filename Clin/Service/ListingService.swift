@@ -19,7 +19,6 @@ struct ListingService: ListingServiceProtocol {
                 .range(from: from, to: to)
                 .execute()
                 .value
-            print("DEBUG: Public listings retrieved succesfully.")
             return listings
         } catch {
             throw error

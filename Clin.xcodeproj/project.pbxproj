@@ -92,6 +92,7 @@
 			membershipExceptions = (
 				CharactersLimitModifier.swift,
 				CircularProgressBar.swift,
+				CooldownView.swift,
 				CustomProgressView.swift,
 				DeleteAlertModifier.swift,
 				EmptyContentView.swift,

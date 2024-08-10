@@ -13,11 +13,13 @@ final class ListingViewModel {
         case loading
         case loaded
         case error(String)
+        case refreshCooldown(String)
     }
     
     enum ListingViewStateMessages: String, Error {
         case generalError = "An error occurred. Please try again."
         case noAuthUserFound = "No authenticated user found."
+        case refreshCooldown = "Please wait 10 seconds before refreshing again."
         
         var message: String {
             return self.rawValue
@@ -56,7 +58,7 @@ final class ListingViewModel {
             viewState = .loaded
             self.currentPage += 1
             
-            print("DEBUG1: Fetching 10 listings...")
+            print("DEBUG: Fetching 10 listings...")
         } catch {
             viewState = .error(ListingViewStateMessages.generalError.message)
         }
@@ -64,21 +66,11 @@ final class ListingViewModel {
     
     @MainActor
     func refreshListings() async {
-//        if let lastRefreshTime = lastRefreshTime {
-//            let timeSinceLastRefresh = Date().timeIntervalSince(lastRefreshTime)
-//            if timeSinceLastRefresh < refreshCooldown {
-//                return
-//            }
-//        }
-//        if let lastRefreshTime = lastRefreshTime {
-//            let timeSinceLastRefresh = Date().timeIntervalSince(lastRefreshTime)
-//            if timeSinceLastRefresh < refreshCooldown {
-//                let elapsedTimeString = timeElapsedString(since: lastRefreshTime)
-//                print("DEBUG: Refresh attempted too soon, please wait.")
-//                viewState = .error("Last refreshed \(elapsedTimeString). Please wait 10 seconds before refreshing again.")
-//                return
-//            }
-//        }
+        if !canRefresh() {
+            viewState = .refreshCooldown(ListingViewStateMessages.refreshCooldown.message)
+            return
+        }
+        
         do {
             self.currentPage = 0
             self.hasMoreListings = true
@@ -87,16 +79,29 @@ final class ListingViewModel {
             
             let newListings = try await listingService.fetchListings(from: from, to: to)
             if newListings.count < pageSize {
-                self.hasMoreListings = false // No more listings to fetch
+                self.hasMoreListings = false
             }
             self.listings = newListings
             self.currentPage += 1
             
-//            lastRefreshTime = Date()
-            print("DEBUG1: Refreshing list...")
+            lastRefreshTime = Date()
+            print("DEBUG: Refreshing list...")
         } catch {
             viewState = .error(ListingViewStateMessages.generalError.message)
         }
+    }
+    
+    private func canRefresh() -> Bool {
+        if let lastRefreshTime = lastRefreshTime {
+            let timeSinceLastRefresh = Date().timeIntervalSince(lastRefreshTime)
+            return timeSinceLastRefresh >= refreshCooldown
+        }
+        return true
+    }
+    
+    @MainActor
+    func resetState() {
+        viewState = .loaded
     }
 }
 

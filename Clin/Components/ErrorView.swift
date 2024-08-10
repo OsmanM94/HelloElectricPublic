@@ -29,7 +29,7 @@ struct ErrorView: View {
                 Text("Retry")
                     .font(.title2)
             }
-
+            
         }
     }
 }
