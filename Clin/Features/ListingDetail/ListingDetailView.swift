@@ -24,6 +24,12 @@ struct ListingDetailView: View {
                             }
                     }
                 }
+//                .onAppear {
+//                    ImagePrefetcher.instance.startPrefetching(urls: listing.imagesURL)
+//                }
+//                .onDisappear {
+//                    ImagePrefetcher.instance.stopPrefetching()
+//                }
                 .sheet(isPresented: $showSheet, content: {
                     SheetImages(listing: listing)
                 })
@@ -62,6 +68,7 @@ struct ListingDetailView: View {
             
             Spacer()
         }
+        
     }
 }
 

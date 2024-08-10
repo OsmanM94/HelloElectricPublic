@@ -24,9 +24,9 @@ final class FavouriteViewModel: ObservableObject {
         }
     }
     
-    @Published var viewState: ViewState = .empty
-    @Published var favoriteListings: [Favourite] = []
-    @Published var isFavourite: Bool = false
+    @Published private(set) var viewState: ViewState = .empty
+    @Published private(set) var favoriteListings: [Favourite] = []
+    @Published private(set) var isFavourite: Bool = false
     
     init(favouriteService: FavouriteServiceProtocol) {
         self.favouriteService = favouriteService
@@ -41,7 +41,7 @@ final class FavouriteViewModel: ObservableObject {
     @MainActor
     func addToFavorites(listing: Listing) async  {
         guard let user = try? await Supabase.shared.client.auth.session.user else {
-            print("DEBUG: No authenticated user found for favourites.")
+            print("DEBUG: No authenticated user found, can't add to favourites.")
             return
         }
         guard let id = listing.id else {
@@ -93,7 +93,7 @@ final class FavouriteViewModel: ObservableObject {
     @MainActor
     func fetchUserFavorites() async  {
         guard let user = try? await Supabase.shared.client.auth.session.user else {
-            print("DEBUG: No authenticated user found for favourites.")
+            print("DEBUG: No authenticated user found for favourites, can't fetch.")
             return
         }
         do {

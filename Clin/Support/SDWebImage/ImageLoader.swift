@@ -66,10 +66,12 @@ final class ImagePrefetcher {
     
     func startPrefetching(urls: [URL]) {
         prefetcher.prefetchURLs(urls)
+        print("DEBUG: Starting prefetching images...")
     }
     
     func stopPrefetching() {
         prefetcher.cancelPrefetching()
+        print("DEBUG: Stopping prefetching images...")
     }
 }
 

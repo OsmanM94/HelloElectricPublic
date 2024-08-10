@@ -27,18 +27,17 @@ final class EditFormViewModel {
        case deleting
    }
     
-    var viewState: ViewState = .idle
-    var imageViewState: ImageViewState = .idle
+    private(set) var viewState: ViewState = .idle
+    private(set) var imageViewState: ImageViewState = .idle
     
-    var pickedImages: [PickedImage] = []
+    var pickedImages: [SelectedImage] = []
     var imageSelections: [PhotosPickerItem] = []
-    var savedImageIdentifiers: [String] = []
     
     var showDeleteAlert: Bool = false
-    var imageToDelete: PickedImage?
-    var uploadingProgress: Double = 0.0
-    var imagesURLs: [URL] = []
-    var thumbnailsURLs: [URL] = []
+    var imageToDelete: SelectedImage?
+    private(set) var uploadingProgress: Double = 0.0
+    private(set) var imagesURLs: [URL] = []
+    private(set) var thumbnailsURLs: [URL] = []
     
     let yearsOfmanufacture: [String] = Array(2010...2030).map { String($0) }
     let vehicleCondition: [String] = ["New", "Used"]
@@ -72,7 +71,7 @@ final class EditFormViewModel {
             try await uploadPickedImages(for: user.id)
             
             let listingToUpdate = Listing(id: listing.id, createdAt: Date(), imagesURL: imagesURLs, thumbnailsURL: thumbnailsURLs, make: listing.make, model: listing.model, condition: listing.condition, mileage: listing.mileage, yearOfManufacture: listing.yearOfManufacture, price: listing.price, textDescription: listing.textDescription, range: listing.range, colour: listing.colour, publicChargingTime: listing.publicChargingTime, homeChargingTime: listing.homeChargingTime, batteryCapacity: listing.batteryCapacity, powerBhp: listing.powerBhp, regenBraking: listing.regenBraking, warranty: listing.warranty, serviceHistory: listing.serviceHistory, numberOfOwners: listing.numberOfOwners, userID: listing.userID)
-           
+            
             try await listingService.updateListing(listingToUpdate)
             
             viewState = .success(ListingFormViewStateMessages.updateSuccess.message)
@@ -108,7 +107,7 @@ final class EditFormViewModel {
             }
         }
     }
-       
+    
     func resetState() {
         pickedImages = []
         imageSelections = []
@@ -139,7 +138,7 @@ final class EditFormViewModel {
     }
         
     @MainActor
-    func deleteImage(_ image: PickedImage) async {
+    func deleteImage(_ image: SelectedImage) async {
         imageViewState = .deleting
         if let index = pickedImages.firstIndex(of: image) {
             pickedImages.remove(at: index)

@@ -22,23 +22,22 @@ final class AuthViewModel {
      init()  {
          Task {
              await setupAuthStateListener()
-             await verifySignInWithAppleAuthenticationState()
          }
     }
     
     func handleAppleSignInCompletion(result: Result<ASAuthorization, Error>) {
-        print("Starting Apple sign-in completion handling.")
+        print("DEBUG: Starting Apple sign-in completion handling.")
         authenticationState = .authenticating
         Task {
             do {
                 guard let credential = try result.get().credential as? ASAuthorizationAppleIDCredential else {
-                    print("Failed to cast credential as ASAuthorizationAppleIDCredential.")
+                    print("DEBUG: Failed to cast credential as ASAuthorizationAppleIDCredential.")
                     authenticationState = .unauthenticated
                     return
                 }
-                print("Successfully retrieved AppleID credential.")
+                print("DEBUG: Successfully retrieved AppleID credential.")
                 guard let idToken = credential.identityToken.flatMap({ String(data: $0, encoding: .utf8) }) else {
-                    print("Failed to retrieve ID token from credential.")
+                    print("DEBUG: Failed to retrieve ID token from credential.")
                     authenticationState = .unauthenticated
                     return
                 }
@@ -49,7 +48,7 @@ final class AuthViewModel {
                         idToken: idToken
                     )
                 )
-                print("Successfully signed in with Supabase.")
+                print("DEBUG: Successfully signed in with Supabase.")
                 authenticationState = .authenticated
                 
                 if let userEmail = credential.email {
@@ -57,47 +56,19 @@ final class AuthViewModel {
                 }
                                 
             } catch let error as AuthenticationErrors {
-                print("AppleAuthError encountered: \(error.localizedDescription)")
+                print("DEBUG: AppleAuthError encountered: \(error.localizedDescription)")
                 authenticationState = .unauthenticated
                 self.errorMessage = error.localizedDescription
                 dump(error)
             } catch {
-                print("Unexpected error encountered: \(error.localizedDescription)")
+                print("DEBUG: Unexpected error encountered: \(error.localizedDescription)")
                 authenticationState = .unauthenticated
                 self.errorMessage = error.localizedDescription
                 dump(error)
             }
         }
     }
-    
-    func verifySignInWithAppleAuthenticationState(userID: String? = nil) async {
-           let appleIDProvider = ASAuthorizationAppleIDProvider()
-           let userID = userID ?? self.user?.id.uuidString
-
-           guard let userID = userID else {
-               authenticationState = .unauthenticated
-               return
-           }
-           
-           do {
-               let credentialState = try await appleIDProvider.credentialState(forUserID: userID)
-               switch credentialState {
-               case .authorized:
-                   break // The Apple ID credential is valid.
-               case .revoked:
-                   self.errorMessage = AuthenticationErrors.credentialRevoked.localizedDescription
-                   await signOut()
-               case .notFound:
-                   self.errorMessage = AuthenticationErrors.credentialNotFound.localizedDescription
-                   await signOut()
-               default:
-                   break
-               }
-           } catch {
-               self.errorMessage = AuthenticationErrors.unknownError(error).localizedDescription
-           }
-       }
-    
+        
     @MainActor
     func signOut() async {
         do {
@@ -108,7 +79,7 @@ final class AuthViewModel {
         }
     }
     
-    private func setupAuthStateListener() async {
+    func setupAuthStateListener() async {
         await Supabase.shared.client.auth.onAuthStateChange { event, user in
             Task { @MainActor in
                 self.user = user?.user

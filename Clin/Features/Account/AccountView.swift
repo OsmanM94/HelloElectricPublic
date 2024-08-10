@@ -51,6 +51,9 @@ struct AccountView: View {
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
         }
+        .task {
+            await authViewModel.setupAuthStateListener()
+        }
     }
 }
 

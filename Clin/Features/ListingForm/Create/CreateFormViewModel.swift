@@ -27,15 +27,15 @@ final class CreateFormViewModel {
         case loaded
     }
     
-    var viewState: ViewState = .idle
-    var imageViewState: ImageViewState = .idle
+    private(set) var viewState: ViewState = .idle
+    private(set) var imageViewState: ImageViewState = .idle
     
-    var pickedImages: [PickedImage] = []
+    var pickedImages: [SelectedImage] = []
     var imageSelections: [PhotosPickerItem] = []
  
     var showDeleteAlert: Bool = false
-    var imageToDelete: PickedImage?
-    var uploadingProgress: Double = 0.0
+    var imageToDelete: SelectedImage?
+    private(set) var uploadingProgress: Double = 0.0
     
     ///DVLA checks
     var registrationNumber: String = ""
@@ -203,7 +203,7 @@ final class CreateFormViewModel {
     }
     
     @MainActor
-    func deleteImage(_ image: PickedImage) async {
+    func deleteImage(_ image: SelectedImage) async {
         imageViewState = .deleting
         if let index = pickedImages.firstIndex(of: image) {
             pickedImages.remove(at: index)

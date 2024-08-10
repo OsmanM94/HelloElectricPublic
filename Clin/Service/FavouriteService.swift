@@ -8,7 +8,7 @@
 import Foundation
 
 struct FavouriteService: FavouriteServiceProtocol {
-    
+        
     func fetchUserFavourites(userID: UUID) async throws -> [Favourite] {
         do {
             let favourites: [Favourite] = try await Supabase.shared.client
@@ -18,7 +18,6 @@ struct FavouriteService: FavouriteServiceProtocol {
                 .order("created_at", ascending: false)
                 .execute()
                 .value
-            
             return favourites
         } catch {
             throw error
@@ -48,6 +47,5 @@ struct FavouriteService: FavouriteServiceProtocol {
             throw error
         }
     }
-    
 }
 

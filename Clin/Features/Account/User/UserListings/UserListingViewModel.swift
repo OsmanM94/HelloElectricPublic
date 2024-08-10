@@ -29,8 +29,8 @@ final class UserListingViewModel {
     var selectedListing: Listing?
     var showingEditView: Bool = false
     var showDeleteAlert: Bool = false
-    var userActiveListings: [Listing] = []
-    var viewState: ViewState = .empty
+    private(set) var userActiveListings: [Listing] = []
+    private(set) var viewState: ViewState = .empty
     
     private let listingService: ListingServiceProtocol
     

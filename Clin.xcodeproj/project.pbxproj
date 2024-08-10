@@ -41,8 +41,8 @@
 				Dvla.swift,
 				Favourite.swift,
 				Listing.swift,
-				PickedImage.swift,
 				Profile.swift,
+				SelectedImage.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
 		};
@@ -92,11 +92,11 @@
 			membershipExceptions = (
 				CharactersLimitModifier.swift,
 				CircularProgressBar.swift,
-				CooldownView.swift,
 				CustomProgressView.swift,
 				DeleteAlertModifier.swift,
 				EmptyContentView.swift,
 				ErrorView.swift,
+				ListingViewPlaceholder.swift,
 				SuccessView.swift,
 				ZoomImages.swift,
 			);

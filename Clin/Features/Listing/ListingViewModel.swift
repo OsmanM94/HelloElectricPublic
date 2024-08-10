@@ -13,13 +13,11 @@ final class ListingViewModel {
         case loading
         case loaded
         case error(String)
-        case refreshCooldown(String)
     }
     
     enum ListingViewStateMessages: String, Error {
         case generalError = "An error occurred. Please try again."
         case noAuthUserFound = "No authenticated user found."
-        case refreshCooldown = "Please wait 10 seconds before refreshing again."
         
         var message: String {
             return self.rawValue
@@ -31,12 +29,12 @@ final class ListingViewModel {
         self.listingService = listingService
     }
     
-    var listings: [Listing] = []
-    var viewState: ListingViewState = .loading
+    private(set) var listings: [Listing] = []
+    private(set) var viewState: ListingViewState = .loading
     
     var showFilterSheet: Bool = false
-    var hasMoreListings: Bool = true
     
+    private(set) var hasMoreListings: Bool = true
     private var currentPage: Int = 0
     private let pageSize: Int = 10
     private var lastRefreshTime: Date? = nil
@@ -67,10 +65,10 @@ final class ListingViewModel {
     @MainActor
     func refreshListings() async {
         if !canRefresh() {
-            viewState = .refreshCooldown(ListingViewStateMessages.refreshCooldown.message)
+            print("DEBUG: Refreshing cooldown is active...")
             return
         }
-        
+    
         do {
             self.currentPage = 0
             self.hasMoreListings = true
@@ -97,11 +95,6 @@ final class ListingViewModel {
             return timeSinceLastRefresh >= refreshCooldown
         }
         return true
-    }
-    
-    @MainActor
-    func resetState() {
-        viewState = .loaded
     }
 }
 

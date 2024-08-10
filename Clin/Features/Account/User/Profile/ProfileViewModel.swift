@@ -21,7 +21,7 @@ final class ProfileViewModel {
     
     var username: String = ""
     var imageSelection: [PhotosPickerItem] = []
-    private(set) var avatarImage: PickedImage?
+    private(set) var avatarImage: SelectedImage?
     private(set) var displayName: String = ""
     private(set) var profile: Profile? = nil
     private(set) var cooldownTime: Int = 0

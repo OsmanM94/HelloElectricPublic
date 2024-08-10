@@ -24,7 +24,7 @@ struct ListingView: View {
                     Text("\(viewModel.listings.count)")
                     switch viewModel.viewState {
                     case .loading:
-                        CustomProgressView()
+                        ListingViewPlaceholder()
                         
                     case .loaded:
                         ListingSubview(viewModel: viewModel, isDoubleTap: $isDoubleTap)
@@ -32,11 +32,6 @@ struct ListingView: View {
                     case .error(let message):
                         ErrorView(message: message, retryAction: {
                             Task { await viewModel.fetchListings() } })
-                        
-                    case .refreshCooldown(let message):
-                        CooldownView(message: message, retryAction: {
-                            viewModel.resetState()
-                        })
                     }
                 }
                 .sheet(isPresented: $viewModel.showFilterSheet, content: {})
@@ -50,24 +45,6 @@ struct ListingView: View {
             }
         }
     }
-}
-
-#Preview("API") {
-    ListingView(viewModel: ListingViewModel(listingService: ListingService()), isDoubleTap: .constant(false))
-        .environmentObject(FavouriteViewModel(favouriteService: FavouriteService()))
-}
-
-#Preview("MockData") {
-    ListingView(viewModel: ListingViewModel(listingService: MockListingService()), isDoubleTap: .constant(false))
-        .environmentObject(FavouriteViewModel(favouriteService: FavouriteService()))
-}
-
-#Preview("Loading") {
-    CustomProgressView()
-}
-
-#Preview("Refresh") {
-    CooldownView(message: "Please wait 10 seconds before refreshing again. ", retryAction: {})
 }
 
 fileprivate struct ListingSubview: View {
@@ -96,8 +73,8 @@ fileprivate struct ListingSubview: View {
                         }
                 }
             }
-            .navigationDestination(for: Listing.self, destination: { item in
-                ListingDetailView(listing: item)
+            .navigationDestination(for: Listing.self, destination: { listing in
+                ListingDetailView(listing: listing)
             })
             .listStyle(.plain)
             .searchable(text: $text, placement:
@@ -116,5 +93,19 @@ fileprivate struct ListingSubview: View {
             }
         }
     }
+}
+
+#Preview("API") {
+    ListingView(viewModel: ListingViewModel(listingService: ListingService()), isDoubleTap: .constant(false))
+        .environmentObject(FavouriteViewModel(favouriteService: FavouriteService()))
+}
+
+#Preview("MockData") {
+    ListingView(viewModel: ListingViewModel(listingService: MockListingService()), isDoubleTap: .constant(false))
+        .environmentObject(FavouriteViewModel(favouriteService: MockFavouriteService()))
+}
+
+#Preview("Loading") {
+    CustomProgressView()
 }
 

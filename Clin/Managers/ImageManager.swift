@@ -54,7 +54,7 @@ final class ImageManager {
             contentType = "image/jpeg"
             print("DEBUG: JPEG is supported.")
         }
-        
+      
         guard let finalData = compressedData else {
             print("DEBUG: Failed to compress image.")
             return nil
@@ -85,7 +85,7 @@ final class ImageManager {
         }
     }
     
-    func loadItem(item: PhotosPickerItem, analyze: Bool = true) async -> PickedImage? {
+    func loadItem(item: PhotosPickerItem, analyze: Bool = true) async -> SelectedImage? {
         do {
             let data = try await item.loadTransferable(type: Data.self)
             guard let data = data, UIImage(data: data) != nil else { return nil }
@@ -100,7 +100,7 @@ final class ImageManager {
                     break
                 }
             }
-            return PickedImage(data: data)
+            return SelectedImage(data: data)
         } catch {
             print("DEBUG: Error loading image: \(error.localizedDescription)")
             return nil

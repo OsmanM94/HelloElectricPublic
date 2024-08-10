@@ -49,7 +49,7 @@ struct EditFormView: View {
 }
 
 #Preview {
-    EditFormView(listing: MockListingService.sampleData[0], viewModel: EditFormViewModel(listingService: ListingService()))
+    EditFormView(listing: MockListingService.sampleData[0], viewModel: EditFormViewModel(listingService: MockListingService()))
 }
 
 fileprivate struct EditFormSubview: View {
@@ -57,7 +57,7 @@ fileprivate struct EditFormSubview: View {
     
     @Bindable var viewModel: EditFormViewModel
     @State var listing: Listing
-    
+
     var body: some View {
         Form {
             Section(header: Text("\(viewModel.totalImageCount)/10")) {
