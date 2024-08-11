@@ -13,20 +13,13 @@ struct ListingDetailSplashView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            if let firstImageURL = listing.imagesURL.first {
-                ImageLoader(url: firstImageURL, contentMode: .fill, targetSize: CGSize(width: 350, height: 350))
-                    .frame(maxWidth: .infinity, maxHeight: 350)
-                    .clipped()
-            } else {
-                Rectangle()
-                    .foregroundStyle(.gray.opacity(0.5))
-                    .frame(maxWidth: .infinity, maxHeight: 350)
-                    .overlay {
-                        Text("No Image Available")
-                            .foregroundStyle(.secondary)
-                            .font(.headline)
-                    }
-            }
+            Rectangle()
+                .foregroundStyle(.gray.opacity(0.5))
+                .frame(maxWidth: .infinity, maxHeight: 350)
+                .overlay {
+                    ProgressView()
+                        .scaleEffect(1.5)
+                }
             VStack(alignment: .leading, spacing: 5) {
                 Text("\(listing.make) \(listing.model)")
                     .font(.title)

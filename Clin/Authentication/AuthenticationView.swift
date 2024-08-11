@@ -34,6 +34,7 @@ struct AuthenticationView: View {
                 }
             }
             .navigationTitle("Sign in")
+            .preferredColorScheme(.light)
         }
     }
 }

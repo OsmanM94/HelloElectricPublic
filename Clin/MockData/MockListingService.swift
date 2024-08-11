@@ -130,6 +130,7 @@ struct MockListingService: ListingServiceProtocol {
     ]
     
     func fetchListings(from: Int, to: Int) async throws -> [Listing] {
+        try await Task.sleep(nanoseconds: 2 * 1_000_000_000)
         return MockListingService.sampleData
     }
     

@@ -16,13 +16,8 @@ struct ListingDetailView: View {
         VStack(spacing: 0) {
             if showSplash {
                 ListingDetailSplashView(listing: listing)
-//                    .transition(.opacity)
                     .onAppear {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                            withAnimation {
-                                showSplash = false
-                            }
-                        }
+                        performAfterDelay(1.5, action: { showSplash = false })
                     }
             } else {
                 VStack(alignment: .leading, spacing: 0) {

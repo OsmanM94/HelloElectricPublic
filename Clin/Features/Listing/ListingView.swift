@@ -21,17 +21,14 @@ struct ListingView: View {
         NavigationStack {
             Group {
                 VStack(spacing: 0) {
-                    Text("\(viewModel.listings.count)")
                     switch viewModel.viewState {
                     case .loading:
-                        ListingViewPlaceholder()
+                        ListingViewPlaceholder(retryAction: {
+                            await viewModel.fetchListings()
+                        })
                         
                     case .loaded:
                         ListingSubview(viewModel: viewModel, isDoubleTap: $isDoubleTap)
-                        
-                    case .error(let message):
-                        ErrorView(message: message, retryAction: {
-                            Task { await viewModel.fetchListings() } })
                     }
                 }
                 .sheet(isPresented: $viewModel.showFilterSheet, content: {})
@@ -85,19 +82,18 @@ fileprivate struct ListingSubview: View {
                     viewModel.showFilterSheet.toggle()
                 })
             }
-            .onChange(of: isDoubleTap) {
-                withAnimation {
-                    proxy.scrollTo(viewModel.listings.first?.id)
-                    print("DEBUG: Scrolling to top.")
+            .onChange(of: isDoubleTap) { _,  newValue in
+                if newValue {
+                    print("DEBUG: Scrolling to top is true")
+                    withAnimation {
+                        proxy.scrollTo(viewModel.listings.first?.id)
+                        isDoubleTap = false
+                        print("DEBUG: Scrolling to top is \(isDoubleTap)")
+                    }
                 }
             }
         }
     }
-}
-
-#Preview("API") {
-    ListingView(viewModel: ListingViewModel(listingService: ListingService()), isDoubleTap: .constant(false))
-        .environmentObject(FavouriteViewModel(favouriteService: FavouriteService()))
 }
 
 #Preview("MockData") {
@@ -105,7 +101,9 @@ fileprivate struct ListingSubview: View {
         .environmentObject(FavouriteViewModel(favouriteService: MockFavouriteService()))
 }
 
-#Preview("Loading") {
-    CustomProgressView()
+
+#Preview("API") {
+    ListingView(viewModel: ListingViewModel(listingService: ListingService()), isDoubleTap: .constant(false))
+        .environmentObject(FavouriteViewModel(favouriteService: FavouriteService()))
 }
 

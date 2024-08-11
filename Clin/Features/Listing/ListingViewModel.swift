@@ -12,17 +12,8 @@ final class ListingViewModel {
     enum ListingViewState {
         case loading
         case loaded
-        case error(String)
     }
     
-    enum ListingViewStateMessages: String, Error {
-        case generalError = "An error occurred. Please try again."
-        case noAuthUserFound = "No authenticated user found."
-        
-        var message: String {
-            return self.rawValue
-        }
-    }
     private let listingService: ListingServiceProtocol
     
     init(listingService: ListingServiceProtocol) {
@@ -58,7 +49,7 @@ final class ListingViewModel {
             
             print("DEBUG: Fetching 10 listings...")
         } catch {
-            viewState = .error(ListingViewStateMessages.generalError.message)
+            print("DEBUG: Error fetching listings \(error)")
         }
     }
     
@@ -85,7 +76,7 @@ final class ListingViewModel {
             lastRefreshTime = Date()
             print("DEBUG: Refreshing list...")
         } catch {
-            viewState = .error(ListingViewStateMessages.generalError.message)
+            print("DEBUG: Error refreshing listings \(error)")
         }
     }
     

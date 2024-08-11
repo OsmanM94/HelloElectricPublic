@@ -13,7 +13,6 @@ final class MarketViewModel {
     var lastSelectedTab: Int = 0
     var isDoubleTap: Bool = false
     
-    
     func handleTabSelection(_ newValue: Int) {
         if newValue == 0 && newValue == lastSelectedTab {
             /// Only toggle isDoubleTap if the current tab is the Listings tab (tag 0)
