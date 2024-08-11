@@ -28,6 +28,8 @@ final class FavouriteViewModel: ObservableObject {
     @Published private(set) var favoriteListings: [Favourite] = []
     @Published private(set) var isFavourite: Bool = false
     
+    private let favouriteService: FavouriteServiceProtocol
+    
     init(favouriteService: FavouriteServiceProtocol) {
         self.favouriteService = favouriteService
         Task {
@@ -35,8 +37,6 @@ final class FavouriteViewModel: ObservableObject {
             print("DEBUG: Initialising user favourites...")
         }
     }
-    
-    private let favouriteService: FavouriteServiceProtocol
     
     @MainActor
     func addToFavorites(listing: Listing) async  {

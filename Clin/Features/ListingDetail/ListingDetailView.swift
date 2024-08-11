@@ -9,66 +9,72 @@ import SwiftUI
 
 struct ListingDetailView: View {
     @State private var showSheet: Bool = false
+    @State private var showSplash: Bool = true
     var listing: Listing
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            if !listing.imagesURL.isEmpty {
-                TabView {
-                    ForEach(listing.imagesURL, id: \.self) { imageURL in
-                        ImageLoader(url: imageURL, contentMode: .fill, targetSize: CGSize(width: 350, height: 350))
+        VStack(spacing: 0) {
+            if showSplash {
+                ListingDetailSplashView(listing: listing)
+//                    .transition(.opacity)
+                    .onAppear {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                            withAnimation {
+                                showSplash = false
+                            }
+                        }
+                    }
+            } else {
+                VStack(alignment: .leading, spacing: 0) {
+                    if !listing.imagesURL.isEmpty {
+                        TabView {
+                            ForEach(listing.imagesURL, id: \.self) { imageURL in
+                                ImageLoader(url: imageURL, contentMode: .fill, targetSize: CGSize(width: 350, height: 350))
+                                    .frame(maxWidth: .infinity, maxHeight: 350)
+                                    .clipped()
+                                    .onTapGesture {
+                                        showSheet.toggle()
+                                    }
+                            }
+                        }
+                        .sheet(isPresented: $showSheet, content: {
+                            SheetImages(listing: listing)
+                        })
+                        .tabViewStyle(.page)
+                        .frame(maxWidth: .infinity, maxHeight: 350)
+                    } else {
+                        Rectangle()
+                            .foregroundStyle(.gray.opacity(0.5))
                             .frame(maxWidth: .infinity, maxHeight: 350)
-                            .clipped()
-                            .onTapGesture {
-                                showSheet.toggle()
+                            .overlay {
+                                Text("No Images Available")
+                                    .foregroundStyle(.secondary)
+                                    .font(.headline)
                             }
                     }
-                }
-//                .onAppear {
-//                    ImagePrefetcher.instance.startPrefetching(urls: listing.imagesURL)
-//                }
-//                .onDisappear {
-//                    ImagePrefetcher.instance.stopPrefetching()
-//                }
-                .sheet(isPresented: $showSheet, content: {
-                    SheetImages(listing: listing)
-                })
-                .tabViewStyle(.page)
-                .frame(maxWidth: .infinity, maxHeight: 350)
-            } else {
-                Rectangle()
-                    .foregroundStyle(.gray.opacity(0.5))
-                    .frame(maxWidth: .infinity, maxHeight: 350)
-                    .overlay {
-                        Text("No Images Available")
+                    
+                    VStack(alignment: .leading, spacing: 5) {
+                        Text("\(listing.make) \(listing.model)")
+                            .font(.title)
+                            .fontWeight(.bold)
+                        
+                        Text("\(listing.condition)")
+                            .font(.title2)
                             .foregroundStyle(.secondary)
-                            .font(.headline)
+                        
+                        Text("\(listing.mileage, format: .number) miles")
+                            .font(.title3)
+                        
+                        Text(listing.price, format: .currency(code: Locale.current.currency?.identifier ?? "GBP").precision(.fractionLength(0)))
+                            .font(.title3)
+                            .fontWeight(.bold)
                     }
+                    .padding()
+                    
+                    Spacer()
+                }
             }
-            
-            VStack(alignment: .leading, spacing: 5) {
-                Text("\(listing.make) \(listing.model)")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                
-                Text("\(listing.condition)")
-                    .font(.title2)
-                    .foregroundStyle(.secondary)
-                
-                Text("\(listing.mileage, format: .number) miles")
-                    .font(.title3)
-                
-                Text(listing.price, format: .currency(code: Locale.current.currency?.identifier ?? "GBP").precision(.fractionLength(0)))
-                    .font(.title3)
-                    .fontWeight(.bold)
-                
-                // Add other listing details here
-            }
-            .padding()
-            
-            Spacer()
         }
-        
     }
 }
 

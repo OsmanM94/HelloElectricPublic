@@ -8,11 +8,9 @@
 import SwiftUI
 
 struct ListingViewPlaceholder: View {
+    @State private var textPlaceholder: String = ""
     var body: some View {
         VStack(spacing: 0) {
-            Text("Loading...")
-                .font(.title)
-                .redacted(reason: .placeholder)
             List {
                 ForEach(0..<10) { _ in
                     HStack {
@@ -35,13 +33,17 @@ struct ListingViewPlaceholder: View {
                     .padding(.vertical, 10)
                 }
             }
+            .navigationTitle("Listings")
+            .navigationBarTitleDisplayMode(.inline)
+            .searchable(text: $textPlaceholder)
             .listStyle(.plain)
-            .redacted(reason: .placeholder)
         }
         .padding()
     }
 }
 
 #Preview {
-    ListingViewPlaceholder()
+    NavigationStack {
+        ListingViewPlaceholder()
+    }
 }
