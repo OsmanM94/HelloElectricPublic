@@ -9,8 +9,7 @@ import SwiftUI
 
 struct ListingDetailSplashView: View {
     @State private var isAnimating: Bool = false
-    var listing: Listing
-    
+   
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             Rectangle()
@@ -21,31 +20,34 @@ struct ListingDetailSplashView: View {
                         .scaleEffect(1.5)
                 }
             VStack(alignment: .leading, spacing: 5) {
-                Text("\(listing.make) \(listing.model)")
+                Text("Tesla model 3 2024 ")
                     .font(.title)
                     .fontWeight(.bold)
+                Text("Used")
+                    .font(.title2)
+                    .foregroundStyle(.secondary)
                 
+                Text("120.000 miles")
+                    .font(.title3)
+                
+                Text("£17.000")
+                    .font(.title3)
+                    .fontWeight(.bold)
             }
+            .shimmer(when: $isAnimating)
             .padding()
-            
+           
             Spacer()
         }
-        
-        VStack(alignment: .center, spacing: 0) {
-            Image(systemName: "ellipsis")
-                .symbolEffect(.bounce, options: .repeating.speed(0.8), value: isAnimating)
-                .font(.system(size: 60))
-                .onAppear {
-                    isAnimating.toggle()
-                }
-                .onDisappear {
-                    isAnimating = false
-                }
+        .onAppear {
+            isAnimating.toggle()
         }
-        .padding(.bottom, 150)
+        .onDisappear {
+            isAnimating = false
+        }
     }
 }
 
 #Preview {
-    ListingDetailSplashView(listing: MockListingService.sampleData[0])
+    ListingDetailSplashView()
 }

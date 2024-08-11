@@ -57,25 +57,21 @@ fileprivate struct ListingSubview: View {
                         ListingCell(listing: item)
                     }
                 }
-                .alignmentGuide(.listRowSeparatorLeading) { _ in
-                    0
-                }
+                .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
+                
                 if viewModel.listings.last != nil && viewModel.hasMoreListings {
                     ProgressView()
                         .scaleEffect(1.0)
                         .frame(maxWidth: .infinity, alignment: .center)
                         .listRowSeparator(.hidden)
-                        .task {
-                            await viewModel.fetchListings()
-                        }
+                        .task { await viewModel.fetchListings() }
                 }
             }
             .navigationDestination(for: Listing.self, destination: { listing in
                 ListingDetailView(listing: listing)
             })
             .listStyle(.plain)
-            .searchable(text: $text, placement:
-                    .navigationBarDrawer(displayMode: .always))
+            .searchable(text: $text, placement: .navigationBarDrawer(displayMode: .always))
             .refreshable { await viewModel.refreshListings() }
             .toolbar {
                 Button("", systemImage: "line.3.horizontal.decrease.circle", action: {
@@ -84,7 +80,7 @@ fileprivate struct ListingSubview: View {
             }
             .onChange(of: isDoubleTap) { _,  newValue in
                 if newValue {
-                    print("DEBUG: Scrolling to top is true")
+                    print("DEBUG: Scrolling to top is \(isDoubleTap)")
                     withAnimation {
                         proxy.scrollTo(viewModel.listings.first?.id)
                         isDoubleTap = false

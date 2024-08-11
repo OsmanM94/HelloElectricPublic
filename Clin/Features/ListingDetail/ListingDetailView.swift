@@ -15,7 +15,7 @@ struct ListingDetailView: View {
     var body: some View {
         VStack(spacing: 0) {
             if showSplash {
-                ListingDetailSplashView(listing: listing)
+                ListingDetailSplashView()
                     .onAppear {
                         performAfterDelay(1.5, action: { showSplash = false })
                     }

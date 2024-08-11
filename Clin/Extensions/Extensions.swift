@@ -61,3 +61,15 @@ public extension Binding {
         )
     }
 }
+
+public extension View {
+    @ViewBuilder
+    func shimmer(when isLoading: Binding<Bool>) -> some View {
+        if isLoading.wrappedValue {
+            self.modifier(Shimmer())
+                .redacted(reason: isLoading.wrappedValue ? .placeholder : [])
+        } else {
+            self
+        }
+    }
+}
