@@ -9,7 +9,11 @@ import SwiftUI
 
 struct ProfileView: View {
     
-    @State private var viewModel = ProfileViewModel()
+    @State private var viewModel: ProfileViewModel
+    
+    init(viewModel: @autoclosure @escaping () -> ProfileViewModel) {
+        self._viewModel = State(wrappedValue: viewModel())
+    }
    
     var body: some View {
         NavigationStack {
@@ -47,12 +51,11 @@ struct ProfileView: View {
             await viewModel.getInitialProfile()
             await viewModel.loadProhibitedWords()
         }
-        .sensitiveContentAnalysisCheck()
     }
 }
 
 #Preview {
-    ProfileView()
+    ProfileView(viewModel: ProfileViewModel(imageManager: ImageManager(), prohibitedWordsService: ProhibitedWordsService()))
         .environment(AuthViewModel())
 }
 

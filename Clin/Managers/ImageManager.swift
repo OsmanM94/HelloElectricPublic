@@ -17,15 +17,11 @@ enum ImageLoadResult {
     case loadingError(String)
 }
 
-
-final class ImageManager {
-    static let shared = ImageManager()
+final class ImageManager: ImageManagerProtocol {
     
     var isHeicSupported: Bool {
         (CGImageDestinationCopyTypeIdentifiers() as! [String]).contains("public.heic")
     }
-    
-    private init() {}
     
     func analyzeImage(_ data: Data) async -> AnalysisState {
         await SensitiveContentAnalysis.shared.analyze(image: data)

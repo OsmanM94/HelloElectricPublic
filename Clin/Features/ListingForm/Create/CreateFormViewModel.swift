@@ -5,9 +5,8 @@
 //  Created by asia on 25/06/2024.
 //
 
-import Foundation
-import PhotosUI
 import SwiftUI
+import PhotosUI
 
 @Observable
 final class CreateFormViewModel {
@@ -71,10 +70,15 @@ final class CreateFormViewModel {
     var thumbnailsURLs: [URL] = []
     
     private let dvlaService = DvlaService()
-    private let listingService: ListingServiceProtocol
     
-    init(listingService: ListingServiceProtocol) {
+    private let listingService: ListingServiceProtocol
+    private let imageManager: ImageManagerProtocol
+    private let prohibitedWordsService: ProhibitedWordsServiceProtocol
+    
+    init(listingService: ListingServiceProtocol, imageManager: ImageManagerProtocol, prohibitedWordsService: ProhibitedWordsServiceProtocol) {
         self.listingService = listingService
+        self.imageManager = imageManager
+        self.prohibitedWordsService = prohibitedWordsService
     }
     
     @MainActor
@@ -89,7 +93,7 @@ final class CreateFormViewModel {
             }
             
             let fieldsToCheck = [model, description]
-            guard !ProhibitedWordsService.shared.containsProhibitedWords(in: fieldsToCheck) else {
+            guard !prohibitedWordsService.containsProhibitedWords(in: fieldsToCheck) else {
                 viewState = .error(ListingFormViewStateMessages.inappropriateField.message)
                 return
             }
@@ -122,7 +126,7 @@ final class CreateFormViewModel {
         let bucketName = "car_images"
         
         for image in pickedImages {
-            let imageURLString = try await ImageManager.shared.uploadImage(image.data, from: bucketName, to: folderPath, targetWidth: 350, targetHeight: 350, compressionQuality: 1.0)
+            let imageURLString = try await imageManager.uploadImage(image.data, from: bucketName, to: folderPath, targetWidth: 350, targetHeight: 350, compressionQuality: 1.0)
             if let urlString = imageURLString, let url = URL(string: urlString) {
                 self.imagesURLs.append(url)
             }
@@ -130,7 +134,7 @@ final class CreateFormViewModel {
         }
         
         if let firstImage = pickedImages.first {
-            let thumbnailURLString = try await ImageManager.shared.uploadImage(firstImage.data, from: bucketName, to: folderPath, targetWidth: 120, targetHeight: 120, compressionQuality: 0.4)
+            let thumbnailURLString = try await imageManager.uploadImage(firstImage.data, from: bucketName, to: folderPath, targetWidth: 120, targetHeight: 120, compressionQuality: 0.4)
             if let thumbUrlString = thumbnailURLString, let url = URL(string: thumbUrlString) {
                 self.thumbnailsURLs.append(url)
             }
@@ -187,7 +191,7 @@ final class CreateFormViewModel {
     @MainActor
     func loadItem(item: PhotosPickerItem) async {
         imageViewState = .loading
-        let result = await ImageManager.shared.loadItem(item: item)
+        let result = await imageManager.loadItem(item: item, analyze: true)
         
         switch result {
         case .success(let pickedImage):
@@ -225,7 +229,7 @@ final class CreateFormViewModel {
     
     func loadProhibitedWords() async {
         do {
-            try await ProhibitedWordsService.shared.loadProhibitedWords()
+            try await prohibitedWordsService.loadProhibitedWords()
         } catch {
             print("Failed to load prohibited words: \(error)")
         }

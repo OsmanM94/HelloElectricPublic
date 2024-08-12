@@ -85,7 +85,7 @@ fileprivate struct UserListingSubview: View {
         .fullScreenCover(item: $viewModel.selectedListing, onDismiss: {
             Task { await viewModel.fetchUserListings() }
         }) { listing in
-            EditFormView(listing: listing, viewModel: EditFormViewModel(listingService: ListingService()))
+            EditFormView(listing: listing, viewModel: EditFormViewModel(listingService: ListingService(), imageManager: ImageManager(), prohibitedWordsService: ProhibitedWordsService()))
         }
         .padding(.top)
     }

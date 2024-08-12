@@ -54,7 +54,7 @@ struct EditFormView: View {
 }
 
 #Preview {
-    EditFormView(listing: MockListingService.sampleData[0], viewModel: EditFormViewModel(listingService: MockListingService()))
+    EditFormView(listing: MockListingService.sampleData[0], viewModel: EditFormViewModel(listingService: MockListingService(), imageManager: ImageManager(), prohibitedWordsService: ProhibitedWordsService()))
 }
 
 fileprivate struct EditFormSubview: View {

@@ -15,7 +15,7 @@ struct CreateListingViewRouter: View {
     var body: some View {
         Group {
             if authViewModel.authenticationState == .authenticated {
-                CreateFormView(viewModel: CreateFormViewModel(listingService: ListingService()))
+                CreateFormView(viewModel: CreateFormViewModel(listingService: ListingService(), imageManager: ImageManager(), prohibitedWordsService: ProhibitedWordsService()))
                     .overlay(
                         !networkMonitor.isConnected ? NetworkMonitorView().background(Color.white.opacity(0.8)) : nil
                     )

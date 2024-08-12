@@ -4,11 +4,8 @@
 //
 //  Created by asia on 04/07/2024.
 //
-
-import Foundation
 import SwiftUI
 import SensitiveContentAnalysis
-
 
 enum AnalysisState: Equatable {
     case notStarted
@@ -22,9 +19,9 @@ enum AnalysisState: Equatable {
 final class SensitiveContentAnalysis {
     static let shared = SensitiveContentAnalysis()
     
-    var analysisState: AnalysisState = .notStarted
-    
     private init() {}
+    
+    var analysisState: AnalysisState = .notStarted
     
     @MainActor
     func analyze(image: Data) async {
@@ -33,7 +30,7 @@ final class SensitiveContentAnalysis {
         let policy = analyzer.analysisPolicy
     
         if policy == .disabled {
-            print("Policy is disabled")
+            print("DEBUG: Sensitive Content Analysis policy is disabled")
             analysisState = .error(message: "Policy is disabled")
             return
         }
@@ -56,7 +53,7 @@ final class SensitiveContentAnalysis {
 
 struct SensitiveContentAnalysisModifier: ViewModifier {
     @Bindable var analysis = SensitiveContentAnalysis.shared
-    
+
     func body(content: Content) -> some View {
         content
             .alert(isPresented: .constant(analysis.analysisState == .error(message: "Policy is disabled"))) {
@@ -76,8 +73,3 @@ struct SensitiveContentAnalysisModifier: ViewModifier {
 
 
 
-//if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
-//    if UIApplication.shared.canOpenURL(settingsURL) {
-//        UIApplication.shared.open(settingsURL)
-//    }
-//}

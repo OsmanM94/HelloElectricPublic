@@ -7,7 +7,6 @@
 import SwiftUI
 import PhotosUI
 
-
 @Observable
 final class ProfileViewModel {
     enum ViewState {
@@ -28,6 +27,14 @@ final class ProfileViewModel {
     private(set) var viewState: ViewState = .idle
     private(set) var cooldownTimer: Timer?
     
+    private let imageManager: ImageManagerProtocol
+    private let prohibitedWordsService: ProhibitedWordsServiceProtocol
+    
+    init(imageManager: ImageManagerProtocol, prohibitedWordsService: ProhibitedWordsServiceProtocol) {
+        self.imageManager = imageManager
+        self.prohibitedWordsService = prohibitedWordsService
+    }
+    
     var isInteractionBlocked: Bool {
         return cooldownTime > 0 || !validateUsername
     }
@@ -42,7 +49,7 @@ final class ProfileViewModel {
     
     func loadProhibitedWords() async {
         do {
-            try await ProhibitedWordsService.shared.loadProhibitedWords()
+            try await prohibitedWordsService.loadProhibitedWords()
         } catch {
             print("Failed to load prohibited words: \(error.localizedDescription)")
         }
@@ -79,7 +86,7 @@ final class ProfileViewModel {
             let folderPath = "\(currentUser.id)"
             let bucketName = "avatars"
             
-            let imageURLString = try await ImageManager.shared.uploadImage(avatarImage!.data, from: bucketName, to: folderPath,targetWidth: 80, targetHeight: 80, compressionQuality: 0.3)
+            let imageURLString = try await imageManager.uploadImage(avatarImage!.data, from: bucketName, to: folderPath,targetWidth: 80, targetHeight: 80, compressionQuality: 0.4)
             
             guard let imageURL = URL(string: imageURLString ?? "") else {
                 viewState = .error(ProfileViewStateMessages.generalError.message)
@@ -117,7 +124,7 @@ final class ProfileViewModel {
             return false
         }
         
-        guard !ProhibitedWordsService.shared.containsProhibitedWord(username) else {
+        guard !prohibitedWordsService.containsProhibitedWord(username) else {
             viewState = .error(ProfileViewStateMessages.inappropriateUsername.message)
             return false
         }
@@ -177,7 +184,7 @@ final class ProfileViewModel {
     
     @MainActor
     func loadItem(item: PhotosPickerItem) async {
-        let result = await ImageManager.shared.loadItem(item: item)
+        let result = await imageManager.loadItem(item: item, analyze: true)
         
         switch result {
         case .success(let pickedImage):

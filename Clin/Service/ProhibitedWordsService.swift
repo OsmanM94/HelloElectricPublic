@@ -7,11 +7,9 @@
 
 import Foundation
 
-final class ProhibitedWordsService {
-    static let shared = ProhibitedWordsService()
-    
-    private init() {}
-    
+
+final class ProhibitedWordsService: ProhibitedWordsServiceProtocol {
+   
     private(set) var prohibitedWords: Set<String> = []
     
     func loadProhibitedWords() async throws {

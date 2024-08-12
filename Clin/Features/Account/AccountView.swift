@@ -15,7 +15,9 @@ struct AccountView: View {
         NavigationStack {
             Form {
                 Section("Manage") {
-                    NavigationLink("Profile", destination: { ProfileView() })
+                    NavigationLink("Profile", destination: {
+                        ProfileView(viewModel: ProfileViewModel(imageManager: ImageManager(), prohibitedWordsService: ProhibitedWordsService()))
+                    })
                     NavigationLink("My listings", destination: {
                         UserListingView(viewModel: UserListingViewModel(listingService: ListingService()))
                     })
@@ -94,3 +96,6 @@ fileprivate struct SignOutButton: View {
         .buttonStyle(.plain)
     }
 }
+
+
+

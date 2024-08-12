@@ -56,12 +56,12 @@ struct CreateFormView: View {
 }
 
 #Preview {
-    CreateFormView(viewModel: CreateFormViewModel(listingService: MockListingService()))
+    CreateFormView(viewModel: CreateFormViewModel(listingService: MockListingService(), imageManager: ImageManager(), prohibitedWordsService: ProhibitedWordsService()))
 }
 
 #Preview("Loaded") {
     NavigationStack {
-        CreateFormSubview(viewModel: CreateFormViewModel(listingService: MockListingService()))
+        CreateFormSubview(viewModel: CreateFormViewModel(listingService: MockListingService(), imageManager: ImageManager(), prohibitedWordsService: ProhibitedWordsService()))
     }
 }
 
