@@ -42,7 +42,9 @@ struct CreateFormView: View {
                             viewModel.resetState()
                         })
                     case .sensitiveApiNotEnabled:
-                        SensitiveAnalysisErrorView()
+                        SensitiveAnalysisErrorView(retryAction: {
+                            viewModel.resetStateToLoaded()
+                        })
                     }
                 }
             }
@@ -54,12 +56,12 @@ struct CreateFormView: View {
 }
 
 #Preview {
-    CreateFormView(viewModel: CreateFormViewModel(listingService: ListingService()))
+    CreateFormView(viewModel: CreateFormViewModel(listingService: MockListingService()))
 }
 
 #Preview("Loaded") {
     NavigationStack {
-        CreateFormSubview(viewModel: CreateFormViewModel(listingService: ListingService()))
+        CreateFormSubview(viewModel: CreateFormViewModel(listingService: MockListingService()))
     }
 }
 

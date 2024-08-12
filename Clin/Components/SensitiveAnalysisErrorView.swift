@@ -9,28 +9,35 @@ import SwiftUI
 
 struct SensitiveAnalysisErrorView: View {
     @State private var showPopover: Bool = false
+    let retryAction: () -> Void
     
     var body: some View {
         ZoomImages {
             VStack(spacing: 0) {
                 HStack(spacing: 5) {
-                    Image(decorative: "sensitive1")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(maxWidth: .infinity)
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                    if let sensitive1 = UIImage(named: "sensitive1")?.resize(200, 200) {
+                        Image(uiImage: sensitive1)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(maxWidth: .infinity)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                    }
                     
-                    Image(decorative: "sensitive2")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(maxWidth: .infinity)
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                    if let sensitive2 = UIImage(named: "sensitive2")?.resize(200, 200) {
+                        Image(uiImage: sensitive2)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(maxWidth: .infinity)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                    }
                     
-                    Image(decorative: "sensitive3")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(maxWidth: .infinity)
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                    if let sensitive3 = UIImage(named: "sensitive3")?.resize(200, 200) {
+                        Image(uiImage: sensitive3)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(maxWidth: .infinity)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                    }
                 }
                 .padding(.top)
                 
@@ -48,6 +55,12 @@ struct SensitiveAnalysisErrorView: View {
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal)
+                    
+                    Button(action: { retryAction() }) {
+                        Text("Retry")
+                            .font(.title3)
+                    }
+                    .padding(.top, 5)
                 }
                 
                 Spacer(minLength: 0)
@@ -67,7 +80,7 @@ struct SensitiveAnalysisErrorView: View {
                         
                         Text("Sensitive Content Warning is required to analyze your images for inappropriate content, such as nudity, before they are uploaded. This helps maintain a safe and respectful environment.")
                             .font(.body)
-                            .multilineTextAlignment(.leading)
+                            .multilineTextAlignment(.center)
                             .foregroundStyle(.secondary)
                             .padding()
                         
@@ -90,5 +103,5 @@ struct SensitiveAnalysisErrorView: View {
 }
 
 #Preview {
-    SensitiveAnalysisErrorView()
+    SensitiveAnalysisErrorView(retryAction: {})
 }

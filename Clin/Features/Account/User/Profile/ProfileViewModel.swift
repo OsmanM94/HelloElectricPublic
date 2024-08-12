@@ -4,11 +4,9 @@
 //
 //  Created by asia on 26/06/2024.
 //
-
-import Foundation
 import SwiftUI
 import PhotosUI
-import Storage
+
 
 @Observable
 final class ProfileViewModel {
@@ -16,6 +14,7 @@ final class ProfileViewModel {
         case idle
         case loading
         case error(String)
+        case sensitiveApiNotEnabled
         case success(String)
     }
     
@@ -33,6 +32,7 @@ final class ProfileViewModel {
         return cooldownTime > 0 || !validateUsername
     }
     
+    @MainActor
     func resetState() {
         username = ""
         imageSelection = []
@@ -185,7 +185,7 @@ final class ProfileViewModel {
         case .sensitiveContent:
             viewState = .error(ProfileViewStateMessages.sensitiveContent.message)
         case .analysisError:
-            viewState = .error(ProfileViewStateMessages.sensitiveApiNotEnabled.message)
+            viewState = .sensitiveApiNotEnabled
         case .loadingError:
             viewState = .error(ProfileViewStateMessages.generalError.message)
         }

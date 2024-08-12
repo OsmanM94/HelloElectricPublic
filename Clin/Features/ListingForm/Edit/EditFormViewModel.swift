@@ -18,6 +18,7 @@ final class EditFormViewModel {
         case uploading
         case success(String)
         case error(String)
+        case sensitiveApiNotEnabled
     }
     
     enum ImageViewState {
@@ -130,7 +131,7 @@ final class EditFormViewModel {
         case .sensitiveContent:
             viewState = .error(ListingFormViewStateMessages.sensitiveContent.message)
         case .analysisError:
-            viewState = .error(ListingFormViewStateMessages.sensitiveApiNotEnabled.message)
+            viewState = .sensitiveApiNotEnabled
         case .loadingError:
             viewState = .error(ListingFormViewStateMessages.generalError.message)
         }
@@ -167,5 +168,13 @@ final class EditFormViewModel {
     
     var totalImageCount: Int {
         imageSelections.count
+    }
+    
+    @MainActor
+    func resetStateToIdle() {
+        pickedImages = []
+        imageSelections = []
+        imageViewState = .idle
+        viewState = .idle
     }
 }

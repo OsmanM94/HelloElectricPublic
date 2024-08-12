@@ -26,6 +26,11 @@ struct ProfileView: View {
                         ErrorView(message: message, retryAction: {
                             viewModel.resetState()
                         })
+                    
+                    case .sensitiveApiNotEnabled:
+                        SensitiveAnalysisErrorView(retryAction: {
+                            viewModel.resetState()
+                        })
                         
                     case .success(let message):
                         SuccessView(message: message, doneAction: {

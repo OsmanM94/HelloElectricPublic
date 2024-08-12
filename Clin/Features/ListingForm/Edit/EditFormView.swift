@@ -36,6 +36,11 @@ struct EditFormView: View {
                         
                     case .error(let message):
                         ErrorView(message: message, retryAction: { viewModel.resetState() })
+                        
+                    case .sensitiveApiNotEnabled:
+                        SensitiveAnalysisErrorView(retryAction: {
+                            viewModel.resetStateToIdle()
+                        })
                     }
                 }
             }

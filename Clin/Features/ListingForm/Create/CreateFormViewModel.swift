@@ -230,4 +230,12 @@ final class CreateFormViewModel {
             print("Failed to load prohibited words: \(error)")
         }
     }
+    
+    @MainActor
+    func resetStateToLoaded() {
+        pickedImages = []
+        imageSelections = []
+        imageViewState = .idle
+        viewState = .loaded
+    }
 }

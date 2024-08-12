@@ -13,6 +13,10 @@ import AVFoundation
 /// Resize image while keeping the aspect ratio. Original image is not modified.
 public extension UIImage {
     func resize(_ width: Int, _ height: Int) -> UIImage? {
+        // Return nil if the image has no valid size
+        guard self.size.width > 0, self.size.height > 0 else {
+            return nil
+        }
         // Keep aspect ratio
         let maxSize = CGSize(width: width, height: height)
 
@@ -24,6 +28,7 @@ public extension UIImage {
 
         // Set scale of renderer so that 1pt == 1px
         let format = UIGraphicsImageRendererFormat()
+//        format.scale = UIScreen.main.scale
         format.scale = 3.0
         let renderer = UIGraphicsImageRenderer(size: targetSize, format: format)
 
@@ -62,6 +67,7 @@ public extension Binding {
     }
 }
 
+/// Shimmer modifier
 public extension View {
     @ViewBuilder
     func shimmer(when isLoading: Binding<Bool>) -> some View {
@@ -71,5 +77,12 @@ public extension View {
         } else {
             self
         }
+    }
+}
+
+/// This modifier shows an alert when the Sensitive Content Analysis is turned off.
+public extension View {
+    func sensitiveContentAnalysisCheck() -> some View {
+        self.modifier(SensitiveContentAnalysisModifier())
     }
 }

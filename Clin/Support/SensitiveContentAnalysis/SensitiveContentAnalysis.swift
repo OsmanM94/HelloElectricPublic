@@ -64,10 +64,8 @@ struct SensitiveContentAnalysisModifier: ViewModifier {
                     title: Text("Enable Sensitive Content Analysis to upload photos."),
                     message: Text("To enable: Go to Settings > Privacy & Security > Sensitive Content Warning."),
                     primaryButton: .default(Text("Go to Settings")) {
-                        if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
-                            if UIApplication.shared.canOpenURL(settingsURL) {
-                                UIApplication.shared.open(settingsURL)
-                            }
+                        if let url = URL(string: UIApplication.openSettingsURLString) {
+                            UIApplication.shared.open(url)
                         }
                     },
                     secondaryButton: .cancel()
@@ -76,9 +74,10 @@ struct SensitiveContentAnalysisModifier: ViewModifier {
     }
 }
 
-extension View {
-    func sensitiveContentAnalysisCheck() -> some View {
-        self.modifier(SensitiveContentAnalysisModifier())
-    }
-}
 
+
+//if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
+//    if UIApplication.shared.canOpenURL(settingsURL) {
+//        UIApplication.shared.open(settingsURL)
+//    }
+//}
