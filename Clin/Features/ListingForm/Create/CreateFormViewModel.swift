@@ -18,6 +18,7 @@ final class CreateFormViewModel {
         case loaded
         case success(String)
         case error(String)
+        case sensitiveApiNotEnabled
     }
     
     enum ImageViewState {
@@ -186,12 +187,18 @@ final class CreateFormViewModel {
     @MainActor
     func loadItem(item: PhotosPickerItem) async {
         imageViewState = .loading
+        let result = await ImageManager.shared.loadItem(item: item)
         
-        if let pickedImage = await ImageManager.shared.loadItem(item: item) {
+        switch result {
+        case .success(let pickedImage):
             pickedImages.append(pickedImage)
             imageViewState = .loaded
-        } else {
+        case .sensitiveContent:
             viewState = .error(ListingFormViewStateMessages.sensitiveContent.message)
+        case .analysisError:
+            viewState = .sensitiveApiNotEnabled
+        case .loadingError:
+            viewState = .error(ListingFormViewStateMessages.generalError.message)
         }
     }
     

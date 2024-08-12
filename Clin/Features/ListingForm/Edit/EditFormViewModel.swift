@@ -121,12 +121,18 @@ final class EditFormViewModel {
     @MainActor
     func loadItem(item: PhotosPickerItem) async {
         imageViewState = .loading
+        let result = await ImageManager.shared.loadItem(item: item)
         
-        if let pickedImage = await ImageManager.shared.loadItem(item: item) {
+        switch result {
+        case .success(let pickedImage):
             pickedImages.append(pickedImage)
             imageViewState = .loaded
-        } else {
+        case .sensitiveContent:
             viewState = .error(ListingFormViewStateMessages.sensitiveContent.message)
+        case .analysisError:
+            viewState = .error(ListingFormViewStateMessages.sensitiveApiNotEnabled.message)
+        case .loadingError:
+            viewState = .error(ListingFormViewStateMessages.generalError.message)
         }
     }
     

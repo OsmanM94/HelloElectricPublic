@@ -5,7 +5,7 @@
 //  Created by asia on 26/06/2024.
 //
 import SwiftUI
-import PhotosUI
+
 
 struct ProfileView: View {
     
@@ -42,6 +42,7 @@ struct ProfileView: View {
             await viewModel.getInitialProfile()
             await viewModel.loadProhibitedWords()
         }
+        .sensitiveContentAnalysisCheck()
     }
 }
 
@@ -119,22 +120,9 @@ fileprivate struct ProfileSubview: View {
                 .disabled(viewModel.isInteractionBlocked)
             }
         }
-        .alert(isPresented: $viewModel.showAlert) {
-            Alert(
-                title: Text("Enable Sensitive Content Analysis"),
-                message: Text("\(viewModel.alertMessage)\n\nTo enable: Go to Settings > Privacy & Security > Sensitive Content Warning."),
-                primaryButton: .default(Text("Go to Settings")) {
-                    if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
-                        if UIApplication.shared.canOpenURL(settingsURL) {
-                            UIApplication.shared.open(settingsURL)
-                        }
-                    }
-                },
-                secondaryButton: .cancel()
-            )
-        }
     }
 }
+
 
 
 

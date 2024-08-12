@@ -10,6 +10,13 @@ import SwiftUI
 import PhotosUI
 import Storage
 
+enum ImageLoadResult {
+    case success(SelectedImage)
+    case sensitiveContent
+    case analysisError(String)
+    case loadingError(String)
+}
+
 
 final class ImageManager {
     static let shared = ImageManager()
@@ -85,25 +92,36 @@ final class ImageManager {
         }
     }
     
-    func loadItem(item: PhotosPickerItem, analyze: Bool = true) async -> SelectedImage? {
+    func loadItem(item: PhotosPickerItem, analyze: Bool = true) async -> ImageLoadResult {
         do {
             let data = try await item.loadTransferable(type: Data.self)
-            guard let data = data, UIImage(data: data) != nil else { return nil }
-            
+            guard let data = data else {
+                return .loadingError("No data was returned from the PhotosPickerItem.")
+            }
+
+            guard UIImage(data: data) != nil else {
+                return .loadingError("Data could not be converted to UIImage.")
+            }
+
             if analyze {
                 let analysisState = await analyzeImage(data)
                 switch analysisState {
-                case .isSensitive, .error:
-                    print("DEBUG: Image contains sensitive content or there was an error analyzing the image.")
-                    return nil
+                case .isSensitive:
+                    return .sensitiveContent
+                case .error(let message):
+                    return .analysisError(message)
                 default:
                     break
                 }
             }
-            return SelectedImage(data: data)
+
+            guard let selectedImage = SelectedImage(data: data) else {
+                return .loadingError("Failed to create SelectedImage from data.")
+            }
+            
+            return .success(selectedImage)
         } catch {
-            print("DEBUG: Error loading image: \(error.localizedDescription)")
-            return nil
+            return .loadingError(error.localizedDescription)
         }
     }
 }

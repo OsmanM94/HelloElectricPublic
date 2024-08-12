@@ -25,9 +25,7 @@ final class ProfileViewModel {
     private(set) var displayName: String = ""
     private(set) var profile: Profile? = nil
     private(set) var cooldownTime: Int = 0
-    var showAlert: Bool = false
-    var alertMessage: String = ""
-    
+   
     private(set) var viewState: ViewState = .idle
     private(set) var cooldownTimer: Timer?
     
@@ -68,7 +66,7 @@ final class ProfileViewModel {
            
         } catch {
             debugPrint(error)
-            viewState = .error(ProfileViewStatesMessages.generalError.message)
+            viewState = .error(ProfileViewStateMessages.generalError.message)
         }
     }
     
@@ -84,7 +82,7 @@ final class ProfileViewModel {
             let imageURLString = try await ImageManager.shared.uploadImage(avatarImage!.data, from: bucketName, to: folderPath,targetWidth: 80, targetHeight: 80, compressionQuality: 0.3)
             
             guard let imageURL = URL(string: imageURLString ?? "") else {
-                viewState = .error(ProfileViewStatesMessages.generalError.message)
+                viewState = .error(ProfileViewStateMessages.generalError.message)
                 return
             }
             
@@ -105,22 +103,22 @@ final class ProfileViewModel {
             self.username = ""
                         
             startCooldownTimer()
-            viewState = .success(ProfileViewStatesMessages.success.message)
+            viewState = .success(ProfileViewStateMessages.success.message)
         } catch {
             debugPrint(error)
-            viewState = .error(ProfileViewStatesMessages.generalError.message)
+            viewState = .error(ProfileViewStateMessages.sensitiveApiNotEnabled.message)
         }
     }
     
     @MainActor
     private func canUpdateProfile() async -> Bool {
         guard cooldownTime == 0 else {
-            viewState = .error(ProfileViewStatesMessages.generalError.message)
+            viewState = .error(ProfileViewStateMessages.generalError.message)
             return false
         }
         
         guard !ProhibitedWordsService.shared.containsProhibitedWord(username) else {
-            viewState = .error(ProfileViewStatesMessages.inappropriateUsername.message)
+            viewState = .error(ProfileViewStateMessages.inappropriateUsername.message)
             return false
         }
         
@@ -132,7 +130,7 @@ final class ProfileViewModel {
         }
         
         guard avatarImage?.data != nil else {
-            viewState = .error(ProfileViewStatesMessages.generalError.message)
+            viewState = .error(ProfileViewStateMessages.generalError.message)
             return false
         }
         return true
@@ -168,21 +166,28 @@ final class ProfileViewModel {
             
             self.profile?.username = username
             self.username = ""
-            viewState = .success(ProfileViewStatesMessages.success.message)
+            viewState = .success(ProfileViewStateMessages.success.message)
             startCooldownTimer()
             
         } catch {
             debugPrint(error)
-            viewState = .error(ProfileViewStatesMessages.generalError.message)
+            viewState = .error(ProfileViewStateMessages.generalError.message)
         }
     }
     
     @MainActor
     func loadItem(item: PhotosPickerItem) async {
-        if let pickedImage = await ImageManager.shared.loadItem(item: item) {
+        let result = await ImageManager.shared.loadItem(item: item)
+        
+        switch result {
+        case .success(let pickedImage):
             avatarImage = pickedImage
-        } else {
-            viewState = .error(ProfileViewStatesMessages.sensitiveContent.message)
+        case .sensitiveContent:
+            viewState = .error(ProfileViewStateMessages.sensitiveContent.message)
+        case .analysisError:
+            viewState = .error(ProfileViewStateMessages.sensitiveApiNotEnabled.message)
+        case .loadingError:
+            viewState = .error(ProfileViewStateMessages.generalError.message)
         }
     }
     
@@ -208,6 +213,7 @@ final class ProfileViewModel {
         }
         return true
     }
+    
 }
 
 

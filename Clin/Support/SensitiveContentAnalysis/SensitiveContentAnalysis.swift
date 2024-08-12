@@ -54,3 +54,31 @@ final class SensitiveContentAnalysis {
     }
 }
 
+struct SensitiveContentAnalysisModifier: ViewModifier {
+    @Bindable var analysis = SensitiveContentAnalysis.shared
+    
+    func body(content: Content) -> some View {
+        content
+            .alert(isPresented: .constant(analysis.analysisState == .error(message: "Policy is disabled"))) {
+                Alert(
+                    title: Text("Enable Sensitive Content Analysis to upload photos."),
+                    message: Text("To enable: Go to Settings > Privacy & Security > Sensitive Content Warning."),
+                    primaryButton: .default(Text("Go to Settings")) {
+                        if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
+                            if UIApplication.shared.canOpenURL(settingsURL) {
+                                UIApplication.shared.open(settingsURL)
+                            }
+                        }
+                    },
+                    secondaryButton: .cancel()
+                )
+            }
+    }
+}
+
+extension View {
+    func sensitiveContentAnalysisCheck() -> some View {
+        self.modifier(SensitiveContentAnalysisModifier())
+    }
+}
+

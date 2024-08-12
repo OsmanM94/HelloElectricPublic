@@ -41,6 +41,8 @@ struct CreateFormView: View {
                         ErrorView(message: message, retryAction: {
                             viewModel.resetState()
                         })
+                    case .sensitiveApiNotEnabled:
+                        SensitiveAnalysisErrorView()
                     }
                 }
             }
