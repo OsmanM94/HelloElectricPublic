@@ -126,18 +126,23 @@ final class CreateFormViewModel {
         let bucketName = "car_images"
         
         for image in pickedImages {
+            let thumbnailSize = CGSize(width: 120, height: 120)
+            let thumbnailImage = UIImage(data: image.data)?.preparingThumbnail(of: thumbnailSize)
+            
+            
             let imageURLString = try await imageManager.uploadImage(image.data, from: bucketName, to: folderPath, targetWidth: 350, targetHeight: 350, compressionQuality: 1.0)
             if let urlString = imageURLString, let url = URL(string: urlString) {
                 self.imagesURLs.append(url)
             }
-            self.uploadingProgress += 1.0 / Double(pickedImages.count)
-        }
-        
-        if let firstImage = pickedImages.first {
-            let thumbnailURLString = try await imageManager.uploadImage(firstImage.data, from: bucketName, to: folderPath, targetWidth: 120, targetHeight: 120, compressionQuality: 0.4)
-            if let thumbUrlString = thumbnailURLString, let url = URL(string: thumbUrlString) {
-                self.thumbnailsURLs.append(url)
+            
+            if let firstImage = pickedImages.first {
+                let thumbnailURLString = try await imageManager.uploadImage(firstImage.data, from: bucketName, to: folderPath, targetWidth: 120, targetHeight: 120, compressionQuality: 0.4)
+                if let thumbUrlString = thumbnailURLString, let url = URL(string: thumbUrlString) {
+                    self.thumbnailsURLs.append(url)
+                }
             }
+            
+            self.uploadingProgress += 1.0 / Double(pickedImages.count)
         }
     }
     

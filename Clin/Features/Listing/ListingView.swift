@@ -83,14 +83,15 @@ fileprivate struct ListingSubview: View {
                     print("DEBUG: Scrolling to top is \(isDoubleTap)")
                     withAnimation {
                         proxy.scrollTo(viewModel.listings.first?.id)
-                        isDoubleTap = false
-                        print("DEBUG: Scrolling to top is \(isDoubleTap)")
                     }
+                    isDoubleTap = false
+                    print("DEBUG: Scrolling to top is \(isDoubleTap)")
                 }
             }
         }
     }
 }
+
 
 #Preview("MockData") {
     ListingView(viewModel: ListingViewModel(listingService: MockListingService()), isDoubleTap: .constant(false))
@@ -102,4 +103,3 @@ fileprivate struct ListingSubview: View {
     ListingView(viewModel: ListingViewModel(listingService: ListingService()), isDoubleTap: .constant(false))
         .environmentObject(FavouriteViewModel(favouriteService: FavouriteService()))
 }
-

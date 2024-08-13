@@ -6,20 +6,46 @@
 //
 
 import Foundation
+import Combine
 
-@Observable
-final class MarketViewModel {
-    var selectedTab: Int = 0
-    var lastSelectedTab: Int = 0
-    var isDoubleTap: Bool = false
+enum Tab {
+    case first
+    case second
+    case third
+}
+
+final class MarketViewModel: ObservableObject {
+    @Published var isDoubleTap: Bool = false
+    @Published var selectedTab: Tab = .first
+    @Published var scrollFirstTabToTop: Bool = false
     
-    func handleTabSelection(_ newValue: Int) {
-        if newValue == 0 && newValue == lastSelectedTab {
-            /// Only toggle isDoubleTap if the current tab is the Listings tab (tag 0)
-            isDoubleTap.toggle()
-        } else {
-            /// Reset the lastSelectedTab when switching to a different tab
-            lastSelectedTab = newValue
-        }
+    private var cancellable: AnyCancellable?
+    
+    init() {
+        listenForTabSelection()
+    }
+    
+    deinit {
+        cancellable?.cancel()
+        cancellable = nil
+    }
+    
+    /// When a new tab is selected, it checks if it matches the currently selected one.
+    /// If so, it toggles the appropriate flag (scrollFirstTabToTop or scrollSecondTabToTop) to enable scrolling to the top when the same tab is re-selected.
+    private func listenForTabSelection() {
+        cancellable = $selectedTab
+            .sink { [weak self] newTab in
+                guard let self = self else { return }
+                if newTab == self.selectedTab {
+                    switch newTab {
+                    case .first:
+                        self.scrollFirstTabToTop.toggle()
+                    case .second:
+                        break
+                    case .third:
+                        break
+                    }
+                }
+            }
     }
 }

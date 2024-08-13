@@ -4,8 +4,6 @@
 //
 //  Created by asia on 07/08/2024.
 //
-
-import Foundation
 import SwiftUI
 import AVFoundation
 
@@ -38,32 +36,18 @@ public extension UIImage {
         }
         return resized
     }
-    
+        
     func heicData(compressionQuality: CGFloat = 1.0) -> Data? {
-        let options: NSDictionary = [
-            kCGImageDestinationLossyCompressionQuality: compressionQuality
-        ]
-        let data = NSMutableData()
-        guard let imageDestination = CGImageDestinationCreateWithData(data as CFMutableData, AVFileType.heic as CFString, 1, nil) else {
-            return nil
-        }
-        CGImageDestinationAddImage(imageDestination, self.cgImage!, options)
-        CGImageDestinationFinalize(imageDestination)
-        return data as Data
-    }
-}
-
-
-/// Purpose: The onUpdate extension on Binding is used to run a specified closure whenever the binding value changes.
-public extension Binding {
-    func onUpdate(_ closure: @escaping (Value) -> Void) -> Binding<Value> {
-        Binding(
-            get: { wrappedValue },
-            set: { newValue in
-                wrappedValue = newValue
-                closure(newValue)
-            }
-        )
+        let destinationData = NSMutableData()
+        
+        guard let cgImage = self.cgImage,
+              let destination = CGImageDestinationCreateWithData(destinationData, AVFileType.heic as CFString, 1, nil) else { return nil }
+        
+        let options: CFDictionary = [kCGImageDestinationLossyCompressionQuality: compressionQuality] as CFDictionary
+        CGImageDestinationAddImage(destination, cgImage, options)
+        CGImageDestinationFinalize(destination)
+        
+        return destinationData as Data
     }
 }
 

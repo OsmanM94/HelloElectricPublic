@@ -47,7 +47,7 @@ struct ListingCell: View {
                 Text("added \(timeElapsedString(since: listing.createdAt))")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
-            }  
+            }
             .padding(.leading, 5)
         }
         .onAppear {

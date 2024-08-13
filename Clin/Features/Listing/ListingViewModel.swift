@@ -24,6 +24,7 @@ final class ListingViewModel {
     private(set) var viewState: ListingViewState = .loading
     
     var showFilterSheet: Bool = false
+    var isDoubleTap: Bool = false
     
     private(set) var hasMoreListings: Bool = true
     private var currentPage: Int = 0

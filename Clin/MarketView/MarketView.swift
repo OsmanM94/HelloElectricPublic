@@ -8,29 +8,27 @@
 import SwiftUI
 
 struct MarketView: View {
-    @State private var viewModel = MarketViewModel()
+    @StateObject private var viewModel = MarketViewModel()
     
     var body: some View {
-        TabView(selection: $viewModel.selectedTab.onUpdate { newValue in
-            viewModel.handleTabSelection(newValue)
-        }) {
-            ListingView(viewModel: ListingViewModel(listingService: ListingService()), isDoubleTap: $viewModel.isDoubleTap)
+        TabView(selection: $viewModel.selectedTab) {
+            ListingView(viewModel: ListingViewModel(listingService: ListingService()), isDoubleTap: $viewModel.scrollFirstTabToTop)
+                .tag(Tab.first)
                 .tabItem {
                     Label("Listings", systemImage: "bolt.car")
                 }
-                .tag(0)
             
             CreateListingViewRouter()
+                .tag(Tab.second)
                 .tabItem {
                     Label("Sell", systemImage: "plus")
                 }
-                .tag(1)
             
             AccountViewRouter()
+                .tag(Tab.third)
                 .tabItem {
                     Label("Account", systemImage: "person.fill")
                 }
-                .tag(2)
         }
     }
 }
@@ -41,3 +39,4 @@ struct MarketView: View {
         .environment(NetworkMonitor())
         .environmentObject(FavouriteViewModel(favouriteService: MockFavouriteService()))
 }
+

@@ -36,18 +36,18 @@ fileprivate struct SDWebImageLoader: View {
                 .scaleEffect(1.5)
         }
         .onSuccess { image, data, cacheType in
-            switch cacheType {
-            case .none:
-                print(" Image downloaded from network")
-            case .disk:
-                print(" Image loaded from disk cache")
-            case .memory:
-                print(" Image loaded from memory cache")
-            case .all:
-                print(" all")
-            @unknown default:
-                print(" Unknown cache type")
-            }
+//            switch cacheType {
+//            case .none:
+//                print(" Image downloaded from network")
+//            case .disk:
+//                print(" Image loaded from disk cache")
+//            case .memory:
+//                print(" Image loaded from memory cache")
+//            case .all:
+//                print(" all")
+//            @unknown default:
+//                print(" Unknown cache type")
+//            }
         }
         .onFailure { error in
             print("DEBUG: Failed to load image: \(String(describing: error))")

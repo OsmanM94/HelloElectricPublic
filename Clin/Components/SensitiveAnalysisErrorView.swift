@@ -15,7 +15,7 @@ struct SensitiveAnalysisErrorView: View {
         ZoomImages {
             VStack(spacing: 0) {
                 HStack(spacing: 5) {
-                    if let sensitive1 = UIImage(named: "sensitive1")?.resize(200, 200) {
+                    if let sensitive1 = UIImage(named: "sensitive1")?.resize(300, 300) {
                         Image(uiImage: sensitive1)
                             .resizable()
                             .aspectRatio(contentMode: .fit)
@@ -23,7 +23,7 @@ struct SensitiveAnalysisErrorView: View {
                             .clipShape(RoundedRectangle(cornerRadius: 10))
                     }
                     
-                    if let sensitive2 = UIImage(named: "sensitive2")?.resize(200, 200) {
+                    if let sensitive2 = UIImage(named: "sensitive2")?.resize(300, 300) {
                         Image(uiImage: sensitive2)
                             .resizable()
                             .aspectRatio(contentMode: .fit)
@@ -31,7 +31,7 @@ struct SensitiveAnalysisErrorView: View {
                             .clipShape(RoundedRectangle(cornerRadius: 10))
                     }
                     
-                    if let sensitive3 = UIImage(named: "sensitive3")?.resize(200, 200) {
+                    if let sensitive3 = UIImage(named: "sensitive3")?.resize(300, 300) {
                         Image(uiImage: sensitive3)
                             .resizable()
                             .aspectRatio(contentMode: .fit)
@@ -70,7 +70,7 @@ struct SensitiveAnalysisErrorView: View {
                 }) {
                     Text("Why is this required?")
                         .font(.headline)
-                        .foregroundColor(.blue)
+                        .foregroundStyle(.blue)
                 }
                 .popover(isPresented: $showPopover) {
                     VStack(spacing: 10) {
@@ -105,3 +105,4 @@ struct SensitiveAnalysisErrorView: View {
 #Preview {
     SensitiveAnalysisErrorView(retryAction: {})
 }
+
