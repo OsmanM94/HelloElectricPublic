@@ -8,8 +8,6 @@ import SwiftUI
 
 func performAfterDelay(_ delay: TimeInterval, action: @escaping () -> Void) {
     DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-        withAnimation {
-            action()
-        }
+        action()
     }
 }

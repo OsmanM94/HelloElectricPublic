@@ -9,40 +9,61 @@ import SwiftUI
 
 struct SearchView: View {
     @StateObject private var viewModel = SearchViewModel()
-    @State private var isPresented: Bool = false
+    @FocusState private var isPresented: Bool
     
     var body: some View {
         NavigationStack {
-            List {
-                ForEach(viewModel.filteredListings, id: \.id) { item in
-                    NavigationLink(value: item) {
-                        ListingCell(listing: item)
+            VStack {
+                SearchableView(search: $viewModel.searchText, disableTextInput: false)
+                    .focused($isPresented)
+                    .onAppear { performAfterDelay(0.1, action: {
+                        isPresented = true
+                    }) }
+            }
+            .navigationTitle("Search")
+            .navigationBarTitleDisplayMode(.inline)
+            
+            VStack {
+                switch viewModel.viewState {
+                case .idle:
+                    SearchSubview(viewModel: viewModel)
+                    
+                case .loading:
+                    ListingViewPlaceholder(showTextField: false, retryAction: {})
+                    
+                case .loaded:
+                    if viewModel.filteredListings.isEmpty {
+                        ContentUnavailableView.search
+                    } else {
+                        SearchSubview(viewModel: viewModel)
                     }
                 }
-                .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
             }
-            .navigationDestination(for: Listing.self, destination: { listing in
-                ListingDetailView(listing: listing)
-            })
-            .listStyle(.plain)
-            .searchable(text: $viewModel.searchText, isPresented: $isPresented, placement: .navigationBarDrawer(displayMode: .always))
-            .onAppear {
-                performAfterDelay(0.1, action: {
-                    isPresented = true
-                })
-            }
-            .toolbar {
-                Button("", systemImage: "line.3.horizontal.decrease.circle", action: {
-//                    viewModel.showFilterSheet.toggle()
-                })
-            }
-//            .searchSuggestions {
-//                ForEach(viewModel.searchSuggestions, id: \.self) { suggestion in
-//                    Text(suggestion)
-//                        .searchCompletion(suggestion)
-//                }
-//            }
+            .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
         }
+        .onAppear { viewModel.viewState = .idle }
+    }
+}
+
+fileprivate struct SearchSubview: View {
+    @StateObject var viewModel: SearchViewModel
+    let systemImageName: String = "line.3.horizontal.decrease.circle"
+    
+    var body: some View {
+        List {
+            ForEach(viewModel.filteredListings, id: \.id) { item in
+                NavigationLink(value: item) {
+                    ListingCell(listing: item)
+                }
+            }
+            .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
+        }
+        .navigationDestination(for: Listing.self, destination: { listing in
+            ListingDetailView(listing: listing)
+        })
+        .listStyle(.plain)
+        .transition(.opacity)
+        .toolbar { Button("", systemImage: systemImageName, action: {})}
     }
 }
 

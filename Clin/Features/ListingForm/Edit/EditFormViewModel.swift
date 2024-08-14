@@ -9,7 +9,7 @@ import PhotosUI
 
 @Observable
 final class EditFormViewModel {
-    enum ViewState {
+    enum ViewState: Equatable {
         case idle
         case loading
         case uploading

@@ -8,13 +8,16 @@
 import SwiftUI
 
 struct ListingViewPlaceholder: View {
+    @State var showTextField: Bool
     @State private var isLoading: Bool = true
     let retryAction: () async -> Void
     
     var body: some View {
         VStack(spacing: 0) {
-            SearchableView()
-                .padding([.top, .bottom])
+            if showTextField {
+                SearchableView(search: .constant(""), disableTextInput: true)
+                    .padding([.top, .bottom])
+            }
             List(0 ..< 6) { item in
                 HStack {
                     RoundedRectangle(cornerRadius: 10)
@@ -51,7 +54,7 @@ struct ListingViewPlaceholder: View {
 
 #Preview {
     NavigationStack {
-        ListingViewPlaceholder(retryAction: {})
+        ListingViewPlaceholder(showTextField: true, retryAction: {})
     }
 }
 

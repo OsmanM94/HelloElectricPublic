@@ -43,6 +43,7 @@ struct EditFormView: View {
                         })
                     }
                 }
+                .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
             }
             .navigationTitle("Edit Listing")
             .navigationBarTitleDisplayMode(.inline)

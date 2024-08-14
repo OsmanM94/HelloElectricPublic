@@ -9,10 +9,19 @@ import Foundation
 import Combine
 
 final class SearchViewModel: ObservableObject {
+    enum ViewState {
+        case idle
+        case loading
+        case loaded
+    }
+    
     @Published private(set) var filteredListings: [Listing] = []
     @Published private(set) var searchSuggestions: [String] = []
     @Published var searchText: String = ""
+    @Published var viewState: ViewState = .idle
+    
     private var cancellables = Set<AnyCancellable>()
+    private var searchTask: Task<Void, Never>?
     private let tableName: String = "car_listing"
    
     var isSearching: Bool {
@@ -30,13 +39,21 @@ final class SearchViewModel: ObservableObject {
     
     private func addSubscribers() {
         $searchText
-            .debounce(for: 0.4, scheduler: DispatchQueue.main)
+            .debounce(for: .seconds(1.5) , scheduler: DispatchQueue.main)
             .removeDuplicates()
             .sink { [weak self] searchText in
                 guard let self = self else { return }
-                Task {
+                
+                self.viewState = .loading
+           
+                if let searchTask = self.searchTask {
+                    print("DEBUG: Cancelling previous task")
+                    searchTask.cancel()
+                }
+                
+                self.searchTask = Task {
+                    print("DEBUG: Starting new search task for text: \(searchText)")
                     await self.searchItems(searchText: searchText)
-//                    await self.updateSearchSuggestions(searchText: searchText)
                 }
             }
             .store(in: &cancellables)
@@ -47,11 +64,22 @@ final class SearchViewModel: ObservableObject {
     @MainActor
     func searchItems(searchText: String) async {
         guard !searchText.isEmpty else {
+            print("DEBUG: Search text is empty, clearing filtered listings")
             self.filteredListings = []
+            self.viewState = .loaded
             return
         }
+        
+        self.viewState = .loading
+        defer {
+            if self.viewState == .loading {
+                self.viewState = .loaded
+            }
+        }
+        
         do {
             let searchResults = try await searchItemsFromSupabase(searchText: searchText)
+            print("DEBUG: Search completed successfully for text: \(searchText)")
             self.filteredListings = searchResults
         } catch {
             print("DEBUG: Error fetching search results from Supabase: \(error)")
@@ -61,6 +89,11 @@ final class SearchViewModel: ObservableObject {
     
     // Executes the network search on Supabase
     private func searchItemsFromSupabase(searchText: String) async throws -> [Listing] {
+        // Check for task cancellation
+        if Task.isCancelled {
+            print("DEBUG: Task was cancelled before starting the search")
+            return []
+        }
         do {
             let response: [Listing] = try await Supabase.shared.client
                 .from(tableName)
@@ -68,6 +101,13 @@ final class SearchViewModel: ObservableObject {
                 .ilike("model, make", pattern: "%\(searchText)%")
                 .execute()
                 .value
+            
+            if Task.isCancelled {
+                print("DEBUG: Task was cancelled after fetching the results")
+                return []
+            }
+            
+            print("DEBUG: Fetched \(response.count) listings from Supabase for text: \(searchText)")
             return response
         } catch {
             print("DEBUG: Failed to fetch listings from Supabase: \(error)")

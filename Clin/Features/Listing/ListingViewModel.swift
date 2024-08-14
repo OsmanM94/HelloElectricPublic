@@ -9,7 +9,7 @@ import Foundation
 
 @Observable
 final class ListingViewModel {
-    enum ListingViewState {
+    enum ViewState {
         case loading
         case loaded
     }
@@ -21,7 +21,7 @@ final class ListingViewModel {
     }
     
     private(set) var listings: [Listing] = []
-    private(set) var viewState: ListingViewState = .loading
+    private(set) var viewState: ViewState = .loading
     
     var showFilterSheet: Bool = false
     var isDoubleTap: Bool = false

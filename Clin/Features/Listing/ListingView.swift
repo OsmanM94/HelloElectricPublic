@@ -25,7 +25,7 @@ struct ListingView: View {
                 VStack(spacing: 0) {
                     switch viewModel.viewState {
                     case .loading:
-                        ListingViewPlaceholder(retryAction: {
+                        ListingViewPlaceholder(showTextField: true, retryAction: {
                             await viewModel.fetchListings()
                         })
                         
@@ -33,6 +33,7 @@ struct ListingView: View {
                         ListingSubview(viewModel: viewModel, isDoubleTap: $isDoubleTap, selectedTab: $selectedTab)
                     }
                 }
+                .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
             }
             .navigationTitle("Listings")
             .navigationBarTitleDisplayMode(.inline)
@@ -53,7 +54,7 @@ fileprivate struct ListingSubview: View {
     
     var body: some View {
         Button(action: { selectedTab = .second }) {
-            SearchableView()
+            SearchableView(search: .constant(""), disableTextInput: true)
                 .padding([.top, .bottom])
                 .contentShape(Rectangle())
         }

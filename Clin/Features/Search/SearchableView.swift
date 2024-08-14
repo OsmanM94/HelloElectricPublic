@@ -8,18 +8,24 @@
 import SwiftUI
 
 struct SearchableView: View {
+    @Binding var search: String
+    @State var disableTextInput: Bool
+    
     var body: some View {
         HStack(spacing: 5) {
             Image(systemName: "magnifyingglass")
                 .foregroundStyle(.gray)
             
-            Text("Search")
-                .foregroundStyle(.gray)
+            TextField("", text: $search, prompt: Text("Search").foregroundStyle(.gray))
+                .autocorrectionDisabled()
+                .textInputAutocapitalization(.never)
+                .submitLabel(.search)
                 .padding(.vertical, 8)
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .disabled(disableTextInput)
         }
         .padding(.horizontal)
-        .background(Color(.systemGray5).opacity(0.8))
+        .background(Color(.systemGray6))
         .clipShape(RoundedRectangle(cornerRadius: 10))
         .padding(.horizontal)
     }
@@ -27,7 +33,7 @@ struct SearchableView: View {
 
 #Preview {
     NavigationStack {
-        SearchableView()
+        SearchableView(search: .constant(""), disableTextInput: false)
             .previewLayout(.sizeThatFits)
     }
 }

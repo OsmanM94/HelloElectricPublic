@@ -17,7 +17,11 @@ struct ListingDetailView: View {
             if showSplash {
                 ListingDetailSplashView()
                     .onAppear {
-                        performAfterDelay(1.5, action: { showSplash = false })
+                        performAfterDelay(1.5, action: {
+                            withAnimation {
+                                showSplash = false
+                            }
+                        })
                     }
             } else {
                 VStack(alignment: .leading, spacing: 0) {
