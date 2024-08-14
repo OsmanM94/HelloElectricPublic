@@ -12,20 +12,26 @@ struct MarketView: View {
     
     var body: some View {
         TabView(selection: $viewModel.selectedTab) {
-            ListingView(viewModel: ListingViewModel(listingService: ListingService()), isDoubleTap: $viewModel.scrollFirstTabToTop)
+            ListingView(viewModel: ListingViewModel(listingService: ListingService()), isDoubleTap: $viewModel.scrollFirstTabToTop, selectedTab: $viewModel.selectedTab)
                 .tag(Tab.first)
                 .tabItem {
                     Label("Listings", systemImage: "bolt.car")
                 }
             
-            CreateListingViewRouter()
+            SearchView()
                 .tag(Tab.second)
+                .tabItem {
+                    Label("Search", systemImage: "magnifyingglass")
+                }
+            
+            CreateListingViewRouter()
+                .tag(Tab.third)
                 .tabItem {
                     Label("Sell", systemImage: "plus")
                 }
             
             AccountViewRouter()
-                .tag(Tab.third)
+                .tag(Tab.fourth)
                 .tabItem {
                     Label("Account", systemImage: "person.fill")
                 }
@@ -39,4 +45,6 @@ struct MarketView: View {
         .environment(NetworkMonitor())
         .environmentObject(FavouriteViewModel(favouriteService: MockFavouriteService()))
 }
+
+
 

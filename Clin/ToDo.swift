@@ -7,6 +7,8 @@
 
 #warning("Implement search functionalities with debounce with filter")
 
+#warning("Implement listing location on Maps")
+
 #warning("Add details view for User listing and Favourites")
 
 #warning("Implement pager feature")

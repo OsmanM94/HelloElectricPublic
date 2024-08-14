@@ -8,13 +8,15 @@
 import SwiftUI
 
 struct ListingView: View {
-    
     @State private var viewModel: ListingViewModel
     @Binding var isDoubleTap: Bool
-    
-    init(viewModel: @autoclosure @escaping () -> ListingViewModel, isDoubleTap: Binding<Bool>) {
+    @Binding var selectedTab: Tab
+        
+    init(viewModel: @autoclosure @escaping () -> ListingViewModel,
+         isDoubleTap: Binding<Bool>, selectedTab: Binding<Tab>) {
         self._viewModel = State(wrappedValue: viewModel())
         self._isDoubleTap = isDoubleTap
+        self._selectedTab = selectedTab
     }
     
     var body: some View {
@@ -28,10 +30,9 @@ struct ListingView: View {
                         })
                         
                     case .loaded:
-                        ListingSubview(viewModel: viewModel, isDoubleTap: $isDoubleTap)
+                        ListingSubview(viewModel: viewModel, isDoubleTap: $isDoubleTap, selectedTab: $selectedTab)
                     }
                 }
-                .sheet(isPresented: $viewModel.showFilterSheet, content: {})
             }
             .navigationTitle("Listings")
             .navigationBarTitleDisplayMode(.inline)
@@ -46,10 +47,18 @@ struct ListingView: View {
 
 fileprivate struct ListingSubview: View {
     @Bindable var viewModel: ListingViewModel
-    @State private var text: String = ""
+    
     @Binding var isDoubleTap: Bool
+    @Binding var selectedTab: Tab
     
     var body: some View {
+        Button(action: { selectedTab = .second }) {
+            SearchableView()
+                .padding([.top, .bottom])
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        
         ScrollViewReader { proxy in
             List {
                 ForEach(viewModel.listings, id: \.id) { item in
@@ -64,28 +73,22 @@ fileprivate struct ListingSubview: View {
                         .scaleEffect(1.0)
                         .frame(maxWidth: .infinity, alignment: .center)
                         .listRowSeparator(.hidden)
-                        .task { await viewModel.fetchListings() }
+                        .task {
+                            await viewModel.fetchListings()
+                        }
                 }
             }
             .navigationDestination(for: Listing.self, destination: { listing in
                 ListingDetailView(listing: listing)
             })
             .listStyle(.plain)
-            .searchable(text: $text, placement: .navigationBarDrawer(displayMode: .always))
             .refreshable { await viewModel.refreshListings() }
-            .toolbar {
-                Button("", systemImage: "line.3.horizontal.decrease.circle", action: {
-                    viewModel.showFilterSheet.toggle()
-                })
-            }
             .onChange(of: isDoubleTap) { _,  newValue in
                 if newValue {
-                    print("DEBUG: Scrolling to top is \(isDoubleTap)")
                     withAnimation {
                         proxy.scrollTo(viewModel.listings.first?.id)
                     }
                     isDoubleTap = false
-                    print("DEBUG: Scrolling to top is \(isDoubleTap)")
                 }
             }
         }
@@ -94,12 +97,11 @@ fileprivate struct ListingSubview: View {
 
 
 #Preview("MockData") {
-    ListingView(viewModel: ListingViewModel(listingService: MockListingService()), isDoubleTap: .constant(false))
+    ListingView(viewModel: ListingViewModel(listingService: MockListingService()), isDoubleTap: .constant(false), selectedTab: .constant(.first))
         .environmentObject(FavouriteViewModel(favouriteService: MockFavouriteService()))
 }
 
-
 #Preview("API") {
-    ListingView(viewModel: ListingViewModel(listingService: ListingService()), isDoubleTap: .constant(false))
+    ListingView(viewModel: ListingViewModel(listingService: ListingService()), isDoubleTap: .constant(false), selectedTab: .constant(.first))
         .environmentObject(FavouriteViewModel(favouriteService: FavouriteService()))
 }

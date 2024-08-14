@@ -86,6 +86,9 @@
 				ListingForm/Edit/EditFormViewModel.swift,
 				ListingForm/SharedComponents/ListingFormViewStatesMessages.swift,
 				ListingForm/SharedComponents/SelectedImageCell.swift,
+				Search/SearchableView.swift,
+				Search/SearchView.swift,
+				Search/SearchViewModel.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
 		};

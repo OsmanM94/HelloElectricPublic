@@ -13,6 +13,8 @@ struct ListingViewPlaceholder: View {
     
     var body: some View {
         VStack(spacing: 0) {
+            SearchableView()
+                .padding([.top, .bottom])
             List(0 ..< 6) { item in
                 HStack {
                     RoundedRectangle(cornerRadius: 10)
@@ -40,8 +42,6 @@ struct ListingViewPlaceholder: View {
             .refreshable {
                 await retryAction()
             }
-            .searchable(text: .constant(""), placement:
-                    .navigationBarDrawer(displayMode: .always))
         }
         .onDisappear {
             isLoading = false
