@@ -8,28 +8,40 @@
 import SwiftUI
 
 struct SearchView: View {
-    @StateObject private var viewModel = SearchViewModel()
+    @State private var viewModel = SearchViewModel()
     @FocusState private var isPresented: Bool
+    let systemImageName: String = "line.3.horizontal.decrease.circle"
     
     var body: some View {
         NavigationStack {
-            VStack {
-                SearchableView(search: $viewModel.searchText, disableTextInput: false)
-                    .focused($isPresented)
-                    .onAppear { performAfterDelay(0.1, action: {
-                        isPresented = true
-                    }) }
+            VStack(spacing: 0) {
+                TextFieldSearchView(disableTextInput: false, search: $viewModel.searchText, action: {
+                    await viewModel.searchItems(searchText: viewModel.searchText)
+                })
+                .focused($isPresented)
+                .onAppear {
+                    performAfterDelay(0.1, action: { isPresented = true })
+                }
             }
             .navigationTitle("Search")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer(minLength: 0)
+                    Button { isPresented = false } label: { Text("Done") }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("", systemImage: systemImageName, action: {})
+                }
+            }
             
-            VStack {
+            VStack(spacing: 0) {
                 switch viewModel.viewState {
                 case .idle:
                     SearchSubview(viewModel: viewModel)
                     
                 case .loading:
-                    ListingViewPlaceholder(showTextField: false, retryAction: {})
+                    ListingsPlaceholder(showTextField: false, retryAction: {})
                     
                 case .loaded:
                     if viewModel.filteredListings.isEmpty {
@@ -41,14 +53,14 @@ struct SearchView: View {
             }
             .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
         }
-        .onAppear { viewModel.viewState = .idle }
+        .onAppear { viewModel.viewState = .idle
+        }
     }
 }
 
 fileprivate struct SearchSubview: View {
-    @StateObject var viewModel: SearchViewModel
-    let systemImageName: String = "line.3.horizontal.decrease.circle"
-    
+    @Bindable var viewModel: SearchViewModel
+
     var body: some View {
         List {
             ForEach(viewModel.filteredListings, id: \.id) { item in
@@ -62,10 +74,10 @@ fileprivate struct SearchSubview: View {
             ListingDetailView(listing: listing)
         })
         .listStyle(.plain)
-        .transition(.opacity)
-        .toolbar { Button("", systemImage: systemImageName, action: {})}
     }
 }
+
+
 
 #Preview {
     SearchView()

@@ -14,20 +14,23 @@ struct FavouriteListingView: View {
     var body: some View {
         NavigationStack {
             Group {
-                switch viewModel.viewState {
-                case .loaded:
-                    FavouriteListingSubview()
-                      
-                case .empty:
-                    EmptyContentView(message: "You haven't saved any listings yet.", systemImage: "heart.slash.fill")
-                    
-                case .error(let message):
-                    ErrorView(message: message, retryAction: {
-                        Task {
-                            await viewModel.fetchUserFavorites()
-                        }
-                    })
+                VStack(spacing: 0) {
+                    switch viewModel.viewState {
+                    case .loaded:
+                        FavouriteListingSubview()
+                        
+                    case .empty:
+                        EmptyContentView(message: "You haven't saved any listings yet.", systemImage: "heart.slash.fill")
+                        
+                    case .error(let message):
+                        ErrorView(message: message, retryAction: {
+                            Task {
+                                await viewModel.fetchUserFavorites()
+                            }
+                        })
+                    }
                 }
+                .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
             }
             .navigationTitle("Saved")
             .navigationBarTitleDisplayMode(.inline)

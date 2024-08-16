@@ -9,8 +9,8 @@ import SwiftUI
 
 struct EditFormView: View {
     @Environment(\.dismiss) private var dismiss
-    @State var listing: Listing
     @State private var viewModel: EditFormViewModel
+    @State var listing: Listing
     
     init(listing: Listing, viewModel: @autoclosure @escaping () -> EditFormViewModel) {
         self._listing = State(initialValue: listing)
@@ -24,6 +24,8 @@ struct EditFormView: View {
                     switch viewModel.viewState {
                     case .idle:
                         EditFormSubview(viewModel: viewModel, listing: listing)
+                            .toolbar { DismissView(action: {
+                                viewModel.resetState(); dismiss() }) }
                         
                     case .loading:
                         CustomProgressView()
@@ -36,11 +38,6 @@ struct EditFormView: View {
                         
                     case .error(let message):
                         ErrorView(message: message, retryAction: { viewModel.resetState() })
-                        
-                    case .sensitiveApiNotEnabled:
-                        SensitiveAnalysisErrorView(retryAction: {
-                            viewModel.resetStateToIdle()
-                        })
                     }
                 }
                 .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
@@ -55,39 +52,22 @@ struct EditFormView: View {
 }
 
 #Preview {
-    EditFormView(listing: MockListingService.sampleData[0], viewModel: EditFormViewModel(listingService: MockListingService(), imageManager: ImageManager(), prohibitedWordsService: ProhibitedWordsService()))
+    EditFormView(listing: MockListingService.sampleData[0], viewModel: EditFormViewModel(listingService: MockListingService(), imageManager: ImageManager(), prohibitedWordsService: ProhibitedWordsService(), httpDownloader: MockHTTPDataDownloader()))
 }
 
 fileprivate struct EditFormSubview: View {
-    @Environment(\.dismiss) private var dismiss
-    
     @Bindable var viewModel: EditFormViewModel
     @State var listing: Listing
-
+    
     var body: some View {
         Form {
-            Section(header: Text("\(viewModel.totalImageCount)/10")) {
-                switch viewModel.imageViewState {
-                case .idle:
-                    EmptyContentView(message: "No selected photos", systemImage: "tray.fill")
-                case .loading:
-                    ImageLoadingPlaceHolders(viewModel: viewModel)
-                case .deleting:
-                    ImageLoadingPlaceHolders(viewModel: viewModel)
-                case .loaded:
-                    SelectedPhotosView(viewModel: viewModel)
-                }
+            Section("Make") {
+                Label(listing.make, systemImage: "lock")
+               
             }
-            Section {
-                TextField("What model is your EV?", text: $listing.model)
-                    .textInputAutocapitalization(.characters)
-                    .autocorrectionDisabled()
-                    .submitLabel(.done)
-                    .characterLimit($listing.model, limit: 30)
-            } header: {
-                Text("Model")
-            } footer: {
-                Text("\(listing.model.count)/30")
+            
+            Section("Model") {
+                Label(listing.model, systemImage: "lock")
             }
             
             Section("Condition") {
@@ -192,99 +172,62 @@ fileprivate struct EditFormSubview: View {
             }
             Section {
                 Button {
-                    Task {
-                        await viewModel.updateUserListing(listing)
-                    }
+                    Task { await viewModel.updateUserListing(listing) }
                 } label: {
-                    Text("Update")
+                    Text("Apply")
                         .font(.headline)
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                 }
-                .listRowBackground(Color.green)
+                .listRowBackground(Color.green.opacity(0.8))
             }
         }
         .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                Button(role: .cancel) { dismiss() } label: {
-                    Text("Cancel")
-                }
-            }
             ToolbarItemGroup(placement: .keyboard) {
                 Spacer(minLength: 0)
-                Button { viewModel.hideKeyboard() } label: {
+                Button {
+                    hideKeyboard()
+                } label: {
                     Text("Done")
                 }
             }
             ToolbarItem(placement: .topBarTrailing) {
-                PhotosPickerView(
-                    selections: $viewModel.imageSelections,
-                    maxSelectionCount: 10,
-                    selectionBehavior: .ordered,
-                    icon: "camera",
-                    size: 20,
-                    colour: .accentColor,
-                    onSelect: { newItems in
-                        Task {
-                            viewModel.pickedImages.removeAll()
-                            for item in newItems {
-                            await viewModel.loadItem(item: item)
-                          }
-                        }
-                    })
-                .deleteAlert(
-                    isPresented: $viewModel.showDeleteAlert,
-                    itemToDelete: $viewModel.imageToDelete
-                ) { imageToDelete in
-                    await viewModel.deleteImage(imageToDelete)
+                    NavigationLink {
+                        ImagePickerGridView(viewModel: viewModel)
+                            .task {
+                               await viewModel.loadListingData(listing: listing)
+                            }
+                    } label: {
+                        Image(systemName: "photo")
+                            .foregroundStyle(.gray)
+                            .font(.system(size: 24))
+                            .overlay(alignment: .topTrailing) {
+                                Text("\(viewModel.totalImageCount)")
+                                    .font(.system(size: 13).bold())
+                                    .foregroundStyle(.white)
+                                    .padding(6)
+                                    .background(Color(.red))
+                                    .clipShape(Circle())
+                                    .offset(x: 4, y: -8)
+                            }
+                    }
                 }
-            }
         }
     }
 }
 
-fileprivate struct ImageLoadingPlaceHolders: View {
-    @Bindable var viewModel: EditFormViewModel
-    
+fileprivate struct DismissView: View {
+    let action: () -> Void
     var body: some View {
-        ScrollView(.horizontal)  {
-            HStack(spacing: 15) {
-                ForEach(viewModel.imageSelections, id: \.self) { _ in
-                    Rectangle()
-                        .foregroundStyle(.gray.opacity(0.2))
-                        .frame(width: 100, height: 100)
-                        .clipped()
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                        .redacted(reason: .placeholder)
-                        .overlay {
-                            ProgressView()
-                                .scaleEffect(1.2)
-                        }
-                }
-            }
-            .padding()
-        }
-        .scrollIndicators(.hidden)
-    }
-}
-
-fileprivate struct SelectedPhotosView: View {
-    @Bindable var viewModel: EditFormViewModel
-   
-    var body: some View {
-        ScrollView(.horizontal) {
-            HStack(spacing: 15) {
-                ForEach(viewModel.pickedImages, id: \.self) { pickedImage in
-                    if let uiImage = UIImage(data: pickedImage.data) {
-                        SelectedImageCell(action: {
-                            viewModel.imageToDelete = pickedImage
-                            viewModel.showDeleteAlert.toggle()
-                        }, image: uiImage)
+        Color.clear
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button(role: .cancel) {
+                        action()
+                    } label: {
+                        Text("Cancel")
                     }
                 }
             }
-            .padding()
-        }
-        .scrollIndicators(.hidden)
     }
 }

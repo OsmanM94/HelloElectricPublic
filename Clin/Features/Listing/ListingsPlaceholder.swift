@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ListingViewPlaceholder: View {
+struct ListingsPlaceholder: View {
     @State var showTextField: Bool
     @State private var isLoading: Bool = true
     let retryAction: () async -> Void
@@ -15,7 +15,7 @@ struct ListingViewPlaceholder: View {
     var body: some View {
         VStack(spacing: 0) {
             if showTextField {
-                SearchableView(search: .constant(""), disableTextInput: true)
+                TextFieldSearchView(disableTextInput: true, search: .constant(""), action: {})
                     .padding([.top, .bottom])
             }
             List(0 ..< 6) { item in
@@ -54,7 +54,7 @@ struct ListingViewPlaceholder: View {
 
 #Preview {
     NavigationStack {
-        ListingViewPlaceholder(showTextField: true, retryAction: {})
+        ListingsPlaceholder(showTextField: true, retryAction: {})
     }
 }
 

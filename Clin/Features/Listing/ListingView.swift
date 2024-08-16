@@ -25,7 +25,7 @@ struct ListingView: View {
                 VStack(spacing: 0) {
                     switch viewModel.viewState {
                     case .loading:
-                        ListingViewPlaceholder(showTextField: true, retryAction: {
+                        ListingsPlaceholder(showTextField: true, retryAction: {
                             await viewModel.fetchListings()
                         })
                         
@@ -54,7 +54,7 @@ fileprivate struct ListingSubview: View {
     
     var body: some View {
         Button(action: { selectedTab = .second }) {
-            SearchableView(search: .constant(""), disableTextInput: true)
+            TextFieldSearchView(disableTextInput: true, search: .constant(""), action: {})
                 .padding([.top, .bottom])
                 .contentShape(Rectangle())
         }

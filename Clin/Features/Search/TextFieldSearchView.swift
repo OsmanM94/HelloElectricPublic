@@ -7,9 +7,11 @@
 
 import SwiftUI
 
-struct SearchableView: View {
-    @Binding var search: String
+struct TextFieldSearchView: View {
     @State var disableTextInput: Bool
+    @Binding var search: String
+    
+    let action: () async -> Void
     
     var body: some View {
         HStack(spacing: 5) {
@@ -21,6 +23,12 @@ struct SearchableView: View {
                 .textInputAutocapitalization(.never)
                 .submitLabel(.search)
                 .padding(.vertical, 8)
+                .onSubmit {
+                    guard !search.isEmpty else { return }
+                    Task {
+                        await action()
+                    }
+                }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .disabled(disableTextInput)
         }
@@ -33,7 +41,7 @@ struct SearchableView: View {
 
 #Preview {
     NavigationStack {
-        SearchableView(search: .constant(""), disableTextInput: false)
+        TextFieldSearchView(disableTextInput: false, search: .constant(""), action: {})
             .previewLayout(.sizeThatFits)
     }
 }

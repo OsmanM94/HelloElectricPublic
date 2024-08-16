@@ -4,8 +4,7 @@
 //
 //  Created by asia on 23/06/2024.
 //
-
-import Foundation
+import SwiftUI
 
 @Observable
 final class ListingViewModel {
@@ -40,11 +39,13 @@ final class ListingViewModel {
         let to = from + pageSize - 1
         
         do {
-            let newListings = try await listingService.fetchListings(from: from, to: to)
+            let newListings = try await listingService.fetchPaginatedListings(from: from, to: to)
             if newListings.count < pageSize {
                 self.hasMoreListings = false // No more listings to fetch
             }
-            listings.append(contentsOf: newListings)
+            withAnimation {
+                listings.append(contentsOf: newListings)
+            }
             viewState = .loaded
             self.currentPage += 1
             
@@ -60,20 +61,20 @@ final class ListingViewModel {
             print("DEBUG: Refreshing cooldown is active...")
             return
         }
-    
+       
         do {
             self.currentPage = 0
             self.hasMoreListings = true
             let from = currentPage * pageSize
             let to = from + pageSize - 1
             
-            let newListings = try await listingService.fetchListings(from: from, to: to)
+            let newListings = try await listingService.fetchPaginatedListings(from: from, to: to)
             if newListings.count < pageSize {
                 self.hasMoreListings = false
             }
             self.listings = newListings
             self.currentPage += 1
-            
+           
             lastRefreshTime = Date()
             print("DEBUG: Refreshing list...")
         } catch {

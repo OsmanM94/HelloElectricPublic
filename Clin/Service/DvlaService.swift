@@ -7,41 +7,28 @@
 
 import Foundation
 
-enum DvlaAPIErrors: Error {
-    case invalidURL
-    case invalidParameters
-    case invalidResponse
-}
-
 struct DvlaService {
+    private let httpDownloader: HTTPDataDownloaderProtocol
     private let apiKey = "32ajeg6zif8hoBN6pASIJ93uAzx9erA34jAoyLxA"
     private let baseURL = "https://driver-vehicle-licensing.api.gov.uk/vehicle-enquiry/v1/vehicles"
-
+    
+    init(httpDownloader: HTTPDataDownloaderProtocol = HTTPDataDownloader()) {
+        self.httpDownloader = httpDownloader
+    }
+    
     func fetchCarDetails(registrationNumber: String) async throws -> Dvla {
         let parameters = ["registrationNumber": registrationNumber]
+        let headers = [
+            "x-api-key": apiKey,
+            "Content-Type": "application/json"
+        ]
         
-        guard let url = URL(string: baseURL) else {
-            throw DvlaAPIErrors.invalidURL
-        }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue(apiKey, forHTTPHeaderField: "x-api-key")
-        
-        guard let httpBody = try? JSONSerialization.data(withJSONObject: parameters) else {
-            throw DvlaAPIErrors.invalidParameters
-        }
-        request.httpBody = httpBody
-        
-        let (data, response) = try await URLSession.shared.data(for: request)
-        
-        if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
-            let decodedCar = try JSONDecoder().decode(Dvla.self, from: data)
-            return decodedCar
-        } else {
-            throw DvlaAPIErrors.invalidResponse
-        }
+        return try await httpDownloader.postData(
+            as: Dvla.self,
+            to: baseURL,
+            body: parameters,
+            headers: headers
+        )
     }
 }
 

@@ -18,7 +18,7 @@ enum ImageLoadResult {
 }
 
 final class ImageManager: ImageManagerProtocol {
-    
+   
     var isHeicSupported: Bool {
         (CGImageDestinationCopyTypeIdentifiers() as! [String]).contains("public.heic")
     }
@@ -111,7 +111,7 @@ final class ImageManager: ImageManagerProtocol {
                 }
             }
 
-            guard let selectedImage = SelectedImage(data: data) else {
+            guard let selectedImage = SelectedImage(data: data, photosPickerItem: nil) else {
                 return .loadingError("Failed to create SelectedImage from data.")
             }
             

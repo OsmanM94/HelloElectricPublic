@@ -30,7 +30,7 @@ struct CreateFormView: View {
                         
                     case .loaded:
                         CreateFormSubview(viewModel: viewModel)
-                        
+                           
                     case .uploading:
                         CircularProgressBar(progress: viewModel.uploadingProgress)
    
@@ -41,10 +41,6 @@ struct CreateFormView: View {
                         ErrorView(message: message, retryAction: {
                             viewModel.resetState()
                         })
-                    case .sensitiveApiNotEnabled:
-                        SensitiveAnalysisErrorView(retryAction: {
-                            viewModel.resetStateToLoaded()
-                        })
                     }
                 }
                 .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
@@ -52,7 +48,10 @@ struct CreateFormView: View {
             .navigationTitle("Selling")
             .navigationBarTitleDisplayMode(.inline)
         }
-        .task {  await viewModel.loadProhibitedWords() }
+        .task {
+            await viewModel.loadProhibitedWords()
+            await viewModel.fetchMakeAndModels()
+        }
     }
 }
 
@@ -108,34 +107,23 @@ fileprivate struct CreateFormSubview: View {
     
     var body: some View {
         Form {
-            Section(header: Text("\(viewModel.imageSelections.count)/10")) {
-                switch viewModel.imageViewState {
-                    case .idle:
-                        EmptyContentView(message: "No selected photos", systemImage: "tray.fill")
-                    case .loading:
-                        ImageLoadingPlaceHolders(viewModel: viewModel)
-                    case .deleting:
-                        ImageLoadingPlaceHolders(viewModel: viewModel)
-                    case .loaded:
-                        SelectedPhotosView(viewModel: viewModel)
+            Section(header: Text("Make")) {
+                Picker("Select Make", selection: $viewModel.make) {
+                    ForEach(viewModel.carMakes, id: \.make) { carMake in
+                        Text(carMake.make).tag(carMake.make)
                     }
+                }
+                .onChange(of: viewModel.make) { 
+                    viewModel.updateAvailableModels()
+                }
             }
             
-            Section("Make") {
-                TextField("", text: $viewModel.make)
-                    .disabled(true)
-            }
-            
-            Section {
-                TextField("What model is your EV?", text: $viewModel.model)
-                    .textInputAutocapitalization(.characters)
-                    .autocorrectionDisabled()
-                    .submitLabel(.done)
-                    .characterLimit($viewModel.model, limit: 30)
-            } header: {
-                Text("Model")
-            } footer: {
-                Text("\(viewModel.model.count)/30")
+            Section(header: Text("Model")) {
+                Picker("Select Model", selection: $viewModel.model) {
+                    ForEach(viewModel.availableModels, id: \.self) { model in
+                        Text(model).tag(model)
+                    }
+                }
             }
             
             Section("Condition") {
@@ -153,7 +141,7 @@ fileprivate struct CreateFormSubview: View {
             
             Section("Colour") {
                 TextField("", text: $viewModel.colour)
-                    .textInputAutocapitalization(.words)
+                    .textInputAutocapitalization(.sentences)
                     .disabled(true)
             }
             
@@ -262,78 +250,27 @@ fileprivate struct CreateFormSubview: View {
             }
             ToolbarItemGroup(placement: .keyboard) {
                 Spacer(minLength: 0)
-                Button { viewModel.hideKeyboard() } label: { Text("Done") }
+                Button { hideKeyboard() } label: { Text("Done") }
             }
-            ToolbarItemGroup(placement: .topBarTrailing) {
-                PhotosPickerView(
-                    selections: $viewModel.imageSelections,
-                    maxSelectionCount: 10,
-                    selectionBehavior: .ordered,
-                    icon: "camera",
-                    size: 20,
-                    colour: .green,
-                    onSelect: { newItems in
-                        Task {
-                            viewModel.pickedImages.removeAll()
-                            for item in newItems {
-                            await viewModel.loadItem(item: item)
-                          }
-                        }
-                    })
-                .deleteAlert(
-                    isPresented: $viewModel.showDeleteAlert,
-                    itemToDelete: $viewModel.imageToDelete
-                ) { imageToDelete in
-                    await viewModel.deleteImage(imageToDelete)
-                }
-            }
-        }
-    }
-}
-
-fileprivate struct SelectedPhotosView: View {
-    @Bindable var viewModel: CreateFormViewModel
-    
-    var body: some View {
-        ScrollView(.horizontal) {
-            HStack(spacing: 15) {
-                ForEach(viewModel.pickedImages, id: \.self) { pickedImage in
-                    if let uiImage = UIImage(data: pickedImage.data) {
-                        SelectedImageCell(action: {
-                            viewModel.imageToDelete = pickedImage
-                            viewModel.showDeleteAlert.toggle()
-                        }, image: uiImage)
+            ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink {
+                        ImagePickerGridView(viewModel: viewModel)
+                    } label: {
+                        Image(systemName: "photo")
+                            .foregroundStyle(.gray)
+                            .font(.system(size: 24))
+                            .overlay(alignment: .topTrailing) {
+                                Text("\(viewModel.totalImageCount)")
+                                    .font(.system(size: 13).bold())
+                                    .foregroundStyle(.white)
+                                    .padding(6)
+                                    .background(Color(.red))
+                                    .clipShape(Circle())
+                                    .offset(x: 4, y: -8)
+                            }
                     }
                 }
-            }
-            .padding()
         }
-        .scrollIndicators(.hidden)
-    }
-}
-
-fileprivate struct ImageLoadingPlaceHolders: View {
-    @Bindable var viewModel: CreateFormViewModel
-    
-    var body: some View {
-        ScrollView(.horizontal) {
-            HStack(spacing: 15) {
-                ForEach(viewModel.imageSelections, id: \.self) { _ in
-                    Rectangle()
-                        .foregroundStyle(.gray.opacity(0.2))
-                        .frame(width: 100, height: 100)
-                        .clipped()
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                        .redacted(reason: .placeholder)
-                        .overlay {
-                            ProgressView()
-                                .scaleEffect(1.2)
-                        }
-                }
-            }
-            .padding(.all)
-        }
-        .scrollIndicators(.hidden)
     }
 }
 

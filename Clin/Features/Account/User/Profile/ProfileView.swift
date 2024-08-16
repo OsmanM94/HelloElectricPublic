@@ -42,6 +42,7 @@ struct ProfileView: View {
                         })
                     }
                 }
+                .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
             }
             .navigationTitle("Profile")
             .navigationBarTitleDisplayMode(.inline)
@@ -61,7 +62,7 @@ struct ProfileView: View {
 
 fileprivate struct ProfileSubview: View {
     @Bindable var viewModel: ProfileViewModel
-   
+    
     var body: some View {
         Form {
             Section {
@@ -86,20 +87,21 @@ fileprivate struct ProfileSubview: View {
                     
                     Spacer(minLength: 0)
                     
-                    PhotosPickerView(
-                        selections: $viewModel.imageSelection,
-                        maxSelectionCount: 1,
-                        selectionBehavior: .default,
-                        icon: "pencil.circle.fill",
-                        size: 30,
-                        colour: .green,
-                        onSelect: { newItems in
-                            if let newValue = newItems.first {
-                                Task {
-                                    await viewModel.loadItem(item: newValue)
-                                }
+                    SinglePhotoPicker(
+                        selection: $viewModel.imageSelection,
+                        photoLibrary: .shared()
+                    ) {
+                        Image(systemName: "pencil.circle.fill")
+                            .symbolRenderingMode(.multicolor)
+                            .font(.system(size: 30))
+                            .foregroundStyle(.accent)
+                    } onSelect: { newPhoto in
+                        if let newPhoto = newPhoto {
+                            Task {
+                                await viewModel.loadItem(item: newPhoto)
                             }
-                        })
+                        }
+                    }
                 }
             }
             Section(footer: Text("Must be between 3-20 characters")) {
@@ -111,11 +113,11 @@ fileprivate struct ProfileSubview: View {
             Section {
                 Button {
                     Task {
-                    await viewModel.updateProfileButtonTapped()
-                    await viewModel.getInitialProfile()
+                        await viewModel.updateProfileButtonTapped()
+                        await viewModel.getInitialProfile()
                     }
                 } label: {
-                     if viewModel.cooldownTime > 0  {
+                    if viewModel.cooldownTime > 0  {
                         Text("Please wait \(viewModel.cooldownTime) seconds to update again")
                             .monospacedDigit()
                             .foregroundStyle(.gray)

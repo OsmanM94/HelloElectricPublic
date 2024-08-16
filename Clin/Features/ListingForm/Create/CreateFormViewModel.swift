@@ -9,7 +9,8 @@ import SwiftUI
 import PhotosUI
 
 @Observable
-final class CreateFormViewModel {
+final class CreateFormViewModel: ImagePickerProtocol {
+   
     enum ViewState: Equatable {
         case idle
         case loading
@@ -17,24 +18,15 @@ final class CreateFormViewModel {
         case loaded
         case success(String)
         case error(String)
-        case sensitiveApiNotEnabled
     }
-    
-    enum ImageViewState {
-        case idle
-        case loading
-        case deleting
-        case loaded
-    }
-    
+        
     private(set) var viewState: ViewState = .idle
-    private(set) var imageViewState: ImageViewState = .idle
+    var imageViewState: ImageViewState = .idle
     
-    var pickedImages: [SelectedImage] = []
-    var imageSelections: [PhotosPickerItem] = []
- 
-    var showDeleteAlert: Bool = false
-    var imageToDelete: SelectedImage?
+    var selectedImages: [SelectedImage?] = Array(repeating: nil, count: 10)
+    var imageSelections: [PhotosPickerItem?] = Array(repeating: nil, count: 10)
+    var isLoading: [Bool] = Array(repeating: false, count: 10)
+
     private(set) var uploadingProgress: Double = 0.0
     
     ///DVLA checks
@@ -58,6 +50,9 @@ final class CreateFormViewModel {
     var serviceHistory: String = "Yes"
     var numberOfOwners: String = "1"
     var isPromoted: Bool = false
+    
+    var carMakes: [CarMake] = []
+    var availableModels: [String] = []
     
     let yearsOfmanufacture: [String] = Array(2010...2030).map { String($0) }
     let vehicleCondition: [String] = ["New", "Used"]
@@ -98,8 +93,12 @@ final class CreateFormViewModel {
                 return
             }
             
-            try await uploadPickedImages(for: user.id)
-        
+            // Calculate the total number of steps (number of images + 1 for the listing creation)
+            let nonNilImageItems = selectedImages.compactMap { $0 }
+            let totalSteps = nonNilImageItems.count + 1
+            
+            try await uploadSelectedImages(for: user.id, totalSteps: totalSteps)
+            
             let listingToCreate = Listing(createdAt: Date(), imagesURL: imagesURLs, thumbnailsURL: thumbnailsURLs, make: make, model: model, condition: condition, mileage: mileage, yearOfManufacture: yearOfManufacture, price: price, textDescription: description, range: range, colour: colour, publicChargingTime: publicChargingTime, homeChargingTime: homeChargingTime, batteryCapacity: batteryCapacity, powerBhp: powerBhp, regenBraking: regenBraking, warranty: warranty, serviceHistory: serviceHistory, numberOfOwners: numberOfOwners, userID: user.id)
             
             try await listingService.createListing(listingToCreate)
@@ -111,38 +110,36 @@ final class CreateFormViewModel {
             print(error)
         }
     }
-        
+    
     @MainActor
-    private func uploadPickedImages(for userId: UUID) async throws {
+    private func uploadSelectedImages(for userId: UUID, totalSteps: Int) async throws {
         imagesURLs.removeAll()
         thumbnailsURLs.removeAll()
         
-        guard !pickedImages.isEmpty else {
-            print("DEBUG: No picked images.")
+        // Filter out non-nil imageItems
+        let nonNilImageItems = selectedImages.compactMap { $0 }
+        
+        guard !nonNilImageItems.isEmpty else {
+            print("Selected images are empty")
             return
         }
         
         let folderPath = "\(userId)"
         let bucketName = "car_images"
         
-        for image in pickedImages {
-            let thumbnailSize = CGSize(width: 120, height: 120)
-            let thumbnailImage = UIImage(data: image.data)?.preparingThumbnail(of: thumbnailSize)
-            
-            
+        for image in nonNilImageItems {
             let imageURLString = try await imageManager.uploadImage(image.data, from: bucketName, to: folderPath, targetWidth: 350, targetHeight: 350, compressionQuality: 1.0)
             if let urlString = imageURLString, let url = URL(string: urlString) {
                 self.imagesURLs.append(url)
             }
-            
-            if let firstImage = pickedImages.first {
-                let thumbnailURLString = try await imageManager.uploadImage(firstImage.data, from: bucketName, to: folderPath, targetWidth: 120, targetHeight: 120, compressionQuality: 0.4)
-                if let thumbUrlString = thumbnailURLString, let url = URL(string: thumbUrlString) {
-                    self.thumbnailsURLs.append(url)
-                }
+            self.uploadingProgress += 1.5 / Double(totalSteps)
+        }
+        
+        if let firstImageItem = nonNilImageItems.first {
+            let thumbnailURLString = try await imageManager.uploadImage(firstImageItem.data, from: bucketName, to: folderPath, targetWidth: 120, targetHeight: 120, compressionQuality: 0.4)
+            if let thumbUrlString = thumbnailURLString, let url = URL(string: thumbUrlString) {
+                self.thumbnailsURLs.append(url)
             }
-            
-            self.uploadingProgress += 1.0 / Double(pickedImages.count)
         }
     }
     
@@ -153,7 +150,6 @@ final class CreateFormViewModel {
             let decodedCar = try await dvlaService.fetchCarDetails(registrationNumber: registrationNumber)
             
             if decodedCar.fuelType.uppercased() == "ELECTRICITY" {
-                self.make = decodedCar.make
                 self.yearOfManufacture = "\(decodedCar.yearOfManufacture)"
                 self.colour = decodedCar.colour
                 viewState = .loaded
@@ -184,52 +180,42 @@ final class CreateFormViewModel {
         warranty = ""
         serviceHistory = ""
         numberOfOwners = ""
-        pickedImages = []
-        imageSelections = []
-        showDeleteAlert = false
-        imageToDelete = nil
+        selectedImages = Array(repeating: nil, count: 10) 
+        imageSelections = Array(repeating: nil, count: 10)
         uploadingProgress = 0.0
         imageViewState = .idle
         viewState = .idle
     }
     
+    func resetStateToIdle() {
+        imageViewState = .idle
+    }
+    
     @MainActor
-    func loadItem(item: PhotosPickerItem) async {
-        imageViewState = .loading
+    func loadItem(item: PhotosPickerItem, at index: Int) async {
+        isLoading[index] = true
+        defer { isLoading[index] = false }
+        
         let result = await imageManager.loadItem(item: item, analyze: true)
         
         switch result {
-        case .success(let pickedImage):
-            pickedImages.append(pickedImage)
-            imageViewState = .loaded
+        case .success(let selectedImage):
+            let newSelectedImage = SelectedImage(data: selectedImage.data, id: UUID().uuidString, photosPickerItem: item)
+            selectedImages[index] = newSelectedImage
         case .sensitiveContent:
-            viewState = .error(ListingFormViewStateMessages.sensitiveContent.message)
+            imageViewState = .error(ListingFormViewStateMessages.sensitiveContent.message)
         case .analysisError:
-            viewState = .sensitiveApiNotEnabled
+            imageViewState = .sensitiveApiNotEnabled
         case .loadingError:
-            viewState = .error(ListingFormViewStateMessages.generalError.message)
+            imageViewState = .error(ListingFormViewStateMessages.generalError.message)
         }
     }
     
-    @MainActor
-    func checkImageState() {
-        if pickedImages.isEmpty {
-            imageViewState = .idle
+    func deleteImage(id: String) {
+        if let index = selectedImages.firstIndex(where: { $0?.id == id }) {
+            selectedImages[index] = nil
+            imageSelections[index] = nil
         }
-    }
-    
-    @MainActor
-    func deleteImage(_ image: SelectedImage) async {
-        imageViewState = .deleting
-        if let index = pickedImages.firstIndex(of: image) {
-            pickedImages.remove(at: index)
-            imageSelections.remove(at: index)
-        }
-        checkImageState()
-    }
-    
-    func hideKeyboard() {
-        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
     
     func loadProhibitedWords() async {
@@ -240,11 +226,42 @@ final class CreateFormViewModel {
         }
     }
     
-    @MainActor
-    func resetStateToLoaded() {
-        pickedImages = []
-        imageSelections = []
-        imageViewState = .idle
-        viewState = .loaded
+    var totalImageCount: Int {
+        selectedImages.compactMap({ $0 }).count
     }
+        
+    @MainActor
+    func fetchMakeAndModels() async {
+        do {
+            self.carMakes = try await listingService.fetchMakeModels()
+            
+            // Set the initial car make
+            self.make = carMakes.first?.make ?? ""
+            
+            // Update available models based on the fetched car makes
+            updateAvailableModels()
+        } catch {
+            print("DEBUG: Failed to fetch car makes and models from Supabase: \(error)")
+            viewState = .error(ListingFormViewStateMessages.generalError.message)
+        }
+    }
+        
+    func updateAvailableModels() {
+        guard let selectedCarMake = carMakes.first(where: { $0.make == make }) else {
+            availableModels = []
+            self.model = ""
+            return
+        }
+        
+        // Update available models based on the selected make
+        availableModels = selectedCarMake.models
+        
+        // Set the model to the first available one, or clear it if no models are available
+        self.model = availableModels.first ?? ""
+    }
+    
+    func loadListingData(listing: Listing) async {}
 }
+
+
+

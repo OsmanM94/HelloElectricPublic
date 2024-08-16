@@ -15,20 +15,23 @@ struct UserListingView: View {
     
     var body: some View {
         NavigationStack {
-            Group {
-                switch viewModel.viewState {
-                case .empty:
-                    EmptyContentView(message: "No active listings found", systemImage: "tray.fill")
-                case .success:
-                    UserListingSubview(viewModel: viewModel)
-                    
-                case .error(let message):
-                    ErrorView(message: message, retryAction: { Task {
-                         await viewModel.fetchUserListings() } })
+            VStack {
+                Group {
+                    switch viewModel.viewState {
+                    case .empty:
+                        EmptyContentView(message: "No active listings found", systemImage: "tray.fill")
+                    case .success:
+                        UserListingSubview(viewModel: viewModel)
+                        
+                    case .error(let message):
+                        ErrorView(message: message, retryAction: { Task {
+                            await viewModel.fetchUserListings() } })
+                    }
                 }
+                .navigationTitle("Active listings")
+                .navigationBarTitleDisplayMode(.inline)
             }
-            .navigationTitle("Active listings")
-            .navigationBarTitleDisplayMode(.inline)
+            .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
             .deleteAlert(
                 isPresented: $viewModel.showDeleteAlert,
                 itemToDelete: $viewModel.listingToDelete
@@ -82,10 +85,21 @@ fileprivate struct UserListingSubview: View {
         }
         .refreshable { await viewModel.fetchUserListings() }
         .listStyle(.plain)
-        .fullScreenCover(item: $viewModel.selectedListing, onDismiss: {
-            Task { await viewModel.fetchUserListings() }
-        }) { listing in
-            EditFormView(listing: listing, viewModel: EditFormViewModel(listingService: ListingService(), imageManager: ImageManager(), prohibitedWordsService: ProhibitedWordsService()))
+        .fullScreenCover(
+            item: $viewModel.selectedListing,
+            onDismiss: {
+                Task {
+                    await viewModel.fetchUserListings()
+                }
+            }) { listing in
+                EditFormView(
+                    listing: listing,
+                    viewModel: EditFormViewModel(
+                        listingService: ListingService(),
+                        imageManager: ImageManager(),
+                        prohibitedWordsService: ProhibitedWordsService(), httpDownloader: HTTPDataDownloader()
+                    )
+                )
         }
         .padding(.top)
     }

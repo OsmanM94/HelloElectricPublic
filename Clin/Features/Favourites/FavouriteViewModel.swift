@@ -7,9 +7,8 @@
 
 import Foundation
 
-
 final class FavouriteViewModel: ObservableObject {
-    enum ViewState {
+    enum ViewState: Equatable {
         case empty
         case loaded
         case error(String)

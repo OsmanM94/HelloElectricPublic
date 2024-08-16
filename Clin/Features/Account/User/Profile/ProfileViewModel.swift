@@ -9,7 +9,7 @@ import PhotosUI
 
 @Observable
 final class ProfileViewModel {
-    enum ViewState {
+    enum ViewState: Equatable {
         case idle
         case loading
         case error(String)
@@ -18,7 +18,7 @@ final class ProfileViewModel {
     }
     
     var username: String = ""
-    var imageSelection: [PhotosPickerItem] = []
+    var imageSelection: PhotosPickerItem?
     private(set) var avatarImage: SelectedImage?
     private(set) var displayName: String = ""
     private(set) var profile: Profile? = nil
@@ -42,7 +42,7 @@ final class ProfileViewModel {
     @MainActor
     func resetState() {
         username = ""
-        imageSelection = []
+        imageSelection = nil
         avatarImage = nil
         viewState = .idle
     }

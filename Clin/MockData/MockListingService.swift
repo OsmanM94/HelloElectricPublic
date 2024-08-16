@@ -8,8 +8,10 @@
 import Foundation
 
 struct MockListingService: ListingServiceProtocol {
-    
+   
     static let mockUserID = UUID(uuidString: "123e4567-e89b-12d3-a456-426614174000")!
+    
+    static var makeSample: [CarMake] = [CarMake(id: 1, make: "Tesla", models: ["Model 3","Model S"])]
     
     static var sampleData: [Listing] = [
         Listing(
@@ -129,9 +131,19 @@ struct MockListingService: ListingServiceProtocol {
         )
     ]
     
-    func fetchListings(from: Int, to: Int) async throws -> [Listing] {
+    func fetchPaginatedListings(from: Int, to: Int) async throws -> [Listing] {
         try await Task.sleep(nanoseconds: 2 * 1_000_000_000)
         return MockListingService.sampleData
+    }
+    
+    func fetchListing(id: Int) async throws -> Listing {
+        try await Task.sleep(nanoseconds: 2 * 1_000_000_000)
+        return MockListingService.sampleData[0]
+    }
+    
+    func fetchMakeModels() async throws -> [CarMake] {
+        try await Task.sleep(nanoseconds: 2 * 1_000_000_000)
+        return MockListingService.makeSample
     }
     
     func fetchUserListings(userID: UUID) async throws -> [Listing] {

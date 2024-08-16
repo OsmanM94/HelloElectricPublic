@@ -10,7 +10,7 @@ import Foundation
 
 @Observable
 final class UserListingViewModel {
-    enum ViewState {
+    enum ViewState: Equatable {
         case empty
         case success
         case error(String)

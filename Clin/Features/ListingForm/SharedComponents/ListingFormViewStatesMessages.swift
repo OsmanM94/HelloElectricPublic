@@ -17,6 +17,7 @@ enum ListingFormViewStateMessages: String, Error {
     case createSuccess = "Listing created successfully."
     case notElectric = "Your vehicle is not electric."
     case invalidRegistration = "Invalid registration number."
+    case errorDownloadingImages = "Error retrieving images from server, Please try again."
     
     var message: String {
         return self.rawValue
