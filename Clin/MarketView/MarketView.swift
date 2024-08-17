@@ -10,17 +10,25 @@ import SwiftUI
 struct MarketView: View {
     @StateObject private var viewModel: MarketViewModel
     
-    let listingService: ListingService
-    let imageManager: ImageManager
-    let prohibitedWordService: ProhibitedWordsService
-    let httpDataDownloader: HTTPDataDownloader
-    let dvlaService: DvlaService
-   
-    init(viewModel: @autoclosure @escaping () -> MarketViewModel , listingService: ListingService, imageManager: ImageManager, prohibitedWordService: ProhibitedWordsService, httpDataDownloader: HTTPDataDownloader, dvlaService: DvlaService) {
+    let listingService: ListingServiceProtocol
+    let imageManager: ImageManagerProtocol
+    let prohibitedWordsService: ProhibitedWordsServiceProtocol
+    let httpDataDownloader: HTTPDataDownloaderProtocol
+    let dvlaService: DvlaServiceProtocol
+    let listingViewModel: ListingViewModel
+    
+    init(viewModel: @autoclosure @escaping () -> MarketViewModel,
+         listingViewModel: @autoclosure @escaping () -> ListingViewModel,
+         listingService: ListingServiceProtocol,
+         imageManager: ImageManagerProtocol,
+         prohibitedWordsService: ProhibitedWordsServiceProtocol,
+         httpDataDownloader: HTTPDataDownloaderProtocol,
+         dvlaService: DvlaServiceProtocol) {
         self._viewModel = StateObject(wrappedValue: viewModel())
+        self.listingViewModel = listingViewModel()
         self.listingService = listingService
         self.imageManager = imageManager
-        self.prohibitedWordService = prohibitedWordService
+        self.prohibitedWordsService = prohibitedWordsService
         self.httpDataDownloader = httpDataDownloader
         self.dvlaService = dvlaService
     }
@@ -28,7 +36,7 @@ struct MarketView: View {
     var body: some View {
         TabView(selection: $viewModel.selectedTab) {
             ListingView(
-                viewModel: ListingViewModel(listingService: listingService),
+                viewModel: listingViewModel,
                 isDoubleTap: $viewModel.scrollFirstTabToTop,
                 selectedTab: $viewModel.selectedTab)
                 .tag(Tab.first)
@@ -44,7 +52,7 @@ struct MarketView: View {
             
             CreateListingViewRouter(
                 imageManager: imageManager,
-                prohibitedWordService: prohibitedWordService,
+                prohibitedWordsService: prohibitedWordsService,
                 listingService: listingService,
                 dvlaService: dvlaService,
                 httpDataDownloader: httpDataDownloader)
@@ -55,7 +63,7 @@ struct MarketView: View {
             
             AccountViewRouter(
                 imageManager: imageManager,
-                prohibitedWordService: prohibitedWordService,
+                prohibitedWordsService: prohibitedWordsService,
                 listingService: listingService,
                 httpDownloader: httpDataDownloader)
                 .tag(Tab.fourth)
@@ -68,11 +76,14 @@ struct MarketView: View {
 
 #Preview {
     MarketView(
-        viewModel: MarketViewModel(),
-        listingService: ListingService(databaseService: DatabaseService()),
-        imageManager: ImageManager(),
-        prohibitedWordService: ProhibitedWordsService(),
-        httpDataDownloader: HTTPDataDownloader(), dvlaService: DvlaService(httpDownloader: HTTPDataDownloader()))
+        viewModel: MarketViewModel(), listingViewModel: ListingViewModel(listingService: MockListingService()),
+        listingService: MockListingService(),
+        imageManager: MockImageManager(isHeicSupported: true),
+        prohibitedWordsService: MockProhibitedWordsService(
+            prohibitedWords: [""]),
+        httpDataDownloader: MockHTTPDataDownloader(),
+        dvlaService: MockDvlaService()
+    )
         .environment(AuthViewModel())
         .environment(NetworkMonitor())
         .environmentObject(FavouriteViewModel(favouriteService: MockFavouriteService()))

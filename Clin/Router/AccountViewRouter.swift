@@ -11,14 +11,14 @@ struct AccountViewRouter: View {
     @Environment(AuthViewModel.self) private var authViewModel
     @Environment(NetworkMonitor.self) private var networkMonitor
     
-    let imageManager: ImageManager
-    let prohibitedWordService: ProhibitedWordsService
-    let listingService: ListingService
-    let httpDownloader: HTTPDataDownloader
+    let imageManager: ImageManagerProtocol
+    let prohibitedWordsService: ProhibitedWordsServiceProtocol
+    let listingService: ListingServiceProtocol
+    let httpDownloader: HTTPDataDownloaderProtocol
     
-    init(imageManager: ImageManager, prohibitedWordService: ProhibitedWordsService, listingService: ListingService, httpDownloader: HTTPDataDownloader) {
+    init(imageManager: ImageManagerProtocol, prohibitedWordsService: ProhibitedWordsServiceProtocol, listingService: ListingServiceProtocol, httpDownloader: HTTPDataDownloaderProtocol) {
         self.imageManager = imageManager
-        self.prohibitedWordService = prohibitedWordService
+        self.prohibitedWordsService = prohibitedWordsService
         self.listingService = listingService
         self.httpDownloader = httpDownloader
     }
@@ -28,7 +28,7 @@ struct AccountViewRouter: View {
             if authViewModel.authenticationState == .authenticated {
                 AccountView(
                     imageManager: imageManager,
-                    prohibitedWordService: prohibitedWordService,
+                    prohibitedWordsService: prohibitedWordsService,
                     listingService: listingService,
                     httpDownloader: httpDownloader)
                     .overlay(

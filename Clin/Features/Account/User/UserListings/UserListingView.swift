@@ -8,17 +8,17 @@ import SwiftUI
 
 struct UserListingView: View {
     @State private var viewModel: UserListingViewModel
-    let listingService: ListingService
-    let imageManager: ImageManager
-    let prohibitedWordsService: ProhibitedWordsService
-    let httpDownloader: HTTPDataDownloader
+    let listingService: ListingServiceProtocol
+    let imageManager: ImageManagerProtocol
+    let prohibitedWordsService: ProhibitedWordsServiceProtocol
+    let httpDataDownloader: HTTPDataDownloaderProtocol
    
-    init(viewModel: @autoclosure @escaping () -> UserListingViewModel,listingService: ListingService, imageManager: ImageManager, prohibitedWordsService: ProhibitedWordsService, httpDownloader: HTTPDataDownloader) {
+    init(viewModel: @autoclosure @escaping () -> UserListingViewModel, listingService: ListingServiceProtocol, imageManager: ImageManagerProtocol, prohibitedWordsService: ProhibitedWordsServiceProtocol, httpDownloader: HTTPDataDownloaderProtocol) {
         self._viewModel = State(wrappedValue: viewModel())
         self.listingService = listingService
         self.imageManager = imageManager
         self.prohibitedWordsService = prohibitedWordsService
-        self.httpDownloader = httpDownloader
+        self.httpDataDownloader = httpDownloader
     }
     
     var body: some View {
@@ -29,7 +29,7 @@ struct UserListingView: View {
                     case .empty:
                         EmptyContentView(message: "No active listings found", systemImage: "tray.fill")
                     case .success:
-                        UserListingSubview(listingService: listingService, imageManager: imageManager, prohibitedWordsService: prohibitedWordsService, httpDownloader: httpDownloader, viewModel: viewModel)
+                        UserListingSubview(listingService: listingService, imageManager: imageManager, prohibitedWordsService: prohibitedWordsService, httpDownloader: httpDataDownloader, viewModel: viewModel)
                         
                     case .error(let message):
                         ErrorView(message: message, retryAction: { Task {
@@ -58,23 +58,28 @@ struct UserListingView: View {
     }
 }
 
-//#Preview("MockData") {
-//    UserListingView(viewModel: UserListingViewModel(listingService: MockListingService as! ListingServiceProtocol), listingService: MockListingService, imageManager: ImageManager(), prohibitedWordsService: ProhibitedWordsService(), httpDownloader: HTTPDataDownloader())
-//}
+#Preview("MockData") {
+    UserListingView(viewModel: UserListingViewModel(listingService: MockListingService()), listingService: MockListingService(), imageManager: MockImageManager(isHeicSupported: true), prohibitedWordsService: MockProhibitedWordsService(prohibitedWords: [
+        "example",
+        "test",
+        "prohibited"
+    ]), httpDownloader: MockHTTPDataDownloader())
+}
 
 fileprivate struct UserListingSubview: View {
     @Bindable var viewModel: UserListingViewModel
     
-    let listingService: ListingService
-    let imageManager: ImageManager
-    let prohibitedWordsService: ProhibitedWordsService
-    let httpDownloader: HTTPDataDownloader
+    let listingService: ListingServiceProtocol
+    let imageManager: ImageManagerProtocol
+    let prohibitedWordsService: ProhibitedWordsServiceProtocol
+    let httpDataDownloader: HTTPDataDownloaderProtocol
     
-    init(listingService: ListingService, imageManager: ImageManager, prohibitedWordsService: ProhibitedWordsService, httpDownloader: HTTPDataDownloader, viewModel: UserListingViewModel) {
+    init(listingService: ListingServiceProtocol, imageManager: ImageManagerProtocol, prohibitedWordsService: ProhibitedWordsServiceProtocol, httpDownloader: HTTPDataDownloaderProtocol, viewModel: UserListingViewModel
+    ) {
         self.listingService = listingService
         self.imageManager = imageManager
         self.prohibitedWordsService = prohibitedWordsService
-        self.httpDownloader = httpDownloader
+        self.httpDataDownloader = httpDownloader
         self.viewModel = viewModel
     }
     
@@ -114,7 +119,7 @@ fileprivate struct UserListingSubview: View {
                     viewModel: EditFormViewModel(
                         listingService: listingService,
                         imageManager: imageManager,
-                        prohibitedWordsService: prohibitedWordsService, httpDownloader: httpDownloader
+                        prohibitedWordsService: prohibitedWordsService, httpDownloader: httpDataDownloader
                     )
                 )
         }

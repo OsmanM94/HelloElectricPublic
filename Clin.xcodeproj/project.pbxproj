@@ -89,7 +89,6 @@
 				ListingForm/SharedComponents/ImagePickerCell.swift,
 				ListingForm/SharedComponents/ImagePickerGridView.swift,
 				ListingForm/SharedComponents/ListingFormViewStatesMessages.swift,
-				ListingForm/SharedComponents/SelectedImageCell.swift,
 				Search/FilterView.swift,
 				Search/SearchView.swift,
 				Search/SearchViewModel.swift,
@@ -147,9 +146,12 @@
 		623B91BC2C66966F00A5BD60 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				MockDvlaService.swift,
 				MockFavouriteService.swift,
 				MockHTTPDataDownloader.swift,
+				MockImageManager.swift,
 				MockListingService.swift,
+				MockProhibitedWordsService.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
 		};

@@ -56,8 +56,12 @@ struct ProfileView: View {
 }
 
 #Preview {
-    ProfileView(viewModel: ProfileViewModel(imageManager: ImageManager(), prohibitedWordsService: ProhibitedWordsService()))
-        .environment(AuthViewModel())
+    ProfileView(viewModel: ProfileViewModel(imageManager: MockImageManager(isHeicSupported: true), prohibitedWordsService: MockProhibitedWordsService(prohibitedWords: [
+        "example",
+        "test",
+        "prohibited"
+    ] )))
+    .environment(AuthViewModel())
 }
 
 fileprivate struct ProfileSubview: View {

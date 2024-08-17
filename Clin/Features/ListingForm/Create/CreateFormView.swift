@@ -55,15 +55,32 @@ struct CreateFormView: View {
     }
 }
 
-//#Preview {
-//    CreateFormView(viewModel: CreateFormViewModel(listingService: MockListingService(), imageManager: ImageManager(), prohibitedWordsService: ProhibitedWordsService(), httpDataDownloader: DvlaService(httpDownloader: HTTPDataDownloader()), dvlaService: DvlaService(httpDownloader: HTTPDataDownloader())))
-//}
-//
-//#Preview("Loaded") {
-//    NavigationStack {
-//        CreateFormSubview(viewModel: CreateFormViewModel(listingService: MockListingService(), imageManager: ImageManager(), prohibitedWordsService: ProhibitedWordsService()))
-//    }
-//}
+#Preview("DVLA") {
+    CreateFormView(
+        viewModel: CreateFormViewModel(
+            listingService: MockListingService(),
+            imageManager: MockImageManager(isHeicSupported: true),
+            prohibitedWordsService: MockProhibitedWordsService(prohibitedWords: [""]),
+            httpDataDownloader: MockHTTPDataDownloader(),
+            dvlaService: MockDvlaService()
+        )
+    )
+}
+
+#Preview("Loaded") {
+    NavigationStack {
+        CreateFormSubview(viewModel: CreateFormViewModel(
+                listingService: MockListingService(),
+                imageManager: MockImageManager(
+                    isHeicSupported: true),
+                prohibitedWordsService: MockProhibitedWordsService(
+                    prohibitedWords: [""]),
+                httpDataDownloader: MockHTTPDataDownloader(),
+                dvlaService: MockDvlaService()
+            )
+        )
+    }
+}
 
 fileprivate struct DvlaCheckView: View {
     @Binding var registrationNumber: String

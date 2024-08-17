@@ -89,6 +89,15 @@ struct ImagePickerCell<ViewModel: ImagePickerProtocol>: View {
 }
 
 #Preview {
-    ImagePickerCell(viewModel: EditFormViewModel(listingService: MockListingService(), imageManager: ImageManager(), prohibitedWordsService: ProhibitedWordsService(), httpDownloader: MockHTTPDataDownloader()), index: 1, number: 1)
-        .preferredColorScheme(.dark)
+    ImagePickerCell(
+        viewModel: EditFormViewModel(
+            listingService: MockListingService(),
+            imageManager: MockImageManager(isHeicSupported: true),
+            prohibitedWordsService: MockProhibitedWordsService(
+                prohibitedWords: [""]),
+            httpDownloader: MockHTTPDataDownloader()),
+        index: 1,
+        number: 1
+    )
+    .preferredColorScheme(.dark)
 }

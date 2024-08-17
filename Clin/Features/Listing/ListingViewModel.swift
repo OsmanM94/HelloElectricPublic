@@ -17,6 +17,7 @@ final class ListingViewModel {
     
     init(listingService: ListingServiceProtocol) {
         self.listingService = listingService
+        print("DEBUG: DID INIT LISTING VIEWMODEL")
     }
     
     private(set) var listings: [Listing] = []

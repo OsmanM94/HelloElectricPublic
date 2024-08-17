@@ -58,7 +58,15 @@ struct ImagePickerGridView<ViewModel: ImagePickerProtocol>: View {
 
 
 #Preview {
-    ImagePickerGridView(viewModel: CreateFormViewModel(listingService: ListingService(databaseService: DatabaseService()), imageManager: ImageManager(), prohibitedWordsService: ProhibitedWordsService(), httpDataDownloader: HTTPDataDownloader(), dvlaService: DvlaService(httpDownloader: HTTPDataDownloader())))
+    ImagePickerGridView(
+        viewModel: EditFormViewModel(
+            listingService: MockListingService(),
+            imageManager: MockImageManager(isHeicSupported: true),
+            prohibitedWordsService: MockProhibitedWordsService(
+                prohibitedWords: [""]),
+            httpDownloader: MockHTTPDataDownloader()
+        )
+    )
 }
 
 

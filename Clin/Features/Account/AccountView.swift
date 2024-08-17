@@ -10,14 +10,14 @@ import SwiftUI
 struct AccountView: View {
     @Environment(AuthViewModel.self) private var authViewModel
  
-    let imageManager: ImageManager
-    let prohibitedWordService: ProhibitedWordsService
-    let listingService: ListingService
-    let httpDownloader: HTTPDataDownloader
+    let imageManager: ImageManagerProtocol
+    let prohibitedWordsService: ProhibitedWordsServiceProtocol
+    let listingService: ListingServiceProtocol
+    let httpDownloader: HTTPDataDownloaderProtocol
     
-    init(imageManager: ImageManager, prohibitedWordService: ProhibitedWordsService, listingService: ListingService, httpDownloader: HTTPDataDownloader) {
+    init(imageManager: ImageManagerProtocol, prohibitedWordsService: ProhibitedWordsServiceProtocol, listingService: ListingServiceProtocol, httpDownloader: HTTPDataDownloaderProtocol) {
         self.imageManager = imageManager
-        self.prohibitedWordService = prohibitedWordService
+        self.prohibitedWordsService = prohibitedWordsService
         self.listingService = listingService
         self.httpDownloader = httpDownloader
     }
@@ -27,10 +27,10 @@ struct AccountView: View {
             Form {
                 Section("Manage") {
                     NavigationLink("Profile", destination: {
-                        ProfileView(viewModel: ProfileViewModel(imageManager: imageManager, prohibitedWordsService: prohibitedWordService))
+                        ProfileView(viewModel: ProfileViewModel(imageManager: imageManager, prohibitedWordsService: prohibitedWordsService))
                     })
                     NavigationLink("My listings", destination: {
-                        UserListingView(viewModel: UserListingViewModel(listingService: listingService), listingService: listingService, imageManager: imageManager, prohibitedWordsService: prohibitedWordService, httpDownloader: httpDownloader)
+                        UserListingView(viewModel: UserListingViewModel(listingService: listingService), listingService: listingService, imageManager: imageManager, prohibitedWordsService: prohibitedWordsService, httpDownloader: httpDownloader)
                     })
                     NavigationLink("Saved", destination: {
                         FavouriteListingView()
@@ -72,9 +72,10 @@ struct AccountView: View {
 
 #Preview {
     AccountView(
-        imageManager: ImageManager(),
-        prohibitedWordService: ProhibitedWordsService(),
-        listingService: ListingService(databaseService: DatabaseService()), httpDownloader: HTTPDataDownloader()
+        imageManager: MockImageManager(isHeicSupported: true),
+        prohibitedWordsService: MockProhibitedWordsService( prohibitedWords: [""]),
+        listingService: MockListingService(),
+        httpDownloader: MockHTTPDataDownloader()
     )
     .environment(AuthViewModel())
     .environmentObject(FavouriteViewModel(favouriteService: MockFavouriteService())

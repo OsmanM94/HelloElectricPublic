@@ -14,6 +14,7 @@ struct ClinApp: App {
     @State private var networkMonitor = NetworkMonitor()
     @State private var favouriteViewModel: FavouriteViewModel
     @State private var marketViewModel: MarketViewModel
+    @State private var listingViewModel: ListingViewModel
     
     let databaseService = DatabaseService()
     let imageManager = ImageManager()
@@ -27,15 +28,17 @@ struct ClinApp: App {
         self.listingService = ListingService(databaseService: databaseService)
         self._favouriteViewModel = State(wrappedValue: FavouriteViewModel(favouriteService: FavouriteService(databaseService: databaseService)))
         self._marketViewModel = State(wrappedValue: MarketViewModel())
+        self._listingViewModel = State(wrappedValue: ListingViewModel(listingService: listingService))
     }
 
     var body: some Scene {
         WindowGroup {
             MarketView(
-                viewModel: MarketViewModel(),
+                viewModel: marketViewModel,
+                listingViewModel: listingViewModel,
                 listingService: listingService,
                 imageManager: imageManager,
-                prohibitedWordService: prohibitedWordsService,
+                prohibitedWordsService: prohibitedWordsService,
                 httpDataDownloader: httpDataDownloader,
                 dvlaService: dvlaService
             )

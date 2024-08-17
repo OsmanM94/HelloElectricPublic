@@ -52,7 +52,15 @@ struct EditFormView: View {
 }
 
 #Preview {
-    EditFormView(listing: MockListingService.sampleData[0], viewModel: EditFormViewModel(listingService: MockListingService(), imageManager: ImageManager(), prohibitedWordsService: ProhibitedWordsService(), httpDownloader: MockHTTPDataDownloader()))
+    EditFormView(
+        listing: MockListingService.sampleData[0],
+        viewModel: EditFormViewModel(
+            listingService: MockListingService(),
+            imageManager: MockImageManager(isHeicSupported: true),
+            prohibitedWordsService: MockProhibitedWordsService(prohibitedWords: [""]),
+            httpDownloader: MockHTTPDataDownloader()
+        )
+    )
 }
 
 fileprivate struct EditFormSubview: View {
