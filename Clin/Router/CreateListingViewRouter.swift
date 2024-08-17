@@ -12,19 +12,19 @@ struct CreateListingViewRouter: View {
     @Environment(AuthViewModel.self) private var authViewModel
     @Environment(NetworkMonitor.self) private var networkMonitor
     
-    let imageManager: ImageManagerProtocol
-    let prohibitedWordsService: ProhibitedWordsServiceProtocol
-    let listingService: ListingServiceProtocol
-    let dvlaService: DvlaServiceProtocol
-    let httpDataDownloader: HTTPDataDownloaderProtocol
+//    let imageManager: ImageManagerProtocol
+//    let prohibitedWordsService: ProhibitedWordsServiceProtocol
+//    let listingService: ListingServiceProtocol
+//    let dvlaService: DvlaServiceProtocol
+//    let httpDataDownloader: HTTPDataDownloaderProtocol
     let createFormViewModel: CreateFormViewModel
     
-    init(imageManager: ImageManagerProtocol, prohibitedWordsService: ProhibitedWordsServiceProtocol, listingService: ListingServiceProtocol, dvlaService: DvlaServiceProtocol, httpDataDownloader: HTTPDataDownloaderProtocol, createFormViewModel: @autoclosure @escaping () -> CreateFormViewModel) {
-        self.imageManager = imageManager
-        self.prohibitedWordsService = prohibitedWordsService
-        self.listingService = listingService
-        self.dvlaService = dvlaService
-        self.httpDataDownloader = httpDataDownloader
+    init( createFormViewModel: @autoclosure @escaping () -> CreateFormViewModel) {
+//        self.imageManager = imageManager
+//        self.prohibitedWordsService = prohibitedWordsService
+//        self.listingService = listingService
+//        self.dvlaService = dvlaService
+//        self.httpDataDownloader = httpDataDownloader
         self.createFormViewModel = createFormViewModel()
     }
     

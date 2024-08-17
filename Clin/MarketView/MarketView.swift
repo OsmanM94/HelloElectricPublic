@@ -53,13 +53,7 @@ struct MarketView: View {
                     Label("Search", systemImage: "magnifyingglass")
                 }
             
-            CreateListingViewRouter(
-                imageManager: imageManager,
-                prohibitedWordsService: prohibitedWordsService,
-                listingService: listingService,
-                dvlaService: dvlaService,
-                httpDataDownloader: httpDataDownloader,
-                createFormViewModel: createFormViewModel)
+            CreateListingViewRouter(createFormViewModel: createFormViewModel)
                 .tag(Tab.third)
                 .tabItem {
                     Label("Sell", systemImage: "plus")
