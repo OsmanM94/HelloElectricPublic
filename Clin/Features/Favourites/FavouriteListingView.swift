@@ -52,7 +52,7 @@ fileprivate struct FavouriteListingSubview: View {
     
     var body: some View {
         List {
-            ForEach(viewModel.favoriteListings, id: \.id) { favourite in
+            ForEach(viewModel.favoriteListings, id: \.listingID) { favourite in
                 FavouriteCell(favourite: favourite)
                     .swipeActions(allowsFullSwipe: false) {
                         Button(role: .destructive) {

@@ -64,16 +64,18 @@ final class CreateFormViewModel: ImagePickerProtocol {
     var imagesURLs: [URL] = []
     var thumbnailsURLs: [URL] = []
     
-    private let dvlaService = DvlaService()
-    
+    private let dvlaService: DvlaService
     private let listingService: ListingServiceProtocol
     private let imageManager: ImageManagerProtocol
     private let prohibitedWordsService: ProhibitedWordsServiceProtocol
+    private let httpDataDownloader: HTTPDataDownloaderProtocol
     
-    init(listingService: ListingServiceProtocol, imageManager: ImageManagerProtocol, prohibitedWordsService: ProhibitedWordsServiceProtocol) {
+    init(listingService: ListingServiceProtocol, imageManager: ImageManagerProtocol, prohibitedWordsService: ProhibitedWordsServiceProtocol, httpDataDownloader: HTTPDataDownloaderProtocol, dvlaService: DvlaService) {
         self.listingService = listingService
         self.imageManager = imageManager
         self.prohibitedWordsService = prohibitedWordsService
+        self.httpDataDownloader = httpDataDownloader
+        self.dvlaService = dvlaService
     }
     
     @MainActor

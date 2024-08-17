@@ -50,6 +50,7 @@
 		6217F3452C2977D200EF8B2D /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				DatabaseService.swift,
 				DvlaService.swift,
 				FavouriteService.swift,
 				ListingService.swift,

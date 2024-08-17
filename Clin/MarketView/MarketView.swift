@@ -8,11 +8,29 @@
 import SwiftUI
 
 struct MarketView: View {
-    @StateObject private var viewModel = MarketViewModel()
+    @StateObject private var viewModel: MarketViewModel
+    
+    let listingService: ListingService
+    let imageManager: ImageManager
+    let prohibitedWordService: ProhibitedWordsService
+    let httpDataDownloader: HTTPDataDownloader
+    let dvlaService: DvlaService
+   
+    init(viewModel: @autoclosure @escaping () -> MarketViewModel , listingService: ListingService, imageManager: ImageManager, prohibitedWordService: ProhibitedWordsService, httpDataDownloader: HTTPDataDownloader, dvlaService: DvlaService) {
+        self._viewModel = StateObject(wrappedValue: viewModel())
+        self.listingService = listingService
+        self.imageManager = imageManager
+        self.prohibitedWordService = prohibitedWordService
+        self.httpDataDownloader = httpDataDownloader
+        self.dvlaService = dvlaService
+    }
     
     var body: some View {
         TabView(selection: $viewModel.selectedTab) {
-            ListingView(viewModel: ListingViewModel(listingService: ListingService()), isDoubleTap: $viewModel.scrollFirstTabToTop, selectedTab: $viewModel.selectedTab)
+            ListingView(
+                viewModel: ListingViewModel(listingService: listingService),
+                isDoubleTap: $viewModel.scrollFirstTabToTop,
+                selectedTab: $viewModel.selectedTab)
                 .tag(Tab.first)
                 .tabItem {
                     Label("Listings", systemImage: "bolt.car")
@@ -24,13 +42,22 @@ struct MarketView: View {
                     Label("Search", systemImage: "magnifyingglass")
                 }
             
-            CreateListingViewRouter()
+            CreateListingViewRouter(
+                imageManager: imageManager,
+                prohibitedWordService: prohibitedWordService,
+                listingService: listingService,
+                dvlaService: dvlaService,
+                httpDataDownloader: httpDataDownloader)
                 .tag(Tab.third)
                 .tabItem {
                     Label("Sell", systemImage: "plus")
                 }
             
-            AccountViewRouter()
+            AccountViewRouter(
+                imageManager: imageManager,
+                prohibitedWordService: prohibitedWordService,
+                listingService: listingService,
+                httpDownloader: httpDataDownloader)
                 .tag(Tab.fourth)
                 .tabItem {
                     Label("Account", systemImage: "person.fill")
@@ -40,7 +67,12 @@ struct MarketView: View {
 }
 
 #Preview {
-    MarketView()
+    MarketView(
+        viewModel: MarketViewModel(),
+        listingService: ListingService(databaseService: DatabaseService()),
+        imageManager: ImageManager(),
+        prohibitedWordService: ProhibitedWordsService(),
+        httpDataDownloader: HTTPDataDownloader(), dvlaService: DvlaService(httpDownloader: HTTPDataDownloader()))
         .environment(AuthViewModel())
         .environment(NetworkMonitor())
         .environmentObject(FavouriteViewModel(favouriteService: MockFavouriteService()))

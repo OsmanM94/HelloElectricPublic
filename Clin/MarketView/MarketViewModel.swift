@@ -15,7 +15,6 @@ enum Tab {
     case fourth
 }
 
-
 final class MarketViewModel: ObservableObject {
     @Published var selectedTab: Tab = .first
     @Published var scrollFirstTabToTop: Bool = false

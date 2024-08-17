@@ -7,15 +7,26 @@
 import SwiftUI
 import PhotosUI
 
-//protocol ListingServiceProtocol {
-//    func fetchPaginatedListings(from: Int, to: Int) async throws -> [Listing]
-//    func fetchListings(id: Int) async throws -> Listing
-//    func fetchUserListings(userID: UUID) async throws -> [Listing]
-//    func fetchMakeModels() async throws -> [CarMake]
-//    func createListing(_ listing: Listing) async throws
-//    func updateListing(_ listing: Listing) async throws
-//    func deleteListing(at id: Int) async throws
-//}
+protocol DatabaseServiceProtocol {
+    func fetchPagination<T: Decodable>(from table: String, orderBy: String, ascending: Bool, from: Int, to: Int) async throws -> [T]
+    func fetchAll<T: Decodable>(from table: String) async throws -> [T]
+    func fetchByID<T: Decodable>(from table: String, id: Int) async throws -> T
+    func fetchByField<T: Decodable>(from table: String, field: String, value: UUID) async throws -> [T]
+    func insert<T: Encodable>(_ item: T, into table: String) async throws
+    func update<T: Encodable>(_ item: T, in table: String, id: Int) async throws
+    func delete(from table: String, id: Int) async throws
+    func deleteByField(from table: String, field: String , value: Int, field2: String, value2: UUID) async throws
+}
+
+protocol ListingServiceProtocol {
+    func fetchPaginatedListings(from: Int, to: Int) async throws -> [Listing]
+    func fetchListing(id: Int) async throws -> Listing
+    func fetchMakeModels() async throws -> [CarMake]
+    func fetchUserListings(userID: UUID) async throws -> [Listing]
+    func createListing(_ listing: Listing) async throws
+    func updateListing(_ listing: Listing) async throws
+    func deleteListing(at id: Int) async throws
+}
 
 protocol FavouriteServiceProtocol {
     func fetchUserFavourites(userID: UUID) async throws -> [Favourite]

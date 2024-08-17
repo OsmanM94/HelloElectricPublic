@@ -192,8 +192,6 @@ final class EditFormViewModel: ImagePickerProtocol {
         }
     }
     
-
-    
     @MainActor
     func loadListingData(listing: Listing) async {
         guard let id = listing.id else {

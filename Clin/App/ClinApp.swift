@@ -12,14 +12,36 @@ struct ClinApp: App {
     
     @State private var authViewModel = AuthViewModel()
     @State private var networkMonitor = NetworkMonitor()
-    @StateObject private var favouriteViewModel = FavouriteViewModel(favouriteService: FavouriteService())
+    @State private var favouriteViewModel: FavouriteViewModel
+    @State private var marketViewModel: MarketViewModel
     
+    let databaseService = DatabaseService()
+    let imageManager = ImageManager()
+    let prohibitedWordsService = ProhibitedWordsService()
+    let httpDataDownloader = HTTPDataDownloader()
+    let dvlaService: DvlaService
+    let listingService: ListingService
+    
+    init() {
+        self.dvlaService = DvlaService(httpDownloader: httpDataDownloader)
+        self.listingService = ListingService(databaseService: databaseService)
+        self._favouriteViewModel = State(wrappedValue: FavouriteViewModel(favouriteService: FavouriteService(databaseService: databaseService)))
+        self._marketViewModel = State(wrappedValue: MarketViewModel())
+    }
+
     var body: some Scene {
         WindowGroup {
-            MarketView()
-                .environment(authViewModel)
-                .environment(networkMonitor)
-                .environmentObject(favouriteViewModel)
+            MarketView(
+                viewModel: MarketViewModel(),
+                listingService: listingService,
+                imageManager: imageManager,
+                prohibitedWordService: prohibitedWordsService,
+                httpDataDownloader: httpDataDownloader,
+                dvlaService: dvlaService
+            )
+            .environment(authViewModel)
+            .environment(networkMonitor)
+            .environmentObject(favouriteViewModel)
         }
     }
 }

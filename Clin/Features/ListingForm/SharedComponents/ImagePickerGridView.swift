@@ -58,7 +58,7 @@ struct ImagePickerGridView<ViewModel: ImagePickerProtocol>: View {
 
 
 #Preview {
-    ImagePickerGridView(viewModel: CreateFormViewModel(listingService: MockListingService(), imageManager: ImageManager(), prohibitedWordsService: ProhibitedWordsService()))
+    ImagePickerGridView(viewModel: CreateFormViewModel(listingService: ListingService(databaseService: DatabaseService()), imageManager: ImageManager(), prohibitedWordsService: ProhibitedWordsService(), httpDataDownloader: HTTPDataDownloader(), dvlaService: DvlaService(httpDownloader: HTTPDataDownloader())))
 }
 
 

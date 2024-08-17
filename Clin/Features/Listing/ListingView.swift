@@ -102,7 +102,3 @@ fileprivate struct ListingSubview: View {
         .environmentObject(FavouriteViewModel(favouriteService: MockFavouriteService()))
 }
 
-#Preview("API") {
-    ListingView(viewModel: ListingViewModel(listingService: ListingService()), isDoubleTap: .constant(false), selectedTab: .constant(.first))
-        .environmentObject(FavouriteViewModel(favouriteService: FavouriteService()))
-}

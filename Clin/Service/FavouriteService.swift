@@ -8,44 +8,32 @@
 import Foundation
 
 struct FavouriteService: FavouriteServiceProtocol {
+    
+    private let databaseService: DatabaseServiceProtocol
+    
+    init(databaseService: DatabaseServiceProtocol) {
+        self.databaseService = databaseService
+        print("DEBUG: Did init favourite service")
+    }
         
     func fetchUserFavourites(userID: UUID) async throws -> [Favourite] {
-        do {
-            let favourites: [Favourite] = try await Supabase.shared.client
-                .from("favourite_listing")
-                .select()
-                .eq("user_id", value: userID)
-                .order("created_at", ascending: false)
-                .execute()
-                .value
-            return favourites
-        } catch {
-            throw error
-        }
+        try await databaseService.fetchByField(from: "favourite_listing", field: "user_id", value: userID)
     }
     
     func addToFavorites(_ favourite: Favourite) async throws {
-        do {
-            try await Supabase.shared.client
-                .from("favourite_listing")
-                .insert(favourite)
-                .execute()
-        } catch {
-            throw error
-        }
+        try await databaseService.insert(favourite, into: "favourite_listing")
     }
     
+    
     func removeFromFavorites(_ favourite: Favourite, for userID: UUID) async throws {
-        do {
-            try await Supabase.shared.client
-                .from("favourite_listing")
-                .delete()
-                .eq("listing_id", value: favourite.listingID)
-                .eq("user_id", value: userID)
-                .execute()
-        } catch {
-            throw error
-        }
+        try await databaseService
+            .deleteByField(
+                from: "favourite_listing",
+                field: "listing_id",
+                value: favourite.listingID,
+                field2: "user_id",
+                value2: userID
+            )
     }
 }
 

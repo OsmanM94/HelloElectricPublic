@@ -19,6 +19,10 @@ enum ImageLoadResult {
 
 final class ImageManager: ImageManagerProtocol {
    
+    init() {
+        print("DEBUG: Did init image manager")
+    }
+    
     var isHeicSupported: Bool {
         (CGImageDestinationCopyTypeIdentifiers() as! [String]).contains("public.heic")
     }

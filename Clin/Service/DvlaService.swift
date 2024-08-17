@@ -12,7 +12,7 @@ struct DvlaService {
     private let apiKey = "32ajeg6zif8hoBN6pASIJ93uAzx9erA34jAoyLxA"
     private let baseURL = "https://driver-vehicle-licensing.api.gov.uk/vehicle-enquiry/v1/vehicles"
     
-    init(httpDownloader: HTTPDataDownloaderProtocol = HTTPDataDownloader()) {
+    init(httpDownloader: HTTPDataDownloaderProtocol) {
         self.httpDownloader = httpDownloader
     }
     
