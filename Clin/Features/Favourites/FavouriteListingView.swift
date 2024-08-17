@@ -43,8 +43,9 @@ struct FavouriteListingView: View {
 }
 
 #Preview("Empty View") {
+    let favouriteService = PreviewHelpers.makeMockFavouriteService()
     FavouriteListingView()
-        .environmentObject(FavouriteViewModel(favouriteService: MockFavouriteService()))
+        .environmentObject(FavouriteViewModel(favouriteService: favouriteService))
 }
 
 fileprivate struct FavouriteListingSubview: View {

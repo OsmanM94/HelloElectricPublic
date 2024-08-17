@@ -58,15 +58,8 @@ struct ImagePickerGridView<ViewModel: ImagePickerProtocol>: View {
 
 
 #Preview {
-    ImagePickerGridView(
-        viewModel: EditFormViewModel(
-            listingService: MockListingService(),
-            imageManager: MockImageManager(isHeicSupported: true),
-            prohibitedWordsService: MockProhibitedWordsService(
-                prohibitedWords: [""]),
-            httpDownloader: MockHTTPDataDownloader()
-        )
-    )
+    let editFormViewModel = PreviewHelpers.makePreviewEditFormViewModel()
+    ImagePickerGridView(viewModel: editFormViewModel)
 }
 
 

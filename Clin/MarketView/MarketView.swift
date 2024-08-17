@@ -16,9 +16,11 @@ struct MarketView: View {
     let httpDataDownloader: HTTPDataDownloaderProtocol
     let dvlaService: DvlaServiceProtocol
     let listingViewModel: ListingViewModel
+    let createFormViewModel: CreateFormViewModel
     
     init(viewModel: @autoclosure @escaping () -> MarketViewModel,
          listingViewModel: @autoclosure @escaping () -> ListingViewModel,
+         createFormViewModel: @autoclosure @escaping () -> CreateFormViewModel,
          listingService: ListingServiceProtocol,
          imageManager: ImageManagerProtocol,
          prohibitedWordsService: ProhibitedWordsServiceProtocol,
@@ -31,6 +33,7 @@ struct MarketView: View {
         self.prohibitedWordsService = prohibitedWordsService
         self.httpDataDownloader = httpDataDownloader
         self.dvlaService = dvlaService
+        self.createFormViewModel = createFormViewModel()
     }
     
     var body: some View {
@@ -55,7 +58,8 @@ struct MarketView: View {
                 prohibitedWordsService: prohibitedWordsService,
                 listingService: listingService,
                 dvlaService: dvlaService,
-                httpDataDownloader: httpDataDownloader)
+                httpDataDownloader: httpDataDownloader,
+                createFormViewModel: createFormViewModel)
                 .tag(Tab.third)
                 .tabItem {
                     Label("Sell", systemImage: "plus")
@@ -75,19 +79,27 @@ struct MarketView: View {
 }
 
 #Preview {
-    MarketView(
-        viewModel: MarketViewModel(), listingViewModel: ListingViewModel(listingService: MockListingService()),
-        listingService: MockListingService(),
-        imageManager: MockImageManager(isHeicSupported: true),
-        prohibitedWordsService: MockProhibitedWordsService(
-            prohibitedWords: [""]),
-        httpDataDownloader: MockHTTPDataDownloader(),
-        dvlaService: MockDvlaService()
+    let listingService = PreviewHelpers.makeMockListingService()
+    let imageManager = PreviewHelpers.makeMockImageManager()
+    let prohibitedWordService = PreviewHelpers.makeMockProhibitedWordsService()
+    let httpDataDownloader = PreviewHelpers.makeMockHttpDataDownloader()
+    let dvlaService = PreviewHelpers.makeMockDvlaService()
+    let listingViewModel = PreviewHelpers.makePreviewListingViewModel()
+    let createFormViewModel = PreviewHelpers.makePreviewCreateFormViewModel()
+    
+    return MarketView(
+        viewModel: MarketViewModel(),
+        listingViewModel: listingViewModel,
+        createFormViewModel: createFormViewModel,
+        listingService: listingService,
+        imageManager: imageManager,
+        prohibitedWordsService: prohibitedWordService,
+        httpDataDownloader: httpDataDownloader,
+        dvlaService: dvlaService
     )
-        .environment(AuthViewModel())
-        .environment(NetworkMonitor())
-        .environmentObject(FavouriteViewModel(favouriteService: MockFavouriteService()))
+    .environment(AuthViewModel())
+    .environment(NetworkMonitor())
+    .environmentObject(PreviewHelpers.makeMockFavouriteViewModel())
 }
-
 
 

@@ -98,7 +98,11 @@ fileprivate struct ListingSubview: View {
 
 
 #Preview("MockData") {
-    ListingView(viewModel: ListingViewModel(listingService: MockListingService()), isDoubleTap: .constant(false), selectedTab: .constant(.first))
+    let listingService = PreviewHelpers.makeMockListingService()
+    ListingView(
+        viewModel: ListingViewModel(listingService: listingService),
+        isDoubleTap: .constant(false),
+        selectedTab: .constant(.first))
         .environmentObject(FavouriteViewModel(favouriteService: MockFavouriteService()))
 }
 

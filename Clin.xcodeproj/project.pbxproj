@@ -171,6 +171,7 @@
 				NetworkMonitor/NetworkMonitor.swift,
 				NetworkMonitor/NetworkMonitorView.swift,
 				PhotosPicker/CustomPhotoPickers.swift,
+				PreviewHelpers/PreviewHelpers.swift,
 				SDWebImage/ImageLoader.swift,
 				SensitiveContentAnalysis/SensitiveContentAnalysis.swift,
 				TimeElapsed/TimeElapsed.swift,

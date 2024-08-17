@@ -15,6 +15,7 @@ struct ClinApp: App {
     @State private var favouriteViewModel: FavouriteViewModel
     @State private var marketViewModel: MarketViewModel
     @State private var listingViewModel: ListingViewModel
+    @State private var createFormViewModel: CreateFormViewModel
     
     let databaseService = DatabaseService()
     let imageManager = ImageManager()
@@ -29,6 +30,7 @@ struct ClinApp: App {
         self._favouriteViewModel = State(wrappedValue: FavouriteViewModel(favouriteService: FavouriteService(databaseService: databaseService)))
         self._marketViewModel = State(wrappedValue: MarketViewModel())
         self._listingViewModel = State(wrappedValue: ListingViewModel(listingService: listingService))
+        self._createFormViewModel = State(wrappedValue: CreateFormViewModel(listingService: listingService, imageManager: imageManager, prohibitedWordsService: prohibitedWordsService, httpDataDownloader: httpDataDownloader, dvlaService: dvlaService))
     }
 
     var body: some Scene {
@@ -36,6 +38,7 @@ struct ClinApp: App {
             MarketView(
                 viewModel: marketViewModel,
                 listingViewModel: listingViewModel,
+                createFormViewModel: createFormViewModel,
                 listingService: listingService,
                 imageManager: imageManager,
                 prohibitedWordsService: prohibitedWordsService,

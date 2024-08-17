@@ -17,19 +17,21 @@ struct CreateListingViewRouter: View {
     let listingService: ListingServiceProtocol
     let dvlaService: DvlaServiceProtocol
     let httpDataDownloader: HTTPDataDownloaderProtocol
+    let createFormViewModel: CreateFormViewModel
     
-    init(imageManager: ImageManagerProtocol, prohibitedWordsService: ProhibitedWordsServiceProtocol, listingService: ListingServiceProtocol, dvlaService: DvlaServiceProtocol, httpDataDownloader: HTTPDataDownloaderProtocol) {
+    init(imageManager: ImageManagerProtocol, prohibitedWordsService: ProhibitedWordsServiceProtocol, listingService: ListingServiceProtocol, dvlaService: DvlaServiceProtocol, httpDataDownloader: HTTPDataDownloaderProtocol, createFormViewModel: @autoclosure @escaping () -> CreateFormViewModel) {
         self.imageManager = imageManager
         self.prohibitedWordsService = prohibitedWordsService
         self.listingService = listingService
         self.dvlaService = dvlaService
         self.httpDataDownloader = httpDataDownloader
+        self.createFormViewModel = createFormViewModel()
     }
     
     var body: some View {
         Group {
             if authViewModel.authenticationState == .authenticated {
-                CreateFormView(viewModel: CreateFormViewModel(listingService: listingService, imageManager: imageManager, prohibitedWordsService: prohibitedWordsService, httpDataDownloader: httpDataDownloader, dvlaService: dvlaService))
+                CreateFormView(viewModel: createFormViewModel)
                     .overlay(
                         !networkMonitor.isConnected ? NetworkMonitorView().background(Color.white.opacity(0.8)) : nil
                     )

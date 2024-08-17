@@ -52,15 +52,9 @@ struct EditFormView: View {
 }
 
 #Preview {
+    let editFormViewModel = PreviewHelpers.makePreviewEditFormViewModel()
     EditFormView(
-        listing: MockListingService.sampleData[0],
-        viewModel: EditFormViewModel(
-            listingService: MockListingService(),
-            imageManager: MockImageManager(isHeicSupported: true),
-            prohibitedWordsService: MockProhibitedWordsService(prohibitedWords: [""]),
-            httpDownloader: MockHTTPDataDownloader()
-        )
-    )
+        listing: MockListingService.sampleData[0], viewModel: editFormViewModel)
 }
 
 fileprivate struct EditFormSubview: View {

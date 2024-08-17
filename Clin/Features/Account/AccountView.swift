@@ -71,11 +71,16 @@ struct AccountView: View {
 }
 
 #Preview {
+    let listingService = PreviewHelpers.makeMockListingService()
+    let imageManager = PreviewHelpers.makeMockImageManager()
+    let prohibitedWordService = PreviewHelpers.makeMockProhibitedWordsService()
+    let httpDataDownloader = PreviewHelpers.makeMockHttpDataDownloader()
+    
     AccountView(
-        imageManager: MockImageManager(isHeicSupported: true),
-        prohibitedWordsService: MockProhibitedWordsService( prohibitedWords: [""]),
-        listingService: MockListingService(),
-        httpDownloader: MockHTTPDataDownloader()
+        imageManager: imageManager,
+        prohibitedWordsService: prohibitedWordService,
+        listingService: listingService,
+        httpDownloader: httpDataDownloader
     )
     .environment(AuthViewModel())
     .environmentObject(FavouriteViewModel(favouriteService: MockFavouriteService())

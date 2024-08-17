@@ -10,7 +10,6 @@ import PhotosUI
 
 @Observable
 final class CreateFormViewModel: ImagePickerProtocol {
-   
     enum ViewState: Equatable {
         case idle
         case loading
@@ -21,14 +20,13 @@ final class CreateFormViewModel: ImagePickerProtocol {
     }
         
     private(set) var viewState: ViewState = .idle
+    private(set) var uploadingProgress: Double = 0.0
     var imageViewState: ImageViewState = .idle
     
     var selectedImages: [SelectedImage?] = Array(repeating: nil, count: 10)
     var imageSelections: [PhotosPickerItem?] = Array(repeating: nil, count: 10)
     var isLoading: [Bool] = Array(repeating: false, count: 10)
 
-    private(set) var uploadingProgress: Double = 0.0
-    
     ///DVLA checks
     var registrationNumber: String = ""
     
@@ -76,6 +74,7 @@ final class CreateFormViewModel: ImagePickerProtocol {
         self.prohibitedWordsService = prohibitedWordsService
         self.httpDataDownloader = httpDataDownloader
         self.dvlaService = dvlaService
+        print("DEBUG: DID INIT CREATE VIEWMODEL")
     }
     
     @MainActor

@@ -89,15 +89,7 @@ struct ImagePickerCell<ViewModel: ImagePickerProtocol>: View {
 }
 
 #Preview {
-    ImagePickerCell(
-        viewModel: EditFormViewModel(
-            listingService: MockListingService(),
-            imageManager: MockImageManager(isHeicSupported: true),
-            prohibitedWordsService: MockProhibitedWordsService(
-                prohibitedWords: [""]),
-            httpDownloader: MockHTTPDataDownloader()),
-        index: 1,
-        number: 1
-    )
+    let editFormViewModel = PreviewHelpers.makePreviewEditFormViewModel()
+    ImagePickerCell(viewModel: editFormViewModel, index: 1, number: 1)
     .preferredColorScheme(.dark)
 }

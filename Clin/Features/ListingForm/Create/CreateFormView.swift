@@ -30,7 +30,11 @@ struct CreateFormView: View {
                         
                     case .loaded:
                         CreateFormSubview(viewModel: viewModel)
-                           
+                            .task {
+                                await viewModel.loadProhibitedWords()
+                                await viewModel.fetchMakeAndModels()
+                                print("DEBUG: Fetching make and models")
+                            }
                     case .uploading:
                         CircularProgressBar(progress: viewModel.uploadingProgress)
    
@@ -48,37 +52,18 @@ struct CreateFormView: View {
             .navigationTitle("Selling")
             .navigationBarTitleDisplayMode(.inline)
         }
-        .task {
-            await viewModel.loadProhibitedWords()
-            await viewModel.fetchMakeAndModels()
-        }
     }
 }
 
 #Preview("DVLA") {
-    CreateFormView(
-        viewModel: CreateFormViewModel(
-            listingService: MockListingService(),
-            imageManager: MockImageManager(isHeicSupported: true),
-            prohibitedWordsService: MockProhibitedWordsService(prohibitedWords: [""]),
-            httpDataDownloader: MockHTTPDataDownloader(),
-            dvlaService: MockDvlaService()
-        )
-    )
+    let createFormViewModel = PreviewHelpers.makePreviewCreateFormViewModel()
+    CreateFormView(viewModel: createFormViewModel)
 }
 
 #Preview("Loaded") {
+    let createFormViewModel = PreviewHelpers.makePreviewCreateFormViewModel()
     NavigationStack {
-        CreateFormSubview(viewModel: CreateFormViewModel(
-                listingService: MockListingService(),
-                imageManager: MockImageManager(
-                    isHeicSupported: true),
-                prohibitedWordsService: MockProhibitedWordsService(
-                    prohibitedWords: [""]),
-                httpDataDownloader: MockHTTPDataDownloader(),
-                dvlaService: MockDvlaService()
-            )
-        )
+        CreateFormSubview(viewModel: createFormViewModel)
     }
 }
 
