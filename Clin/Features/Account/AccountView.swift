@@ -75,7 +75,7 @@ fileprivate struct SignOutButton: View {
                 withAnimation(.easeInOut(duration: 0.5)) {
                     isSigningOut = true
                 }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                performAfterDelay(0.3) {
                     action()
                     isSigningOut = false
                 }

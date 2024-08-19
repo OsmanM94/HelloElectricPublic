@@ -18,8 +18,8 @@ final class SearchViewModel: ObservableObject {
     @Published var searchText: String = ""
     @Published var viewState: ViewState = .idle
     
-    private(set) var filteredListings: [Listing] = []
-    private(set) var searchSuggestions: [String] = []
+    @Published private(set) var filteredListings: [Listing] = []
+    @Published private(set) var searchSuggestions: [String] = []
    
     private let tableName: String = "car_listing"
     

@@ -18,8 +18,7 @@ final class ListingViewModel: ObservableObject {
     
     @Published var showFilterSheet: Bool = false
     @Published var isDoubleTap: Bool = false
-
-    private(set) var hasMoreListings: Bool = true
+    @Published private(set) var hasMoreListings: Bool = true
     private(set) var currentPage: Int = 0
     private(set) var lastRefreshTime: Date? = nil
     private let pageSize: Int = 10

@@ -53,13 +53,12 @@ struct SearchView: View {
             }
             .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
         }
-        .onAppear { viewModel.viewState = .idle
-        }
+        .onAppear { viewModel.viewState = .idle }
     }
 }
 
 fileprivate struct SearchSubview: View {
-    @StateObject var viewModel: SearchViewModel
+    @ObservedObject var viewModel: SearchViewModel
 
     var body: some View {
         List {

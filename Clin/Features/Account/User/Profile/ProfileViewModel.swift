@@ -95,10 +95,10 @@ final class ProfileViewModel: ObservableObject {
             try await profileService.updateProfile(updatedProfile)
             self.profile?.avatarURL = imageURL
             self.username = ""
-                       
+            
             self.profile?.avatarURL = imageURL
             self.username = ""
-                        
+            
             startCooldownTimer()
             viewState = .success(ProfileViewStateMessages.success.message)
         } catch {
@@ -196,7 +196,7 @@ final class ProfileViewModel: ObservableObject {
             }
         }
     }
-        
+    
     var validateUsername: Bool {
         if username.count < 3 {
             return false
@@ -205,9 +205,7 @@ final class ProfileViewModel: ObservableObject {
         }
         return true
     }
-    
 }
-
 
 
 

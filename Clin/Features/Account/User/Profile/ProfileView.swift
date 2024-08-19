@@ -55,78 +55,100 @@ struct ProfileView: View {
 }
 
 fileprivate struct ProfileSubview: View {
-    @StateObject var viewModel: ProfileViewModel
+    @ObservedObject var viewModel: ProfileViewModel
     
     var body: some View {
         Form {
-            Section {
-                HStack(spacing: 0) {
-                    Group {
-                        ZStack {
-                            if let avatarImage = viewModel.avatarImage {
-                                avatarImage.image.resizable()
-                            } else {
-                                CircularProfileView(size: .xLarge, profile: viewModel.profile)
-                            }
-                        }
-                    }
-                    .scaledToFill()
-                    .clipShape(Circle())
-                    .frame(width: 80, height: 80)
-                    
-                    Text("\(viewModel.displayName)")
-                        .font(.title3)
-                        .fontWeight(.semibold)
-                        .padding(.leading)
-                    
-                    Spacer(minLength: 0)
-                    
-                    SinglePhotoPicker(
-                        selection: $viewModel.imageSelection,
-                        photoLibrary: .shared()
-                    ) {
-                        Image(systemName: "pencil.circle.fill")
-                            .symbolRenderingMode(.multicolor)
-                            .font(.system(size: 30))
-                            .foregroundStyle(.accent)
-                    } onSelect: { newPhoto in
-                        if let newPhoto = newPhoto {
-                            Task {
-                                await viewModel.loadItem(item: newPhoto)
-                            }
-                        }
-                    }
+            avatarSection
+            usernameSection
+            updateButtonSection
+        }
+    }
+    
+    // MARK: - Sections
+    
+    private var avatarSection: some View {
+        Section {
+            HStack(spacing: 0) {
+                avatarView
+                usernameText
+                Spacer(minLength: 0)
+                photoPicker
+            }
+        }
+    }
+    
+    private var usernameSection: some View {
+        Section(footer: Text("Must be between 3-20 characters")) {
+            TextField("Username", text: $viewModel.username)
+                .textContentType(.username)
+                .textInputAutocapitalization(.never)
+                .submitLabel(.done)
+        }
+    }
+    
+    private var updateButtonSection: some View {
+        Section {
+            Button {
+                Task {
+                    await viewModel.updateProfileButtonTapped()
+                    await viewModel.getInitialProfile()
+                }
+            } label: {
+                if viewModel.cooldownTime > 0 {
+                    Text("Please wait \(viewModel.cooldownTime) seconds to update again")
+                        .monospacedDigit()
+                        .foregroundStyle(.white)
+                } else {
+                    Text("Update profile")
+                        .font(.headline)
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
                 }
             }
-            Section(footer: Text("Must be between 3-20 characters")) {
-                TextField("Username", text: $viewModel.username)
-                    .textContentType(.username)
-                    .textInputAutocapitalization(.never)
-                    .submitLabel(.done)
+            .disabled(viewModel.isInteractionBlocked)
+            .listRowBackground(Color(viewModel.validateUsername ? .accent : .gray.opacity(0.4)))
+        }
+    }
+    
+    // MARK: - UI Components
+    
+    private var avatarView: some View {
+        ZStack {
+            if let avatarImage = viewModel.avatarImage {
+                avatarImage.image.resizable()
+            } else {
+                CircularProfileView(size: .xLarge, profile: viewModel.profile)
             }
-            Section {
-                Button {
-                    Task {
-                        await viewModel.updateProfileButtonTapped()
-                        await viewModel.getInitialProfile()
-                    }
-                } label: {
-                    if viewModel.cooldownTime > 0  {
-                        Text("Please wait \(viewModel.cooldownTime) seconds to update again")
-                            .monospacedDigit()
-                            .foregroundStyle(.gray)
-                    } else {
-                        Text("Update profile")
-                            .fontWeight(.bold)
-                            .foregroundStyle(viewModel.validateUsername ? .green : .gray.opacity(0.5))
-                    }
+        }
+        .scaledToFill()
+        .clipShape(Circle())
+        .frame(width: 80, height: 80)
+    }
+    
+    private var usernameText: some View {
+        Text(viewModel.displayName)
+            .font(.title3)
+            .fontWeight(.semibold)
+            .padding(.leading)
+    }
+    
+    private var photoPicker: some View {
+        SinglePhotoPicker(
+            selection: $viewModel.imageSelection,
+            photoLibrary: .shared()
+        ) {
+            Image(systemName: "pencil.circle.fill")
+                .symbolRenderingMode(.multicolor)
+                .font(.system(size: 30))
+                .foregroundStyle(.accent)
+        } onSelect: { newPhoto in
+            if let newPhoto = newPhoto {
+                Task {
+                    await viewModel.loadItem(item: newPhoto)
                 }
-                .disabled(viewModel.isInteractionBlocked)
             }
         }
     }
 }
-
-
-
 

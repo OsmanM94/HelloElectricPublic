@@ -40,52 +40,77 @@ struct ListingView: View {
     }
 }
 
-fileprivate struct ListingSubview: View {
-    @StateObject var viewModel: ListingViewModel
-    
+struct ListingSubview: View {
+    @ObservedObject var viewModel: ListingViewModel
     @Binding var isDoubleTap: Bool
     @Binding var selectedTab: Tab
     
     var body: some View {
+        VStack {
+            searchButton
+            listingScrollView
+        }
+    }
+}
+
+// MARK: - Subviews
+private extension ListingSubview {
+    
+    var searchButton: some View {
         Button(action: { selectedTab = .second }) {
             TextFieldSearchView(disableTextInput: true, search: .constant(""), action: {})
                 .padding([.top, .bottom])
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        
+    }
+    
+    var listingScrollView: some View {
         ScrollViewReader { proxy in
             List {
-                ForEach(viewModel.listings, id: \.id) { item in
-                    NavigationLink(value: item) {
-                        ListingCell(listing: item)
-                    }
-                }
-                .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
-                
-                if viewModel.listings.last != nil && viewModel.hasMoreListings {
-                    ProgressView()
-                        .scaleEffect(1.0)
-                        .frame(maxWidth: .infinity, alignment: .center)
-                        .listRowSeparator(.hidden)
-                        .task {
-                            await viewModel.fetchListings()
-                        }
-                }
+                listingItems
+                loadingIndicator
             }
-            .navigationDestination(for: Listing.self, destination: { listing in
+            .navigationDestination(for: Listing.self) { listing in
                 ListingDetailView(listing: listing)
-            })
+            }
             .listStyle(.plain)
             .refreshable { await viewModel.refreshListings() }
-            .onChange(of: isDoubleTap) { _,  newValue in
+            .onChange(of: isDoubleTap) { _, newValue in
                 if newValue {
-                    withAnimation {
-                        proxy.scrollTo(viewModel.listings.first?.id)
-                    }
+                    scrollToTop(proxy: proxy)
                     isDoubleTap = false
                 }
             }
+        }
+    }
+    
+    var listingItems: some View {
+        ForEach(viewModel.listings, id: \.id) { item in
+            NavigationLink(value: item) {
+                ListingCell(listing: item)
+            }
+        }
+        .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
+    }
+    
+    var loadingIndicator: some View {
+        Group {
+            if viewModel.listings.last != nil && viewModel.hasMoreListings {
+                ProgressView()
+                    .scaleEffect(1.0)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .listRowSeparator(.hidden)
+                    .task {
+                        await viewModel.fetchListings()
+                    }
+            }
+        }
+    }
+    
+    func scrollToTop(proxy: ScrollViewProxy) {
+        withAnimation {
+            proxy.scrollTo(viewModel.listings.first?.id)
         }
     }
 }

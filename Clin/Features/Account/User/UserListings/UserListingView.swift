@@ -51,7 +51,7 @@ struct UserListingView: View {
 }
 
 fileprivate struct UserListingSubview: View {
-    @StateObject var viewModel: UserListingViewModel
+    @ObservedObject var viewModel: UserListingViewModel
     
     var body: some View {
         List {
