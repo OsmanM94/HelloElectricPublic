@@ -42,6 +42,7 @@ struct FavouriteListingView: View {
 }
 
 #Preview("Empty View") {
+    let _ = PreviewsProvider.shared.container.favouriteService.register { MockFavouriteService() }
     FavouriteListingView()
         .environmentObject(FavouriteViewModel())
 }

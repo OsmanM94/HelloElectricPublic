@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Factory
 
 struct ListingView: View {
     @StateObject var viewModel = ListingViewModel()
@@ -91,7 +92,10 @@ fileprivate struct ListingSubview: View {
 
 
 #Preview("MockData") {
+    let _ = PreviewsProvider.shared.container.listingService.register { MockListingService() }
     ListingView(isDoubleTap: .constant(false), selectedTab: .constant(.first))
         .environmentObject(FavouriteViewModel())
 }
+
+
 

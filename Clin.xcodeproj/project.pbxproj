@@ -205,7 +205,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				FactoryContainer.swift,
-				PropertyWrapper.swift,
+				PreviewsProvider.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
 		};

@@ -65,7 +65,6 @@ struct AccountView: View {
 }
 
 fileprivate struct SignOutButton: View {
-    
     let action: () -> Void
     let description: String
     @State private var isSigningOut: Bool = false

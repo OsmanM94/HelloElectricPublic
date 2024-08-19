@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-
 struct CreateFormView: View {
     @StateObject private var viewModel = CreateFormViewModel()
     

@@ -81,4 +81,5 @@ fileprivate struct SearchSubview: View {
 
 #Preview {
     SearchView()
+        .environmentObject(FavouriteViewModel())
 }

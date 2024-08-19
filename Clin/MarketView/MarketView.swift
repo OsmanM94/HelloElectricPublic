@@ -42,6 +42,7 @@ struct MarketView: View {
 }
 
 #Preview {
+    let _ = PreviewsProvider.shared.container.listingService.register { MockListingService() }
     MarketView()
         .environmentObject(AuthViewModel())
         .environment(NetworkMonitor())
