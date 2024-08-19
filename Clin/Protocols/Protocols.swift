@@ -51,7 +51,7 @@ protocol ProhibitedWordsServiceProtocol {
     func containsProhibitedWords(in fields: [String]) -> Bool
 }
 
-protocol ImagePickerProtocol: ObservableObject {
+protocol ImagePickerProtocol: Observable {
     var selectedImages: [SelectedImage?] { get set }
     var imageSelections: [PhotosPickerItem?] { get set }
     var isLoading: [Bool] { get set }

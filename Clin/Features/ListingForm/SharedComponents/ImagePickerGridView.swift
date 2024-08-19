@@ -15,7 +15,7 @@ enum ImageViewState: Equatable {
 }
 
 struct ImagePickerGridView<ViewModel: ImagePickerProtocol>: View {
-    @ObservedObject var viewModel: ViewModel
+    @State var viewModel: ViewModel
     let columns = [
         GridItem(.flexible()),
         GridItem(.flexible()),

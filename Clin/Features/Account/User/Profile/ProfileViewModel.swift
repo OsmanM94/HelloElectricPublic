@@ -8,8 +8,8 @@ import SwiftUI
 import PhotosUI
 import Factory
 
-
-final class ProfileViewModel: ObservableObject {
+@Observable
+final class ProfileViewModel {
     enum ViewState: Equatable {
         case idle
         case loading
@@ -18,23 +18,22 @@ final class ProfileViewModel: ObservableObject {
         case success(String)
     }
     
-    @Published var username: String = ""
-    @Published var imageSelection: PhotosPickerItem?
-    @Published private(set) var avatarImage: SelectedImage?
-    @Published private(set) var displayName: String = ""
-    @Published private(set) var profile: Profile? = nil
-    @Published private(set) var cooldownTime: Int = 0
-   
-    @Published private(set) var viewState: ViewState = .idle
-    @Published private(set) var cooldownTimer: Timer?
+    var username: String = ""
+    var imageSelection: PhotosPickerItem?
+    private(set) var avatarImage: SelectedImage?
+    private(set) var displayName: String = ""
+    private(set) var profile: Profile? = nil
+    private(set) var cooldownTime: Int = 0
     
+    private(set) var viewState: ViewState = .idle
+    private(set) var cooldownTimer: Timer?
+    
+    @ObservationIgnored
     @Injected(\.prohibitedWordsService) private var prohibitedWordsService
+    @ObservationIgnored
     @Injected(\.imageManager) private var imageManager
+    @ObservationIgnored
     @Injected(\.profileService) private var profileService
-    
-    init() {
-        print("DEBUG: Did init ProfileViewModel")
-    }
     
     var isInteractionBlocked: Bool {
         return cooldownTime > 0 || !validateUsername
@@ -93,9 +92,6 @@ final class ProfileViewModel: ObservableObject {
             )
             
             try await profileService.updateProfile(updatedProfile)
-            self.profile?.avatarURL = imageURL
-            self.username = ""
-            
             self.profile?.avatarURL = imageURL
             self.username = ""
             

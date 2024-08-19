@@ -9,16 +9,16 @@ import SwiftUI
 
 @main
 struct ClinApp: App {
-    @StateObject private var authViewModel = AuthViewModel()
+    @State private var authViewModel = AuthViewModel()
     @State private var networkMonitor = NetworkMonitor()
     @State private var favouriteViewModel = FavouriteViewModel()
     
     var body: some Scene {
         WindowGroup {
             MarketView()
-                .environmentObject(authViewModel)
+                .environment(authViewModel)
                 .environment(networkMonitor)
-                .environmentObject(favouriteViewModel)
+                .environment(favouriteViewModel)
         }
     }
 }

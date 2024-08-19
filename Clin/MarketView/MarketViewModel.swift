@@ -16,8 +16,8 @@ enum Tab {
 }
 
 final class MarketViewModel: ObservableObject {
-    @Published var selectedTab: Tab = .first
-    @Published var scrollFirstTabToTop: Bool = false
+     @Published var selectedTab: Tab = .first
+     @Published var scrollFirstTabToTop: Bool = false
     
     private var cancellable: AnyCancellable?
     
@@ -52,3 +52,4 @@ final class MarketViewModel: ObservableObject {
         }
     }
 }
+

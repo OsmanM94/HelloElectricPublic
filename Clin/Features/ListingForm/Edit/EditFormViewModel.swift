@@ -8,8 +8,8 @@ import SwiftUI
 import PhotosUI
 import Factory
 
-
-final class EditFormViewModel: ObservableObject, ImagePickerProtocol {
+@Observable
+final class EditFormViewModel: ImagePickerProtocol {
     enum ViewState: Equatable {
         case idle
         case loading
@@ -18,16 +18,16 @@ final class EditFormViewModel: ObservableObject, ImagePickerProtocol {
         case error(String)
     }
     
-    @Published private(set) var viewState: ViewState = .idle
-    @Published var imageViewState: ImageViewState = .idle
+    private(set) var viewState: ViewState = .idle
+    var imageViewState: ImageViewState = .idle
    
-    @Published var selectedImages: [SelectedImage?] = Array(repeating: nil, count: 10)
-    @Published var imageSelections: [PhotosPickerItem?] = Array(repeating: nil, count: 10)
-    @Published var isLoading: [Bool] = Array(repeating: false, count: 10)
+    var selectedImages: [SelectedImage?] = Array(repeating: nil, count: 10)
+    var imageSelections: [PhotosPickerItem?] = Array(repeating: nil, count: 10)
+    var isLoading: [Bool] = Array(repeating: false, count: 10)
         
-    @Published private(set) var uploadingProgress: Double = 0.0
-    @Published private(set) var imagesURLs: [URL] = []
-    @Published private(set) var thumbnailsURLs: [URL] = []
+    private(set) var uploadingProgress: Double = 0.0
+    private(set) var imagesURLs: [URL] = []
+    private(set) var thumbnailsURLs: [URL] = []
     
     let yearsOfmanufacture: [String] = Array(2010...2030).map { String($0) }
     let vehicleCondition: [String] = ["New", "Used"]
@@ -36,16 +36,18 @@ final class EditFormViewModel: ObservableObject, ImagePickerProtocol {
     let vehicleServiceHistory: [String] = ["Yes", "No"]
     let vehicleNumberOfOwners: [String] = ["1", "2", "3", "4+"]
     
+    @ObservationIgnored
     @Injected(\.listingService) private var listingService
+    @ObservationIgnored
     @Injected(\.prohibitedWordsService) private var prohibitedWordsService
+    @ObservationIgnored
     @Injected(\.imageManager) private var imageManager
+    @ObservationIgnored
     @Injected(\.dvlaService) private var dvlaService
+    @ObservationIgnored
     @Injected(\.httpDataDownloader) private var httpDataDownloader
+    @ObservationIgnored
     @Injected(\.supabaseService) private var supabaseService
-    
-    init() {
-        print("DEBUG: Did init EditFormViewModel")
-    }
     
     @MainActor
     func updateUserListing(_ listing: Listing) async {

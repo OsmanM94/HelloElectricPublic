@@ -9,7 +9,7 @@ import SwiftUI
 import Factory
 
 struct ListingView: View {
-    @StateObject var viewModel = ListingViewModel()
+    @State var viewModel = ListingViewModel()
     @Binding var isDoubleTap: Bool
     @Binding var selectedTab: Tab
     
@@ -41,7 +41,7 @@ struct ListingView: View {
 }
 
 struct ListingSubview: View {
-    @ObservedObject var viewModel: ListingViewModel
+    @Bindable var viewModel: ListingViewModel
     @Binding var isDoubleTap: Bool
     @Binding var selectedTab: Tab
     
@@ -119,8 +119,7 @@ private extension ListingSubview {
 #Preview("MockData") {
     let _ = PreviewsProvider.shared.container.listingService.register { MockListingService() }
     ListingView(isDoubleTap: .constant(false), selectedTab: .constant(.first))
-        .environmentObject(FavouriteViewModel())
+        .environment(FavouriteViewModel())
 }
-
 
 

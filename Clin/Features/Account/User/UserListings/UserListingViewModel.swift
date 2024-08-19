@@ -7,7 +7,8 @@
 import Foundation
 import Factory
 
-final class UserListingViewModel: ObservableObject {
+@Observable
+final class UserListingViewModel {
     enum ViewState: Equatable {
         case empty
         case success
@@ -23,20 +24,19 @@ final class UserListingViewModel: ObservableObject {
         }
     }
     
-    @Published var listingToDelete: Listing?
-    @Published var selectedListing: Listing?
-    @Published var showingEditView: Bool = false
-    @Published var showDeleteAlert: Bool = false
-    @Published private(set) var userActiveListings: [Listing] = []
-    @Published private(set) var viewState: ViewState = .empty
+    var listingToDelete: Listing?
+    var selectedListing: Listing?
+    var showingEditView: Bool = false
+    var showDeleteAlert: Bool = false
+    private(set) var userActiveListings: [Listing] = []
+    private(set) var viewState: ViewState = .empty
     
+    @ObservationIgnored
     @Injected(\.listingService) private var listingService
+    @ObservationIgnored
     @Injected(\.supabaseService) private var supabaseService
     
-    init() {
-        print("DEBUG: Did init UserListingViewModel")
-    }
-    
+
     @MainActor
     func fetchUserListings() async {
         do {

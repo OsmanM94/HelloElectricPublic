@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SearchView: View {
-    @StateObject private var viewModel = SearchViewModel()
+    @State private var viewModel = SearchViewModel()
     @FocusState private var isPresented: Bool
     let systemImageName: String = "line.3.horizontal.decrease.circle"
     
@@ -58,7 +58,7 @@ struct SearchView: View {
 }
 
 fileprivate struct SearchSubview: View {
-    @ObservedObject var viewModel: SearchViewModel
+    @Bindable var viewModel: SearchViewModel
 
     var body: some View {
         List {
@@ -80,5 +80,5 @@ fileprivate struct SearchSubview: View {
 
 #Preview {
     SearchView()
-        .environmentObject(FavouriteViewModel())
+        .environment(FavouriteViewModel())
 }

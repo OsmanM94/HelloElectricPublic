@@ -6,7 +6,7 @@ import SwiftUI
 
 
 struct ImagePickerCell<ViewModel: ImagePickerProtocol>: View {
-    @ObservedObject var viewModel: ViewModel
+    @State var viewModel: ViewModel
     @State private var showDeleteAlert: Bool = false
     @State private var itemToDelete: SelectedImage?
     

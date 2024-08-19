@@ -9,8 +9,8 @@ import SwiftUI
 import PhotosUI
 import Factory
 
-
-final class CreateFormViewModel: ObservableObject, ImagePickerProtocol {
+@Observable
+final class CreateFormViewModel: ImagePickerProtocol {
     enum ViewState: Equatable {
         case idle
         case loading
@@ -20,40 +20,40 @@ final class CreateFormViewModel: ObservableObject, ImagePickerProtocol {
         case error(String)
     }
         
-    @Published private(set) var viewState: ViewState = .idle
-    @Published var imageViewState: ImageViewState = .idle
-    @Published private(set) var uploadingProgress: Double = 0.0
+    private(set) var viewState: ViewState = .idle
+    var imageViewState: ImageViewState = .idle
+    private(set) var uploadingProgress: Double = 0.0
     
-    @Published var selectedImages: [SelectedImage?] = Array(repeating: nil, count: 10)
-    @Published var imageSelections: [PhotosPickerItem?] = Array(repeating: nil, count: 10)
-    @Published var isLoading: [Bool] = Array(repeating: false, count: 10)
+    var selectedImages: [SelectedImage?] = Array(repeating: nil, count: 10)
+    var imageSelections: [PhotosPickerItem?] = Array(repeating: nil, count: 10)
+    var isLoading: [Bool] = Array(repeating: false, count: 10)
 
     ///DVLA checks
-    @Published var registrationNumber: String = ""
+    var registrationNumber: String = ""
     
-    @Published var make: String = ""
-    @Published var model: String = ""
-    @Published var condition: String = "Used"
-    @Published var mileage: Double = 500
-    @Published var yearOfManufacture: String = "2015"
-    @Published var price: Double = 500
-    @Published var description: String = ""
-    @Published var range: String = "300"
-    @Published var colour: String = ""
-    @Published var publicChargingTime: String = "30mins"
-    @Published var homeChargingTime: String = "1hr"
-    @Published var batteryCapacity: String = "40kWh"
-    @Published var powerBhp: String = "40"
-    @Published var regenBraking: String = "Yes"
-    @Published var warranty: String = "Yes"
-    @Published var serviceHistory: String = "Yes"
-    @Published var numberOfOwners: String = "1"
-    @Published var isPromoted: Bool = false
+    var make: String = ""
+    var model: String = ""
+    var condition: String = "Used"
+    var mileage: Double = 500
+    var yearOfManufacture: String = "2015"
+    var price: Double = 500
+    var description: String = ""
+    var range: String = "300"
+    var colour: String = ""
+    var publicChargingTime: String = "30mins"
+    var homeChargingTime: String = "1hr"
+    var batteryCapacity: String = "40kWh"
+    var powerBhp: String = "40"
+    var regenBraking: String = "Yes"
+    var warranty: String = "Yes"
+    var serviceHistory: String = "Yes"
+    var numberOfOwners: String = "1"
+    var isPromoted: Bool = false
     
-    @Published var carMakes: [CarMake] = []
-    @Published var availableModels: [String] = []
-    @Published var imagesURLs: [URL] = []
-    @Published var thumbnailsURLs: [URL] = []
+    var carMakes: [CarMake] = []
+    var availableModels: [String] = []
+    var imagesURLs: [URL] = []
+    var thumbnailsURLs: [URL] = []
     
     let yearsOfmanufacture: [String] = Array(2010...2030).map { String($0) }
     let vehicleCondition: [String] = ["New", "Used"]
@@ -62,15 +62,16 @@ final class CreateFormViewModel: ObservableObject, ImagePickerProtocol {
     let vehicleServiceHistory: [String] = ["Yes", "No"]
     let vehicleNumberOfOwners: [String] = ["1", "2", "3", "4+"]
     
+    @ObservationIgnored
     @Injected(\.listingService) private var listingService
+    @ObservationIgnored
     @Injected(\.prohibitedWordsService) private var prohibitedWordsService
+    @ObservationIgnored
     @Injected(\.imageManager) private var imageManager
+    @ObservationIgnored
     @Injected(\.dvlaService) private var dvlaService
+    @ObservationIgnored
     @Injected(\.supabaseService) private var supabaseService
-    
-    init() {
-        print("DEBUG: Did init CreateFormViewModel")
-    }
     
     @MainActor
     func createListing() async {

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct AccountView: View {
-    @EnvironmentObject private var authViewModel: AuthViewModel
+    @Environment(AuthViewModel.self) private var authViewModel
  
     var body: some View {
         NavigationStack {
@@ -60,8 +60,8 @@ struct AccountView: View {
 
 #Preview {
     AccountView()
-        .environmentObject(AuthViewModel())
-        .environmentObject(FavouriteViewModel())
+        .environment(AuthViewModel())
+        .environment(FavouriteViewModel())
 }
 
 fileprivate struct SignOutButton: View {

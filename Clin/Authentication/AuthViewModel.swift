@@ -17,8 +17,9 @@ enum AuthenticationState {
     case authenticated
 }
 
-final class AuthViewModel: ObservableObject {
-    @Published var authenticationState: AuthenticationState = .unauthenticated
+@Observable
+final class AuthViewModel {
+    var authenticationState: AuthenticationState = .unauthenticated
     var displayName: String = ""
     var user: User? = nil
     
@@ -26,9 +27,8 @@ final class AuthViewModel: ObservableObject {
         Task {
             await setupAuthStateListener()
         }
-        print("DEBUG: Did init AuthViewModel")
     }
-    
+    @ObservationIgnored
     @Injected(\.supabaseService) private var supabaseService
     
     func handleAppleSignInCompletion(result: Result<ASAuthorization, Error>) {

@@ -7,27 +7,26 @@
 import SwiftUI
 import Factory
 
-final class ListingViewModel: ObservableObject {
+@Observable
+final class ListingViewModel {
     enum ViewState {
         case loading
         case loaded
     }
     
-    @Published private(set) var listings: [Listing] = []
-    @Published private(set) var viewState: ViewState = .loading
+    private(set) var listings: [Listing] = []
+    private(set) var viewState: ViewState = .loading
     
-    @Published var showFilterSheet: Bool = false
-    @Published var isDoubleTap: Bool = false
-    @Published private(set) var hasMoreListings: Bool = true
+    var showFilterSheet: Bool = false
+    var isDoubleTap: Bool = false
+    private(set) var hasMoreListings: Bool = true
     private(set) var currentPage: Int = 0
     private(set) var lastRefreshTime: Date? = nil
     private let pageSize: Int = 10
     private let refreshCooldown: TimeInterval = 10
    
-    init() {
-        print("DEBUG: Did init ListingViewModel")
-    }
-    
+
+    @ObservationIgnored
     @Injected(\.listingService) private var listingService
     
     @MainActor

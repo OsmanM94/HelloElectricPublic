@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct UserListingView: View {
-    @StateObject private var viewModel = UserListingViewModel()
+    @State private var viewModel = UserListingViewModel()
     
     var body: some View {
         NavigationStack {
@@ -51,7 +51,7 @@ struct UserListingView: View {
 }
 
 fileprivate struct UserListingSubview: View {
-    @ObservedObject var viewModel: UserListingViewModel
+    @Bindable var viewModel: UserListingViewModel
     
     var body: some View {
         List {

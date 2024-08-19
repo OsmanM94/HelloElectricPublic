@@ -8,7 +8,8 @@
 import Foundation
 import Factory
 
-final class FavouriteViewModel: ObservableObject {
+@Observable
+final class FavouriteViewModel {
     enum ViewState: Equatable {
         case empty
         case loaded
@@ -24,11 +25,13 @@ final class FavouriteViewModel: ObservableObject {
         }
     }
     
-    @Published private(set) var viewState: ViewState = .empty
-    @Published private(set) var favoriteListings: [Favourite] = []
-    @Published private(set) var isFavourite: Bool = false
+    private(set) var viewState: ViewState = .empty
+    private(set) var favoriteListings: [Favourite] = []
+    private(set) var isFavourite: Bool = false
     
+    @ObservationIgnored
     @Injected(\.favouriteService) private var favouriteService
+    @ObservationIgnored
     @Injected(\.supabaseService) private var supabaseService
     
     init() {

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct AddToFavouritesButton: View {
-    @EnvironmentObject private var viewModel: FavouriteViewModel
+    @Environment(FavouriteViewModel.self) private var viewModel
     var listing: Listing
     
     var body: some View {
@@ -40,6 +40,6 @@ struct AddToFavouritesButton: View {
 
 #Preview {
     AddToFavouritesButton(listing: MockListingService.sampleData[0])
-        .environmentObject(FavouriteViewModel())
+        .environment(FavouriteViewModel())
         .preferredColorScheme(.dark)
 }

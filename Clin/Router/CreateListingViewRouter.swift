@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CreateListingViewRouter: View {
-    @EnvironmentObject private var authViewModel: AuthViewModel
+    @Environment(AuthViewModel.self) private var authViewModel
     @Environment(NetworkMonitor.self) private var networkMonitor
 
     var body: some View {

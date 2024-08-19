@@ -9,7 +9,7 @@ import SwiftUI
 
 
 struct EditFormView: View {
-    @StateObject private var viewModel = EditFormViewModel()
+    @State private var viewModel = EditFormViewModel()
     @Environment(\.dismiss) private var dismiss
     @State var listing: Listing
     
@@ -52,7 +52,7 @@ struct EditFormView: View {
 }
 
 fileprivate struct EditFormSubview: View {
-    @ObservedObject var viewModel: EditFormViewModel
+    @Bindable var viewModel: EditFormViewModel
     @State var listing: Listing
     
     var body: some View {

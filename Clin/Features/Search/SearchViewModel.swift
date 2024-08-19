@@ -8,27 +8,25 @@
 import Foundation
 import Factory
 
-final class SearchViewModel: ObservableObject {
+@Observable
+final class SearchViewModel {
     enum ViewState {
         case idle
         case loading
         case loaded
     }
     
-    @Published var searchText: String = ""
-    @Published var viewState: ViewState = .idle
+    var searchText: String = ""
+    var viewState: ViewState = .idle
     
-    @Published private(set) var filteredListings: [Listing] = []
-    @Published private(set) var searchSuggestions: [String] = []
+    private(set) var filteredListings: [Listing] = []
+    private(set) var searchSuggestions: [String] = []
    
     private let tableName: String = "car_listing"
     
+    @ObservationIgnored
     @Injected(\.supabaseService) private var supabaseService
-    
-    init() {
-        print("DEBUG: Did init SearchViewModel")
-    }
-    
+  
     @MainActor
     func searchItems(searchText: String) async {
         self.viewState = .loading

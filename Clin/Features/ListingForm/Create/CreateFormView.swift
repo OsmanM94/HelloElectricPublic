@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CreateFormView: View {
-    @StateObject private var viewModel = CreateFormViewModel()
+    @State private var viewModel = CreateFormViewModel()
     
     var body: some View {
         NavigationStack {
@@ -103,7 +103,7 @@ fileprivate struct DvlaCheckView: View {
 }
 
 fileprivate struct CreateFormSubview: View {
-    @ObservedObject var viewModel: CreateFormViewModel
+    @Bindable var viewModel: CreateFormViewModel
     
     var body: some View {
         Form {

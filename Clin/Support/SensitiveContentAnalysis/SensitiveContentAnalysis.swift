@@ -19,9 +19,7 @@ enum AnalysisState: Equatable {
 final class SensitiveContentAnalysis {
     static let shared = SensitiveContentAnalysis()
     
-    private init() {
-        print("DEBUG: Did init SensitiveContentAnalysis")
-    }
+    private init() {}
     
     var analysisState: AnalysisState = .notStarted
     

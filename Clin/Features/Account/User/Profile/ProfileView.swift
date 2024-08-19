@@ -7,8 +7,8 @@
 import SwiftUI
 
 struct ProfileView: View {
-    @StateObject private var viewModel = ProfileViewModel()
-
+    @State private var viewModel = ProfileViewModel()
+    
     var body: some View {
         NavigationStack {
             Group {
@@ -16,7 +16,7 @@ struct ProfileView: View {
                     switch viewModel.viewState {
                     case .idle:
                         ProfileSubview(viewModel: viewModel)
-                    
+                        
                     case .loading:
                         ProgressView("Analyzing...").scaleEffect(1.5)
                         
@@ -24,7 +24,7 @@ struct ProfileView: View {
                         ErrorView(message: message, retryAction: {
                             viewModel.resetState()
                         })
-                    
+                        
                     case .sensitiveApiNotEnabled:
                         SensitiveAnalysisErrorView(retryAction: {
                             viewModel.resetState()
@@ -51,11 +51,11 @@ struct ProfileView: View {
 
 #Preview {
     ProfileView()
-        .environmentObject(AuthViewModel())
+        .environment(AuthViewModel())
 }
 
 fileprivate struct ProfileSubview: View {
-    @ObservedObject var viewModel: ProfileViewModel
+    @Bindable var viewModel: ProfileViewModel
     
     var body: some View {
         Form {
@@ -152,3 +152,7 @@ fileprivate struct ProfileSubview: View {
     }
 }
 
+#Preview {
+    ProfileView()
+        .environment(AuthViewModel())
+}
