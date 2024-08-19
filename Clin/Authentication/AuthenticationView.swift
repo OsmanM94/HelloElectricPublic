@@ -10,7 +10,7 @@ import AuthenticationServices
 
 struct AuthenticationView: View {
     
-    @Environment(AuthViewModel.self) private var viewModel
+    @EnvironmentObject private var viewModel: AuthViewModel
    
     var body: some View {
         NavigationStack {
@@ -41,7 +41,7 @@ struct AuthenticationView: View {
 
 #Preview {
     AuthenticationView()
-        .environment(AuthViewModel())
+        .environmentObject(AuthViewModel())
 }
 
 fileprivate struct WelcomeText: View {

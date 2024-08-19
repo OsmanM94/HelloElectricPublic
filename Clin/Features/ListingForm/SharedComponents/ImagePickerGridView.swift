@@ -58,8 +58,7 @@ struct ImagePickerGridView<ViewModel: ImagePickerProtocol>: View {
 
 
 #Preview {
-    let editFormViewModel = PreviewHelpers.makePreviewEditFormViewModel()
-    ImagePickerGridView(viewModel: editFormViewModel)
+    ImagePickerGridView(viewModel: EditFormViewModel())
 }
 
 

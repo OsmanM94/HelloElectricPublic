@@ -6,17 +6,14 @@
 //
 
 import Foundation
+import Factory
 
-
-struct DatabaseService: DatabaseServiceProtocol {
-    
-    init() {
-        print("DEBUG: Did init database service")
-    }
+final class DatabaseService: DatabaseServiceProtocol {
+    @Injected(\.supabaseService) private var supabaseService
     
     func fetchPagination<T: Decodable>(from table: String, orderBy: String, ascending: Bool = true, from: Int, to: Int) async throws -> [T] {
         do {
-            let result: [T] = try await Supabase.shared.client
+            let result: [T] = try await supabaseService.client
                 .from(table)
                 .select()
                 .order(orderBy, ascending: ascending)
@@ -31,7 +28,7 @@ struct DatabaseService: DatabaseServiceProtocol {
     
     func fetchAll<T: Decodable>(from table: String) async throws -> [T] {
         do {
-            let result: [T] = try await Supabase.shared.client
+            let result: [T] = try await supabaseService.client
                 .from(table)
                 .select("*")
                 .execute()
@@ -44,7 +41,7 @@ struct DatabaseService: DatabaseServiceProtocol {
     
     func fetchByID<T: Decodable>(from table: String, id: Int) async throws -> T {
         do {
-            let result: T = try await Supabase.shared.client
+            let result: T = try await supabaseService.client
                 .from(table)
                 .select()
                 .eq("id", value: id)
@@ -59,7 +56,7 @@ struct DatabaseService: DatabaseServiceProtocol {
     
     func fetchByField<T: Decodable>(from table: String, field: String, value: UUID) async throws -> [T] {
         do {
-            let result: [T] = try await Supabase.shared.client
+            let result: [T] = try await supabaseService.client
                 .from(table)
                 .select()
                 .eq(field, value: value)
@@ -73,7 +70,7 @@ struct DatabaseService: DatabaseServiceProtocol {
     
     func insert<T: Encodable>(_ item: T, into table: String) async throws {
         do {
-            try await Supabase.shared.client
+            try await supabaseService.client
                 .from(table)
                 .insert(item)
                 .execute()
@@ -85,7 +82,7 @@ struct DatabaseService: DatabaseServiceProtocol {
     
     func update<T: Encodable>(_ item: T, in table: String, id: Int) async throws {
         do {
-            try await Supabase.shared.client
+            try await supabaseService.client
                 .from(table)
                 .update(item)
                 .eq("id", value: id)
@@ -98,7 +95,7 @@ struct DatabaseService: DatabaseServiceProtocol {
     
     func delete(from table: String, id: Int) async throws {
         do {
-            try await Supabase.shared.client
+            try await supabaseService.client
                 .from(table)
                 .delete()
                 .eq("id", value: id)
@@ -111,7 +108,7 @@ struct DatabaseService: DatabaseServiceProtocol {
     
     func deleteByField(from table: String, field: String, value: Int, field2: String, value2: UUID) async throws {
         do {
-            try await Supabase.shared.client
+            try await supabaseService.client
             .from(table)
             .delete()
             .eq(field, value: value)

@@ -1,9 +1,4 @@
-//
-//  ListingCell.swift
-//  Clin
-//
-//  Created by asia on 23/07/2024.
-//
+
 
 import SwiftUI
 
@@ -58,7 +53,7 @@ struct ListingCell: View {
 
 #Preview {
     ListingCell(listing: MockListingService.sampleData[0])
-        .environmentObject(FavouriteViewModel(favouriteService: MockFavouriteService()))
+        .environmentObject(FavouriteViewModel())
 }
 
 

@@ -7,15 +7,11 @@
 
 import SwiftUI
 
+
 struct EditFormView: View {
+    @StateObject private var viewModel = EditFormViewModel()
     @Environment(\.dismiss) private var dismiss
-    @State private var viewModel: EditFormViewModel
     @State var listing: Listing
-    
-    init(listing: Listing, viewModel: @autoclosure @escaping () -> EditFormViewModel) {
-        self._listing = State(initialValue: listing)
-        self._viewModel = State(wrappedValue: viewModel())
-    }
     
     var body: some View {
         NavigationStack {
@@ -52,13 +48,11 @@ struct EditFormView: View {
 }
 
 #Preview {
-    let editFormViewModel = PreviewHelpers.makePreviewEditFormViewModel()
-    EditFormView(
-        listing: MockListingService.sampleData[0], viewModel: editFormViewModel)
+    EditFormView(listing: MockListingService.sampleData[0])
 }
 
 fileprivate struct EditFormSubview: View {
-    @Bindable var viewModel: EditFormViewModel
+    @StateObject var viewModel: EditFormViewModel
     @State var listing: Listing
     
     var body: some View {

@@ -8,30 +8,13 @@
 import SwiftUI
 
 struct CreateListingViewRouter: View {
-    
-    @Environment(AuthViewModel.self) private var authViewModel
+    @EnvironmentObject private var authViewModel: AuthViewModel
     @Environment(NetworkMonitor.self) private var networkMonitor
-    
-//    let imageManager: ImageManagerProtocol
-//    let prohibitedWordsService: ProhibitedWordsServiceProtocol
-//    let listingService: ListingServiceProtocol
-//    let dvlaService: DvlaServiceProtocol
-//    let httpDataDownloader: HTTPDataDownloaderProtocol
-    let createFormViewModel: CreateFormViewModel
-    
-    init( createFormViewModel: @autoclosure @escaping () -> CreateFormViewModel) {
-//        self.imageManager = imageManager
-//        self.prohibitedWordsService = prohibitedWordsService
-//        self.listingService = listingService
-//        self.dvlaService = dvlaService
-//        self.httpDataDownloader = httpDataDownloader
-        self.createFormViewModel = createFormViewModel()
-    }
-    
+
     var body: some View {
         Group {
             if authViewModel.authenticationState == .authenticated {
-                CreateFormView(viewModel: createFormViewModel)
+                CreateFormView()
                     .overlay(
                         !networkMonitor.isConnected ? NetworkMonitorView().background(Color.white.opacity(0.8)) : nil
                     )
@@ -44,4 +27,3 @@ struct CreateListingViewRouter: View {
         }
     }
 }
-

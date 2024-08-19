@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		623B8F572C62DC0700A5BD60 /* ToDo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 623B8F562C62DC0700A5BD60 /* ToDo.swift */; };
 		629185B82C31614500DA4BAA /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 629185B72C31614500DA4BAA /* SDWebImageSwiftUI */; };
+		62BE33342C72500D006C0584 /* Factory in Frameworks */ = {isa = PBXBuildFile; productRef = 62BE33332C72500D006C0584 /* Factory */; };
 		62C449052C26CDC4009650A3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 62C449042C26CDC4009650A3 /* Assets.xcassets */; };
 		62C449092C26CDC4009650A3 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 62C449082C26CDC4009650A3 /* Preview Assets.xcassets */; };
 		62C449D02C27469D009650A3 /* Auth in Frameworks */ = {isa = PBXBuildFile; productRef = 62C449CF2C27469D009650A3 /* Auth */; };
@@ -171,7 +172,6 @@
 				NetworkMonitor/NetworkMonitor.swift,
 				NetworkMonitor/NetworkMonitorView.swift,
 				PhotosPicker/CustomPhotoPickers.swift,
-				PreviewHelpers/PreviewHelpers.swift,
 				SDWebImage/ImageLoader.swift,
 				SensitiveContentAnalysis/SensitiveContentAnalysis.swift,
 				TimeElapsed/TimeElapsed.swift,
@@ -201,11 +201,18 @@
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
 		};
+		62BE33312C724F1B006C0584 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				FactoryContainer.swift,
+				PropertyWrapper.swift,
+			);
+			target = 62C448FC2C26CDC2009650A3 /* Clin */;
+		};
 		62C4493D2C26E23C009650A3 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				AuthenticationErrors.swift,
-				AuthenticationState.swift,
 				AuthenticationView.swift,
 				AuthViewModel.swift,
 			);
@@ -229,6 +236,7 @@
 		629188CB2C35BAE800DA4BAA /* Components */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (622369BA2C3D6B7100576FF4 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Components; sourceTree = "<group>"; };
 		629189ED2C36FEB400DA4BAA /* Resources */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (629189F02C36FEC800DA4BAA /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Resources; sourceTree = "<group>"; };
 		62BE2DBA2C6F7BD7006C0584 /* Network */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (62BE2DBD2C6F7C0C006C0584 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Network; sourceTree = "<group>"; };
+		62BE332D2C724F02006C0584 /* Factory */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (62BE33312C724F1B006C0584 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Factory; sourceTree = "<group>"; };
 		62C4493C2C26E236009650A3 /* Authentication */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (62C4493D2C26E23C009650A3 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Authentication; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
@@ -244,6 +252,7 @@
 				62C449D02C27469D009650A3 /* Auth in Frameworks */,
 				62C449D82C27469D009650A3 /* Storage in Frameworks */,
 				62C449D62C27469D009650A3 /* Realtime in Frameworks */,
+				62BE33342C72500D006C0584 /* Factory in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -269,6 +278,7 @@
 		62C448FF2C26CDC2009650A3 /* Clin */ = {
 			isa = PBXGroup;
 			children = (
+				62BE332D2C724F02006C0584 /* Factory */,
 				62BE2DBA2C6F7BD7006C0584 /* Network */,
 				623B91BB2C66961100A5BD60 /* MockData */,
 				623B88892C5D15F100A5BD60 /* Supabase */,
@@ -325,6 +335,7 @@
 				62C449D72C27469D009650A3 /* Storage */,
 				62C449D92C27469D009650A3 /* Supabase */,
 				629185B72C31614500DA4BAA /* SDWebImageSwiftUI */,
+				62BE33332C72500D006C0584 /* Factory */,
 			);
 			productName = Clin;
 			productReference = 62C448FD2C26CDC2009650A3 /* Clin.app */;
@@ -357,6 +368,7 @@
 			packageReferences = (
 				62C449CE2C27469D009650A3 /* XCRemoteSwiftPackageReference "supabase-swift" */,
 				629185B62C31614500DA4BAA /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
+				62BE33322C72500D006C0584 /* XCRemoteSwiftPackageReference "Factory" */,
 			);
 			productRefGroup = 62C448FE2C26CDC2009650A3 /* Products */;
 			projectDirPath = "";
@@ -615,6 +627,14 @@
 				minimumVersion = 3.1.0;
 			};
 		};
+		62BE33322C72500D006C0584 /* XCRemoteSwiftPackageReference "Factory" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/hmlongco/Factory.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.3.2;
+			};
+		};
 		62C449CE2C27469D009650A3 /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/supabase/supabase-swift";
@@ -630,6 +650,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 629185B62C31614500DA4BAA /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
 			productName = SDWebImageSwiftUI;
+		};
+		62BE33332C72500D006C0584 /* Factory */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 62BE33322C72500D006C0584 /* XCRemoteSwiftPackageReference "Factory" */;
+			productName = Factory;
 		};
 		62C449CF2C27469D009650A3 /* Auth */ = {
 			isa = XCSwiftPackageProductDependency;

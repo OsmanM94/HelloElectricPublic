@@ -1,6 +1,15 @@
 {
-  "originHash" : "a3f55c23444f9a14943971d1dcd5067ec7f86c9c98a9f84bcb7ea5103db1feb9",
+  "originHash" : "ac2dded284c88478c58f6376c50f6aa5b829ec75439b189e9d92c044b727ce0f",
   "pins" : [
+    {
+      "identity" : "factory",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/hmlongco/Factory.git",
+      "state" : {
+        "revision" : "587995f7d5cc667951d635fbf6b4252324ba0439",
+        "version" : "2.3.2"
+      }
+    },
     {
       "identity" : "sdwebimage",
       "kind" : "remoteSourceControl",

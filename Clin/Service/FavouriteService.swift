@@ -6,16 +6,11 @@
 //
 
 import Foundation
+import Factory
 
-struct FavouriteService: FavouriteServiceProtocol {
+final class FavouriteService: FavouriteServiceProtocol {
+    @Injected(\.databaseService) var databaseService: DatabaseServiceProtocol
     
-    private let databaseService: DatabaseServiceProtocol
-    
-    init(databaseService: DatabaseServiceProtocol) {
-        self.databaseService = databaseService
-        print("DEBUG: Did init favourite service")
-    }
-        
     func fetchUserFavourites(userID: UUID) async throws -> [Favourite] {
         try await databaseService.fetchByField(from: "favourite_listing", field: "user_id", value: userID)
     }

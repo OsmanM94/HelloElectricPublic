@@ -19,7 +19,9 @@ enum AnalysisState: Equatable {
 final class SensitiveContentAnalysis {
     static let shared = SensitiveContentAnalysis()
     
-    private init() {}
+    private init() {
+        print("DEBUG: Did init SensitiveContentAnalysis")
+    }
     
     var analysisState: AnalysisState = .notStarted
     
@@ -28,7 +30,7 @@ final class SensitiveContentAnalysis {
         analysisState = .analyzing
         let analyzer = SCSensitivityAnalyzer()
         let policy = analyzer.analysisPolicy
-    
+        
         if policy == .disabled {
             print("DEBUG: Sensitive Content Analysis policy is disabled")
             analysisState = .error(message: "Policy is disabled")
@@ -53,7 +55,7 @@ final class SensitiveContentAnalysis {
 
 struct SensitiveContentAnalysisModifier: ViewModifier {
     @Bindable var analysis = SensitiveContentAnalysis.shared
-
+    
     func body(content: Content) -> some View {
         content
             .alert(isPresented: .constant(analysis.analysisState == .error(message: "Policy is disabled"))) {

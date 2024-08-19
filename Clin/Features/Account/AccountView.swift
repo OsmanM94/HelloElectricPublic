@@ -8,29 +8,17 @@
 import SwiftUI
 
 struct AccountView: View {
-    @Environment(AuthViewModel.self) private var authViewModel
+    @EnvironmentObject private var authViewModel: AuthViewModel
  
-    let imageManager: ImageManagerProtocol
-    let prohibitedWordsService: ProhibitedWordsServiceProtocol
-    let listingService: ListingServiceProtocol
-    let httpDownloader: HTTPDataDownloaderProtocol
-    
-    init(imageManager: ImageManagerProtocol, prohibitedWordsService: ProhibitedWordsServiceProtocol, listingService: ListingServiceProtocol, httpDownloader: HTTPDataDownloaderProtocol) {
-        self.imageManager = imageManager
-        self.prohibitedWordsService = prohibitedWordsService
-        self.listingService = listingService
-        self.httpDownloader = httpDownloader
-    }
-    
     var body: some View {
         NavigationStack {
             Form {
                 Section("Manage") {
                     NavigationLink("Profile", destination: {
-                        ProfileView(viewModel: ProfileViewModel(imageManager: imageManager, prohibitedWordsService: prohibitedWordsService))
+                        ProfileView()
                     })
                     NavigationLink("My listings", destination: {
-                        UserListingView(viewModel: UserListingViewModel(listingService: listingService), listingService: listingService, imageManager: imageManager, prohibitedWordsService: prohibitedWordsService, httpDownloader: httpDownloader)
+                        UserListingView()
                     })
                     NavigationLink("Saved", destination: {
                         FavouriteListingView()
@@ -71,20 +59,9 @@ struct AccountView: View {
 }
 
 #Preview {
-    let listingService = PreviewHelpers.makeMockListingService()
-    let imageManager = PreviewHelpers.makeMockImageManager()
-    let prohibitedWordService = PreviewHelpers.makeMockProhibitedWordsService()
-    let httpDataDownloader = PreviewHelpers.makeMockHttpDataDownloader()
-    
-    AccountView(
-        imageManager: imageManager,
-        prohibitedWordsService: prohibitedWordService,
-        listingService: listingService,
-        httpDownloader: httpDataDownloader
-    )
-    .environment(AuthViewModel())
-    .environmentObject(FavouriteViewModel(favouriteService: MockFavouriteService())
-    )
+    AccountView()
+        .environmentObject(AuthViewModel())
+        .environmentObject(FavouriteViewModel())
 }
 
 fileprivate struct SignOutButton: View {

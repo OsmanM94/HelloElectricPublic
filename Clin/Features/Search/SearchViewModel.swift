@@ -6,21 +6,28 @@
 //
 
 import Foundation
+import Factory
 
-@Observable
-final class SearchViewModel {
+final class SearchViewModel: ObservableObject {
     enum ViewState {
         case idle
         case loading
         case loaded
     }
     
+    @Published var searchText: String = ""
+    @Published var viewState: ViewState = .idle
+    
     private(set) var filteredListings: [Listing] = []
     private(set) var searchSuggestions: [String] = []
-    var searchText: String = ""
-    var viewState: ViewState = .idle
-    
+   
     private let tableName: String = "car_listing"
+    
+    @Injected(\.supabaseService) private var supabaseService
+    
+    init() {
+        print("DEBUG: Did init SearchViewModel")
+    }
     
     @MainActor
     func searchItems(searchText: String) async {
@@ -39,7 +46,7 @@ final class SearchViewModel {
     
     private func searchItemsFromSupabase(searchText: String) async throws -> [Listing] {
         do {
-            let response: [Listing] = try await Supabase.shared.client
+            let response: [Listing] = try await supabaseService.client
                 .from(tableName)
                 .select()
 //                .ilike("make", pattern: "%\(searchText)%")

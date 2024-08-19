@@ -6,14 +6,10 @@
 //
 
 import Foundation
+import Factory
 
-struct ListingService: ListingServiceProtocol {
-    private let databaseService: DatabaseServiceProtocol
-    
-    init(databaseService: DatabaseServiceProtocol) {
-        self.databaseService = databaseService
-        print("DEBUG: Did init listing service")
-    }
+final class ListingService: ListingServiceProtocol {
+    @Injected(\.databaseService) var databaseService: DatabaseServiceProtocol
     
     func fetchPaginatedListings(from: Int, to: Int) async throws -> [Listing] {
         try await databaseService.fetchPagination(from: "car_listing", orderBy: "created_at", ascending: false, from: from, to: to)

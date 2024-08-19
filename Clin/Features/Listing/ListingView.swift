@@ -8,16 +8,9 @@
 import SwiftUI
 
 struct ListingView: View {
-    @State private var viewModel: ListingViewModel
+    @StateObject var viewModel = ListingViewModel()
     @Binding var isDoubleTap: Bool
     @Binding var selectedTab: Tab
-        
-    init(viewModel: @autoclosure @escaping () -> ListingViewModel,
-         isDoubleTap: Binding<Bool>, selectedTab: Binding<Tab>) {
-        self._viewModel = State(wrappedValue: viewModel())
-        self._isDoubleTap = isDoubleTap
-        self._selectedTab = selectedTab
-    }
     
     var body: some View {
         NavigationStack {
@@ -47,7 +40,7 @@ struct ListingView: View {
 }
 
 fileprivate struct ListingSubview: View {
-    @Bindable var viewModel: ListingViewModel
+    @StateObject var viewModel: ListingViewModel
     
     @Binding var isDoubleTap: Bool
     @Binding var selectedTab: Tab
@@ -98,11 +91,7 @@ fileprivate struct ListingSubview: View {
 
 
 #Preview("MockData") {
-    let listingService = PreviewHelpers.makeMockListingService()
-    ListingView(
-        viewModel: ListingViewModel(listingService: listingService),
-        isDoubleTap: .constant(false),
-        selectedTab: .constant(.first))
-        .environmentObject(FavouriteViewModel(favouriteService: MockFavouriteService()))
+    ListingView(isDoubleTap: .constant(false), selectedTab: .constant(.first))
+        .environmentObject(FavouriteViewModel())
 }
 

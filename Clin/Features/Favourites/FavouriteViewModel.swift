@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Factory
 
 final class FavouriteViewModel: ObservableObject {
     enum ViewState: Equatable {
@@ -27,10 +28,10 @@ final class FavouriteViewModel: ObservableObject {
     @Published private(set) var favoriteListings: [Favourite] = []
     @Published private(set) var isFavourite: Bool = false
     
-    private let favouriteService: FavouriteServiceProtocol
+    @Injected(\.favouriteService) private var favouriteService
+    @Injected(\.supabaseService) private var supabaseService
     
-    init(favouriteService: FavouriteServiceProtocol) {
-        self.favouriteService = favouriteService
+    init() {
         Task {
             await fetchUserFavorites()
             print("DEBUG: Initialising user favourites...")
@@ -39,7 +40,7 @@ final class FavouriteViewModel: ObservableObject {
     
     @MainActor
     func addToFavorites(listing: Listing) async  {
-        guard let user = try? await Supabase.shared.client.auth.session.user else {
+        guard let user = try? await supabaseService.client.auth.session.user else {
             print("DEBUG: No authenticated user found, can't add to favourites.")
             return
         }
@@ -72,7 +73,7 @@ final class FavouriteViewModel: ObservableObject {
     
     @MainActor
     func removeFromFavorites(favourite: Favourite) async  {
-        guard let user = try? await Supabase.shared.client.auth.session.user else {
+        guard let user = try? await supabaseService.client.auth.session.user else {
             print("DEBUG: No authenticated user found for favourites.")
             return
         }
@@ -91,7 +92,7 @@ final class FavouriteViewModel: ObservableObject {
     
     @MainActor
     func fetchUserFavorites() async  {
-        guard let user = try? await Supabase.shared.client.auth.session.user else {
+        guard let user = try? await supabaseService.client.auth.session.user else {
             print("DEBUG: No authenticated user found for favourites, can't fetch.")
             return
         }

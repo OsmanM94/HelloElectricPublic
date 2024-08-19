@@ -6,15 +6,9 @@
 //
 import SwiftUI
 
-
 struct ProfileView: View {
-    
-    @State private var viewModel: ProfileViewModel
-    
-    init(viewModel: @autoclosure @escaping () -> ProfileViewModel) {
-        self._viewModel = State(wrappedValue: viewModel())
-    }
-   
+    @StateObject private var viewModel = ProfileViewModel()
+
     var body: some View {
         NavigationStack {
             Group {
@@ -56,16 +50,12 @@ struct ProfileView: View {
 }
 
 #Preview {
-    ProfileView(viewModel: ProfileViewModel(imageManager: MockImageManager(isHeicSupported: true), prohibitedWordsService: MockProhibitedWordsService(prohibitedWords: [
-        "example",
-        "test",
-        "prohibited"
-    ] )))
-    .environment(AuthViewModel())
+    ProfileView()
+        .environmentObject(AuthViewModel())
 }
 
 fileprivate struct ProfileSubview: View {
-    @Bindable var viewModel: ProfileViewModel
+    @StateObject var viewModel: ProfileViewModel
     
     var body: some View {
         Form {

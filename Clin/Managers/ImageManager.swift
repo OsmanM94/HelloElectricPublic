@@ -8,6 +8,7 @@
 import SwiftUI
 import PhotosUI
 import Storage
+import Factory
 
 enum ImageLoadResult {
     case success(SelectedImage)
@@ -17,10 +18,7 @@ enum ImageLoadResult {
 }
 
 final class ImageManager: ImageManagerProtocol {
-   
-    init() {
-        print("DEBUG: Did init image manager")
-    }
+    @Injected(\.supabaseService) private var supabaseService
     
     var isHeicSupported: Bool {
         (CGImageDestinationCopyTypeIdentifiers() as! [String]).contains("public.heic")
@@ -66,7 +64,7 @@ final class ImageManager: ImageManagerProtocol {
             return nil
         }
         
-        try await Supabase.shared.client.storage
+        try await supabaseService.client.storage
             .from(bucket)
             .upload(
                 path: filePath,
@@ -76,14 +74,14 @@ final class ImageManager: ImageManagerProtocol {
         
         print("DEBUG: Image uploaded to Supabase Storage at path: \(filePath)")
         
-        let url = try Supabase.shared.client.storage.from(bucket).getPublicURL(path: filePath, download: true)
+        let url = try supabaseService.client.storage.from(bucket).getPublicURL(path: filePath, download: true)
         return url.absoluteString
     }
     
     func deleteImage(path: String, from folder: String) async throws {
         do {
             let fileName = URL(string: path)?.lastPathComponent ?? ""
-            _ = try await Supabase.shared.client.storage.from(folder).remove(paths: [fileName])
+            _ = try await supabaseService.client.storage.from(folder).remove(paths: [fileName])
             print("DEBUG: Image deleted from Supabase Storage at path: \(path)")
         } catch {
             print("DEBUG: Error deleting image from database: \(error)")

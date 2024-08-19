@@ -8,38 +8,11 @@
 import SwiftUI
 
 struct MarketView: View {
-    @StateObject private var viewModel: MarketViewModel
-    
-    let listingService: ListingServiceProtocol
-    let imageManager: ImageManagerProtocol
-    let prohibitedWordsService: ProhibitedWordsServiceProtocol
-    let httpDataDownloader: HTTPDataDownloaderProtocol
-    let dvlaService: DvlaServiceProtocol
-    let listingViewModel: ListingViewModel
-    let createFormViewModel: CreateFormViewModel
-    
-    init(viewModel: @autoclosure @escaping () -> MarketViewModel,
-         listingViewModel: @autoclosure @escaping () -> ListingViewModel,
-         createFormViewModel: @autoclosure @escaping () -> CreateFormViewModel,
-         listingService: ListingServiceProtocol,
-         imageManager: ImageManagerProtocol,
-         prohibitedWordsService: ProhibitedWordsServiceProtocol,
-         httpDataDownloader: HTTPDataDownloaderProtocol,
-         dvlaService: DvlaServiceProtocol) {
-        self._viewModel = StateObject(wrappedValue: viewModel())
-        self.listingViewModel = listingViewModel()
-        self.listingService = listingService
-        self.imageManager = imageManager
-        self.prohibitedWordsService = prohibitedWordsService
-        self.httpDataDownloader = httpDataDownloader
-        self.dvlaService = dvlaService
-        self.createFormViewModel = createFormViewModel()
-    }
+    @StateObject private var viewModel = MarketViewModel()
     
     var body: some View {
         TabView(selection: $viewModel.selectedTab) {
             ListingView(
-                viewModel: listingViewModel,
                 isDoubleTap: $viewModel.scrollFirstTabToTop,
                 selectedTab: $viewModel.selectedTab)
                 .tag(Tab.first)
@@ -53,17 +26,13 @@ struct MarketView: View {
                     Label("Search", systemImage: "magnifyingglass")
                 }
             
-            CreateListingViewRouter(createFormViewModel: createFormViewModel)
+            CreateListingViewRouter()
                 .tag(Tab.third)
                 .tabItem {
                     Label("Sell", systemImage: "plus")
                 }
             
-            AccountViewRouter(
-                imageManager: imageManager,
-                prohibitedWordsService: prohibitedWordsService,
-                listingService: listingService,
-                httpDownloader: httpDataDownloader)
+            AccountViewRouter()
                 .tag(Tab.fourth)
                 .tabItem {
                     Label("Account", systemImage: "person.fill")
@@ -73,27 +42,10 @@ struct MarketView: View {
 }
 
 #Preview {
-    let listingService = PreviewHelpers.makeMockListingService()
-    let imageManager = PreviewHelpers.makeMockImageManager()
-    let prohibitedWordService = PreviewHelpers.makeMockProhibitedWordsService()
-    let httpDataDownloader = PreviewHelpers.makeMockHttpDataDownloader()
-    let dvlaService = PreviewHelpers.makeMockDvlaService()
-    let listingViewModel = PreviewHelpers.makePreviewListingViewModel()
-    let createFormViewModel = PreviewHelpers.makePreviewCreateFormViewModel()
-    
-    return MarketView(
-        viewModel: MarketViewModel(),
-        listingViewModel: listingViewModel,
-        createFormViewModel: createFormViewModel,
-        listingService: listingService,
-        imageManager: imageManager,
-        prohibitedWordsService: prohibitedWordService,
-        httpDataDownloader: httpDataDownloader,
-        dvlaService: dvlaService
-    )
-    .environment(AuthViewModel())
-    .environment(NetworkMonitor())
-    .environmentObject(PreviewHelpers.makeMockFavouriteViewModel())
+    MarketView()
+        .environmentObject(AuthViewModel())
+        .environment(NetworkMonitor())
+        .environmentObject(FavouriteViewModel())
 }
 
 

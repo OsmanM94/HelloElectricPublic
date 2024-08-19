@@ -40,6 +40,6 @@ struct AddToFavouritesButton: View {
 
 #Preview {
     AddToFavouritesButton(listing: MockListingService.sampleData[0])
-        .environmentObject(FavouriteViewModel(favouriteService: MockFavouriteService()))
+        .environmentObject(FavouriteViewModel())
         .preferredColorScheme(.dark)
 }

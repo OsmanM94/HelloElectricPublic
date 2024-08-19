@@ -4,12 +4,10 @@
 //
 //  Created by asia on 31/07/2024.
 //
-
 import Foundation
+import Factory
 
-
-@Observable
-final class UserListingViewModel {
+final class UserListingViewModel: ObservableObject {
     enum ViewState: Equatable {
         case empty
         case success
@@ -25,33 +23,29 @@ final class UserListingViewModel {
         }
     }
     
-    var listingToDelete: Listing?
-    var selectedListing: Listing?
-    var showingEditView: Bool = false
-    var showDeleteAlert: Bool = false
-    private(set) var userActiveListings: [Listing] = []
-    private(set) var viewState: ViewState = .empty
+    @Published var listingToDelete: Listing?
+    @Published var selectedListing: Listing?
+    @Published var showingEditView: Bool = false
+    @Published var showDeleteAlert: Bool = false
+    @Published private(set) var userActiveListings: [Listing] = []
+    @Published private(set) var viewState: ViewState = .empty
     
-    private let listingService: ListingServiceProtocol
+    @Injected(\.listingService) private var listingService
+    @Injected(\.supabaseService) private var supabaseService
     
-    init(listingService: ListingServiceProtocol) {
-        self.listingService = listingService
+    init() {
+        print("DEBUG: Did init UserListingViewModel")
     }
-        
+    
     @MainActor
     func fetchUserListings() async {
         do {
-            let userID: UUID
-            if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" {
-                userID = MockListingService.mockUserID
-            } else {
-                guard let user = try? await Supabase.shared.client.auth.session.user else {
-                    viewState = .error(UserListingsViewStateMessages.generalError.message)
-                    return
-                }
-                userID = user.id
+            guard let user = try? await supabaseService.client.auth.session.user else {
+                viewState = .error(UserListingsViewStateMessages.generalError.message)
+                return
             }
-            userActiveListings = try await listingService.fetchUserListings(userID: userID)
+            
+            self.userActiveListings = try await listingService.fetchUserListings(userID: user.id)
             viewState = .success
         } catch {
             viewState = .error(UserListingsViewStateMessages.noAuthUserFound.message)

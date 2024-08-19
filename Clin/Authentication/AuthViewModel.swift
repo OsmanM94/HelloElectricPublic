@@ -9,21 +9,27 @@ import Foundation
 import Supabase
 import AuthenticationServices
 import CryptoKit
+import Factory
 
+enum AuthenticationState {
+    case unauthenticated
+    case authenticating
+    case authenticated
+}
 
-@Observable
-final class AuthViewModel {
-    var flow: AuthenticationFlow = .login
-    var authenticationState: AuthenticationState = .unauthenticated
-    var errorMessage: String = ""
+final class AuthViewModel: ObservableObject {
+    @Published var authenticationState: AuthenticationState = .unauthenticated
     var displayName: String = ""
     var user: User? = nil
-   
-     init()  {
-         Task {
-             await setupAuthStateListener()
-         }
+    
+    init() {
+        Task {
+            await setupAuthStateListener()
+        }
+        print("DEBUG: Did init AuthViewModel")
     }
+    
+    @Injected(\.supabaseService) private var supabaseService
     
     func handleAppleSignInCompletion(result: Result<ASAuthorization, Error>) {
         print("DEBUG: Starting Apple sign-in completion handling.")
@@ -42,7 +48,7 @@ final class AuthViewModel {
                     return
                 }
                 
-                try await Supabase.shared.client.auth.signInWithIdToken(
+                try await supabaseService.client.auth.signInWithIdToken(
                     credentials: .init(
                         provider: .apple,
                         idToken: idToken
@@ -58,12 +64,10 @@ final class AuthViewModel {
             } catch let error as AuthenticationErrors {
                 print("DEBUG: AppleAuthError encountered: \(error.localizedDescription)")
                 authenticationState = .unauthenticated
-                self.errorMessage = error.localizedDescription
                 dump(error)
             } catch {
                 print("DEBUG: Unexpected error encountered: \(error.localizedDescription)")
                 authenticationState = .unauthenticated
-                self.errorMessage = error.localizedDescription
                 dump(error)
             }
         }
@@ -72,15 +76,15 @@ final class AuthViewModel {
     @MainActor
     func signOut() async {
         do {
-            try await Supabase.shared.client.auth.signOut()
+            try await supabaseService.client.auth.signOut()
             authenticationState = .unauthenticated
         } catch {
-            self.errorMessage = error.localizedDescription
+            print("DEBUG: Error signing out")
         }
     }
     
     func setupAuthStateListener() async {
-        await Supabase.shared.client.auth.onAuthStateChange { event, user in
+        await supabaseService.client.auth.onAuthStateChange { event, user in
             Task { @MainActor in
                 self.user = user?.user
                 self.authenticationState = user?.user == nil ? .unauthenticated : .authenticated
@@ -88,5 +92,4 @@ final class AuthViewModel {
             }
         }
     }
-    
 }

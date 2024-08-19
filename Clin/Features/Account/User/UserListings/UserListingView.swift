@@ -7,19 +7,7 @@
 import SwiftUI
 
 struct UserListingView: View {
-    @State private var viewModel: UserListingViewModel
-    let listingService: ListingServiceProtocol
-    let imageManager: ImageManagerProtocol
-    let prohibitedWordsService: ProhibitedWordsServiceProtocol
-    let httpDataDownloader: HTTPDataDownloaderProtocol
-   
-    init(viewModel: @autoclosure @escaping () -> UserListingViewModel, listingService: ListingServiceProtocol, imageManager: ImageManagerProtocol, prohibitedWordsService: ProhibitedWordsServiceProtocol, httpDownloader: HTTPDataDownloaderProtocol) {
-        self._viewModel = State(wrappedValue: viewModel())
-        self.listingService = listingService
-        self.imageManager = imageManager
-        self.prohibitedWordsService = prohibitedWordsService
-        self.httpDataDownloader = httpDownloader
-    }
+    @StateObject private var viewModel = UserListingViewModel()
     
     var body: some View {
         NavigationStack {
@@ -29,7 +17,7 @@ struct UserListingView: View {
                     case .empty:
                         EmptyContentView(message: "No active listings found", systemImage: "tray.fill")
                     case .success:
-                        UserListingSubview(listingService: listingService, imageManager: imageManager, prohibitedWordsService: prohibitedWordsService, httpDownloader: httpDataDownloader, viewModel: viewModel)
+                        UserListingSubview(viewModel: viewModel)
                         
                     case .error(let message):
                         ErrorView(message: message, retryAction: { Task {
@@ -41,7 +29,7 @@ struct UserListingView: View {
             }
             .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
             .deleteAlert(
-                isPresented: $viewModel.showDeleteAlert,
+                isPresented:  $viewModel.showDeleteAlert,
                 itemToDelete: $viewModel.listingToDelete
             ) { listing in
                 Task {
@@ -59,29 +47,11 @@ struct UserListingView: View {
 }
 
 #Preview("MockData") {
-    UserListingView(viewModel: UserListingViewModel(listingService: MockListingService()), listingService: MockListingService(), imageManager: MockImageManager(isHeicSupported: true), prohibitedWordsService: MockProhibitedWordsService(prohibitedWords: [
-        "example",
-        "test",
-        "prohibited"
-    ]), httpDownloader: MockHTTPDataDownloader())
+    UserListingView()
 }
 
 fileprivate struct UserListingSubview: View {
-    @Bindable var viewModel: UserListingViewModel
-    
-    let listingService: ListingServiceProtocol
-    let imageManager: ImageManagerProtocol
-    let prohibitedWordsService: ProhibitedWordsServiceProtocol
-    let httpDataDownloader: HTTPDataDownloaderProtocol
-    
-    init(listingService: ListingServiceProtocol, imageManager: ImageManagerProtocol, prohibitedWordsService: ProhibitedWordsServiceProtocol, httpDownloader: HTTPDataDownloaderProtocol, viewModel: UserListingViewModel
-    ) {
-        self.listingService = listingService
-        self.imageManager = imageManager
-        self.prohibitedWordsService = prohibitedWordsService
-        self.httpDataDownloader = httpDownloader
-        self.viewModel = viewModel
-    }
+    @StateObject var viewModel: UserListingViewModel
     
     var body: some View {
         List {
@@ -114,14 +84,7 @@ fileprivate struct UserListingSubview: View {
                     await viewModel.fetchUserListings()
                 }
             }) { listing in
-                EditFormView(
-                    listing: listing,
-                    viewModel: EditFormViewModel(
-                        listingService: listingService,
-                        imageManager: imageManager,
-                        prohibitedWordsService: prohibitedWordsService, httpDownloader: httpDataDownloader
-                    )
-                )
+                EditFormView(listing: listing)
         }
         .padding(.top)
     }

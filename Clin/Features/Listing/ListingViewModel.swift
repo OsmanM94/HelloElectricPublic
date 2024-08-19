@@ -5,32 +5,31 @@
 //  Created by asia on 23/06/2024.
 //
 import SwiftUI
+import Factory
 
-@Observable
-final class ListingViewModel {
+final class ListingViewModel: ObservableObject {
     enum ViewState {
         case loading
         case loaded
     }
     
-    private let listingService: ListingServiceProtocol
+    @Published private(set) var listings: [Listing] = []
+    @Published private(set) var viewState: ViewState = .loading
     
-    init(listingService: ListingServiceProtocol) {
-        self.listingService = listingService
-        print("DEBUG: DID INIT LISTING VIEWMODEL")
+    @Published var showFilterSheet: Bool = false
+    @Published var isDoubleTap: Bool = false
+
+    private(set) var hasMoreListings: Bool = true
+    private(set) var currentPage: Int = 0
+    private(set) var lastRefreshTime: Date? = nil
+    private let pageSize: Int = 10
+    private let refreshCooldown: TimeInterval = 10
+   
+    init() {
+        print("DEBUG: Did init ListingViewModel")
     }
     
-    private(set) var listings: [Listing] = []
-    private(set) var viewState: ViewState = .loading
-    
-    var showFilterSheet: Bool = false
-    var isDoubleTap: Bool = false
-    
-    private(set) var hasMoreListings: Bool = true
-    private var currentPage: Int = 0
-    private let pageSize: Int = 10
-    private var lastRefreshTime: Date? = nil
-    private let refreshCooldown: TimeInterval = 10
+    @Injected(\.listingService) private var listingService
     
     @MainActor
     func fetchListings() async {

@@ -6,9 +6,10 @@
 //
 import SwiftUI
 import PhotosUI
+import Factory
 
-@Observable
-final class EditFormViewModel: ImagePickerProtocol {
+
+final class EditFormViewModel: ObservableObject, ImagePickerProtocol {
     enum ViewState: Equatable {
         case idle
         case loading
@@ -17,11 +18,11 @@ final class EditFormViewModel: ImagePickerProtocol {
         case error(String)
     }
     
-    private(set) var viewState: ViewState = .idle
-    var imageViewState: ImageViewState = .idle
+    @Published private(set) var viewState: ViewState = .idle
+    @Published var imageViewState: ImageViewState = .idle
    
-    var selectedImages: [SelectedImage?] = Array(repeating: nil, count: 10)
-    var imageSelections: [PhotosPickerItem?] = Array(repeating: nil, count: 10)
+    @Published var selectedImages: [SelectedImage?] = Array(repeating: nil, count: 10)
+    @Published var imageSelections: [PhotosPickerItem?] = Array(repeating: nil, count: 10)
     var isLoading: [Bool] = Array(repeating: false, count: 10)
         
     private(set) var uploadingProgress: Double = 0.0
@@ -35,16 +36,15 @@ final class EditFormViewModel: ImagePickerProtocol {
     let vehicleServiceHistory: [String] = ["Yes", "No"]
     let vehicleNumberOfOwners: [String] = ["1", "2", "3", "4+"]
     
-    private let listingService: ListingServiceProtocol
-    private let httpDownloader: HTTPDataDownloaderProtocol
-    private let imageManager: ImageManagerProtocol
-    private let prohibitedWordsService: ProhibitedWordsServiceProtocol
+    @Injected(\.listingService) private var listingService
+    @Injected(\.prohibitedWordsService) private var prohibitedWordsService
+    @Injected(\.imageManager) private var imageManager
+    @Injected(\.dvlaService) private var dvlaService
+    @Injected(\.httpDataDownloader) private var httpDataDownloader
+    @Injected(\.supabaseService) private var supabaseService
     
-    init(listingService: ListingServiceProtocol, imageManager: ImageManagerProtocol, prohibitedWordsService: ProhibitedWordsServiceProtocol, httpDownloader: HTTPDataDownloaderProtocol) {
-        self.listingService = listingService
-        self.imageManager = imageManager
-        self.prohibitedWordsService = prohibitedWordsService
-        self.httpDownloader = httpDownloader
+    init() {
+        print("DEBUG: Did init EditFormViewModel")
     }
     
     @MainActor
@@ -52,7 +52,7 @@ final class EditFormViewModel: ImagePickerProtocol {
         viewState = .uploading
         uploadingProgress = 0.0
         do {
-            guard let user = try? await Supabase.shared.client.auth.session.user else {
+            guard let user = try? await supabaseService.client.auth.session.user else {
                 viewState = .error(ListingFormViewStateMessages.noAuthUserFound.message)
                 return
             }
@@ -79,7 +79,6 @@ final class EditFormViewModel: ImagePickerProtocol {
                 listingToUpdate.thumbnailsURL = thumbnailsURLs
             }
 
-            
             try await listingService.updateListing(listingToUpdate)
             
             viewState = .success(ListingFormViewStateMessages.updateSuccess.message)
@@ -179,7 +178,7 @@ final class EditFormViewModel: ImagePickerProtocol {
             defer { isLoading[urlIndex] = false }
             
             do {
-                let data = try await httpDownloader.fetchURL(from: url)
+                let data = try await httpDataDownloader.fetchURL(from: url)
                 guard let selectedImage = SelectedImage(data: data, id: url.absoluteString, photosPickerItem: nil) else {
                     print("DEBUG: Failed to create SelectedImage from data for URL: \(url)")
                     continue

@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct FavouriteListingView: View {
-    
     @EnvironmentObject private var viewModel: FavouriteViewModel
     
     var body: some View {
@@ -43,9 +42,8 @@ struct FavouriteListingView: View {
 }
 
 #Preview("Empty View") {
-    let favouriteService = PreviewHelpers.makeMockFavouriteService()
     FavouriteListingView()
-        .environmentObject(FavouriteViewModel(favouriteService: favouriteService))
+        .environmentObject(FavouriteViewModel())
 }
 
 fileprivate struct FavouriteListingSubview: View {

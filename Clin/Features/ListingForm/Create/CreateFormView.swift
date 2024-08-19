@@ -7,13 +7,10 @@
 
 import SwiftUI
 
+
 struct CreateFormView: View {
-    @State private var viewModel: CreateFormViewModel
+    @StateObject private var viewModel = CreateFormViewModel()
     
-    init(viewModel: @autoclosure @escaping () -> CreateFormViewModel) {
-        self._viewModel = State(wrappedValue: viewModel())
-    }
-  
     var body: some View {
         NavigationStack {
             Group {
@@ -32,8 +29,10 @@ struct CreateFormView: View {
                         CreateFormSubview(viewModel: viewModel)
                             .task {
                                 await viewModel.loadProhibitedWords()
-                                await viewModel.fetchMakeAndModels()
-                                print("DEBUG: Fetching make and models")
+                                if viewModel.carMakes.isEmpty {
+                                    await viewModel.fetchMakeAndModels()
+                                    print("DEBUG: Fetching make and models")
+                                }
                             }
                     case .uploading:
                         CircularProgressBar(progress: viewModel.uploadingProgress)
@@ -56,14 +55,12 @@ struct CreateFormView: View {
 }
 
 #Preview("DVLA") {
-    let createFormViewModel = PreviewHelpers.makePreviewCreateFormViewModel()
-    CreateFormView(viewModel: createFormViewModel)
+    CreateFormView()
 }
 
 #Preview("Loaded") {
-    let createFormViewModel = PreviewHelpers.makePreviewCreateFormViewModel()
     NavigationStack {
-        CreateFormSubview(viewModel: createFormViewModel)
+        CreateFormSubview(viewModel: CreateFormViewModel())
     }
 }
 
@@ -105,7 +102,7 @@ fileprivate struct DvlaCheckView: View {
 }
 
 fileprivate struct CreateFormSubview: View {
-    @Bindable var viewModel: CreateFormViewModel
+    @StateObject var viewModel: CreateFormViewModel
     
     var body: some View {
         Form {

@@ -7,13 +7,8 @@
 
 import Foundation
 
-
 final class ProhibitedWordsService: ProhibitedWordsServiceProtocol {
     
-    init() {
-        print("DEBUG: Did init prohibited words service")
-    }
-   
     private(set) var prohibitedWords: Set<String> = []
     
     func loadProhibitedWords() async throws {

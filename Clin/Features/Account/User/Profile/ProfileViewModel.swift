@@ -6,9 +6,10 @@
 //
 import SwiftUI
 import PhotosUI
+import Factory
 
-@Observable
-final class ProfileViewModel {
+
+final class ProfileViewModel: ObservableObject {
     enum ViewState: Equatable {
         case idle
         case loading
@@ -17,22 +18,22 @@ final class ProfileViewModel {
         case success(String)
     }
     
-    var username: String = ""
-    var imageSelection: PhotosPickerItem?
-    private(set) var avatarImage: SelectedImage?
-    private(set) var displayName: String = ""
-    private(set) var profile: Profile? = nil
-    private(set) var cooldownTime: Int = 0
+    @Published var username: String = ""
+    @Published var imageSelection: PhotosPickerItem?
+    @Published private(set) var avatarImage: SelectedImage?
+    @Published private(set) var displayName: String = ""
+    @Published private(set) var profile: Profile? = nil
+    @Published private(set) var cooldownTime: Int = 0
    
-    private(set) var viewState: ViewState = .idle
-    private(set) var cooldownTimer: Timer?
+    @Published private(set) var viewState: ViewState = .idle
+    @Published private(set) var cooldownTimer: Timer?
     
-    private let imageManager: ImageManagerProtocol
-    private let prohibitedWordsService: ProhibitedWordsServiceProtocol
+    @Injected(\.prohibitedWordsService) private var prohibitedWordsService
+    @Injected(\.supabaseService) private var supabaseService
+    @Injected(\.imageManager) private var imageManager
     
-    init(imageManager: ImageManagerProtocol, prohibitedWordsService: ProhibitedWordsServiceProtocol) {
-        self.imageManager = imageManager
-        self.prohibitedWordsService = prohibitedWordsService
+    init() {
+        print("DEBUG: Did init ProfileViewModel")
     }
     
     var isInteractionBlocked: Bool {
@@ -58,9 +59,9 @@ final class ProfileViewModel {
     @MainActor
     func getInitialProfile() async {
         do {
-            let currentUser = try await Supabase.shared.client.auth.session.user
+            let currentUser = try await supabaseService.client.auth.session.user
             
-            let profile: Profile = try await Supabase.shared.client
+            let profile: Profile = try await supabaseService.client
                 .from("profiles")
                 .select()
                 .eq("user_id", value: currentUser.id)
@@ -82,7 +83,7 @@ final class ProfileViewModel {
         guard await canUpdateProfile() else { return }
         
         do {
-            let currentUser = try await Supabase.shared.client.auth.session.user
+            let currentUser = try await supabaseService.client.auth.session.user
             let folderPath = "\(currentUser.id)"
             let bucketName = "avatars"
             
@@ -100,7 +101,7 @@ final class ProfileViewModel {
                 userID: currentUser.id
             )
             
-            try await Supabase.shared.client
+            try await supabaseService.client
                 .from("profiles")
                 .update(updatedProfile)
                 .eq("user_id", value: currentUser.id)
@@ -156,7 +157,7 @@ final class ProfileViewModel {
     @MainActor
     private func updateUsernameOnly() async {
         do {
-            let currentUser = try await Supabase.shared.client.auth.session.user
+            let currentUser = try await supabaseService.client.auth.session.user
             
             let updatedProfile = Profile(
                 username: username,
@@ -165,7 +166,7 @@ final class ProfileViewModel {
                 userID: currentUser.id
             )
             
-            try await Supabase.shared.client
+            try await supabaseService.client
                 .from("profiles")
                 .update(updatedProfile)
                 .eq("user_id", value: currentUser.id)
