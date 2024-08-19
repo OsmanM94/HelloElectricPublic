@@ -55,6 +55,7 @@
 				DvlaService.swift,
 				FavouriteService.swift,
 				ListingService.swift,
+				ProfileService.swift,
 				ProhibitedWordsService.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;

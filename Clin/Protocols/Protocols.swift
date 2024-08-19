@@ -12,8 +12,10 @@ protocol DatabaseServiceProtocol {
     func fetchAll<T: Decodable>(from table: String) async throws -> [T]
     func fetchByID<T: Decodable>(from table: String, id: Int) async throws -> T
     func fetchByField<T: Decodable>(from table: String, field: String, value: UUID) async throws -> [T]
+    func fetchSingleField<T: Decodable>(from table: String, field: String, value: UUID) async throws -> T
     func insert<T: Encodable>(_ item: T, into table: String) async throws
     func update<T: Encodable>(_ item: T, in table: String, id: Int) async throws
+    func updateByUUID<T: Encodable>(_ item: T, in table: String, userID: UUID) async throws
     func delete(from table: String, id: Int) async throws
     func deleteByField(from table: String, field: String , value: Int, field2: String, value2: UUID) async throws
 }
@@ -69,4 +71,10 @@ protocol HTTPDataDownloaderProtocol {
 
 protocol DvlaServiceProtocol {
     func fetchCarDetails(registrationNumber: String) async throws -> Dvla
+}
+
+protocol ProfileServiceProtocol {
+    func getProfile(for userID: UUID) async throws -> Profile
+    func updateProfile(_ profile: Profile) async throws
+    func getCurrentUserID() async throws -> UUID
 }

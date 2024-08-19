@@ -43,4 +43,8 @@ extension Container {
     var databaseService: Factory<DatabaseServiceProtocol> {
         Factory(self) { DatabaseService() }
     }
+    
+    var profileService: Factory<ProfileServiceProtocol> {
+        Factory(self) { ProfileService() }
+    }
 }

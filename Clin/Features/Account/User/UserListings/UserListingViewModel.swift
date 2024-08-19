@@ -40,12 +40,12 @@ final class UserListingViewModel: ObservableObject {
     @MainActor
     func fetchUserListings() async {
         do {
-            guard let user = try? await supabaseService.client.auth.session.user else {
+            guard let currentUser = try? await supabaseService.client.auth.session.user else {
                 viewState = .error(UserListingsViewStateMessages.generalError.message)
                 return
             }
             
-            self.userActiveListings = try await listingService.fetchUserListings(userID: user.id)
+            self.userActiveListings = try await listingService.fetchUserListings(userID: currentUser.id)
             viewState = .success
         } catch {
             viewState = .error(UserListingsViewStateMessages.noAuthUserFound.message)

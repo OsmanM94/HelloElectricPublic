@@ -29,8 +29,8 @@ final class ProfileViewModel: ObservableObject {
     @Published private(set) var cooldownTimer: Timer?
     
     @Injected(\.prohibitedWordsService) private var prohibitedWordsService
-    @Injected(\.supabaseService) private var supabaseService
     @Injected(\.imageManager) private var imageManager
+    @Injected(\.profileService) private var profileService
     
     init() {
         print("DEBUG: Did init ProfileViewModel")
@@ -59,19 +59,10 @@ final class ProfileViewModel: ObservableObject {
     @MainActor
     func getInitialProfile() async {
         do {
-            let currentUser = try await supabaseService.client.auth.session.user
-            
-            let profile: Profile = try await supabaseService.client
-                .from("profiles")
-                .select()
-                .eq("user_id", value: currentUser.id)
-                .single()
-                .execute()
-                .value
-            
+            let userID = try await profileService.getCurrentUserID()
+            let profile = try await profileService.getProfile(for: userID)
             self.displayName = profile.username ?? ""
             self.profile = profile
-           
         } catch {
             debugPrint(error)
             viewState = .error(ProfileViewStateMessages.generalError.message)
@@ -83,8 +74,8 @@ final class ProfileViewModel: ObservableObject {
         guard await canUpdateProfile() else { return }
         
         do {
-            let currentUser = try await supabaseService.client.auth.session.user
-            let folderPath = "\(currentUser.id)"
+            let userID = try await profileService.getCurrentUserID()
+            let folderPath = "\(userID)"
             let bucketName = "avatars"
             
             let imageURLString = try await imageManager.uploadImage(avatarImage!.data, from: bucketName, to: folderPath,targetWidth: 80, targetHeight: 80, compressionQuality: 0.4)
@@ -98,14 +89,12 @@ final class ProfileViewModel: ObservableObject {
                 username: username,
                 avatarURL: imageURL,
                 updatedAt: Date.now,
-                userID: currentUser.id
+                userID: userID
             )
             
-            try await supabaseService.client
-                .from("profiles")
-                .update(updatedProfile)
-                .eq("user_id", value: currentUser.id)
-                .execute()
+            try await profileService.updateProfile(updatedProfile)
+            self.profile?.avatarURL = imageURL
+            self.username = ""
                        
             self.profile?.avatarURL = imageURL
             self.username = ""
@@ -157,26 +146,21 @@ final class ProfileViewModel: ObservableObject {
     @MainActor
     private func updateUsernameOnly() async {
         do {
-            let currentUser = try await supabaseService.client.auth.session.user
+            let currentUser = try await profileService.getCurrentUserID()
             
             let updatedProfile = Profile(
                 username: username,
                 avatarURL: profile?.avatarURL, // Keep the existing avatar URL
                 updatedAt: Date.now,
-                userID: currentUser.id
+                userID: currentUser
             )
             
-            try await supabaseService.client
-                .from("profiles")
-                .update(updatedProfile)
-                .eq("user_id", value: currentUser.id)
-                .execute()
+            try await profileService.updateProfile(updatedProfile)
             
             self.profile?.username = username
             self.username = ""
             viewState = .success(ProfileViewStateMessages.success.message)
             startCooldownTimer()
-            
         } catch {
             debugPrint(error)
             viewState = .error(ProfileViewStateMessages.generalError.message)
@@ -223,5 +207,9 @@ final class ProfileViewModel: ObservableObject {
     }
     
 }
+
+
+
+
 
 

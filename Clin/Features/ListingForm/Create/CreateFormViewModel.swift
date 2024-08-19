@@ -22,11 +22,11 @@ final class CreateFormViewModel: ObservableObject, ImagePickerProtocol {
         
     @Published private(set) var viewState: ViewState = .idle
     @Published var imageViewState: ImageViewState = .idle
-    private(set) var uploadingProgress: Double = 0.0
+    @Published private(set) var uploadingProgress: Double = 0.0
     
     @Published var selectedImages: [SelectedImage?] = Array(repeating: nil, count: 10)
     @Published var imageSelections: [PhotosPickerItem?] = Array(repeating: nil, count: 10)
-    var isLoading: [Bool] = Array(repeating: false, count: 10)
+    @Published var isLoading: [Bool] = Array(repeating: false, count: 10)
 
     ///DVLA checks
     @Published var registrationNumber: String = ""
@@ -51,9 +51,9 @@ final class CreateFormViewModel: ObservableObject, ImagePickerProtocol {
     @Published var isPromoted: Bool = false
     
     @Published var carMakes: [CarMake] = []
-    var availableModels: [String] = []
-    var imagesURLs: [URL] = []
-    var thumbnailsURLs: [URL] = []
+    @Published var availableModels: [String] = []
+    @Published var imagesURLs: [URL] = []
+    @Published var thumbnailsURLs: [URL] = []
     
     let yearsOfmanufacture: [String] = Array(2010...2030).map { String($0) }
     let vehicleCondition: [String] = ["New", "Used"]

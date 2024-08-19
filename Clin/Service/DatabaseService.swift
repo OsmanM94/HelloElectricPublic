@@ -68,6 +68,21 @@ final class DatabaseService: DatabaseServiceProtocol {
         }
     }
     
+    func fetchSingleField<T: Decodable>(from table: String, field: String, value: UUID) async throws -> T {
+        do {
+            let result: T = try await supabaseService.client
+                .from(table)
+                .select()
+                .eq(field, value: value)
+                .single()
+                .execute()
+                .value
+            return result
+        } catch {
+            throw error
+        }
+    }
+    
     func insert<T: Encodable>(_ item: T, into table: String) async throws {
         do {
             try await supabaseService.client
@@ -86,6 +101,19 @@ final class DatabaseService: DatabaseServiceProtocol {
                 .from(table)
                 .update(item)
                 .eq("id", value: id)
+                .execute()
+            print("DEBUG: Item updated successfully in \(table).")
+        } catch {
+            throw error
+        }
+    }
+    
+    func updateByUUID<T: Encodable>(_ item: T, in table: String, userID: UUID) async throws {
+        do {
+            try await supabaseService.client
+                .from(table)
+                .update(item)
+                .eq("user_id", value: userID)
                 .execute()
             print("DEBUG: Item updated successfully in \(table).")
         } catch {

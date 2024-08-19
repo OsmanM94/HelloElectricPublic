@@ -5,17 +5,14 @@
 //  Created by asia on 07/08/2024.
 //
 
-#warning("Implement search functionalities with debounce with filter")
 
 #warning("Implement listing location")
 
 #warning("Add details view for User listing and Favourites")
 
-#warning("Implement pager feature")
-
 #warning("Implement a way to delete the user account")
 
-#warning("Implement notification")
+#warning("Implement notifications")
 
 
 /// KNOWN ISSUES
