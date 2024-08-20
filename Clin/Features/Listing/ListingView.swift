@@ -9,28 +9,25 @@ import SwiftUI
 import Factory
 
 struct ListingView: View {
-    @State var viewModel = ListingViewModel()
-    @Binding var isDoubleTap: Bool
-    @Binding var selectedTab: Tab
+    @State private var viewModel = ListingViewModel()
     
     var body: some View {
         NavigationStack {
             Group {
-                VStack(spacing: 0) {
+                VStack {
                     switch viewModel.viewState {
                     case .loading:
-                        ListingsPlaceholder(showTextField: true, retryAction: {
+                        ListingsPlaceholder(retryAction: {
                             await viewModel.fetchListings()
                         })
                         
                     case .loaded:
-                        ListingSubview(viewModel: viewModel, isDoubleTap: $isDoubleTap, selectedTab: $selectedTab)
+                        ListingSubview(viewModel: viewModel)
                     }
                 }
                 .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
+                .navigationTitle("Listings")
             }
-            .navigationTitle("Listings")
-            .navigationBarTitleDisplayMode(.inline)
         }
         .task {
             if viewModel.listings.isEmpty {
@@ -40,85 +37,63 @@ struct ListingView: View {
     }
 }
 
-struct ListingSubview: View {
+fileprivate struct ListingSubview: View {
     @Bindable var viewModel: ListingViewModel
-    @Binding var isDoubleTap: Bool
-    @Binding var selectedTab: Tab
-    
+    @State private var shouldScrollToTop: Bool = false
+  
     var body: some View {
-        VStack {
-            searchButton
-            listingScrollView
-        }
-    }
-}
-
-// MARK: - Subviews
-private extension ListingSubview {
-    
-    var searchButton: some View {
-        Button(action: { selectedTab = .second }) {
-            TextFieldSearchView(disableTextInput: true, search: .constant(""), action: {})
-                .padding([.top, .bottom])
-                .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-    }
-    
-    var listingScrollView: some View {
         ScrollViewReader { proxy in
             List {
-                listingItems
-                loadingIndicator
+                ForEach(viewModel.listings, id: \.id) { item in
+                    NavigationLink(value: item) {
+                        ListingCell(listing: item)
+                            .id(item.id)
+                    }
+                    .task {
+                        if item == viewModel.listings.last {
+                            await viewModel.fetchListings()
+                        }
+                    }
+                }
+                .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
+                
+                if viewModel.hasMoreListings {
+                    ProgressView()
+                        .scaleEffect(1.0)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .listRowSeparator(.hidden)
+                }
             }
-            .navigationDestination(for: Listing.self) { listing in
+            .navigationDestination(for: Listing.self, destination: { listing in
                 ListingDetailView(listing: listing)
-            }
+            })
             .listStyle(.plain)
             .refreshable { await viewModel.refreshListings() }
-            .onChange(of: isDoubleTap) { _, newValue in
+            .onChange(of: shouldScrollToTop) { _, newValue in
                 if newValue {
-                    scrollToTop(proxy: proxy)
-                    isDoubleTap = false
+                    withAnimation {
+                        proxy.scrollTo(viewModel.listings.first?.id, anchor: .top)
+                    }
+                    shouldScrollToTop = false
+                }
+            }
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        shouldScrollToTop.toggle()
+                    } label: {
+                        Image(systemName: "arrow.up.circle")
+                    }
+                    .disabled(viewModel.listings.count <= 10)
                 }
             }
         }
     }
-    
-    var listingItems: some View {
-        ForEach(viewModel.listings, id: \.id) { item in
-            NavigationLink(value: item) {
-                ListingCell(listing: item)
-            }
-        }
-        .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
-    }
-    
-    var loadingIndicator: some View {
-        Group {
-            if viewModel.listings.last != nil && viewModel.hasMoreListings {
-                ProgressView()
-                    .scaleEffect(1.0)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .listRowSeparator(.hidden)
-                    .task {
-                        await viewModel.fetchListings()
-                    }
-            }
-        }
-    }
-    
-    func scrollToTop(proxy: ScrollViewProxy) {
-        withAnimation {
-            proxy.scrollTo(viewModel.listings.first?.id)
-        }
-    }
 }
-
 
 #Preview("MockData") {
     let _ = PreviewsProvider.shared.container.listingService.register { MockListingService() }
-    ListingView(isDoubleTap: .constant(false), selectedTab: .constant(.first))
+    ListingView()
         .environment(FavouriteViewModel())
 }
 

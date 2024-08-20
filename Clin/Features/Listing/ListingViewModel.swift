@@ -25,9 +25,12 @@ final class ListingViewModel {
     private let pageSize: Int = 10
     private let refreshCooldown: TimeInterval = 10
    
-
     @ObservationIgnored
     @Injected(\.listingService) private var listingService
+    
+    init() {
+        print("DEBUG: Did init Listing viewmodel.")
+    }
     
     @MainActor
     func fetchListings() async {

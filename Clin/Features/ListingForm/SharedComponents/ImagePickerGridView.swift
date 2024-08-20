@@ -26,16 +26,7 @@ struct ImagePickerGridView<ViewModel: ImagePickerProtocol>: View {
         VStack {
             switch viewModel.imageViewState {
             case .idle:
-                ScrollView {
-                    LazyVGrid(columns: columns, spacing: 10) {
-                        ForEach(0..<10, id: \.self) { index in
-                            ImagePickerCell(viewModel: viewModel, index: index, number: index + 1)
-                                .frame(width: 100, height: 100)
-                        }
-                    }
-                    .padding()
-                }
-                .scrollIndicators(.hidden)
+                gridView
             case .sensitiveContent(let message):
                 ErrorView(message: message, retryAction: {
                     viewModel.resetStateToIdle()
@@ -52,7 +43,23 @@ struct ImagePickerGridView<ViewModel: ImagePickerProtocol>: View {
                 })
             }
         }
+        .navigationBarTitleDisplayMode(.inline)
         .animation(.easeInOut(duration: 0.2), value: viewModel.imageViewState)
+    }
+}
+
+extension ImagePickerGridView {
+    var gridView: some View {
+        ScrollView(.vertical) {
+            LazyVGrid(columns: columns, spacing: 10) {
+                ForEach(0..<10, id: \.self) { index in
+                    ImagePickerCell(viewModel: viewModel, index: index, number: index + 1)
+                        .frame(width: 100, height: 100)
+                }
+            }
+            .padding()
+        }
+        .scrollIndicators(.hidden)
     }
 }
 

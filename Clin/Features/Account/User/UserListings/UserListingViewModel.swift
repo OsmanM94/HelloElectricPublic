@@ -36,7 +36,10 @@ final class UserListingViewModel {
     @ObservationIgnored
     @Injected(\.supabaseService) private var supabaseService
     
-
+    init() {
+        print("DEBUG: Did init user listings vm")
+    }
+    
     @MainActor
     func fetchUserListings() async {
         do {

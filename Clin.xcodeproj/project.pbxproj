@@ -94,7 +94,6 @@
 				Search/FilterView.swift,
 				Search/SearchView.swift,
 				Search/SearchViewModel.swift,
-				Search/TextFieldSearchView.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
 		};
@@ -170,6 +169,7 @@
 			membershipExceptions = (
 				JSONDecoder/JSONDecoder.swift,
 				JSONDecoder/JSONLoadingError.swift,
+				LazyView/LazyView.swift,
 				NetworkMonitor/NetworkMonitor.swift,
 				NetworkMonitor/NetworkMonitorView.swift,
 				PhotosPicker/CustomPhotoPickers.swift,
@@ -190,7 +190,6 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				MarketView.swift,
-				MarketViewModel.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
 		};

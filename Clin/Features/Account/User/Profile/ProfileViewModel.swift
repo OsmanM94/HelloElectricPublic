@@ -23,11 +23,8 @@ final class ProfileViewModel {
     private(set) var avatarImage: SelectedImage?
     private(set) var displayName: String = ""
     private(set) var profile: Profile? = nil
-    private(set) var cooldownTime: Int = 0
-    
     private(set) var viewState: ViewState = .idle
-    private(set) var cooldownTimer: Timer?
-    
+   
     @ObservationIgnored
     @Injected(\.prohibitedWordsService) private var prohibitedWordsService
     @ObservationIgnored
@@ -36,7 +33,11 @@ final class ProfileViewModel {
     @Injected(\.profileService) private var profileService
     
     var isInteractionBlocked: Bool {
-        return cooldownTime > 0 || !validateUsername
+        !validateUsername
+    }
+    
+    init() {
+        print("DEBUG: Did init profile viewmodel.")
     }
     
     @MainActor
@@ -95,7 +96,6 @@ final class ProfileViewModel {
             self.profile?.avatarURL = imageURL
             self.username = ""
             
-            startCooldownTimer()
             viewState = .success(ProfileViewStateMessages.success.message)
         } catch {
             debugPrint(error)
@@ -105,11 +105,6 @@ final class ProfileViewModel {
     
     @MainActor
     private func canUpdateProfile() async -> Bool {
-        guard cooldownTime == 0 else {
-            viewState = .error(ProfileViewStateMessages.generalError.message)
-            return false
-        }
-        
         guard !prohibitedWordsService.containsProhibitedWord(username) else {
             viewState = .error(ProfileViewStateMessages.inappropriateUsername.message)
             return false
@@ -156,7 +151,6 @@ final class ProfileViewModel {
             self.profile?.username = username
             self.username = ""
             viewState = .success(ProfileViewStateMessages.success.message)
-            startCooldownTimer()
         } catch {
             debugPrint(error)
             viewState = .error(ProfileViewStateMessages.generalError.message)
@@ -176,20 +170,6 @@ final class ProfileViewModel {
             viewState = .sensitiveApiNotEnabled
         case .loadingError:
             viewState = .error(ProfileViewStateMessages.generalError.message)
-        }
-    }
-    
-    private func startCooldownTimer() {
-        cooldownTime = 60 // 1 minute cooldown period, adjust as needed
-        cooldownTimer?.invalidate()
-        cooldownTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] timer in
-            guard let self = self else { return }
-            if self.cooldownTime > 0 {
-                self.cooldownTime -= 1
-            } else {
-                timer.invalidate()
-                self.cooldownTimer = nil
-            }
         }
     }
     

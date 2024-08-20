@@ -8,16 +8,11 @@
 import SwiftUI
 
 struct ListingsPlaceholder: View {
-    @State var showTextField: Bool
     @State private var isLoading: Bool = true
     let retryAction: () async -> Void
     
     var body: some View {
         VStack(spacing: 0) {
-            if showTextField {
-                TextFieldSearchView(disableTextInput: true, search: .constant(""), action: {})
-                    .padding([.top, .bottom])
-            }
             List(0 ..< 6) { item in
                 HStack {
                     RoundedRectangle(cornerRadius: 10)
@@ -38,8 +33,6 @@ struct ListingsPlaceholder: View {
                 .padding(.leading, 5)
                 .padding(.vertical, 10)
             }
-            .navigationTitle("Listings")
-            .navigationBarTitleDisplayMode(.inline)
             .listStyle(.plain)
             .shimmer(when: $isLoading)
             .refreshable {
@@ -54,7 +47,26 @@ struct ListingsPlaceholder: View {
 
 #Preview {
     NavigationStack {
-        ListingsPlaceholder(showTextField: true, retryAction: {})
+        ListingsPlaceholder(retryAction: {})
     }
 }
 
+
+struct SearchBarPlaceholder: View {
+    var body: some View {
+        HStack(spacing: 5) {
+            Image(systemName: "magnifyingglass")
+                .foregroundStyle(.gray)
+            
+            Text("Search")
+                .foregroundStyle(.gray)
+                .padding(.vertical, 8)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            
+        }
+        .padding(.horizontal)
+        .background(Color(.systemGray6))
+        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .padding([.top, .bottom, .horizontal])
+    }
+}

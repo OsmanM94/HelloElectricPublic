@@ -28,10 +28,7 @@ struct CreateFormView: View {
                         CreateFormSubview(viewModel: viewModel)
                             .task {
                                 await viewModel.loadProhibitedWords()
-                                if viewModel.carMakes.isEmpty {
-                                    await viewModel.fetchMakeAndModels()
-                                    print("DEBUG: Fetching make and models")
-                                }
+                                await viewModel.fetchMakeAndModels()
                             }
                     case .uploading:
                         CircularProgressBar(progress: viewModel.uploadingProgress)
@@ -48,7 +45,6 @@ struct CreateFormView: View {
                 .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
             }
             .navigationTitle("Selling")
-            .navigationBarTitleDisplayMode(.inline)
         }
     }
 }
@@ -70,7 +66,7 @@ fileprivate struct DvlaCheckView: View {
     var body: some View {
         Form {
             Section("UK Registration") {
-                TextField("", text: $registrationNumber, prompt: Text("Enter registration").foregroundStyle(.gray))
+                TextField("", text: $registrationNumber, prompt: Text("Enter registration"))
                     .foregroundStyle(.black)
                     .font(.system(size: 24, weight: .semibold))
                     .submitLabel(.done)
@@ -93,11 +89,14 @@ fileprivate struct DvlaCheckView: View {
                 }
             } label: {
                 Text("Continue")
-                    .foregroundStyle(registrationNumber.isEmpty ? .gray : .white)
+                    .foregroundStyle(registrationNumber.isEmpty ? .gray.opacity(0.5) : .white)
+                    .fontWeight(.bold)
+                    .animation(.easeInOut, value: registrationNumber)
             }
             .disabled(registrationNumber.isEmpty)
             .frame(maxWidth: .infinity)
-            .listRowBackground(Color(registrationNumber.isEmpty ? .gray.opacity(0.4) : .accent))
+            .listRowBackground(Color(registrationNumber.isEmpty ? .gray.opacity(0.2) : .accent))
+            
         }
     }
 }
@@ -152,23 +151,33 @@ fileprivate struct CreateFormSubview: View {
     
     private var makeSection: some View {
         Section(header: Text("Make")) {
-            Picker("Select Make", selection: $viewModel.make) {
-                ForEach(viewModel.carMakes, id: \.make) { carMake in
-                    Text(carMake.make).tag(carMake.make)
+            if viewModel.isLoadingMake {
+                ProgressView()
+            } else {
+                Picker("Select Make", selection: $viewModel.make) {
+                    ForEach(viewModel.carMakes, id: \.make) { carMake in
+                        Text(carMake.make).tag(carMake.make)
+                    }
                 }
-            }
-            .onChange(of: viewModel.make) {
-                viewModel.updateAvailableModels()
+                .pickerStyle(.navigationLink)
+                .onChange(of: viewModel.make) {
+                    viewModel.updateAvailableModels()
+                }
             }
         }
     }
     
     private var modelSection: some View {
         Section(header: Text("Model")) {
-            Picker("Select Model", selection: $viewModel.model) {
-                ForEach(viewModel.availableModels, id: \.self) { model in
-                    Text(model).tag(model)
+            if viewModel.isLoadingMake {
+                ProgressView()
+            } else {
+                Picker("Select Model", selection: $viewModel.model) {
+                    ForEach(viewModel.availableModels, id: \.self) { model in
+                        Text(model).tag(model)
+                    }
                 }
+                .pickerStyle(.navigationLink)
             }
         }
     }

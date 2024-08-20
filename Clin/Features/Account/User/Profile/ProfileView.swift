@@ -8,7 +8,7 @@ import SwiftUI
 
 struct ProfileView: View {
     @State private var viewModel = ProfileViewModel()
-    
+  
     var body: some View {
         NavigationStack {
             Group {
@@ -95,16 +95,10 @@ fileprivate struct ProfileSubview: View {
                     await viewModel.getInitialProfile()
                 }
             } label: {
-                if viewModel.cooldownTime > 0 {
-                    Text("Please wait \(viewModel.cooldownTime) seconds to update again")
-                        .monospacedDigit()
-                        .foregroundStyle(.white)
-                } else {
-                    Text("Update profile")
-                        .font(.headline)
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                }
+                Text("Update profile")
+                    .font(.headline)
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity)
             }
             .disabled(viewModel.isInteractionBlocked)
             .listRowBackground(Color(viewModel.validateUsername ? .accent : .gray.opacity(0.4)))
@@ -152,7 +146,4 @@ fileprivate struct ProfileSubview: View {
     }
 }
 
-#Preview {
-    ProfileView()
-        .environment(AuthViewModel())
-}
+

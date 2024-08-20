@@ -14,53 +14,68 @@ struct SearchView: View {
     
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
-                TextFieldSearchView(disableTextInput: false, search: $viewModel.searchText, action: {
-                    await viewModel.searchItems(searchText: viewModel.searchText)
-                })
-                .focused($isPresented)
-                .onAppear {
-                    performAfterDelay(0.1, action: { isPresented = true })
+            Group {
+                VStack(spacing: 0) {
+                    switch viewModel.viewState {
+                    case .idle:
+                        searchBar
+                        searchListView
+                    case .loading:
+                        CustomProgressView()
+                    case .loaded:
+                        if viewModel.filteredListings.isEmpty {
+                            searchBar
+                            ContentUnavailableView.search
+                        } else {
+                            searchBar
+                            searchListView
+                        }
+                    }
                 }
-            }
-            .navigationTitle("Search")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItemGroup(placement: .keyboard) {
-                    Spacer(minLength: 0)
-                    Button { isPresented = false } label: { Text("Done") }
-                }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("", systemImage: systemImageName, action: {})
-                }
-            }
-            
-            VStack(spacing: 0) {
-                switch viewModel.viewState {
-                case .idle:
-                    SearchSubview(viewModel: viewModel)
-                    
-                case .loading:
-                    ListingsPlaceholder(showTextField: false, retryAction: {})
-                    
-                case .loaded:
-                    if viewModel.filteredListings.isEmpty {
-                        ContentUnavailableView.search
-                    } else {
-                        SearchSubview(viewModel: viewModel)
+                .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
+                .toolbar {
+                    ToolbarItemGroup(placement: .keyboard) {
+                        Spacer(minLength: 0)
+                        Button { isPresented = false } label: { Text("Done") }
+                    }
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button("", systemImage: systemImageName, action: {})
+                    }
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button("Reset") { viewModel.resetState() }
+                        .disabled(viewModel.searchText.isEmpty)
                     }
                 }
             }
-            .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
+            .navigationTitle("Search")
         }
-        .onAppear { viewModel.viewState = .idle }
     }
 }
-
-fileprivate struct SearchSubview: View {
-    @Bindable var viewModel: SearchViewModel
-
-    var body: some View {
+extension SearchView {
+    var searchBar: some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 5) {
+                Image(systemName: "magnifyingglass")
+                    .foregroundStyle(.gray)
+                
+                TextField("", text: $viewModel.searchText, prompt: Text("Search").foregroundStyle(.gray))
+                    .autocorrectionDisabled()
+                    .textInputAutocapitalization(.never)
+                    .submitLabel(.search)
+                    .padding(.vertical, 8)
+                    .onSubmit {
+                        Task { await viewModel.searchItems() }
+                    }
+            }
+            .padding(.horizontal)
+            .background(Color(.systemGray6))
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .padding(.horizontal)
+            .focused($isPresented)
+        }
+    }
+    
+    var searchListView: some View {
         List {
             ForEach(viewModel.filteredListings, id: \.id) { item in
                 NavigationLink(value: item) {
@@ -76,9 +91,8 @@ fileprivate struct SearchSubview: View {
     }
 }
 
-
-
 #Preview {
     SearchView()
         .environment(FavouriteViewModel())
 }
+

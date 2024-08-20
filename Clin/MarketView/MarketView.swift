@@ -8,32 +8,29 @@
 import SwiftUI
 
 struct MarketView: View {
-    @StateObject private var viewModel = MarketViewModel()
+    @State private var selectedTab: Int = 0
     
     var body: some View {
-        TabView(selection: $viewModel.selectedTab) {
-            ListingView(
-                isDoubleTap: $viewModel.scrollFirstTabToTop,
-                selectedTab: $viewModel.selectedTab)
-                .tag(Tab.first)
+        TabView(selection: $selectedTab) {
+            ListingView()
+                .tag(0)
                 .tabItem {
                     Label("Listings", systemImage: "bolt.car")
                 }
-            
             SearchView()
-                .tag(Tab.second)
+                .tag(1)
                 .tabItem {
                     Label("Search", systemImage: "magnifyingglass")
                 }
             
             CreateListingViewRouter()
-                .tag(Tab.third)
+                .tag(2)
                 .tabItem {
                     Label("Sell", systemImage: "plus")
                 }
             
             AccountViewRouter()
-                .tag(Tab.fourth)
+                .tag(3)
                 .tabItem {
                     Label("Account", systemImage: "person.fill")
                 }

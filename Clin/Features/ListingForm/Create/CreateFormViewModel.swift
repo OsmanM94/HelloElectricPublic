@@ -21,8 +21,9 @@ final class CreateFormViewModel: ImagePickerProtocol {
     }
         
     private(set) var viewState: ViewState = .idle
-    var imageViewState: ImageViewState = .idle
     private(set) var uploadingProgress: Double = 0.0
+    var imageViewState: ImageViewState = .idle
+    var isLoadingMake: Bool = false
     
     var selectedImages: [SelectedImage?] = Array(repeating: nil, count: 10)
     var imageSelections: [PhotosPickerItem?] = Array(repeating: nil, count: 10)
@@ -229,17 +230,24 @@ final class CreateFormViewModel: ImagePickerProtocol {
         
     @MainActor
     func fetchMakeAndModels() async {
-        do {
-            self.carMakes = try await listingService.fetchMakeModels()
+        if carMakes.isEmpty || availableModels.isEmpty {
+            isLoadingMake = true
+            defer { isLoadingMake = false }
             
-            // Set the initial car make
-            self.make = carMakes.first?.make ?? ""
-            
-            // Update available models based on the fetched car makes
-            updateAvailableModels()
-        } catch {
-            print("DEBUG: Failed to fetch car makes and models from Supabase: \(error)")
-            viewState = .error(ListingFormViewStateMessages.generalError.message)
+            do {
+                self.carMakes = try await listingService.fetchMakeModels()
+                
+                // Set the initial car make
+                self.make = carMakes.first?.make ?? ""
+                
+                // Update available models based on the fetched car makes
+                updateAvailableModels()
+                
+                print("DEBUG: Fetching make and models")
+            } catch {
+                print("DEBUG: Failed to fetch car makes and models from Supabase: \(error)")
+                viewState = .error(ListingFormViewStateMessages.generalError.message)
+            }
         }
     }
         

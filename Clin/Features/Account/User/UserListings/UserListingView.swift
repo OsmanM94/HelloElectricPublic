@@ -77,16 +77,14 @@ fileprivate struct UserListingSubview: View {
         }
         .refreshable { await viewModel.fetchUserListings() }
         .listStyle(.plain)
-        .fullScreenCover(
-            item: $viewModel.selectedListing,
-            onDismiss: {
+        .fullScreenCover(item: $viewModel.selectedListing, onDismiss: {
                 Task {
                     await viewModel.fetchUserListings()
                 }
             }) { listing in
                 EditFormView(listing: listing)
-        }
-        .padding(.top)
+            }
+            .padding(.top)
     }
 }
 

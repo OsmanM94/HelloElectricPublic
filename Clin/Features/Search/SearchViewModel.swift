@@ -27,8 +27,20 @@ final class SearchViewModel {
     @ObservationIgnored
     @Injected(\.supabaseService) private var supabaseService
   
+    init() {
+        print("DEBUG: Did init search viewmodel")
+    }
+    
     @MainActor
-    func searchItems(searchText: String) async {
+    func resetState() {
+        self.searchText = ""
+        self.filteredListings.removeAll()
+        viewState = .idle
+    }
+    
+    @MainActor
+    func searchItems() async {
+        guard !searchText.isEmpty else { return }
         self.viewState = .loading
         
         do {

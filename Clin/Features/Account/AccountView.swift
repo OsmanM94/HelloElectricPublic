@@ -9,16 +9,16 @@ import SwiftUI
 
 struct AccountView: View {
     @Environment(AuthViewModel.self) private var authViewModel
- 
+    
     var body: some View {
         NavigationStack {
             Form {
                 Section("Manage") {
-                    NavigationLink("Profile", destination: {
-                        ProfileView()
-                    })
+                    NavigationLink("Profile") {
+                        LazyView(ProfileView())
+                    }
                     NavigationLink("My listings", destination: {
-                        UserListingView()
+                        LazyView(UserListingView())
                     })
                     NavigationLink("Saved", destination: {
                         FavouriteListingView()
@@ -50,7 +50,6 @@ struct AccountView: View {
                 }
             }
             .navigationTitle("Settings")
-            .navigationBarTitleDisplayMode(.inline)
         }
         .task {
             await authViewModel.setupAuthStateListener()
