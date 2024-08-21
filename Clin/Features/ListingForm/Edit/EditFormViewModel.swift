@@ -65,9 +65,9 @@ final class EditFormViewModel: ImagePickerProtocol {
                 return
             }
             
-            // Calculate the total number of steps (number of images + 1 for the listing creation)
+            // Calculate the total number of steps
             let nonNilImageItems = selectedImages.compactMap { $0 }
-            let totalSteps = nonNilImageItems.count + 1
+            let totalSteps = nonNilImageItems.count
             
             try await uploadSelectedImages(for: user.id, totalSteps: totalSteps)
             
@@ -127,7 +127,7 @@ final class EditFormViewModel: ImagePickerProtocol {
         viewState = .idle
     }
     
-    func resetStateToIdle() {
+    func resetImageStateToIdle() {
         imageViewState = .idle
     }
    

@@ -8,69 +8,141 @@
 import SwiftUI
 
 struct FilterView: View {
-    @Binding var selectedMake: String
-    @Binding var selectedModel: String
-    @Binding var selectedYear: Int
-    @Binding var maxPrice: Double
-    
-    var makes: [String]
-    var models: [String]
-    
-    var applyFilters: () -> Void
+    @Bindable var viewModel: SearchViewModel
+    let onApply: () -> Void
     
     var body: some View {
         NavigationStack {
             Form {
-                Section(header: Text("Make")) {
-                    Picker("Select Make", selection: $selectedMake) {
-                        ForEach(makes, id: \.self) { make in
-                            Text(make).tag(make)
+                Section(header: Text("Make and model ")) {
+                    Picker("Make", selection: $viewModel.make) {
+                        Text("Any").tag("Any")
+                        ForEach(viewModel.fetchedMakeModels, id: \.make) { item in
+                            Text(item.make).tag(item.make)
                         }
                     }
-                }
-                
-                Section(header: Text("Model")) {
-                    Picker("Select Model", selection: $selectedModel) {
-                        ForEach(models, id: \.self) { model in
+                    .onChange(of: viewModel.make) {
+                        viewModel.updateAvailableModels()
+                    }
+                    Picker("Model", selection: $viewModel.model) {
+                        ForEach(viewModel.availableModels, id: \.self) { model in
                             Text(model).tag(model)
                         }
                     }
                 }
+                .pickerStyle(.navigationLink)
                 
-                Section(header: Text("Year")) {
-                    Stepper("Year: \(selectedYear, format: .number.precision(.fractionLength(0)))", value: $selectedYear, in: 2000...2024)
+                Section(header: Text("Year and condition")) {
+                    Picker("Year of manufacture", selection:
+                            $viewModel.selectedYear) {
+                        ForEach(viewModel.yearOfManufacture, id: \.self) { year in
+                            Text(year).tag(year)
+                        }
+                    }
+                    Picker("Condition", selection: $viewModel.condition) {
+                        ForEach(viewModel.vehicleCondition, id: \.self) { condition in
+                            Text(condition).tag(condition)
+                        }
+                    }
                 }
+                .pickerStyle(.navigationLink)
                 
-                Section(header: Text("Maximum Price")) {
-                    Slider(value: $maxPrice, in: 0...100000, step: 1000) {
+                Section(header: Text("Price and mileage")) {
+                    Text("Max Price: \(viewModel.maxPrice, format: .currency(code: "GBP").precision(.fractionLength(0)))")
+                    Slider(value: $viewModel.maxPrice, in: 0...100000, step: 1000) {
                         Text("Price")
                     }
-                    Text("Selected Price: \(maxPrice, format: .currency(code: Locale.current.currency?.identifier ?? "GBP").precision(.fractionLength(0)))")
+                    Text("Max Mileage: \(viewModel.maxMileage, specifier: "%.0f") miles")
+                    Slider(value: $viewModel.maxMileage, in: 0...500000, step: 1000) {
+                        Text("Max Mileage")
+                    }
                 }
-            }
-            .navigationTitle("Filters")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        applyFilters()
-                    } label: {
-                        Text("Apply")
+                
+                DisclosureGroup("Other specification") {
+                    Picker("Colour", selection: $viewModel.colour) {
+                        ForEach(viewModel.availableColours, id: \.self) { colour in
+                            Text(colour).tag(colour)
+                        }
+                    }
+                    Picker("Warranty", selection: $viewModel.warranty) {
+                        ForEach(viewModel.vehicleWarranty, id: \.self) { warranty in
+                            Text(warranty).tag(warranty)
+                        }
+                    }
+                    Picker("Service history", selection: $viewModel.serviceHistory) {
+                        ForEach(viewModel.vehicleServiceHistory, id: \.self) { service in
+                            Text(service).tag(service)
+                        }
+                    }
+                    Picker("Owners", selection: $viewModel.numberOfOwners) {
+                        ForEach(viewModel.vehicleNumberOfOwners, id: \.self) { owners in
+                            Text(owners).tag(owners)
+                        }
+                    }
+                }
+                .pickerStyle(.navigationLink)
+                    
+                DisclosureGroup("EV specific") {
+                    Picker("Range", selection: $viewModel.range) {
+                        ForEach(viewModel.vehicleRange, id: \.self) { range in
+                            Text(range).tag(range)
+                        }
+                    }
+                    Picker("Public charging time", selection: $viewModel.maxPublicChargingTime) {
+                        ForEach(viewModel.publicCharge, id: \.self) { time in
+                            Text(time).tag(time)
+                        }
+                    }
+                    Picker("Home charging time", selection: $viewModel.maxHomeChargingTime) {
+                        ForEach(viewModel.homeCharge, id: \.self) { time in
+                            Text(time).tag(time)
+                        }
+                    }
+                    Picker("Power BHP", selection: $viewModel.powerBhp) {
+                        ForEach(viewModel.vehiclePowerBhp, id: \.self) { power in
+                            Text(power).tag(power)
+                        }
+                    }
+                    Picker("Battery capacity", selection: $viewModel.batteryCapacity) {
+                        ForEach(viewModel.batteryCap, id: \.self) { battery in
+                            Text(battery).tag(battery)
+                        }
                     }
 
+                    Picker("Regen braking", selection: $viewModel.regenBraking) {
+                        ForEach(viewModel.vehicleRegenBraking, id: \.self) { regen in
+                            Text(regen).tag(regen)
+                        }
+                    }
+                }
+                .pickerStyle(.navigationLink)
+            }
+            .navigationTitle("Filters")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Apply") {
+                        Task {
+                            await viewModel.fetchFilteredItems()
+                            onApply()
+                        }
+                    }
+                }
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Reset filters") {
+                        viewModel.resetFilters()
+                    }
                 }
             }
+        }
+        .task {
+            await viewModel.fetchMakeModels()
+            await viewModel.fetchEvSpecifications()
+            await viewModel.fetchAvailableColours()
         }
     }
 }
 
 #Preview {
-    FilterView(
-        selectedMake: .constant("Tesla"),
-        selectedModel: .constant("Model S"),
-        selectedYear: .constant(2024),
-        maxPrice: .constant(100000),
-        makes: ["Tesla", "Ford", "Toyota"], // Example makes
-        models: ["Model S", "Model 3", "Mustang", "Corolla"], // Example models
-        applyFilters: {}
-    )
+    FilterView(viewModel: SearchViewModel(), onApply: {})
 }

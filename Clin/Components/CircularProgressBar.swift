@@ -33,6 +33,7 @@ struct CircularProgressBar: View {
         }
         .frame(width: 250, height: 250)
         .padding()
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 

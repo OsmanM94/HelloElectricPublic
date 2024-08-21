@@ -29,17 +29,17 @@ struct ImagePickerGridView<ViewModel: ImagePickerProtocol>: View {
                 gridView
             case .sensitiveContent(let message):
                 ErrorView(message: message, retryAction: {
-                    viewModel.resetStateToIdle()
+                    viewModel.resetImageStateToIdle()
                 })
                 
             case .sensitiveApiNotEnabled:
                 SensitiveAnalysisErrorView(retryAction: {
-                    viewModel.resetStateToIdle()
+                    viewModel.resetImageStateToIdle()
                 })
                 
             case .error(let message):
                 ErrorView(message: message, retryAction: {
-                    viewModel.resetStateToIdle()
+                    viewModel.resetImageStateToIdle()
                 })
             }
         }

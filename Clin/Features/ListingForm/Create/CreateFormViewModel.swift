@@ -28,40 +28,48 @@ final class CreateFormViewModel: ImagePickerProtocol {
     var selectedImages: [SelectedImage?] = Array(repeating: nil, count: 10)
     var imageSelections: [PhotosPickerItem?] = Array(repeating: nil, count: 10)
     var isLoading: [Bool] = Array(repeating: false, count: 10)
+    var evSpecific: [EVMakeModels] = []
 
     ///DVLA checks
     var registrationNumber: String = ""
     
-    var make: String = ""
-    var model: String = ""
+    // Properties
+    var make: String = "Select"
+    var model: String = "Select"
+    var body: String = "Select"
     var condition: String = "Used"
     var mileage: Double = 500
-    var yearOfManufacture: String = "2015"
+    var yearOfManufacture: String = "Select"
     var price: Double = 500
     var description: String = ""
-    var range: String = "300"
-    var colour: String = ""
-    var publicChargingTime: String = "30mins"
-    var homeChargingTime: String = "1hr"
-    var batteryCapacity: String = "40kWh"
-    var powerBhp: String = "40"
-    var regenBraking: String = "Yes"
-    var warranty: String = "Yes"
-    var serviceHistory: String = "Yes"
-    var numberOfOwners: String = "1"
+    var range: String = "Select"
+    var colour: String = "Loading"
+    var publicChargingTime: String = "Select"
+    var homeChargingTime: String = "Select"
+    var batteryCapacity: String = "Select"
+    var powerBhp: String = "Select"
+    var regenBraking: String = "Select"
+    var warranty: String = "Select"
+    var serviceHistory: String = "Select"
+    var numberOfOwners: String = "Select"
     var isPromoted: Bool = false
     
-    var carMakes: [CarMake] = []
     var availableModels: [String] = []
     var imagesURLs: [URL] = []
     var thumbnailsURLs: [URL] = []
     
-    let yearsOfmanufacture: [String] = Array(2010...2030).map { String($0) }
-    let vehicleCondition: [String] = ["New", "Used"]
-    let vehicleRegenBraking: [String] = ["Yes", "No"]
-    let vehicleWarranty: [String] = ["Yes", "No"]
-    let vehicleServiceHistory: [String] = ["Yes", "No"]
-    let vehicleNumberOfOwners: [String] = ["1", "2", "3", "4+"]
+    // Pre-selected properties
+    let bodyType: [String] = []
+    let yearsOfmanufacture: [String] = []
+    let vehicleRange: [String] = []
+    let homeCharge: [String] = []
+    let publicCharge: [String] = []
+    let batteryCap: [String] = []
+    let vehicleCondition: [String] = []
+    let vehicleRegenBraking: [String] = []
+    let vehicleWarranty: [String] = []
+    let vehicleServiceHistory: [String] = []
+    let vehicleNumberOfOwners: [String] = []
     
     @ObservationIgnored
     @Injected(\.listingService) private var listingService
@@ -93,7 +101,7 @@ final class CreateFormViewModel: ImagePickerProtocol {
             
             // Calculate the total number of steps (number of images + 1 for the listing creation)
             let nonNilImageItems = selectedImages.compactMap { $0 }
-            let totalSteps = nonNilImageItems.count + 1
+            let totalSteps = nonNilImageItems.count 
             
             try await uploadSelectedImages(for: user.id, totalSteps: totalSteps)
             
@@ -162,22 +170,6 @@ final class CreateFormViewModel: ImagePickerProtocol {
     
     func resetState() {
         registrationNumber = ""
-        make = ""
-        model = ""
-        mileage = 0
-        yearOfManufacture = ""
-        price = 0
-        description = ""
-        range = ""
-        colour = ""
-        publicChargingTime = ""
-        homeChargingTime = ""
-        batteryCapacity = ""
-        powerBhp = ""
-        regenBraking = ""
-        warranty = ""
-        serviceHistory = ""
-        numberOfOwners = ""
         selectedImages = Array(repeating: nil, count: 10) 
         imageSelections = Array(repeating: nil, count: 10)
         uploadingProgress = 0.0
@@ -185,7 +177,7 @@ final class CreateFormViewModel: ImagePickerProtocol {
         viewState = .idle
     }
     
-    func resetStateToIdle() {
+    func resetImageStateToIdle() {
         imageViewState = .idle
     }
     
@@ -230,15 +222,15 @@ final class CreateFormViewModel: ImagePickerProtocol {
         
     @MainActor
     func fetchMakeAndModels() async {
-        if carMakes.isEmpty || availableModels.isEmpty {
+        if evSpecific.isEmpty || availableModels.isEmpty {
             isLoadingMake = true
             defer { isLoadingMake = false }
             
             do {
-                self.carMakes = try await listingService.fetchMakeModels()
+                self.evSpecific = try await listingService.fetchMakeModels()
                 
                 // Set the initial car make
-                self.make = carMakes.first?.make ?? ""
+                self.make = evSpecific.first?.make ?? ""
                 
                 // Update available models based on the fetched car makes
                 updateAvailableModels()
@@ -252,7 +244,7 @@ final class CreateFormViewModel: ImagePickerProtocol {
     }
         
     func updateAvailableModels() {
-        guard let selectedCarMake = carMakes.first(where: { $0.make == make }) else {
+        guard let selectedCarMake = evSpecific.first(where: { $0.make == make }) else {
             availableModels = []
             self.model = ""
             return

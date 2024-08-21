@@ -9,50 +9,38 @@ import SwiftUI
 
 struct SearchView: View {
     @State private var viewModel = SearchViewModel()
-    @FocusState private var isPresented: Bool
-    let systemImageName: String = "line.3.horizontal.decrease.circle"
-    
+   
     var body: some View {
         NavigationStack {
             Group {
                 VStack(spacing: 0) {
                     switch viewModel.viewState {
                     case .idle:
-                        searchBar
-                        searchListView
+                        SearchSubview(viewModel: viewModel)
                     case .loading:
                         CustomProgressView()
                     case .loaded:
                         if viewModel.filteredListings.isEmpty {
-                            searchBar
+                            SearchSubview(viewModel: viewModel)
                             ContentUnavailableView.search
                         } else {
-                            searchBar
-                            searchListView
+                            SearchSubview(viewModel: viewModel)
                         }
                     }
                 }
                 .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
-                .toolbar {
-                    ToolbarItemGroup(placement: .keyboard) {
-                        Spacer(minLength: 0)
-                        Button { isPresented = false } label: { Text("Done") }
-                    }
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button("", systemImage: systemImageName, action: {})
-                    }
-                    ToolbarItem(placement: .topBarLeading) {
-                        Button("Reset") { viewModel.resetState() }
-                        .disabled(viewModel.searchText.isEmpty)
-                    }
-                }
             }
             .navigationTitle("Search")
         }
     }
 }
-extension SearchView {
-    var searchBar: some View {
+struct SearchSubview: View {
+    @Bindable var viewModel: SearchViewModel
+    @FocusState private var isPresented: Bool
+    @State private var showingFilterView = false
+    let systemImageName: String = "line.3.horizontal.decrease.circle"
+    
+    var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 5) {
                 Image(systemName: "magnifyingglass")
@@ -73,9 +61,8 @@ extension SearchView {
             .padding(.horizontal)
             .focused($isPresented)
         }
-    }
-    
-    var searchListView: some View {
+        .padding(.bottom)
+        
         List {
             ForEach(viewModel.filteredListings, id: \.id) { item in
                 NavigationLink(value: item) {
@@ -88,8 +75,31 @@ extension SearchView {
             ListingDetailView(listing: listing)
         })
         .listStyle(.plain)
+        .sheet(isPresented: $showingFilterView) {
+            FilterView(viewModel: viewModel) {
+                showingFilterView = false
+            }
+        }
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer(minLength: 0)
+                Button { isPresented = false } label: { Text("Done") }
+            }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button(action: { showingFilterView = true }) {
+                    Image(systemName: systemImageName)
+                }
+            }
+            ToolbarItem(placement: .topBarLeading) {
+                Button("Clear") {
+                    viewModel.resetState()
+                }
+                .disabled(viewModel.searchText.isEmpty || !viewModel.filteredListings.isEmpty)
+            }
+        }
     }
 }
+
 
 #Preview {
     SearchView()

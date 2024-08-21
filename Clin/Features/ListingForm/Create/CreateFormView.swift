@@ -155,8 +155,8 @@ fileprivate struct CreateFormSubview: View {
                 ProgressView()
             } else {
                 Picker("Select Make", selection: $viewModel.make) {
-                    ForEach(viewModel.carMakes, id: \.make) { carMake in
-                        Text(carMake.make).tag(carMake.make)
+                    ForEach(viewModel.evSpecific, id: \.make) { item in
+                        Text(item.make).tag(item.make)
                     }
                 }
                 .pickerStyle(.navigationLink)
@@ -201,7 +201,7 @@ fileprivate struct CreateFormSubview: View {
     
     private var colourSection: some View {
         Section("Colour") {
-            TextField("", text: $viewModel.colour)
+            TextField("Colour", text: $viewModel.colour)
                 .textInputAutocapitalization(.sentences)
                 .disabled(true)
         }
@@ -209,7 +209,7 @@ fileprivate struct CreateFormSubview: View {
     
     private var yearOfManufactureSection: some View {
         Section("Year of manufacture") {
-            Picker("\(viewModel.yearOfManufacture)", selection: $viewModel.yearOfManufacture) {
+            Picker("Selected Year", selection: $viewModel.yearOfManufacture) {
                 ForEach(viewModel.yearsOfmanufacture, id: \.self) { year in
                     Text(year).tag(year)
                 }

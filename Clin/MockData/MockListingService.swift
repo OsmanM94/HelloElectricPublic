@@ -11,7 +11,7 @@ struct MockListingService: ListingServiceProtocol {
    
     static let mockUserID = UUID(uuidString: "123e4567-e89b-12d3-a456-426614174000")!
     
-    static var makeSample: [CarMake] = [CarMake(id: 1, make: "Tesla", models: ["Model 3","Model S"])]
+    static var makeSample: [EVMakeModels] = [EVMakeModels(id: 1, make: "Tesla", models: ["Model2","Model3"])]
     
     static var sampleData: [Listing] = [
         Listing(
@@ -141,7 +141,7 @@ struct MockListingService: ListingServiceProtocol {
         return MockListingService.sampleData[0]
     }
     
-    func fetchMakeModels() async throws -> [CarMake] {
+    func fetchMakeModels() async throws -> [EVMakeModels] {
         try await Task.sleep(nanoseconds: 2 * 1_000_000_000)
         return MockListingService.makeSample
     }

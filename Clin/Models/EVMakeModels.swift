@@ -7,8 +7,9 @@
 
 import Foundation
 
-struct CarMake: Identifiable, Codable {
+struct EVMakeModels: Identifiable, Codable {
     var id: Int?
-    var make: String
-    var models: [String]
+    let make: String
+    let models: [String]
 }
+
