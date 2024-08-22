@@ -39,7 +39,7 @@ final class CreateFormViewModel: ImagePickerProtocol {
     var body: String = "Select"
     var condition: String = "Used"
     var mileage: Double = 500
-    var yearOfManufacture: String = "Select"
+    var selectedYear: String = "Select"
     var price: Double = 500
     var description: String = ""
     var range: String = "Select"
@@ -54,22 +54,27 @@ final class CreateFormViewModel: ImagePickerProtocol {
     var numberOfOwners: String = "Select"
     var isPromoted: Bool = false
     
-    var availableModels: [String] = []
     var imagesURLs: [URL] = []
     var thumbnailsURLs: [URL] = []
     
     // Pre-selected properties
-    let bodyType: [String] = []
-    let yearsOfmanufacture: [String] = []
-    let vehicleRange: [String] = []
-    let homeCharge: [String] = []
-    let publicCharge: [String] = []
-    let batteryCap: [String] = []
-    let vehicleCondition: [String] = []
-    let vehicleRegenBraking: [String] = []
-    let vehicleWarranty: [String] = []
-    let vehicleServiceHistory: [String] = []
-    let vehicleNumberOfOwners: [String] = []
+    var loadedModels: [EVModels] = []
+    var availableModels: [String] = []
+    var cities: [String] = []
+    
+    var bodyType: [String] = []
+    var yearOfManufacture: [String] = []
+    var vehicleCondition: [String] = []
+    var vehicleRange: [String] = []
+    var homeCharge: [String] = []
+    var publicCharge: [String] = []
+    var batteryCap: [String] = []
+    var vehicleRegenBraking: [String] = []
+    var vehiclePowerBhp: [String] = []
+    var vehicleWarranty: [String] = []
+    var vehicleServiceHistory: [String] = []
+    var vehicleNumberOfOwners: [String] = []
+    var vehicleColours: [String] = []
     
     @ObservationIgnored
     @Injected(\.listingService) private var listingService
@@ -81,6 +86,16 @@ final class CreateFormViewModel: ImagePickerProtocol {
     @Injected(\.dvlaService) private var dvlaService
     @ObservationIgnored
     @Injected(\.supabaseService) private var supabaseService
+    
+    @MainActor
+    func loadBulkData() async {
+        self.viewState = .loading
+        await loadProhibitedWords()
+        await loadModels()
+        await loadEVFeatures()
+        await loadUKcities()
+        self.viewState = .loaded
+    }
     
     @MainActor
     func createListing() async {
@@ -105,7 +120,7 @@ final class CreateFormViewModel: ImagePickerProtocol {
             
             try await uploadSelectedImages(for: user.id, totalSteps: totalSteps)
             
-            let listingToCreate = Listing(createdAt: Date(), imagesURL: imagesURLs, thumbnailsURL: thumbnailsURLs, make: make, model: model, condition: condition, mileage: mileage, yearOfManufacture: yearOfManufacture, price: price, textDescription: description, range: range, colour: colour, publicChargingTime: publicChargingTime, homeChargingTime: homeChargingTime, batteryCapacity: batteryCapacity, powerBhp: powerBhp, regenBraking: regenBraking, warranty: warranty, serviceHistory: serviceHistory, numberOfOwners: numberOfOwners, userID: user.id)
+            let listingToCreate = Listing(createdAt: Date(), imagesURL: imagesURLs, thumbnailsURL: thumbnailsURLs, make: make, model: model, condition: condition, mileage: mileage, yearOfManufacture: selectedYear, price: price, textDescription: description, range: range, colour: colour, publicChargingTime: publicChargingTime, homeChargingTime: homeChargingTime, batteryCapacity: batteryCapacity, powerBhp: powerBhp, regenBraking: regenBraking, warranty: warranty, serviceHistory: serviceHistory, numberOfOwners: numberOfOwners, userID: user.id)
             
             try await listingService.createListing(listingToCreate)
             
@@ -156,7 +171,7 @@ final class CreateFormViewModel: ImagePickerProtocol {
             let decodedCar = try await dvlaService.loadDetails(registrationNumber: registrationNumber)
             
             if decodedCar.fuelType.uppercased() == "ELECTRICITY" {
-                self.yearOfManufacture = "\(decodedCar.yearOfManufacture)"
+                self.selectedYear = "\(decodedCar.yearOfManufacture)"
                 self.colour = decodedCar.colour
                 viewState = .loaded
             } else {
@@ -208,7 +223,7 @@ final class CreateFormViewModel: ImagePickerProtocol {
         }
     }
     
-    func loadProhibitedWords() async {
+    private func loadProhibitedWords() async {
         do {
             try await prohibitedWordsService.loadProhibitedWords()
         } catch {
@@ -220,44 +235,113 @@ final class CreateFormViewModel: ImagePickerProtocol {
         selectedImages.compactMap({ $0 }).count
     }
         
-    @MainActor
-    func fetchMakeAndModels() async {
-        if evSpecific.isEmpty || availableModels.isEmpty {
-            isLoadingMake = true
-            defer { isLoadingMake = false }
-            
+    // MARK: - Load Models, Cities and EV specs
+    
+    private func loadModels() async {
+        if loadedModels.isEmpty || availableModels.isEmpty {
             do {
-                self.evSpecific = try await listingService.loadModels()
-                
-                // Set the initial car make
-                self.make = evSpecific.first?.make ?? ""
-                
-                // Update available models based on the fetched car makes
+                self.loadedModels = try await listingService.loadModels()
                 updateAvailableModels()
                 
                 print("DEBUG: Fetching make and models")
             } catch {
                 print("DEBUG: Failed to fetch car makes and models from Supabase: \(error)")
-                viewState = .error(ListingFormViewStateMessages.generalError.message)
+                self.viewState = .error(ListingFormViewStateMessages.generalError.message)
             }
         }
     }
-        
+    
     func updateAvailableModels() {
-        guard let selectedCarMake = evSpecific.first(where: { $0.make == make }) else {
+        if make == "Any" {
+            availableModels = loadedModels.flatMap { $0.models }
+        } else if let selectedCarMake = loadedModels.first(where: { $0.make == make }) {
+            availableModels = selectedCarMake.models
+        } else {
             availableModels = []
-            self.model = ""
-            return
         }
         
-        // Update available models based on the selected make
-        availableModels = selectedCarMake.models
-        
-        // Set the model to the first available one, or clear it if no models are available
-        self.model = availableModels.first ?? ""
+        // Set model to "Any" if it's the default case, or keep the first available model
+        if model == "Any" || availableModels.isEmpty {
+            self.model = "Any"
+        } else {
+            self.model = availableModels.first ?? "Any"
+        }
     }
     
-    func loadListingData(listing: Listing) async {}
+    private func loadUKcities() async {
+        do {
+            let fetchedData = try await listingService.loadCities()
+                
+            // Clear existing data in the arrays to avoid duplicates
+            cities.removeAll()
+            cities.append("Any")
+            
+            // Iterate over the fetched data and append to arrays
+            for city in fetchedData {
+                cities.append(city.city)
+            }
+        } catch {
+            print("DEBUG: Failed to fetch colours: \(error)")
+            self.viewState = .error(ListingFormViewStateMessages.generalError.message)
+        }
+    }
+    
+    private func loadEVFeatures() async {
+        do {
+            let fetchedData = try await listingService.loadEVfeatures()
+                
+            // Clear existing data in the arrays to avoid duplicates
+            bodyType.removeAll()
+            yearOfManufacture.removeAll()
+            vehicleCondition.removeAll()
+            vehicleRange.removeAll()
+            homeCharge.removeAll()
+            publicCharge.removeAll()
+            batteryCap.removeAll()
+            vehicleRegenBraking.removeAll()
+            vehicleWarranty.removeAll()
+            vehicleServiceHistory.removeAll()
+            vehicleNumberOfOwners.removeAll()
+            vehiclePowerBhp.removeAll()
+            vehicleColours.removeAll()
+            
+            bodyType.append("Any")
+            yearOfManufacture.append("Any")
+            vehicleCondition.append("Any")
+            vehicleRange.append("Any")
+            homeCharge.append("Any")
+            publicCharge.append("Any")
+            batteryCap.append("Any")
+            vehicleRegenBraking.append("Any")
+            vehicleWarranty.append("Any")
+            vehicleServiceHistory.append("Any")
+            vehicleNumberOfOwners.append("Any")
+            vehiclePowerBhp.append("Any")
+            vehicleColours.append("Any")
+            
+            // Iterate over the fetched data and append to arrays
+            for evSpecific in fetchedData {
+                bodyType.append(contentsOf: evSpecific.bodyType)
+                yearOfManufacture.append(contentsOf: evSpecific.yearOfManufacture)
+                vehicleCondition.append(contentsOf: evSpecific.condition)
+                vehicleRange.append(contentsOf: evSpecific.range)
+                homeCharge.append(contentsOf: evSpecific.homeChargingTime)
+                publicCharge.append(contentsOf: evSpecific.publicChargingTime)
+                batteryCap.append(contentsOf: evSpecific.batteryCapacity)
+                vehicleRegenBraking.append(contentsOf: evSpecific.regenBraking)
+                vehicleWarranty.append(contentsOf: evSpecific.warranty)
+                vehicleServiceHistory.append(contentsOf: evSpecific.serviceHistory)
+                vehicleNumberOfOwners.append(contentsOf: evSpecific.owners)
+                vehiclePowerBhp.append(contentsOf: evSpecific.powerBhp)
+                vehicleColours.append(contentsOf: evSpecific.colours)
+            }
+        } catch {
+            print("DEBUG: Failed to fetch colours: \(error)")
+            self.viewState = .error(ListingFormViewStateMessages.generalError.message)
+        }
+    }
+    
+    func retrieveImages(listing: Listing) async {}
 }
 
 

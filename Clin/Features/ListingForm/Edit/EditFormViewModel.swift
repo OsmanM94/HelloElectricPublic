@@ -194,7 +194,7 @@ final class EditFormViewModel: ImagePickerProtocol {
     }
     
     @MainActor
-    func loadListingData(listing: Listing) async {
+    func retrieveImages(listing: Listing) async {
         guard let id = listing.id else {
             viewState = .error(ListingFormViewStateMessages.generalError.message)
             return

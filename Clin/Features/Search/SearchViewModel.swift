@@ -26,7 +26,7 @@ final class SearchViewModel {
     var viewState: ViewState = .idle
     var filterViewState: FilterViewState = .loading
     
-    private(set) var filteredListings: [Listing] = []
+    private(set) var searchedItems: [Listing] = []
     private(set) var searchSuggestions: [String] = []
     
     private let defaultMaxPrice: Double = 20_000
@@ -37,8 +37,6 @@ final class SearchViewModel {
     
     @ObservationIgnored
     @Injected(\.supabaseService) private var supabaseService
-    @ObservationIgnored
-    @Injected(\.listingService) private var listingService
     @ObservationIgnored
     @Injected(\.searchService) private var searchService
     
@@ -51,6 +49,9 @@ final class SearchViewModel {
         didSet { updateFilterState() }
     }
     var city: String = "Any" {
+        didSet { updateFilterState() }
+    }
+    var body: String = "Any" {
         didSet { updateFilterState() }
     }
     var selectedYear: String = "Any" {
@@ -98,7 +99,7 @@ final class SearchViewModel {
     
     // Available properties to fetch
     var availableModels: [String] = []
-    var fetchedMakeModels: [EVModels] = []
+    var loadedModels: [EVModels] = []
     var cities: [String] = []
     
     var bodyType: [String] = []
@@ -117,6 +118,15 @@ final class SearchViewModel {
     
     init() {
         print("DEBUG: Did init search viewmodel")
+    }
+    
+    @MainActor
+    func loadBulkData() async {
+        self.filterViewState = .loading
+        await loadModels()
+        await loadEVFeatures()
+        await loadUKcities()
+        self.filterViewState = .loaded
     }
     
     private func isAnyFilterActive() -> Bool {
@@ -146,7 +156,7 @@ final class SearchViewModel {
     @MainActor
     func resetState() {
         self.searchText = ""
-        self.filteredListings.removeAll()
+        self.searchedItems.removeAll()
         viewState = .idle
     }
     
@@ -176,22 +186,22 @@ final class SearchViewModel {
     @MainActor
     func searchItems() async {
         guard !searchText.isEmpty else { return }
-        self.filteredListings.removeAll()
+        self.searchedItems.removeAll()
         self.viewState = .loading
         
         do {
-            let searchResults = try await searchItemsFromSupabase(searchText: searchText)
+            let response = try await searchItemsFromSupabase(searchText: searchText)
             print("DEBUG: Search completed successfully for text: \(searchText)")
-            self.filteredListings = searchResults
+            self.searchedItems = response
            
-            if self.filteredListings.isEmpty {
+            if self.searchedItems.isEmpty {
                 self.viewState = .empty
             } else {
                 self.viewState = .loaded
             }
         } catch {
             print("DEBUG: Error fetching search results from Supabase: \(error)")
-            self.filteredListings = []
+            self.searchedItems = []
             self.viewState = .idle
         }
     }
@@ -200,7 +210,7 @@ final class SearchViewModel {
         do {
             let response: [Listing] = try await supabaseService.client
                 .from(table)
-                .select()
+                .select("make,model,year")
                 .or("make.ilike.%\(searchText)%,model.ilike.%\(searchText)%,year.ilike.%\(searchText)%")
                 .execute()
                 .value
@@ -213,10 +223,9 @@ final class SearchViewModel {
     }
     
     // MARK: - Search with filters
-    
     @MainActor
     func searchFilteredItems() async {
-        self.filteredListings.removeAll()
+        self.searchedItems.removeAll()
         self.viewState = .loading
         do {
             var query = supabaseService.client
@@ -275,25 +284,25 @@ final class SearchViewModel {
             
             let response: [Listing] = try await query.execute().value
             
-            self.filteredListings = response
+            self.searchedItems = response
         
-            if self.filteredListings.isEmpty {
+            if self.searchedItems.isEmpty {
                 self.viewState = .empty
             } else {
                 self.viewState = .loaded
             }
         } catch {
             print("DEBUG: Error fetching filtered items from Supabase: \(error)")
-            self.filteredListings = []
+            self.searchedItems = []
             self.viewState = .idle
         }
     }
     
-    // MARK: - Load Models, Cities and EV specs
+    // MARK: - Load models, cities and EV specs
     private func loadModels() async {
-        if fetchedMakeModels.isEmpty || availableModels.isEmpty {
+        if loadedModels.isEmpty || availableModels.isEmpty {
             do {
-                self.fetchedMakeModels = try await searchService.loadModels()
+                self.loadedModels = try await searchService.loadModels()
                 updateAvailableModels()
                 
                 print("DEBUG: Fetching make and models")
@@ -305,8 +314,8 @@ final class SearchViewModel {
     
     func updateAvailableModels() {
         if make == "Any" {
-            availableModels = fetchedMakeModels.flatMap { $0.models }
-        } else if let selectedCarMake = fetchedMakeModels.first(where: { $0.make == make }) {
+            availableModels = loadedModels.flatMap { $0.models }
+        } else if let selectedCarMake = loadedModels.first(where: { $0.make == make }) {
             availableModels = selectedCarMake.models
         } else {
             availableModels = []
@@ -322,12 +331,8 @@ final class SearchViewModel {
     
     private func loadUKcities() async {
         do {
-            let fetchedData: [Cities] = try await supabaseService.client
-                .from("uk_cities")
-                .select()
-                .execute()
-                .value
-            
+            let fetchedData = try await searchService.loadCities()
+                
             // Clear existing data in the arrays to avoid duplicates
             cities.removeAll()
             cities.append("Any")
@@ -341,14 +346,10 @@ final class SearchViewModel {
         }
     }
     
-    private func loadEvSpecifications() async {
+    private func loadEVFeatures() async {
         do {
-            let fetchedData: [EVFeatures] = try await supabaseService.client
-                .from("ev_specific")
-                .select()
-                .execute()
-                .value
-            
+            let fetchedData = try await searchService.loadEVfeatures()
+                
             // Clear existing data in the arrays to avoid duplicates
             bodyType.removeAll()
             yearOfManufacture.removeAll()
@@ -397,15 +398,6 @@ final class SearchViewModel {
         } catch {
             print("DEBUG: Failed to fetch colours: \(error)")
         }
-    }
-    
-    @MainActor
-    func loadBulkData() async {
-        self.filterViewState = .loading
-        await loadModels()
-        await loadEvSpecifications()
-        await loadUKcities()
-        self.filterViewState = .loaded
     }
 }
 

@@ -94,7 +94,7 @@ private extension EditFormSubview {
             NavigationLink {
                 ImagePickerGridView(viewModel: viewModel)
                     .task {
-                        await viewModel.loadListingData(listing: listing)
+                        await viewModel.retrieveImages(listing: listing)
                     }
             } label: {
                 ImageCounterView(count: viewModel.totalImageCount)

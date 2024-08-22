@@ -97,13 +97,15 @@ fileprivate struct SheetImages: View {
                         ForEach(listing.imagesURL, id: \.self) { imageURL in
                             ZoomImages {
                                 ImageLoader(url: imageURL, contentMode: .fit, targetSize: CGSize(width: 350, height: 350))
-                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+//                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                    .containerRelativeFrame([.horizontal,.vertical])
                             }
                         }
                     }
                     .tabViewStyle(.page)
                     .indexViewStyle(.page(backgroundDisplayMode: .always))
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+//                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .containerRelativeFrame([.horizontal,.vertical])
                 } else {
                     Rectangle()
                         .foregroundStyle(.gray.opacity(0.5))

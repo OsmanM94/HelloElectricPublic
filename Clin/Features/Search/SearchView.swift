@@ -77,7 +77,7 @@ private extension SearchView {
     
      private var listView: some View {
         List {
-            ForEach(viewModel.filteredListings, id: \.id) { item in
+            ForEach(viewModel.searchedItems, id: \.id) { item in
                 NavigationLink(value: item) {
                     ListingCell(listing: item)
                 }
@@ -107,7 +107,7 @@ private extension SearchView {
                     
                     if viewModel.isFilterApplied {
                         Circle()
-                            .fill(Color.blue)
+                            .foregroundStyle(.blue.gradient)
                             .frame(width: 11, height: 11)
                             .offset(x: 1, y: -1)
                     }
@@ -121,12 +121,13 @@ private extension SearchView {
             Button("Clear") {
                 viewModel.resetState()
             }
-            .disabled(viewModel.searchText.isEmpty || !viewModel.filteredListings.isEmpty)
+            .disabled(viewModel.searchText.isEmpty || !viewModel.searchedItems.isEmpty)
         }
     }
 }
 
 #Preview {
+    let _ = PreviewsProvider.shared.container.searchService.register { MockSearchService() }
     SearchView()
         .environment(FavouriteViewModel())
 }

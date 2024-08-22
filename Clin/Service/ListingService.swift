@@ -30,6 +30,15 @@ final class ListingService: ListingServiceProtocol {
             )
     }
     
+    func loadUserListings(userID: UUID) async throws -> [Listing] {
+        try await databaseService
+            .loadMultipleWithField(
+                from: "car_listing",
+                field: "user_id",
+                uuid: userID
+            )
+    }
+    
     func loadModels() async throws -> [EVModels] {
         try await databaseService
             .loadAll(
@@ -37,12 +46,17 @@ final class ListingService: ListingServiceProtocol {
             )
     }
     
-    func loadUserListings(userID: UUID) async throws -> [Listing] {
+    func loadCities() async throws -> [Cities] {
         try await databaseService
-            .loadMultipleWithField(
-                from: "car_listing",
-                field: "user_id",
-                uuid: userID
+            .loadAll(
+                from: "uk_cities"
+            )
+    }
+    
+    func loadEVfeatures() async throws -> [EVFeatures] {
+        try await databaseService
+            .loadAll(
+                from: "ev_features"
             )
     }
     

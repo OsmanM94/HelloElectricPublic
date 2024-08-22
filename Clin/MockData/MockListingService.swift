@@ -8,10 +8,14 @@
 import Foundation
 
 struct MockListingService: ListingServiceProtocol {
-   
+    
     static let mockUserID = UUID(uuidString: "123e4567-e89b-12d3-a456-426614174000")!
     
-    static var makeSample: [EVModels] = [EVModels(id: 1, make: "Tesla", models: ["Model2","Model3"])]
+    static var modelsSample: [EVModels] = [EVModels(id: 1, make: "Tesla", models: ["Model2","Model3"])]
+    
+    static var citiesSample: [Cities] = [Cities(id: 1, city: "London")]
+    
+    static var evFeatures: [EVFeatures] = [EVFeatures(id: 1, bodyType: ["SUV"], yearOfManufacture: ["2024"], range: ["300"], homeChargingTime: ["1hour"], publicChargingTime: ["30"], batteryCapacity: ["50kWh"], condition: ["Used"], regenBraking: ["Yes"], warranty: ["Yes"], serviceHistory: ["Yes"], owners: ["4"], powerBhp: ["450"], colours: ["White"])]
     
     static var sampleData: [Listing] = [
         Listing(
@@ -143,7 +147,17 @@ struct MockListingService: ListingServiceProtocol {
     
     func loadModels() async throws -> [EVModels] {
         try await Task.sleep(nanoseconds: 2 * 1_000_000_000)
-        return MockListingService.makeSample
+        return MockListingService.modelsSample
+    }
+    
+    func loadCities() async throws -> [Cities] {
+        try await Task.sleep(nanoseconds: 2 * 1_000_000_000)
+        return MockListingService.citiesSample
+    }
+    
+    func loadEVfeatures() async throws -> [EVFeatures] {
+        try await Task.sleep(nanoseconds: 2 * 1_000_000_000)
+        return MockListingService.evFeatures
     }
     
     func loadUserListings(userID: UUID) async throws -> [Listing] {

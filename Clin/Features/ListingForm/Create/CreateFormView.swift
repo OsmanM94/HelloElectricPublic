@@ -27,8 +27,7 @@ struct CreateFormView: View {
                     case .loaded:
                         CreateFormSubview(viewModel: viewModel)
                             .task {
-                                await viewModel.loadProhibitedWords()
-                                await viewModel.fetchMakeAndModels()
+                                await viewModel.loadBulkData()
                             }
                     case .uploading:
                         CircularProgressBar(progress: viewModel.uploadingProgress)
@@ -212,8 +211,8 @@ fileprivate struct CreateFormSubview: View {
     
     private var yearOfManufactureSection: some View {
         Section("Year of manufacture") {
-            Picker("Selected Year", selection: $viewModel.yearOfManufacture) {
-                ForEach(viewModel.yearsOfmanufacture, id: \.self) { year in
+            Picker("Selected Year", selection: $viewModel.selectedYear) {
+                ForEach(viewModel.yearOfManufacture, id: \.self) { year in
                     Text(year).tag(year)
                 }
             }

@@ -23,11 +23,13 @@ protocol DatabaseServiceProtocol {
 protocol ListingServiceProtocol {
     func loadPaginatedListings(from: Int, to: Int) async throws -> [Listing]
     func loadListing(id: Int) async throws -> Listing
-    func loadModels() async throws -> [EVModels]
     func loadUserListings(userID: UUID) async throws -> [Listing]
     func createListing(_ listing: Listing) async throws
     func updateListing(_ listing: Listing) async throws
     func deleteListing(at id: Int) async throws
+    func loadModels() async throws -> [EVModels]
+    func loadCities() async throws -> [Cities]
+    func loadEVfeatures() async throws -> [EVFeatures]
 }
 
 protocol FavouriteServiceProtocol {
@@ -59,7 +61,7 @@ protocol ImagePickerProtocol: Observable {
     
     func loadItem(item: PhotosPickerItem, at index: Int) async
     func deleteImage(id: String)
-    func loadListingData(listing: Listing) async
+    func retrieveImages(listing: Listing) async
     func resetImageStateToIdle()
 }
 

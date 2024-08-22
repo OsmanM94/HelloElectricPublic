@@ -28,7 +28,7 @@ struct FilterView: View {
             }
         }
         .task {
-//            await viewModel.loadBulkData()
+            await viewModel.loadBulkData()
         }
     }
 }
@@ -40,6 +40,7 @@ fileprivate struct FilterSubView: View {
     var body: some View {
         Form {
             MakeModelSection(viewModel: viewModel)
+            bodyTypeSection(viewModel: viewModel)
             YearConditionSection(viewModel: viewModel)
             LocationSection(viewModel: viewModel)
             PriceMileageSection(viewModel: viewModel)
@@ -54,12 +55,13 @@ fileprivate struct FilterSubView: View {
                         onApply()
                     }
                 }
+                .disabled(!viewModel.isFilterApplied)
             }
             ToolbarItem(placement: .topBarLeading) {
                 Button("Reset") {
                     viewModel.resetFilters()
                 }
-                
+                .disabled(!viewModel.isFilterApplied)
             }
         }
     }
@@ -72,7 +74,7 @@ fileprivate struct MakeModelSection: View {
         Section(header: Text("Make and model ")) {
             Picker("Make", selection: $viewModel.make) {
                 Text("Any").tag("Any")
-                ForEach(viewModel.fetchedMakeModels, id: \.self) { item in
+                ForEach(viewModel.loadedModels, id: \.self) { item in
                     Text(item.make).tag(item.make)
                 }
             }
@@ -86,6 +88,21 @@ fileprivate struct MakeModelSection: View {
                 }
             }
             .disabled(viewModel.make.isEmpty || viewModel.make == "Any")
+        }
+        .pickerStyle(.navigationLink)
+    }
+}
+
+fileprivate struct bodyTypeSection: View {
+    @Bindable var viewModel: SearchViewModel
+    
+    var body: some View {
+        Section("Body Type") {
+            Picker("Body", systemImage: "car.fill", selection: $viewModel.body) {
+                ForEach(viewModel.bodyType, id: \.self) { body in
+                    Text(body).tag(body)
+                }
+            }
         }
         .pickerStyle(.navigationLink)
     }
@@ -133,11 +150,11 @@ fileprivate struct PriceMileageSection: View {
     var body: some View {
         Section(header: Text("Price and mileage")) {
             Text("Max Price: \(viewModel.maxPrice, format: .currency(code: "GBP").precision(.fractionLength(0)))")
-            Slider(value: $viewModel.maxPrice, in: 0...100000, step: 1000) {
+            Slider(value: $viewModel.maxPrice, in: 0...100_000, step: 1000) {
                 Text("Price")
             }
             Text("Max Mileage: \(viewModel.maxMileage, specifier: "%.0f") miles")
-            Slider(value: $viewModel.maxMileage, in: 0...500000, step: 1000) {
+            Slider(value: $viewModel.maxMileage, in: 0...300_000, step: 1000) {
                 Text("Max Mileage")
             }
         }
@@ -181,7 +198,7 @@ fileprivate struct EVSpecificationsSection: View {
     
     var body: some View {
         DisclosureGroup {
-            Picker("Range", selection: $viewModel.range) {
+            Picker("Driving range", selection: $viewModel.range) {
                 ForEach(viewModel.vehicleRange, id: \.self) { range in
                     Text(range).tag(range)
                 }
@@ -219,5 +236,6 @@ fileprivate struct EVSpecificationsSection: View {
 }
 
 #Preview {
+    let _ = PreviewsProvider.shared.container.searchService.register { MockSearchService() }
     FilterView(viewModel: SearchViewModel(), onApply: {})
 }
