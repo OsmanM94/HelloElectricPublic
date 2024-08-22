@@ -14,18 +14,18 @@ final class SearchViewModel {
         case idle
         case loading
         case loaded
+        case empty
     }
     
     enum FilterViewState {
-        case idle
         case loading
         case loaded
     }
     
     var searchText: String = ""
     var viewState: ViewState = .idle
-    var filterViewState: FilterViewState = .idle
-   
+    var filterViewState: FilterViewState = .loading
+    
     private(set) var filteredListings: [Listing] = []
     private(set) var searchSuggestions: [String] = []
     
@@ -41,8 +41,9 @@ final class SearchViewModel {
     // Filter properties
     var make: String = "Any"
     var model: String = "Any"
+    var city: String = "Any"
     var selectedYear: String = "Any"
-    var maxPrice: Double = 10000
+    var maxPrice: Double = 20000
     var condition: String = "Any"
     var maxMileage: Double = 100000
     var range: String = "Any"
@@ -58,8 +59,8 @@ final class SearchViewModel {
     
     // Available properties to fetch
     var availableModels: [String] = []
-    var availableColours: [String] = []
-    var fetchedMakeModels: [EVMakeModels] = []
+    var fetchedMakeModels: [EVModels] = []
+    var cities: [String] = []
     
     var bodyType: [String] = []
     var yearOfManufacture: [String] = []
@@ -73,7 +74,8 @@ final class SearchViewModel {
     var vehicleWarranty: [String] = []
     var vehicleServiceHistory: [String] = []
     var vehicleNumberOfOwners: [String] = []
-
+    var vehicleColours: [String] = []
+    
     init() {
         print("DEBUG: Did init search viewmodel")
     }
@@ -89,8 +91,9 @@ final class SearchViewModel {
     func resetFilters() {
         make = "Any"
         model = "Any"
+        city = "Any"
         selectedYear = "Any"
-        maxPrice = 10000
+        maxPrice = 20000
         selectedYear = "Any"
         condition = "Any"
         maxMileage = 100000
@@ -117,10 +120,16 @@ final class SearchViewModel {
             let searchResults = try await searchItemsFromSupabase(searchText: searchText)
             print("DEBUG: Search completed successfully for text: \(searchText)")
             self.filteredListings = searchResults
-            self.viewState = .loaded
+           
+            if self.filteredListings.isEmpty {
+                self.viewState = .empty
+            } else {
+                self.viewState = .loaded
+            }
         } catch {
             print("DEBUG: Error fetching search results from Supabase: \(error)")
             self.filteredListings = []
+            self.viewState = .idle
         }
     }
     
@@ -141,82 +150,206 @@ final class SearchViewModel {
     }
     
     @MainActor
-    func fetchFilteredItems() async {
+    func searchFilteredItems() async {
         self.filteredListings.removeAll()
         self.viewState = .loading
-        
         do {
             var query = supabaseService.client
                 .from(table)
                 .select()
             
-            // Applying filters for each property
-            if !make.isEmpty {
+            // Applying filters only if the value is not "Any" or empty
+            if !make.isEmpty && make != "Any" {
                 query = query.eq("make", value: make)
             }
-            if !model.isEmpty {
+            if !model.isEmpty && model != "Any" {
                 query = query.eq("model", value: model)
             }
-            if !selectedYear.isEmpty {
+            if !selectedYear.isEmpty && selectedYear != "Any" {
                 query = query.eq("year", value: selectedYear)
             }
             if maxPrice < 100000 {
                 query = query.lte("price", value: maxPrice)
             }
-            if maxMileage < 100000 {
+            if maxMileage < 500000 {
                 query = query.lte("mileage", value: maxMileage)
             }
-            if !condition.isEmpty {
+            if !condition.isEmpty && condition != "Any" {
                 query = query.eq("condition", value: condition)
             }
-            if !range.isEmpty {
+            if !range.isEmpty && range != "Any" {
                 query = query.eq("range", value: range)
             }
-            if !colour.isEmpty {
+            if !colour.isEmpty && colour != "Any" {
                 query = query.eq("colour", value: colour)
             }
-            if !maxPublicChargingTime.isEmpty {
+            if !maxPublicChargingTime.isEmpty && maxPublicChargingTime != "Any" {
                 query = query.lte("public_charging", value: maxPublicChargingTime)
             }
-            if !maxHomeChargingTime.isEmpty {
+            if !maxHomeChargingTime.isEmpty && maxHomeChargingTime != "Any" {
                 query = query.lte("home_charging", value: maxHomeChargingTime)
             }
-            if !batteryCapacity.isEmpty {
+            if !batteryCapacity.isEmpty && batteryCapacity != "Any" {
                 query = query.eq("battery_capacity", value: batteryCapacity)
             }
-            if !powerBhp.isEmpty {
+            if !powerBhp.isEmpty && powerBhp != "Any" {
                 query = query.eq("power_bhp", value: powerBhp)
             }
-            if !regenBraking.isEmpty {
+            if !regenBraking.isEmpty && regenBraking != "Any" {
                 query = query.eq("regen_braking", value: regenBraking)
             }
-            if !warranty.isEmpty {
+            if !warranty.isEmpty && warranty != "Any" {
                 query = query.eq("warranty", value: warranty)
             }
-            if !serviceHistory.isEmpty {
+            if !serviceHistory.isEmpty && serviceHistory != "Any" {
                 query = query.eq("service_history", value: serviceHistory)
             }
-            if !numberOfOwners.isEmpty {
+            if !numberOfOwners.isEmpty && numberOfOwners != "Any" {
                 query = query.eq("owners", value: numberOfOwners)
             }
             
             let response: [Listing] = try await query.execute().value
             
             self.filteredListings = response
-            self.viewState = .loaded
+        
+            if self.filteredListings.isEmpty {
+                self.viewState = .empty
+            } else {
+                self.viewState = .loaded
+            }
         } catch {
             print("DEBUG: Error fetching filtered items from Supabase: \(error)")
             self.filteredListings = []
             self.viewState = .idle
         }
     }
-       
     
+    private func loadModels() async {
+        if fetchedMakeModels.isEmpty || availableModels.isEmpty {
+            do {
+                self.fetchedMakeModels = try await listingService.fetchMakeModels()
+                updateAvailableModels()
+                
+                print("DEBUG: Fetching make and models")
+            } catch {
+                print("DEBUG: Failed to fetch car makes and models from Supabase: \(error)")
+            }
+        }
+    }
+    
+    func updateAvailableModels() {
+        if make == "Any" {
+            availableModels = fetchedMakeModels.flatMap { $0.models }
+        } else if let selectedCarMake = fetchedMakeModels.first(where: { $0.make == make }) {
+            availableModels = selectedCarMake.models
+        } else {
+            availableModels = []
+        }
+        
+        // Set model to "Any" if it's the default case, or keep the first available model
+        if model == "Any" || availableModels.isEmpty {
+            self.model = "Any"
+        } else {
+            self.model = availableModels.first ?? "Any"
+        }
+    }
+    
+    private func loadUKcities() async {
+        do {
+            let fetchedData: [Cities] = try await supabaseService.client
+                .from("uk_cities")
+                .select("city")
+                .execute()
+                .value
+            
+            // Clear existing data in the arrays to avoid duplicates
+            cities.removeAll()
+            cities.append("Any")
+            
+            // Iterate over the fetched data and append to arrays
+            for city in fetchedData {
+                cities.append(city.city)
+            }
+        } catch {
+            print("DEBUG: Failed to fetch colours: \(error)")
+        }
+    }
+    
+    private func loadEvSpecifications() async {
+        do {
+            let fetchedData: [EVFeatures] = try await supabaseService.client
+                .from("ev_specific")
+                .select()
+                .execute()
+                .value
+            
+            // Clear existing data in the arrays to avoid duplicates
+            bodyType.removeAll()
+            yearOfManufacture.removeAll()
+            vehicleCondition.removeAll()
+            vehicleRange.removeAll()
+            homeCharge.removeAll()
+            publicCharge.removeAll()
+            batteryCap.removeAll()
+            vehicleRegenBraking.removeAll()
+            vehicleWarranty.removeAll()
+            vehicleServiceHistory.removeAll()
+            vehicleNumberOfOwners.removeAll()
+            vehiclePowerBhp.removeAll()
+            vehicleColours.removeAll()
+            
+            bodyType.append("Any")
+            yearOfManufacture.append("Any")
+            vehicleCondition.append("Any")
+            vehicleRange.append("Any")
+            homeCharge.append("Any")
+            publicCharge.append("Any")
+            batteryCap.append("Any")
+            vehicleRegenBraking.append("Any")
+            vehicleWarranty.append("Any")
+            vehicleServiceHistory.append("Any")
+            vehicleNumberOfOwners.append("Any")
+            vehiclePowerBhp.append("Any")
+            vehicleColours.append("Any")
+            
+            // Iterate over the fetched data and append to arrays
+            for evSpecific in fetchedData {
+                bodyType.append(contentsOf: evSpecific.bodyType)
+                yearOfManufacture.append(contentsOf: evSpecific.yearOfManufacture)
+                vehicleCondition.append(contentsOf: evSpecific.condition)
+                vehicleRange.append(contentsOf: evSpecific.range)
+                homeCharge.append(contentsOf: evSpecific.homeChargingTime)
+                publicCharge.append(contentsOf: evSpecific.publicChargingTime)
+                batteryCap.append(contentsOf: evSpecific.batteryCapacity)
+                vehicleRegenBraking.append(contentsOf: evSpecific.regenBraking)
+                vehicleWarranty.append(contentsOf: evSpecific.warranty)
+                vehicleServiceHistory.append(contentsOf: evSpecific.serviceHistory)
+                vehicleNumberOfOwners.append(contentsOf: evSpecific.owners)
+                vehiclePowerBhp.append(contentsOf: evSpecific.powerBhp)
+                vehicleColours.append(contentsOf: evSpecific.colours)
+            }
+        } catch {
+            print("DEBUG: Failed to fetch colours: \(error)")
+        }
+    }
+    
+    @MainActor
+    func loadBulkData() async {
+        self.filterViewState = .loading
+        await loadModels()
+        await loadEvSpecifications()
+        await loadUKcities()
+        self.filterViewState = .loaded
+    }
+}
+
+
+
 //    // Fetch filtered items directly from the database
 //    @MainActor
 //    func fetchFilteredItems() async {
 //        self.viewState = .loading
-//        
+//
 //        do {
 //            let query = supabaseService.client
 //                .from(table1)
@@ -237,9 +370,9 @@ final class SearchViewModel {
 //                .eq("warranty", value: warranty)
 //                .eq("service_history", value: serviceHistory)
 //                .eq("owners", value: numberOfOwners)
-//            
+//
 //            let response: [Listing] = try await query.execute().value
-//            
+//
 //            self.filteredListings = response
 //            self.viewState = .loaded
 //        } catch {
@@ -248,113 +381,3 @@ final class SearchViewModel {
 //            self.viewState = .idle
 //        }
 //    }
-    
-
-    @MainActor
-    func fetchMakeModels() async {
-        if fetchedMakeModels.isEmpty || availableModels.isEmpty {
-            
-            do {
-                self.fetchedMakeModels = try await listingService.fetchMakeModels()
-                self.make = fetchedMakeModels.first?.make ?? ""
-                // Update available models based on the fetched car makes
-                updateAvailableModels()
-                
-                print("DEBUG: Fetching make and models")
-            } catch {
-                print("DEBUG: Failed to fetch car makes and models from Supabase: \(error)")
-            }
-        }
-    }
-    
-    @MainActor
-    func fetchAvailableColours() async {
-        do {
-            let colours: [ColourResult] = try await supabaseService.client
-                .from("car_listing")
-                .select("colour")
-                .execute()
-                .value
-            
-            let uniqueColours = Set(colours.compactMap { $0.colour }).sorted()
-            
-            self.availableColours = uniqueColours
-        } catch {
-            print("DEBUG: Failed to fetch colours: \(error)")
-        }
-    }
-        
-    func updateAvailableModels() {
-        guard let selectedCarMake = fetchedMakeModels.first(where: { $0.make == make }) else {
-            availableModels = []
-            self.model = ""
-            return
-        }
-        
-        // Update available models based on the selected make
-        availableModels = selectedCarMake.models
-        
-        // Set the model to the first available one, or clear it if no models are available
-        self.model = availableModels.first ?? ""
-    }
-    
-    @MainActor
-    func fetchEvSpecifications() async {
-        do {
-            let fetchedData: [EVSpecifications] = try await supabaseService.client
-                .from("ev_specific")
-                .select()
-                .execute()
-                .value
-            
-            // Clear existing data in the arrays to avoid duplicates
-            bodyType.removeAll()
-            yearOfManufacture.removeAll()
-            vehicleCondition.removeAll()
-            vehicleRange.removeAll()
-            homeCharge.removeAll()
-            publicCharge.removeAll()
-            batteryCap.removeAll()
-            vehicleRegenBraking.removeAll()
-            vehicleWarranty.removeAll()
-            vehicleServiceHistory.removeAll()
-            vehicleNumberOfOwners.removeAll()
-            vehiclePowerBhp.removeAll()
-            
-            // Iterate over the fetched data and append to arrays
-            for evSpecific in fetchedData {
-                bodyType.append(contentsOf: evSpecific.bodyType)
-                yearOfManufacture.append(contentsOf: evSpecific.yearOfManufacture)
-                vehicleCondition.append(contentsOf: evSpecific.condition)
-                vehicleRange.append(contentsOf: evSpecific.range)
-                homeCharge.append(contentsOf: evSpecific.homeChargingTime)
-                publicCharge.append(contentsOf: evSpecific.publicChargingTime)
-                batteryCap.append(contentsOf: evSpecific.batteryCapacity)
-                vehicleRegenBraking.append(contentsOf: evSpecific.regenBraking)
-                vehicleWarranty.append(contentsOf: evSpecific.warranty)
-                vehicleServiceHistory.append(contentsOf: evSpecific.serviceHistory)
-                vehicleNumberOfOwners.append(contentsOf: evSpecific.owners)
-                vehiclePowerBhp.append(contentsOf: evSpecific.powerBhp)
-            }
-            
-//            // Optionally, you can remove duplicates
-//            bodyType = Array(Set(bodyType))
-//            yearsOfmanufacture = Array(Set(yearsOfmanufacture))
-//            vehicleCondition = Array(Set(vehicleCondition))
-//            vehicleRange = Array(Set(vehicleRange))
-//            homeCharge = Array(Set(homeCharge))
-//            publicCharge = Array(Set(publicCharge))
-//            batteryCap = Array(Set(batteryCap))
-//            vehicleRegenBraking = Array(Set(vehicleRegenBraking))
-//            vehicleWarranty = Array(Set(vehicleWarranty))
-//            vehicleServiceHistory = Array(Set(vehicleServiceHistory))
-//            vehicleNumberOfOwners = Array(Set(vehicleNumberOfOwners))
-            
-        } catch {
-            print("DEBUG: Failed to fetch colours: \(error)")
-        }
-    }
-}
-
-
-

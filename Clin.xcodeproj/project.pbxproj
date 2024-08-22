@@ -39,10 +39,10 @@
 		6217F3222C288A6100EF8B2D /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				ColourResult.swift,
+				Cities.swift,
 				Dvla.swift,
-				EVMakeModels.swift,
-				EVSpecifications.swift,
+				EVFeatures.swift,
+				EVModels.swift,
 				Favourite.swift,
 				Listing.swift,
 				Profile.swift,

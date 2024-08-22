@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct EVSpecifications: Identifiable, Codable {
+struct EVFeatures: Identifiable, Codable {
     var id: Int?
     let bodyType: [String]
     let yearOfManufacture: [String]
@@ -21,6 +21,7 @@ struct EVSpecifications: Identifiable, Codable {
     let serviceHistory: [String]
     let owners: [String]
     let powerBhp: [String]
+    let colours: [String]
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -36,6 +37,7 @@ struct EVSpecifications: Identifiable, Codable {
         case serviceHistory = "service_history"
         case owners
         case powerBhp = "power_bhp"
+        case colours
     }
 }
 

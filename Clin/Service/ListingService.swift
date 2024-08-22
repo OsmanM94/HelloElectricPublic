@@ -19,7 +19,7 @@ final class ListingService: ListingServiceProtocol {
         try await databaseService.fetchByID(from: "car_listing", id: id)
     }
     
-    func fetchMakeModels() async throws -> [EVMakeModels] {
+    func fetchMakeModels() async throws -> [EVModels] {
         try await databaseService.fetchAll(from: "ev_make")
     }
     

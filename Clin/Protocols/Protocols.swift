@@ -23,7 +23,7 @@ protocol DatabaseServiceProtocol {
 protocol ListingServiceProtocol {
     func fetchPaginatedListings(from: Int, to: Int) async throws -> [Listing]
     func fetchListing(id: Int) async throws -> Listing
-    func fetchMakeModels() async throws -> [EVMakeModels]
+    func fetchMakeModels() async throws -> [EVModels]
     func fetchUserListings(userID: UUID) async throws -> [Listing]
     func createListing(_ listing: Listing) async throws
     func updateListing(_ listing: Listing) async throws

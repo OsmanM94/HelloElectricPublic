@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct EVMakeModels: Identifiable, Codable {
+struct EVModels: Identifiable, Codable, Hashable {
     var id: Int?
     let make: String
     let models: [String]

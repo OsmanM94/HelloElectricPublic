@@ -28,7 +28,7 @@ final class CreateFormViewModel: ImagePickerProtocol {
     var selectedImages: [SelectedImage?] = Array(repeating: nil, count: 10)
     var imageSelections: [PhotosPickerItem?] = Array(repeating: nil, count: 10)
     var isLoading: [Bool] = Array(repeating: false, count: 10)
-    var evSpecific: [EVMakeModels] = []
+    var evSpecific: [EVModels] = []
 
     ///DVLA checks
     var registrationNumber: String = ""
