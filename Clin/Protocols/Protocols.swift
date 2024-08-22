@@ -8,11 +8,11 @@ import SwiftUI
 import PhotosUI
 
 protocol DatabaseServiceProtocol {
-    func fetchPagination<T: Decodable>(from table: String, orderBy: String, ascending: Bool, from: Int, to: Int) async throws -> [T]
-    func fetchAll<T: Decodable>(from table: String) async throws -> [T]
-    func fetchByID<T: Decodable>(from table: String, id: Int) async throws -> T
-    func fetchByField<T: Decodable>(from table: String, field: String, value: UUID) async throws -> [T]
-    func fetchSingleField<T: Decodable>(from table: String, field: String, value: UUID) async throws -> T
+    func loadWithPagination<T: Decodable>(from table: String, orderBy: String, ascending: Bool, from: Int, to: Int) async throws -> [T]
+    func loadAll<T: Decodable>(from table: String) async throws -> [T]
+    func loadByID<T: Decodable>(from table: String, id: Int) async throws -> T
+    func loadMultipleWithField<T: Decodable>(from table: String, field: String, uuid: UUID) async throws -> [T]
+    func loadSingleWithField<T: Decodable>(from table: String, field: String, uuid: UUID) async throws -> T
     func insert<T: Encodable>(_ item: T, into table: String) async throws
     func update<T: Encodable>(_ item: T, in table: String, id: Int) async throws
     func updateByUUID<T: Encodable>(_ item: T, in table: String, userID: UUID) async throws
@@ -21,17 +21,17 @@ protocol DatabaseServiceProtocol {
 }
 
 protocol ListingServiceProtocol {
-    func fetchPaginatedListings(from: Int, to: Int) async throws -> [Listing]
-    func fetchListing(id: Int) async throws -> Listing
-    func fetchMakeModels() async throws -> [EVModels]
-    func fetchUserListings(userID: UUID) async throws -> [Listing]
+    func loadPaginatedListings(from: Int, to: Int) async throws -> [Listing]
+    func loadListing(id: Int) async throws -> Listing
+    func loadModels() async throws -> [EVModels]
+    func loadUserListings(userID: UUID) async throws -> [Listing]
     func createListing(_ listing: Listing) async throws
     func updateListing(_ listing: Listing) async throws
     func deleteListing(at id: Int) async throws
 }
 
 protocol FavouriteServiceProtocol {
-    func fetchUserFavourites(userID: UUID) async throws -> [Favourite]
+    func loadUserFavourites(userID: UUID) async throws -> [Favourite]
     func addToFavorites(_ favourite: Favourite) async throws
     func removeFromFavorites(_ favourite: Favourite, for userID: UUID) async throws
 }
@@ -70,11 +70,17 @@ protocol HTTPDataDownloaderProtocol {
 }
 
 protocol DvlaServiceProtocol {
-    func fetchCarDetails(registrationNumber: String) async throws -> Dvla
+    func loadDetails(registrationNumber: String) async throws -> Dvla
 }
 
 protocol ProfileServiceProtocol {
-    func getProfile(for userID: UUID) async throws -> Profile
+    func loadProfile(for userID: UUID) async throws -> Profile
     func updateProfile(_ profile: Profile) async throws
     func getCurrentUserID() async throws -> UUID
+}
+
+protocol SearchServiceProtocol {
+    func loadModels() async throws -> [EVModels]
+    func loadCities() async throws -> [Cities]
+    func loadEVfeatures() async throws -> [EVFeatures]
 }

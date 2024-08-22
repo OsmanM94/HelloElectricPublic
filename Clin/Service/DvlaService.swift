@@ -14,7 +14,7 @@ final class DvlaService: DvlaServiceProtocol {
     private let apiKey = "32ajeg6zif8hoBN6pASIJ93uAzx9erA34jAoyLxA"
     private let baseURL = "https://driver-vehicle-licensing.api.gov.uk/vehicle-enquiry/v1/vehicles"
     
-    func fetchCarDetails(registrationNumber: String) async throws -> Dvla {
+    func loadDetails(registrationNumber: String) async throws -> Dvla {
         let parameters = ["registrationNumber": registrationNumber]
         let headers = [
             "x-api-key": apiKey,

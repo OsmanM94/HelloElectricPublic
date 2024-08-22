@@ -10,6 +10,7 @@ import SwiftUI
 struct SearchView: View {
     @State private var viewModel = SearchViewModel()
     @State private var showingFilterView: Bool = false
+    
     @FocusState private var isPresented: Bool
     let systemImageName: String = "line.3.horizontal.decrease.circle"
     
@@ -42,34 +43,13 @@ struct SearchView: View {
             }
         }
     }
-    
-    private var keyboardToolbarContent: some ToolbarContent {
-        ToolbarItemGroup(placement: .keyboard) {
-            Spacer(minLength: 0)
-            Button { isPresented = false } label: { Text("Done") }
-        }
-    }
-    
-    private var topBarTrailingToolbarContent: some ToolbarContent {
-        ToolbarItem(placement: .topBarTrailing) {
-            Button(action: { showingFilterView = true }) {
-                Image(systemName: systemImageName)
-            }
-        }
-    }
-    
-    private var topBarLeadingToolbarContent: some ToolbarContent {
-        ToolbarItem(placement: .topBarLeading) {
-            Button("Clear") {
-                viewModel.resetState()
-            }
-            .disabled(viewModel.searchText.isEmpty || !viewModel.filteredListings.isEmpty)
-        }
-    }
 }
 
-extension SearchView {
-    var searchBar: some View {
+private extension SearchView {
+    
+    // MARK: - Search bar
+    
+    private var searchBar: some View {
         VStack(spacing: 0) {
             HStack(spacing: 5) {
                 Image(systemName: "magnifyingglass")
@@ -93,7 +73,9 @@ extension SearchView {
         .padding(.bottom)
     }
     
-    var listView: some View {
+    // MARK: - List View
+    
+     private var listView: some View {
         List {
             ForEach(viewModel.filteredListings, id: \.id) { item in
                 NavigationLink(value: item) {
@@ -107,10 +89,44 @@ extension SearchView {
         })
         .listStyle(.plain)
     }
+    
+    // MARK: - Toolbar
+    
+    private var keyboardToolbarContent: some ToolbarContent {
+        ToolbarItemGroup(placement: .keyboard) {
+            Spacer(minLength: 0)
+            Button { isPresented = false } label: { Text("Done") }
+        }
+    }
+    
+    private var topBarTrailingToolbarContent: some ToolbarContent {
+        ToolbarItem(placement: .topBarTrailing) {
+            Button(action: { showingFilterView = true }) {
+                ZStack(alignment: .topTrailing) {
+                    Image(systemName: systemImageName)
+                    
+                    if viewModel.isFilterApplied {
+                        Circle()
+                            .fill(Color.blue)
+                            .frame(width: 11, height: 11)
+                            .offset(x: 1, y: -1)
+                    }
+                }
+            }
+        }
+    }
+    
+    private var topBarLeadingToolbarContent: some ToolbarContent {
+        ToolbarItem(placement: .topBarLeading) {
+            Button("Clear") {
+                viewModel.resetState()
+            }
+            .disabled(viewModel.searchText.isEmpty || !viewModel.filteredListings.isEmpty)
+        }
+    }
 }
 
 #Preview {
     SearchView()
         .environment(FavouriteViewModel())
 }
-

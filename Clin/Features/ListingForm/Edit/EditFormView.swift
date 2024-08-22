@@ -68,53 +68,55 @@ fileprivate struct EditFormSubview: View {
             applyButtonSection
         }
         .toolbar {
-            ToolbarItemGroup(placement: .keyboard) {
-                Spacer(minLength: 0)
-                Button {
-                    hideKeyboard()
-                } label: {
-                    Text("Done")
-                }
-            }
-            ToolbarItem(placement: .topBarTrailing) {
-                NavigationLink {
-                    ImagePickerGridView(viewModel: viewModel)
-                        .task {
-                            await viewModel.loadListingData(listing: listing)
-                        }
-                } label: {
-                    Image(systemName: "photo")
-                        .foregroundStyle(.gray)
-                        .font(.system(size: 24))
-                        .overlay(alignment: .topTrailing) {
-                            Text("\(viewModel.totalImageCount)")
-                                .font(.system(size: 13).bold())
-                                .foregroundStyle(.white)
-                                .padding(6)
-                                .background(Color(.red))
-                                .clipShape(Circle())
-                                .offset(x: 4, y: -8)
-                        }
-                }
-            }
+            keyboardToolbarContent
+            topBarTrailingToolbarContent
         }
     }
 }
 
 private extension EditFormSubview {
-    var makeSection: some View {
+    
+    // MARK: Toolbar
+    
+     private var keyboardToolbarContent: some ToolbarContent {
+        ToolbarItemGroup(placement: .keyboard) {
+            Spacer(minLength: 0)
+            Button {
+                hideKeyboard()
+            } label: {
+                Text("Done")
+            }
+        }
+    }
+    
+     private var topBarTrailingToolbarContent: some ToolbarContent {
+        ToolbarItem(placement: .topBarTrailing) {
+            NavigationLink {
+                ImagePickerGridView(viewModel: viewModel)
+                    .task {
+                        await viewModel.loadListingData(listing: listing)
+                    }
+            } label: {
+                ImageCounterView(count: viewModel.totalImageCount)
+            }
+        }
+    }
+    
+    // MARK: Sections
+    
+    private var makeSection: some View {
         Section("Make") {
-            Label(listing.make, systemImage: "lock")
+            Label(listing.make, systemImage: "lock.fill")
         }
     }
     
-    var modelSection: some View {
+    private var modelSection: some View {
         Section("Model") {
-            Label(listing.model, systemImage: "lock")
+            Label(listing.model, systemImage: "lock.fill")
         }
     }
     
-    var conditionSection: some View {
+    private var conditionSection: some View {
         Section("Condition") {
             Picker("Vehicle condition", selection: $listing.condition) {
                 ForEach(viewModel.vehicleCondition, id: \.self) { condition in
@@ -124,14 +126,14 @@ private extension EditFormSubview {
         }
     }
     
-    var mileageSection: some View {
+    private var mileageSection: some View {
         Section("Mileage") {
             TextField("Current mileage", value: $listing.mileage, format: .number)
                 .keyboardType(.decimalPad)
         }
     }
     
-    var yearOfManufactureSection: some View {
+    private var yearOfManufactureSection: some View {
         Section("Year of manufacture") {
             Picker("\(listing.yearOfManufacture)", selection: $listing.yearOfManufacture) {
                 ForEach(viewModel.yearsOfmanufacture, id: \.self) { year in
@@ -141,7 +143,7 @@ private extension EditFormSubview {
         }
     }
     
-    var averageRangeSection: some View {
+    private var averageRangeSection: some View {
         Section("Average Range") {
             TextField("What is the average range?", text: $listing.range)
                 .keyboardType(.decimalPad)
@@ -149,14 +151,14 @@ private extension EditFormSubview {
         }
     }
     
-    var priceSection: some View {
+    private var priceSection: some View {
         Section("Price") {
             TextField("Asking price", value: $listing.price, format: .currency(code: "GBP").precision(.fractionLength(0)))
                 .keyboardType(.decimalPad)
         }
     }
     
-    var descriptionSection: some View {
+    private var descriptionSection: some View {
         Section {
             TextEditor(text: $listing.textDescription)
                 .frame(minHeight: 150)
@@ -168,7 +170,7 @@ private extension EditFormSubview {
         }
     }
     
-    var featuresSection: some View {
+    private var featuresSection: some View {
         Section("Features") {
             chargingTimesDisclosureGroup
             batteryCapacityDisclosureGroup
@@ -176,7 +178,7 @@ private extension EditFormSubview {
         }
     }
     
-    var applyButtonSection: some View {
+    private var applyButtonSection: some View {
         Section {
             Button {
                 Task { await viewModel.updateUserListing(listing) }
@@ -190,7 +192,7 @@ private extension EditFormSubview {
         }
     }
     
-    var chargingTimesDisclosureGroup: some View {
+    private var chargingTimesDisclosureGroup: some View {
         DisclosureGroup {
             HStack(spacing: 5) {
                 Text("H:")
@@ -207,7 +209,7 @@ private extension EditFormSubview {
         }
     }
     
-    var batteryCapacityDisclosureGroup: some View {
+    private var batteryCapacityDisclosureGroup: some View {
         DisclosureGroup {
             HStack(spacing: 5) {
                 Text("kWh:")
@@ -220,7 +222,7 @@ private extension EditFormSubview {
         }
     }
     
-    var additionalDataDisclosureGroup: some View {
+    private var additionalDataDisclosureGroup: some View {
         DisclosureGroup {
             HStack(spacing: 5) {
                 Text("BHP:")

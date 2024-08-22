@@ -202,7 +202,7 @@ final class EditFormViewModel: ImagePickerProtocol {
         
         do {
             // Fetch listing from the service
-            let fetchedListing = try await listingService.fetchListing(id: id)
+            let fetchedListing = try await listingService.loadListing(id: id)
             
             // Append new image URLs without removing existing ones
             let newImageUrls = fetchedListing.imagesURL.filter { !imagesURLs.contains($0) }

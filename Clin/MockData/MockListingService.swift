@@ -131,22 +131,22 @@ struct MockListingService: ListingServiceProtocol {
         )
     ]
     
-    func fetchPaginatedListings(from: Int, to: Int) async throws -> [Listing] {
+    func loadPaginatedListings(from: Int, to: Int) async throws -> [Listing] {
         try await Task.sleep(nanoseconds: 2 * 1_000_000_000)
         return MockListingService.sampleData
     }
     
-    func fetchListing(id: Int) async throws -> Listing {
+    func loadListing(id: Int) async throws -> Listing {
         try await Task.sleep(nanoseconds: 2 * 1_000_000_000)
         return MockListingService.sampleData[0]
     }
     
-    func fetchMakeModels() async throws -> [EVModels] {
+    func loadModels() async throws -> [EVModels] {
         try await Task.sleep(nanoseconds: 2 * 1_000_000_000)
         return MockListingService.makeSample
     }
     
-    func fetchUserListings(userID: UUID) async throws -> [Listing] {
+    func loadUserListings(userID: UUID) async throws -> [Listing] {
         return MockListingService.sampleData.filter { $0.userID == userID }
     }
     

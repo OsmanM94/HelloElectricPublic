@@ -47,4 +47,8 @@ extension Container {
     var profileService: Factory<ProfileServiceProtocol> {
         Factory(self) { ProfileService() }
     }
+    
+    var searchService: Factory<SearchServiceProtocol> {
+        Factory(self) { SearchService() }
+    }
 }

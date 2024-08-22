@@ -11,7 +11,7 @@ import Factory
 final class DatabaseService: DatabaseServiceProtocol {
     @Injected(\.supabaseService) private var supabaseService
     
-    func fetchPagination<T: Decodable>(from table: String, orderBy: String, ascending: Bool = true, from: Int, to: Int) async throws -> [T] {
+    func loadWithPagination<T: Decodable>(from table: String, orderBy: String, ascending: Bool = true, from: Int, to: Int) async throws -> [T] {
         do {
             let result: [T] = try await supabaseService.client
                 .from(table)
@@ -26,11 +26,11 @@ final class DatabaseService: DatabaseServiceProtocol {
         }
     }
     
-    func fetchAll<T: Decodable>(from table: String) async throws -> [T] {
+    func loadAll<T: Decodable>(from table: String) async throws -> [T] {
         do {
             let result: [T] = try await supabaseService.client
                 .from(table)
-                .select("*")
+                .select()
                 .execute()
                 .value
             return result
@@ -39,7 +39,7 @@ final class DatabaseService: DatabaseServiceProtocol {
         }
     }
     
-    func fetchByID<T: Decodable>(from table: String, id: Int) async throws -> T {
+    func loadByID<T: Decodable>(from table: String, id: Int) async throws -> T {
         do {
             let result: T = try await supabaseService.client
                 .from(table)
@@ -54,12 +54,12 @@ final class DatabaseService: DatabaseServiceProtocol {
         }
     }
     
-    func fetchByField<T: Decodable>(from table: String, field: String, value: UUID) async throws -> [T] {
+    func loadMultipleWithField<T: Decodable>(from table: String, field: String, uuid: UUID) async throws -> [T] {
         do {
             let result: [T] = try await supabaseService.client
                 .from(table)
                 .select()
-                .eq(field, value: value)
+                .eq(field, value: uuid)
                 .execute()
                 .value
             return result
@@ -68,12 +68,12 @@ final class DatabaseService: DatabaseServiceProtocol {
         }
     }
     
-    func fetchSingleField<T: Decodable>(from table: String, field: String, value: UUID) async throws -> T {
+    func loadSingleWithField<T: Decodable>(from table: String, field: String, uuid: UUID) async throws -> T {
         do {
             let result: T = try await supabaseService.client
                 .from(table)
                 .select()
-                .eq(field, value: value)
+                .eq(field, value: uuid)
                 .single()
                 .execute()
                 .value

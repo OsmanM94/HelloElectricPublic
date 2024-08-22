@@ -60,7 +60,7 @@ final class ProfileViewModel {
     func getInitialProfile() async {
         do {
             let userID = try await profileService.getCurrentUserID()
-            let profile = try await profileService.getProfile(for: userID)
+            let profile = try await profileService.loadProfile(for: userID)
             self.displayName = profile.username ?? ""
             self.profile = profile
         } catch {

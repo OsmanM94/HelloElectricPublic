@@ -11,14 +11,18 @@ import Factory
 final class FavouriteService: FavouriteServiceProtocol {
     @Injected(\.databaseService) var databaseService: DatabaseServiceProtocol
     
-    func fetchUserFavourites(userID: UUID) async throws -> [Favourite] {
-        try await databaseService.fetchByField(from: "favourite_listing", field: "user_id", value: userID)
+    func loadUserFavourites(userID: UUID) async throws -> [Favourite] {
+        try await databaseService
+            .loadMultipleWithField(
+                from: "favourite_listing",
+                field: "user_id",
+                uuid: userID
+            )
     }
     
     func addToFavorites(_ favourite: Favourite) async throws {
         try await databaseService.insert(favourite, into: "favourite_listing")
     }
-    
     
     func removeFromFavorites(_ favourite: Favourite, for userID: UUID) async throws {
         try await databaseService

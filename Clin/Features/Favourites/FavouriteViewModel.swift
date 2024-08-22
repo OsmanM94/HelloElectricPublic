@@ -100,7 +100,7 @@ final class FavouriteViewModel {
             return
         }
         do {
-            self.favoriteListings = try await favouriteService.fetchUserFavourites(userID: user.id)
+            self.favoriteListings = try await favouriteService.loadUserFavourites(userID: user.id)
             updateViewState()
         } catch {
             print("DEBUG: Error fetching user listings: \(error)")

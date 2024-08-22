@@ -11,24 +11,47 @@ import Factory
 final class ListingService: ListingServiceProtocol {
     @Injected(\.databaseService) var databaseService: DatabaseServiceProtocol
     
-    func fetchPaginatedListings(from: Int, to: Int) async throws -> [Listing] {
-        try await databaseService.fetchPagination(from: "car_listing", orderBy: "created_at", ascending: false, from: from, to: to)
+    func loadPaginatedListings(from: Int,to: Int) async throws -> [Listing] {
+        try await databaseService
+            .loadWithPagination(
+                from: "car_listing",
+                orderBy: "created_at",
+                ascending: false,
+                from: from,
+                to: to
+            )
     }
     
-    func fetchListing(id: Int) async throws -> Listing {
-        try await databaseService.fetchByID(from: "car_listing", id: id)
+    func loadListing(id: Int) async throws -> Listing {
+        try await databaseService
+            .loadByID(
+                from: "car_listing",
+                id: id
+            )
     }
     
-    func fetchMakeModels() async throws -> [EVModels] {
-        try await databaseService.fetchAll(from: "ev_make")
+    func loadModels() async throws -> [EVModels] {
+        try await databaseService
+            .loadAll(
+                from: "ev_make"
+            )
     }
     
-    func fetchUserListings(userID: UUID) async throws -> [Listing] {
-        try await databaseService.fetchByField(from: "car_listing", field: "user_id", value: userID)
+    func loadUserListings(userID: UUID) async throws -> [Listing] {
+        try await databaseService
+            .loadMultipleWithField(
+                from: "car_listing",
+                field: "user_id",
+                uuid: userID
+            )
     }
     
     func createListing(_ listing: Listing) async throws {
-        try await databaseService.insert(listing, into: "car_listing")
+        try await databaseService
+            .insert(
+                listing,
+                into: "car_listing"
+            )
     }
     
     func updateListing(_ listing: Listing) async throws {
@@ -40,6 +63,10 @@ final class ListingService: ListingServiceProtocol {
     }
     
     func deleteListing(at id: Int) async throws {
-        try await databaseService.delete(from: "car_listing", id: id)
+        try await databaseService
+            .delete(
+                from: "car_listing",
+                id: id
+            )
     }
 }

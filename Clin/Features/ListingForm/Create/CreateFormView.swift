@@ -13,7 +13,7 @@ struct CreateFormView: View {
     var body: some View {
         NavigationStack {
             Group {
-                VStack(spacing: 0) {
+                VStack {
                     switch viewModel.viewState {
                     case .idle:
                         DvlaCheckView(
@@ -66,7 +66,7 @@ fileprivate struct DvlaCheckView: View {
     var body: some View {
         Form {
             Section("UK Registration") {
-                TextField("", text: $registrationNumber, prompt: Text("Enter registration"))
+                TextField("", text: $registrationNumber, prompt: Text("Enter registration").foregroundStyle(.black.opacity(0.3)))
                     .foregroundStyle(.black)
                     .font(.system(size: 24, weight: .semibold))
                     .submitLabel(.done)
@@ -119,30 +119,33 @@ fileprivate struct CreateFormSubview: View {
             createButtonSection
         }
         .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                Button("Cancel", action: viewModel.resetState)
-            }
-            ToolbarItemGroup(placement: .keyboard) {
-                Spacer(minLength: 0)
-                Button { hideKeyboard() } label: { Text("Done") }
-            }
-            ToolbarItem(placement: .topBarTrailing) {
-                NavigationLink {
-                    ImagePickerGridView(viewModel: viewModel)
-                } label: {
-                    Image(systemName: "photo")
-                        .foregroundStyle(.gray)
-                        .font(.system(size: 24))
-                        .overlay(alignment: .topTrailing) {
-                            Text("\(viewModel.totalImageCount)")
-                                .font(.system(size: 13).bold())
-                                .foregroundStyle(.white)
-                                .padding(6)
-                                .background(Color(.red))
-                                .clipShape(Circle())
-                                .offset(x: 4, y: -8)
-                        }
-                }
+            topBarLeadingToolbarContent
+            keyboardToolbarContent
+            topBarTrailingToolbarContent
+        }
+    }
+    
+    // MARK: - Toolbar
+    
+    private var topBarLeadingToolbarContent: some ToolbarContent {
+        ToolbarItem(placement: .topBarLeading) {
+            Button("Cancel", action: viewModel.resetState)
+        }
+    }
+    
+    private var keyboardToolbarContent: some ToolbarContent {
+        ToolbarItemGroup(placement: .keyboard) {
+            Spacer(minLength: 0)
+            Button { hideKeyboard() } label: { Text("Done") }
+        }
+    }
+    
+    private var topBarTrailingToolbarContent: some ToolbarContent {
+        ToolbarItem(placement: .topBarTrailing) {
+            NavigationLink {
+                ImagePickerGridView(viewModel: viewModel)
+            } label: {
+                ImageCounterView(count: viewModel.totalImageCount)
             }
         }
     }

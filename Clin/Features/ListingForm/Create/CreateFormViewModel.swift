@@ -153,7 +153,7 @@ final class CreateFormViewModel: ImagePickerProtocol {
     func sendDvlaRequest() async {
         viewState = .loading
         do {
-            let decodedCar = try await dvlaService.fetchCarDetails(registrationNumber: registrationNumber)
+            let decodedCar = try await dvlaService.loadDetails(registrationNumber: registrationNumber)
             
             if decodedCar.fuelType.uppercased() == "ELECTRICITY" {
                 self.yearOfManufacture = "\(decodedCar.yearOfManufacture)"
@@ -227,7 +227,7 @@ final class CreateFormViewModel: ImagePickerProtocol {
             defer { isLoadingMake = false }
             
             do {
-                self.evSpecific = try await listingService.fetchMakeModels()
+                self.evSpecific = try await listingService.loadModels()
                 
                 // Set the initial car make
                 self.make = evSpecific.first?.make ?? ""

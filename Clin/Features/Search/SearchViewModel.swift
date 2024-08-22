@@ -29,6 +29,10 @@ final class SearchViewModel {
     private(set) var filteredListings: [Listing] = []
     private(set) var searchSuggestions: [String] = []
     
+    private let defaultMaxPrice: Double = 20_000
+    private let defaultMaxMileage: Double = 100_000
+    private(set) var isFilterApplied: Bool = false
+    
     private let table: String = "car_listing"
     
     @ObservationIgnored
@@ -36,26 +40,61 @@ final class SearchViewModel {
     @ObservationIgnored
     @Injected(\.listingService) private var listingService
     @ObservationIgnored
-    @Injected(\.databaseService) private var databaseService
+    @Injected(\.searchService) private var searchService
     
-    // Filter properties
-    var make: String = "Any"
-    var model: String = "Any"
-    var city: String = "Any"
-    var selectedYear: String = "Any"
-    var maxPrice: Double = 20000
-    var condition: String = "Any"
-    var maxMileage: Double = 100000
-    var range: String = "Any"
-    var colour: String = "Any"
-    var maxPublicChargingTime: String = "Any"
-    var maxHomeChargingTime: String = "Any"
-    var batteryCapacity: String = "Any"
-    var powerBhp: String = "Any"
-    var regenBraking: String = "Any"
-    var warranty: String = "Any"
-    var serviceHistory: String = "Any"
-    var numberOfOwners: String = "Any"
+    //Filter properties
+    
+    var make: String = "Any" {
+        didSet { updateFilterState() }
+    }
+    var model: String = "Any" {
+        didSet { updateFilterState() }
+    }
+    var city: String = "Any" {
+        didSet { updateFilterState() }
+    }
+    var selectedYear: String = "Any" {
+        didSet { updateFilterState() }
+    }
+    var maxPrice: Double = 20_000 {
+        didSet { updateFilterState() }
+    }
+    var condition: String = "Any" {
+        didSet { updateFilterState() }
+    }
+    var maxMileage: Double = 100_000 {
+        didSet { updateFilterState() }
+    }
+    var range: String = "Any" {
+        didSet { updateFilterState() }
+    }
+    var colour: String = "Any" {
+        didSet { updateFilterState() }
+    }
+    var maxPublicChargingTime: String = "Any" {
+        didSet { updateFilterState() }
+    }
+    var maxHomeChargingTime: String = "Any" {
+        didSet { updateFilterState() }
+    }
+    var batteryCapacity: String = "Any" {
+        didSet { updateFilterState() }
+    }
+    var powerBhp: String = "Any" {
+        didSet { updateFilterState() }
+    }
+    var regenBraking: String = "Any" {
+        didSet { updateFilterState() }
+    }
+    var warranty: String = "Any" {
+        didSet { updateFilterState() }
+    }
+    var serviceHistory: String = "Any" {
+        didSet { updateFilterState() }
+    }
+    var numberOfOwners: String = "Any" {
+        didSet { updateFilterState() }
+    }
     
     // Available properties to fetch
     var availableModels: [String] = []
@@ -80,6 +119,30 @@ final class SearchViewModel {
         print("DEBUG: Did init search viewmodel")
     }
     
+    private func isAnyFilterActive() -> Bool {
+        return make != "Any" ||
+        model != "Any" ||
+        city != "Any" ||
+        selectedYear != "Any" ||
+        maxPrice < defaultMaxPrice ||
+        condition != "Any" ||
+        maxMileage < defaultMaxMileage ||
+        range != "Any" ||
+        colour != "Any" ||
+        maxPublicChargingTime != "Any" ||
+        maxHomeChargingTime != "Any" ||
+        batteryCapacity != "Any" ||
+        powerBhp != "Any" ||
+        regenBraking != "Any" ||
+        warranty != "Any" ||
+        serviceHistory != "Any" ||
+        numberOfOwners != "Any"
+    }
+    
+    private func updateFilterState() {
+        isFilterApplied = isAnyFilterActive()
+    }
+    
     @MainActor
     func resetState() {
         self.searchText = ""
@@ -93,10 +156,10 @@ final class SearchViewModel {
         model = "Any"
         city = "Any"
         selectedYear = "Any"
-        maxPrice = 20000
+        maxPrice = 20_000
         selectedYear = "Any"
         condition = "Any"
-        maxMileage = 100000
+        maxMileage = 100_000
         range = "Any"
         colour = "Any"
         maxPublicChargingTime = "Any"
@@ -109,7 +172,7 @@ final class SearchViewModel {
         numberOfOwners = "Any"
     }
     
-    // Main search function based on search text
+    // MARK: - Search
     @MainActor
     func searchItems() async {
         guard !searchText.isEmpty else { return }
@@ -148,6 +211,8 @@ final class SearchViewModel {
             throw error
         }
     }
+    
+    // MARK: - Search with filters
     
     @MainActor
     func searchFilteredItems() async {
@@ -224,10 +289,11 @@ final class SearchViewModel {
         }
     }
     
+    // MARK: - Load Models, Cities and EV specs
     private func loadModels() async {
         if fetchedMakeModels.isEmpty || availableModels.isEmpty {
             do {
-                self.fetchedMakeModels = try await listingService.fetchMakeModels()
+                self.fetchedMakeModels = try await searchService.loadModels()
                 updateAvailableModels()
                 
                 print("DEBUG: Fetching make and models")
@@ -258,7 +324,7 @@ final class SearchViewModel {
         do {
             let fetchedData: [Cities] = try await supabaseService.client
                 .from("uk_cities")
-                .select("city")
+                .select()
                 .execute()
                 .value
             

@@ -59,6 +59,7 @@
 				ListingService.swift,
 				ProfileService.swift,
 				ProhibitedWordsService.swift,
+				SearchService.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
 		};
@@ -86,13 +87,14 @@
 				Listing/ListingViewModel.swift,
 				ListingDetail/ListingDetailSplashView.swift,
 				ListingDetail/ListingDetailView.swift,
+				ListingForm/Components/ImageCounterView.swift,
+				ListingForm/Components/ImagePickerCell.swift,
+				ListingForm/Components/ImagePickerGridView.swift,
+				ListingForm/Components/ListingFormViewStatesMessages.swift,
 				ListingForm/Create/CreateFormView.swift,
 				ListingForm/Create/CreateFormViewModel.swift,
 				ListingForm/Edit/EditFormView.swift,
 				ListingForm/Edit/EditFormViewModel.swift,
-				ListingForm/SharedComponents/ImagePickerCell.swift,
-				ListingForm/SharedComponents/ImagePickerGridView.swift,
-				ListingForm/SharedComponents/ListingFormViewStatesMessages.swift,
 				Search/FilterView.swift,
 				Search/SearchView.swift,
 				Search/SearchViewModel.swift,
@@ -155,6 +157,7 @@
 				MockImageManager.swift,
 				MockListingService.swift,
 				MockProhibitedWordsService.swift,
+				MockSearchService.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
 		};

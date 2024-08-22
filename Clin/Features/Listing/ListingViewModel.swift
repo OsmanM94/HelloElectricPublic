@@ -40,7 +40,7 @@ final class ListingViewModel {
         let to = from + pageSize - 1
         
         do {
-            let newListings = try await listingService.fetchPaginatedListings(from: from, to: to)
+            let newListings = try await listingService.loadPaginatedListings(from: from, to: to)
             if newListings.count < pageSize {
                 self.hasMoreListings = false // No more listings to fetch
             }
@@ -69,7 +69,7 @@ final class ListingViewModel {
             let from = currentPage * pageSize
             let to = from + pageSize - 1
             
-            let newListings = try await listingService.fetchPaginatedListings(from: from, to: to)
+            let newListings = try await listingService.loadPaginatedListings(from: from, to: to)
             if newListings.count < pageSize {
                 self.hasMoreListings = false
             }

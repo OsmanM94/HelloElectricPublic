@@ -8,7 +8,7 @@
 import Foundation
 
 struct MockDvlaService: DvlaServiceProtocol {
-    func fetchCarDetails(registrationNumber: String) async throws -> Dvla {
+    func loadDetails(registrationNumber: String) async throws -> Dvla {
         return Dvla(fuelType: "ELECTRICITY", registrationNumber: "KM24EDP", yearOfManufacture: 1994, colour: "white", make: "Tesla")
     }
 }

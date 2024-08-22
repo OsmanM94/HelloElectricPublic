@@ -48,7 +48,7 @@ final class UserListingViewModel {
                 return
             }
             
-            self.userActiveListings = try await listingService.fetchUserListings(userID: currentUser.id)
+            self.userActiveListings = try await listingService.loadUserListings(userID: currentUser.id)
             viewState = .success
         } catch {
             viewState = .error(UserListingsViewStateMessages.noAuthUserFound.message)

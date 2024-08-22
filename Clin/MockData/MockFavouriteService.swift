@@ -48,7 +48,7 @@ struct MockFavouriteService: FavouriteServiceProtocol {
         )
     ]
     
-    func fetchUserFavourites(userID: UUID) async throws -> [Favourite] {
+    func loadUserFavourites(userID: UUID) async throws -> [Favourite] {
         return MockFavouriteService.sampleData.filter { $0.userID == userID }
     }
     
