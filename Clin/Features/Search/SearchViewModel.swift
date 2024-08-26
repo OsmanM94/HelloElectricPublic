@@ -48,7 +48,7 @@ final class SearchViewModel {
     var model: String = "Any" {
         didSet { updateFilterState() }
     }
-    var city: String = "Any" {
+    var location: String = "Any" {
         didSet { updateFilterState() }
     }
     var body: String = "Any" {
@@ -98,23 +98,24 @@ final class SearchViewModel {
     }
     
     // Available properties to fetch
-    var availableModels: [String] = []
     var loadedModels: [EVModels] = []
-    var cities: [String] = []
+    var makeOptions: [String] { ["Any"] + loadedModels.map { $0.make } }
+    var modelOptions: [String] = []
+    var availableLocations: [String] = []
     
-    var bodyType: [String] = []
-    var yearOfManufacture: [String] = []
-    var vehicleCondition: [String] = []
-    var vehicleRange: [String] = []
-    var homeCharge: [String] = []
-    var publicCharge: [String] = []
-    var batteryCap: [String] = []
-    var vehicleRegenBraking: [String] = []
-    var vehiclePowerBhp: [String] = []
-    var vehicleWarranty: [String] = []
-    var vehicleServiceHistory: [String] = []
-    var vehicleNumberOfOwners: [String] = []
-    var vehicleColours: [String] = []
+    var bodyTypeOptions: [String] = []
+    var yearOptions: [String] = []
+    var conditionOptions: [String] = []
+    var rangeOptions: [String] = []
+    var colourOptions: [String] = []
+    var publicChargingTimeOptions: [String] = []
+    var homeChargingTimeOptions: [String] = []
+    var batteryCapacityOptions: [String] = []
+    var powerBhpOptions: [String] = []
+    var regenBrakingOptions: [String] = []
+    var warrantyOptions: [String] = []
+    var serviceHistoryOptions: [String] = []
+    var numberOfOwnersOptions: [String] = []
     
     init() {
         print("DEBUG: Did init search viewmodel")
@@ -125,14 +126,14 @@ final class SearchViewModel {
         self.filterViewState = .loading
         await loadModels()
         await loadEVFeatures()
-        await loadUKcities()
+        await loadLocations()
         self.filterViewState = .loaded
     }
     
     private func isAnyFilterActive() -> Bool {
         return make != "Any" ||
         model != "Any" ||
-        city != "Any" ||
+        location != "Any" ||
         selectedYear != "Any" ||
         maxPrice < defaultMaxPrice ||
         condition != "Any" ||
@@ -164,7 +165,7 @@ final class SearchViewModel {
     func resetFilters() {
         make = "Any"
         model = "Any"
-        city = "Any"
+        location = "Any"
         selectedYear = "Any"
         maxPrice = 20_000
         selectedYear = "Any"
@@ -200,7 +201,7 @@ final class SearchViewModel {
                 self.viewState = .loaded
             }
         } catch {
-            print("DEBUG: Error fetching search results from Supabase: \(error)")
+            print("DEBUG: Error loading search results from Supabase: \(error)")
             self.searchedItems = []
             self.viewState = .idle
         }
@@ -210,14 +211,14 @@ final class SearchViewModel {
         do {
             let response: [Listing] = try await supabaseService.client
                 .from(table)
-                .select("make,model,year")
-                .or("make.ilike.%\(searchText)%,model.ilike.%\(searchText)%,year.ilike.%\(searchText)%")
+                .select()
+                .or("make.ilike.%\(searchText)%,model.ilike.%\(searchText)%")
                 .execute()
                 .value
-            print("DEBUG: Fetched \(response.count) listings from Supabase for text: \(searchText)")
+            print("DEBUG: Loaded \(response.count) listings from Supabase for text: \(searchText)")
             return response
         } catch {
-            print("DEBUG: Failed to fetch listings from Supabase: \(error)")
+            print("DEBUG: Failed to load listings from Supabase: \(error)")
             throw error
         }
     }
@@ -292,7 +293,7 @@ final class SearchViewModel {
                 self.viewState = .loaded
             }
         } catch {
-            print("DEBUG: Error fetching filtered items from Supabase: \(error)")
+            print("DEBUG: Error loading filtered items from Supabase: \(error)")
             self.searchedItems = []
             self.viewState = .idle
         }
@@ -300,103 +301,67 @@ final class SearchViewModel {
     
     // MARK: - Load models, cities and EV specs
     private func loadModels() async {
-        if loadedModels.isEmpty || availableModels.isEmpty {
+        if loadedModels.isEmpty {
             do {
                 self.loadedModels = try await searchService.loadModels()
+                
+                // Update available models
                 updateAvailableModels()
                 
-                print("DEBUG: Fetching make and models")
+                print("DEBUG: Loading make and models")
             } catch {
-                print("DEBUG: Failed to fetch car makes and models from Supabase: \(error)")
+                print("DEBUG: Failed to load car makes and models from Supabase: \(error)")
             }
         }
     }
     
     func updateAvailableModels() {
         if make == "Any" {
-            availableModels = loadedModels.flatMap { $0.models }
+            modelOptions = ["Any"] + loadedModels.flatMap { $0.models }
         } else if let selectedCarMake = loadedModels.first(where: { $0.make == make }) {
-            availableModels = selectedCarMake.models
+            modelOptions = ["Any"] + selectedCarMake.models
         } else {
-            availableModels = []
+            modelOptions = ["Any"]
         }
         
-        // Set model to "Any" if it's the default case, or keep the first available model
-        if model == "Any" || availableModels.isEmpty {
+        // Check if the current model is still valid in the new list of available models
+        if !modelOptions.contains(model) {
             self.model = "Any"
-        } else {
-            self.model = availableModels.first ?? "Any"
         }
     }
     
-    private func loadUKcities() async {
+    private func loadLocations() async {
         do {
-            let fetchedData = try await searchService.loadCities()
+            let loadedData = try await searchService.loadCities()
                 
             // Clear existing data in the arrays to avoid duplicates
-            cities.removeAll()
-            cities.append("Any")
-            
-            // Iterate over the fetched data and append to arrays
-            for city in fetchedData {
-                cities.append(city.city)
-            }
+            availableLocations = ["Any"] + loadedData.compactMap { $0.city }
+        
         } catch {
-            print("DEBUG: Failed to fetch colours: \(error)")
+            print("DEBUG: Failed to load UK cities: \(error)")
         }
     }
     
     private func loadEVFeatures() async {
         do {
-            let fetchedData = try await searchService.loadEVfeatures()
+            let loadedData = try await searchService.loadEVfeatures()
                 
-            // Clear existing data in the arrays to avoid duplicates
-            bodyType.removeAll()
-            yearOfManufacture.removeAll()
-            vehicleCondition.removeAll()
-            vehicleRange.removeAll()
-            homeCharge.removeAll()
-            publicCharge.removeAll()
-            batteryCap.removeAll()
-            vehicleRegenBraking.removeAll()
-            vehicleWarranty.removeAll()
-            vehicleServiceHistory.removeAll()
-            vehicleNumberOfOwners.removeAll()
-            vehiclePowerBhp.removeAll()
-            vehicleColours.removeAll()
+            bodyTypeOptions = ["Any"] + loadedData.flatMap { $0.bodyType }
+            yearOptions = ["Any"] + loadedData.flatMap { $0.yearOfManufacture }
+            conditionOptions = ["Any"] + loadedData.flatMap { $0.condition }
+            rangeOptions = ["Any"] + loadedData.flatMap { $0.range }
+            homeChargingTimeOptions = ["Any"] + loadedData.flatMap { $0.homeChargingTime }
+            publicChargingTimeOptions = ["Any"] + loadedData.flatMap { $0.publicChargingTime }
+            batteryCapacityOptions = ["Any"] + loadedData.flatMap { $0.batteryCapacity }
+            regenBrakingOptions = ["Any"] + loadedData.flatMap { $0.regenBraking }
+            warrantyOptions = ["Any"] + loadedData.flatMap { $0.warranty }
+            serviceHistoryOptions = ["Any"] + loadedData.flatMap { $0.serviceHistory }
+            numberOfOwnersOptions = ["Any"] + loadedData.flatMap { $0.owners }
+            powerBhpOptions = ["Any"] + loadedData.flatMap { $0.powerBhp }
+            colourOptions = ["Any"] + loadedData.flatMap { $0.colours }
             
-            bodyType.append("Any")
-            yearOfManufacture.append("Any")
-            vehicleCondition.append("Any")
-            vehicleRange.append("Any")
-            homeCharge.append("Any")
-            publicCharge.append("Any")
-            batteryCap.append("Any")
-            vehicleRegenBraking.append("Any")
-            vehicleWarranty.append("Any")
-            vehicleServiceHistory.append("Any")
-            vehicleNumberOfOwners.append("Any")
-            vehiclePowerBhp.append("Any")
-            vehicleColours.append("Any")
-            
-            // Iterate over the fetched data and append to arrays
-            for evSpecific in fetchedData {
-                bodyType.append(contentsOf: evSpecific.bodyType)
-                yearOfManufacture.append(contentsOf: evSpecific.yearOfManufacture)
-                vehicleCondition.append(contentsOf: evSpecific.condition)
-                vehicleRange.append(contentsOf: evSpecific.range)
-                homeCharge.append(contentsOf: evSpecific.homeChargingTime)
-                publicCharge.append(contentsOf: evSpecific.publicChargingTime)
-                batteryCap.append(contentsOf: evSpecific.batteryCapacity)
-                vehicleRegenBraking.append(contentsOf: evSpecific.regenBraking)
-                vehicleWarranty.append(contentsOf: evSpecific.warranty)
-                vehicleServiceHistory.append(contentsOf: evSpecific.serviceHistory)
-                vehicleNumberOfOwners.append(contentsOf: evSpecific.owners)
-                vehiclePowerBhp.append(contentsOf: evSpecific.powerBhp)
-                vehicleColours.append(contentsOf: evSpecific.colours)
-            }
         } catch {
-            print("DEBUG: Failed to fetch colours: \(error)")
+            print("DEBUG: Failed to load ev features: \(error)")
         }
     }
 }

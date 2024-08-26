@@ -12,37 +12,35 @@ struct CreateFormView: View {
     
     var body: some View {
         NavigationStack {
-            Group {
-                VStack {
-                    switch viewModel.viewState {
-                    case .idle:
-                        DvlaCheckView(
-                            registrationNumber: $viewModel.registrationNumber,
-                            sendDvlaRequest:
-                                { await viewModel.sendDvlaRequest() })
-                        
-                    case .loading:
-                        CustomProgressView()
-                        
-                    case .loaded:
-                        CreateFormSubview(viewModel: viewModel)
-                            .task {
-                                await viewModel.loadBulkData()
-                            }
-                    case .uploading:
-                        CircularProgressBar(progress: viewModel.uploadingProgress)
-   
-                    case .success(let message):
-                        SuccessView(message: message, doneAction: { viewModel.resetState() })
-  
-                    case .error(let message):
-                        ErrorView(message: message, retryAction: {
-                            viewModel.resetState()
-                        })
-                    }
+            VStack {
+                switch viewModel.viewState {
+                case .idle:
+                    DvlaCheckView(
+                        registrationNumber: $viewModel.registrationNumber,
+                        sendDvlaRequest:
+                            { await viewModel.sendDvlaRequest() })
+                    
+                case .loading:
+                    CustomProgressView()
+                    
+                case .loaded:
+                    CreateFormSubview(viewModel: viewModel)
+                        .task {
+                            await viewModel.loadBulkData()
+                        }
+                case .uploading:
+                    CircularProgressBar(progress: viewModel.uploadingProgress)
+                    
+                case .success(let message):
+                    SuccessView(message: message, doneAction: { viewModel.resetState() })
+                    
+                case .error(let message):
+                    ErrorView(message: message, retryAction: {
+                        viewModel.resetState()
+                    })
                 }
-                .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
             }
+            .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
             .navigationTitle("Selling")
         }
     }
@@ -68,7 +66,7 @@ fileprivate struct DvlaCheckView: View {
                 TextField("", text: $registrationNumber, prompt: Text("Enter registration").foregroundStyle(.black.opacity(0.3)))
                     .foregroundStyle(.black)
                     .font(.system(size: 24, weight: .semibold))
-                    .submitLabel(.done)
+                    .submitLabel(.continue)
                     .listRowBackground(Color.yellow)
                     .multilineTextAlignment(.center)
                     .textInputAutocapitalization(.characters)
@@ -80,22 +78,15 @@ fileprivate struct DvlaCheckView: View {
                             .scaledToFill()
                             .offset(x: -20, y: 0)
                     }
+                    .onSubmit {
+                        Task {
+                            guard !registrationNumber.isEmpty else {
+                                return
+                            }
+                            await sendDvlaRequest()
+                        }
+                    }
             }
-            
-            Button {
-                Task {
-                    await sendDvlaRequest()
-                }
-            } label: {
-                Text("Continue")
-                    .foregroundStyle(registrationNumber.isEmpty ? .gray.opacity(0.5) : .white)
-                    .fontWeight(.bold)
-                    .animation(.easeInOut, value: registrationNumber)
-            }
-            .disabled(registrationNumber.isEmpty)
-            .frame(maxWidth: .infinity)
-            .listRowBackground(Color(registrationNumber.isEmpty ? .gray.opacity(0.2) : .accent))
-            
         }
     }
 }
@@ -104,24 +95,251 @@ fileprivate struct CreateFormSubview: View {
     @Bindable var viewModel: CreateFormViewModel
     
     var body: some View {
-        Form {
-            makeSection
-            modelSection
-            conditionSection
-            mileageSection
-            colourSection
-            yearOfManufactureSection
-            rangeSection
-            priceSection
-            descriptionSection
-            featuresSection
-            createButtonSection
+        ZStack {
+            switch viewModel.subFormViewState {
+            case .loading:
+                CustomProgressView()
+            case .loaded:
+                Form {
+                    makeModelSection
+                    bodyTypeSection
+                    yearConditionSection
+                    mileageLocationSection
+                    colourRangeSection
+                    priceSection
+                    descriptionSection
+                    featuresSection
+                    createButtonSection
+                }
+                .toolbar {
+                    topBarLeadingToolbarContent
+                    keyboardToolbarContent
+                    topBarTrailingToolbarContent
+                }
+            case .error(let message):
+                ErrorView(message: message) { viewModel.resetState() }
+            }
         }
-        .toolbar {
-            topBarLeadingToolbarContent
-            keyboardToolbarContent
-            topBarTrailingToolbarContent
+        .animation(.easeInOut(duration: 0.3), value: viewModel.subFormViewState)
+    }
+    
+    // MARK: - Sections
+    
+    private var makeModelSection: some View {
+        Section(header: Text("Make and model ")) {
+            Picker("Make", selection: $viewModel.make) {
+                ForEach(viewModel.makeOptions, id: \.self) { make in
+                    Text(make).tag(make)
+                }
+            }
+            .onChange(of: viewModel.make) {
+                viewModel.updateAvailableModels()
+            }
+            Picker("Model", selection: $viewModel.model) {
+                ForEach(viewModel.modelOptions, id: \.self) { model in
+                    Text(model).tag(model)
+                }
+            }
+            .disabled(viewModel.make == "Select")
         }
+        .pickerStyle(.navigationLink)
+    }
+    
+    private var bodyTypeSection: some View {
+        Section("Body Type") {
+            Picker("Body", systemImage: "car.fill", selection: $viewModel.body) {
+                ForEach(viewModel.bodyTypeOptions, id: \.self) { body in
+                    Text(body).tag(body)
+                }
+            }
+            .disabled(viewModel.make == "Select" || viewModel.model == "Select")
+        }
+        .pickerStyle(.navigationLink)
+    }
+    
+    private var yearConditionSection: some View {
+        Section(header: Text("Year and condition")) {
+            Picker("Year of manufacture", systemImage: "licenseplate.fill", selection: $viewModel.selectedYear) {
+                ForEach(viewModel.yearOptions, id: \.self) { year in
+                    Text(year).tag(year)
+                }
+            }
+            .disabled(viewModel.body == "Select")
+            
+            Picker("Condition", systemImage: "axle.2", selection: $viewModel.condition) {
+                ForEach(viewModel.conditionOptions, id: \.self) { condition in
+                    Text(condition).tag(condition)
+                }
+            }
+            .disabled(viewModel.selectedYear == "Select")
+        }
+        .pickerStyle(.navigationLink)
+    }
+    
+    private var mileageLocationSection: some View {
+        Section("Mileage and location") {
+            HStack(spacing: 15) {
+                Image(systemName: "gauge.with.needle")
+                    .imageScale(.large)
+                    .foregroundStyle(viewModel.condition == "Select" ? .green.opacity(0.5) : .green)
+                TextField("Current mileage", value: $viewModel.mileage, format: .number)
+                    .keyboardType(.decimalPad)
+                    .foregroundStyle(viewModel.condition == "Select" ? .gray : .primary)
+                    .opacity(viewModel.condition == "Select" ? 0.8 : 1)
+            }
+            .disabled(viewModel.condition == "Select")
+            
+            Picker("Location", systemImage: "location.fill.viewfinder", selection: $viewModel.location) {
+                ForEach(viewModel.availableLocations, id: \.self) { city in
+                    Text(city).tag(city)
+                }
+            }
+            .pickerStyle(.navigationLink)
+            .disabled(viewModel.mileage == 500)
+        }
+    }
+
+    private var colourRangeSection: some View {
+        Section("Colour and range") {
+            Picker("Colour", systemImage: "paintpalette.fill" ,selection: $viewModel.colour) {
+                ForEach(viewModel.colourOptions, id: \.self) { colour in
+                    Text(colour).tag(colour)
+                }
+            }
+            .disabled(viewModel.location == "Select")
+            
+            Picker("Driving range", systemImage: "road.lanes", selection: $viewModel.range) {
+                ForEach(viewModel.rangeOptions, id: \.self) { range in
+                    Text(range).tag(range)
+                }
+            }
+            .disabled(viewModel.colour == "Select")
+        }
+        .pickerStyle(.navigationLink)
+    }
+    
+    private var priceSection: some View {
+        Section("Price") {
+            TextField("Asking price", value: $viewModel.price, format: .currency(code: "GBP").precision(.fractionLength(0)))
+                .keyboardType(.decimalPad)
+                .foregroundStyle(viewModel.range == "Select" ? .gray : .primary)
+                .opacity(viewModel.range == "Select" ? 0.8 : 1)
+                .disabled(viewModel.range == "Select")
+            
+        }
+    }
+
+    private var descriptionSection: some View {
+        Section {
+            TextEditor(text: $viewModel.description)
+                .frame(minHeight: 150)
+                .characterLimit($viewModel.description, limit: 500)
+        } header: {
+            Text("Description (keep it simple)")
+        } footer: {
+            Text("\(viewModel.description.count)/500")
+        }
+    }
+    
+    private var featuresSection: some View {
+        Section("Features") {
+            DisclosureGroup {
+                homeChargingTime
+                publicChargingTime
+            } label: {
+                Label("Charging times", systemImage: "ev.charger")
+            }
+            
+            DisclosureGroup {
+                additionalDataSection
+            } label: {
+                Label("Additional features", systemImage: "battery.100percent.bolt")
+            }
+        }
+    }
+
+    private var createButtonSection: some View {
+        Section {
+            Button {
+                Task {
+                    await viewModel.createListing()
+                }
+            } label: {
+                Text("Create listing")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity)
+            }
+            .disabled(!viewModel.isFormValid())
+        }
+    }
+    
+    // MARK: - Feature Sections
+    
+    private var homeChargingTime: some View {
+        Picker("Home", selection: $viewModel.homeChargingTime) {
+            ForEach(viewModel.homeChargingTimeOptions, id: \.self) { time in
+                Text(time).tag(time)
+            }
+        }
+        .pickerStyle(.navigationLink)
+        .disabled(viewModel.price <= 500)
+    }
+    
+    private var publicChargingTime: some View {
+        Picker("Public", selection: $viewModel.publicChargingTime) {
+            ForEach(viewModel.publicChargingTimeOptions, id: \.self) { time in
+                Text(time).tag(time)
+            }
+        }
+        .pickerStyle(.navigationLink)
+        .disabled(viewModel.homeChargingTime == "Select")
+    }
+    
+    private var additionalDataSection: some View {
+        Section {
+            Picker("Power BHP", selection: $viewModel.powerBhp) {
+                ForEach(viewModel.powerBhpOptions, id: \.self) { power in
+                    Text(power).tag(power)
+                }
+            }
+            .disabled(viewModel.publicChargingTime == "Select")
+            
+            Picker("Battery capacity", selection: $viewModel.batteryCapacity) {
+                ForEach(viewModel.batteryCapacityOptions, id: \.self) { battery in
+                    Text(battery).tag(battery)
+                }
+            }
+            .disabled(viewModel.powerBhp == "Select")
+            
+            Picker("Regen braking", selection: $viewModel.regenBraking) {
+                ForEach(viewModel.regenBrakingOptions, id: \.self) { regen in
+                    Text(regen).tag(regen)
+                }
+            }
+            .disabled(viewModel.batteryCapacity == "Select")
+            
+            Picker("Warranty", selection: $viewModel.warranty) {
+                ForEach(viewModel.warrantyOptions, id: \.self) { warranty in
+                    Text(warranty).tag(warranty)
+                }
+            }
+            .disabled(viewModel.regenBraking == "Select")
+            
+            Picker("Service history", selection: $viewModel.serviceHistory) {
+                ForEach(viewModel.serviceHistoryOptions, id: \.self) { service in
+                    Text(service).tag(service)
+                }
+            }
+            .disabled(viewModel.warranty == "Select")
+            
+            Picker("Owners", selection: $viewModel.numberOfOwners) {
+                ForEach(viewModel.numberOfOwnersOptions, id: \.self) { owners in
+                    Text(owners).tag(owners)
+                }
+            }
+            .disabled(viewModel.serviceHistory == "Select" && viewModel.numberOfOwners == "Select")
+        }
+        .pickerStyle(.navigationLink)
     }
     
     // MARK: - Toolbar
@@ -145,198 +363,6 @@ fileprivate struct CreateFormSubview: View {
                 ImagePickerGridView(viewModel: viewModel)
             } label: {
                 ImageCounterView(count: viewModel.totalImageCount)
-            }
-        }
-    }
-    
-    // MARK: - Sections
-    
-    private var makeSection: some View {
-        Section(header: Text("Make")) {
-            if viewModel.isLoadingMake {
-                ProgressView()
-            } else {
-                Picker("Select Make", selection: $viewModel.make) {
-                    ForEach(viewModel.evSpecific, id: \.make) { item in
-                        Text(item.make).tag(item.make)
-                    }
-                }
-                .pickerStyle(.navigationLink)
-                .onChange(of: viewModel.make) {
-                    viewModel.updateAvailableModels()
-                }
-            }
-        }
-    }
-    
-    private var modelSection: some View {
-        Section(header: Text("Model")) {
-            if viewModel.isLoadingMake {
-                ProgressView()
-            } else {
-                Picker("Select Model", selection: $viewModel.model) {
-                    ForEach(viewModel.availableModels, id: \.self) { model in
-                        Text(model).tag(model)
-                    }
-                }
-                .pickerStyle(.navigationLink)
-            }
-        }
-    }
-    
-    private var conditionSection: some View {
-        Section("Condition") {
-            Picker("Vehicle condition", selection: $viewModel.condition) {
-                ForEach(viewModel.vehicleCondition, id: \.self) { condition in
-                    Text(condition).tag(condition)
-                }
-            }
-        }
-    }
-    
-    private var mileageSection: some View {
-        Section("Mileage") {
-            TextField("Current mileage", value: $viewModel.mileage, format: .number)
-                .keyboardType(.decimalPad)
-        }
-    }
-    
-    private var colourSection: some View {
-        Section("Colour") {
-            TextField("Colour", text: $viewModel.colour)
-                .textInputAutocapitalization(.sentences)
-                .disabled(true)
-        }
-    }
-    
-    private var yearOfManufactureSection: some View {
-        Section("Year of manufacture") {
-            Picker("Selected Year", selection: $viewModel.selectedYear) {
-                ForEach(viewModel.yearOfManufacture, id: \.self) { year in
-                    Text(year).tag(year)
-                }
-            }
-        }
-    }
-    
-    private var rangeSection: some View {
-        Section("Average Range") {
-            TextField("What is the average range?", text: $viewModel.range)
-                .keyboardType(.decimalPad)
-                .characterLimit($viewModel.range, limit: 4)
-        }
-    }
-
-    private var priceSection: some View {
-        Section("Price") {
-            TextField("Asking price", value: $viewModel.price, format: .currency(code: "GBP").precision(.fractionLength(0)))
-                .keyboardType(.decimalPad)
-        }
-    }
-
-    private var descriptionSection: some View {
-        Section {
-            TextEditor(text: $viewModel.description)
-                .frame(minHeight: 150)
-                .characterLimit($viewModel.description, limit: 500)
-        } header: {
-            Text("Description")
-        } footer: {
-            Text("\(viewModel.description.count)/500")
-        }
-    }
-    
-    private var featuresSection: some View {
-        Section("Features") {
-            DisclosureGroup {
-                chargingTimesSection
-            } label: {
-                Label("Charging times", systemImage: "ev.charger")
-            }
-            
-            DisclosureGroup {
-                batteryCapacitySection
-            } label: {
-                Label("Battery capacity", systemImage: "battery.100percent.bolt")
-            }
-            
-            DisclosureGroup {
-                additionalDataSection
-            } label: {
-                Label("Additional data", systemImage: "gear")
-            }
-        }
-    }
-
-    private var createButtonSection: some View {
-        Section {
-            Button {
-                Task {
-                    await viewModel.createListing()
-                }
-            } label: {
-                Text("Create listing")
-                    .font(.headline)
-                    .foregroundStyle(.white)
-                    .frame(maxWidth: .infinity)
-            }
-            .listRowBackground(Color.green)
-        }
-    }
-    
-    // MARK: - Feature Sections
-    
-    private var chargingTimesSection: some View {
-        VStack {
-            HStack {
-                Text("H:")
-                TextField("Estimated home time charging", text: $viewModel.homeChargingTime)
-                    .characterLimit($viewModel.homeChargingTime, limit: 30)
-            }
-            HStack {
-                Text("P:")
-                TextField("Estimated public time charging", text: $viewModel.publicChargingTime)
-                    .characterLimit($viewModel.publicChargingTime, limit: 30)
-            }
-        }
-    }
-    
-    private var batteryCapacitySection: some View {
-        HStack {
-            Text("kWh:")
-            TextField("", text: $viewModel.batteryCapacity)
-                .characterLimit($viewModel.batteryCapacity, limit: 5)
-                .keyboardType(.decimalPad)
-        }
-    }
-    
-    private var additionalDataSection: some View {
-        VStack {
-            HStack {
-                Text("BHP:")
-                TextField("What is the bhp power?", text: $viewModel.powerBhp)
-                    .keyboardType(.decimalPad)
-                    .characterLimit($viewModel.powerBhp, limit: 5)
-            }
-            Picker("Regen braking", selection: $viewModel.regenBraking) {
-                ForEach(viewModel.vehicleRegenBraking, id: \.self) { regen in
-                    Text(regen).tag(regen)
-                }
-            }
-            Picker("Warranty", selection: $viewModel.warranty) {
-                ForEach(viewModel.vehicleWarranty, id: \.self) { warranty in
-                    Text(warranty).tag(warranty)
-                }
-            }
-            Picker("Service history", selection: $viewModel.serviceHistory) {
-                ForEach(viewModel.vehicleServiceHistory, id: \.self) { service in
-                    Text(service).tag(service)
-                }
-            }
-            Picker("How many owners?", selection: $viewModel.numberOfOwners) {
-                ForEach(viewModel.vehicleNumberOfOwners, id: \.self) { owners in
-                    Text(owners).tag(owners)
-                }
             }
         }
     }

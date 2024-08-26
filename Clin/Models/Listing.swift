@@ -14,8 +14,10 @@ struct Listing: Identifiable, Codable, Hashable {
     var thumbnailsURL: [URL]
     var make: String
     var model: String
+    var bodyType: String
     var condition: String
     var mileage: Double
+    var location: String
     var yearOfManufacture: String
     var price: Double
     var textDescription: String
@@ -37,8 +39,10 @@ struct Listing: Identifiable, Codable, Hashable {
         case thumbnailsURL = "thumbnails"
         case make
         case model
+        case bodyType = "body_type"
         case condition
         case mileage
+        case location
         case yearOfManufacture = "year"
         case price
         case textDescription

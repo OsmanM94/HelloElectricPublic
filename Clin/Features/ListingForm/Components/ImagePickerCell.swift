@@ -48,7 +48,7 @@ struct ImagePickerCell<ViewModel: ImagePickerProtocol>: View {
                 } else {
                     SinglePhotoPicker(selection: $viewModel.imageSelections[index], photoLibrary: .shared()) {
                         ZStack {
-                            if viewModel.isLoading[index] {
+                            if viewModel.isLoadingImages[index] {
                                 Color(.clear)
                                     .font(.system(size: 40))
                                     .foregroundStyle(.gray)
@@ -77,7 +77,7 @@ struct ImagePickerCell<ViewModel: ImagePickerProtocol>: View {
 
                 }
             }
-            .disabled(viewModel.isLoading[index])
+            .disabled(viewModel.isLoadingImages[index])
         }
         .deleteAlert(
             isPresented: $showDeleteAlert,

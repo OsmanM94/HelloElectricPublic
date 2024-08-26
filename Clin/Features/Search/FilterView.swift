@@ -73,17 +73,15 @@ fileprivate struct MakeModelSection: View {
     var body: some View {
         Section(header: Text("Make and model ")) {
             Picker("Make", selection: $viewModel.make) {
-                Text("Any").tag("Any")
-                ForEach(viewModel.loadedModels, id: \.self) { item in
-                    Text(item.make).tag(item.make)
+                ForEach(viewModel.makeOptions, id: \.self) { item in
+                    Text(item).tag(item)
                 }
             }
             .onChange(of: viewModel.make) {
                 viewModel.updateAvailableModels()
             }
             Picker("Model", selection: $viewModel.model) {
-                Text("Any").tag("Any")
-                ForEach(viewModel.availableModels, id: \.self) { model in
+                ForEach(viewModel.modelOptions, id: \.self) { model in
                     Text(model).tag(model)
                 }
             }
@@ -99,7 +97,7 @@ fileprivate struct bodyTypeSection: View {
     var body: some View {
         Section("Body Type") {
             Picker("Body", systemImage: "car.fill", selection: $viewModel.body) {
-                ForEach(viewModel.bodyType, id: \.self) { body in
+                ForEach(viewModel.bodyTypeOptions, id: \.self) { body in
                     Text(body).tag(body)
                 }
             }
@@ -114,13 +112,13 @@ fileprivate struct YearConditionSection: View {
     var body: some View {
         Section(header: Text("Year and condition")) {
             Picker("Year of manufacture", systemImage: "licenseplate.fill", selection: $viewModel.selectedYear) {
-                ForEach(viewModel.yearOfManufacture, id: \.self) { year in
+                ForEach(viewModel.yearOptions, id: \.self) { year in
                     Text(year).tag(year)
                 }
             }
             
             Picker("Condition", systemImage: "axle.2", selection: $viewModel.condition) {
-                ForEach(viewModel.vehicleCondition, id: \.self) { condition in
+                ForEach(viewModel.conditionOptions, id: \.self) { condition in
                     Text(condition).tag(condition)
                 }
             }
@@ -134,8 +132,8 @@ fileprivate struct LocationSection: View {
     
     var body: some View {
         Section("Location") {
-            Picker("Location", systemImage: "location.fill.viewfinder", selection: $viewModel.city) {
-                ForEach(viewModel.cities, id: \.self) { city in
+            Picker("Location", systemImage: "location.fill.viewfinder", selection: $viewModel.location) {
+                ForEach(viewModel.availableLocations, id: \.self) { city in
                     Text(city).tag(city)
                 }
             }
@@ -167,22 +165,22 @@ fileprivate struct OtherSpecificationsSection: View {
     var body: some View {
         DisclosureGroup {
             Picker("Colour", selection: $viewModel.colour) {
-                ForEach(viewModel.vehicleColours, id: \.self) { colour in
+                ForEach(viewModel.colourOptions, id: \.self) { colour in
                     Text(colour).tag(colour)
                 }
             }
             Picker("Warranty", selection: $viewModel.warranty) {
-                ForEach(viewModel.vehicleWarranty, id: \.self) { warranty in
+                ForEach(viewModel.warrantyOptions, id: \.self) { warranty in
                     Text(warranty).tag(warranty)
                 }
             }
             Picker("Service history", selection: $viewModel.serviceHistory) {
-                ForEach(viewModel.vehicleServiceHistory, id: \.self) { service in
+                ForEach(viewModel.serviceHistoryOptions, id: \.self) { service in
                     Text(service).tag(service)
                 }
             }
             Picker("Owners", selection: $viewModel.numberOfOwners) {
-                ForEach(viewModel.vehicleNumberOfOwners, id: \.self) { owners in
+                ForEach(viewModel.numberOfOwnersOptions, id: \.self) { owners in
                     Text(owners).tag(owners)
                 }
             }
@@ -199,32 +197,32 @@ fileprivate struct EVSpecificationsSection: View {
     var body: some View {
         DisclosureGroup {
             Picker("Driving range", selection: $viewModel.range) {
-                ForEach(viewModel.vehicleRange, id: \.self) { range in
+                ForEach(viewModel.rangeOptions, id: \.self) { range in
                     Text(range).tag(range)
                 }
             }
             Picker("Public charging time", selection: $viewModel.maxPublicChargingTime) {
-                ForEach(viewModel.publicCharge, id: \.self) { time in
+                ForEach(viewModel.publicChargingTimeOptions, id: \.self) { time in
                     Text(time).tag(time)
                 }
             }
             Picker("Home charging time", selection: $viewModel.maxHomeChargingTime) {
-                ForEach(viewModel.homeCharge, id: \.self) { time in
+                ForEach(viewModel.homeChargingTimeOptions, id: \.self) { time in
                     Text(time).tag(time)
                 }
             }
             Picker("Power BHP", selection: $viewModel.powerBhp) {
-                ForEach(viewModel.vehiclePowerBhp, id: \.self) { power in
+                ForEach(viewModel.powerBhpOptions, id: \.self) { power in
                     Text(power).tag(power)
                 }
             }
             Picker("Battery capacity", selection: $viewModel.batteryCapacity) {
-                ForEach(viewModel.batteryCap, id: \.self) { battery in
+                ForEach(viewModel.batteryCapacityOptions, id: \.self) { battery in
                     Text(battery).tag(battery)
                 }
             }
             Picker("Regen braking", selection: $viewModel.regenBraking) {
-                ForEach(viewModel.vehicleRegenBraking, id: \.self) { regen in
+                ForEach(viewModel.regenBrakingOptions, id: \.self) { regen in
                     Text(regen).tag(regen)
                 }
             }

@@ -10,6 +10,7 @@ import Factory
 
 @Observable
 final class EditFormViewModel: ImagePickerProtocol {
+    // MARK: - Enums
     enum ViewState: Equatable {
         case idle
         case loading
@@ -18,36 +19,57 @@ final class EditFormViewModel: ImagePickerProtocol {
         case error(String)
     }
     
+    enum SubFormViewState: Equatable {
+        case loading, loaded, error(String)
+    }
+    
+    // MARK: - Observable properties
+    // View States
     private(set) var viewState: ViewState = .idle
+    private(set) var subFormViewState: SubFormViewState = .loading
+    private(set) var uploadingProgress: Double = 0.0
     var imageViewState: ImageViewState = .idle
    
+    // MARK: - Image properties
     var selectedImages: [SelectedImage?] = Array(repeating: nil, count: 10)
     var imageSelections: [PhotosPickerItem?] = Array(repeating: nil, count: 10)
-    var isLoading: [Bool] = Array(repeating: false, count: 10)
-        
-    private(set) var uploadingProgress: Double = 0.0
+    var isLoadingImages: [Bool] = Array(repeating: false, count: 10)
     private(set) var imagesURLs: [URL] = []
     private(set) var thumbnailsURLs: [URL] = []
     
-    let yearsOfmanufacture: [String] = Array(2010...2030).map { String($0) }
-    let vehicleCondition: [String] = ["New", "Used"]
-    let vehicleRegenBraking: [String] = ["Yes", "No"]
-    let vehicleWarranty: [String] = ["Yes", "No"]
-    let vehicleServiceHistory: [String] = ["Yes", "No"]
-    let vehicleNumberOfOwners: [String] = ["1", "2", "3", "4+"]
+    // MARK: - Dependencies
+    @ObservationIgnored @Injected(\.listingService) private var listingService
+    @ObservationIgnored @Injected(\.prohibitedWordsService) private var prohibitedWordsService
+    @ObservationIgnored @Injected(\.imageManager) private var imageManager
+    @ObservationIgnored @Injected(\.dvlaService) private var dvlaService
+    @ObservationIgnored @Injected(\.httpDataDownloader) private var httpDataDownloader
+    @ObservationIgnored @Injected(\.supabaseService) private var supabaseService
     
-    @ObservationIgnored
-    @Injected(\.listingService) private var listingService
-    @ObservationIgnored
-    @Injected(\.prohibitedWordsService) private var prohibitedWordsService
-    @ObservationIgnored
-    @Injected(\.imageManager) private var imageManager
-    @ObservationIgnored
-    @Injected(\.dvlaService) private var dvlaService
-    @ObservationIgnored
-    @Injected(\.httpDataDownloader) private var httpDataDownloader
-    @ObservationIgnored
-    @Injected(\.supabaseService) private var supabaseService
+    
+    // MARK: - Data Arrays
+    var availableLocations: [String] = []
+    var bodyTypeOptions: [String] = []
+    var yearOptions: [String] = []
+    var conditionOptions: [String] = []
+    var rangeOptions: [String] = []
+    var colourOptions: [String] = []
+    var publicChargingTimeOptions: [String] = []
+    var homeChargingTimeOptions: [String] = []
+    var batteryCapacityOptions: [String] = []
+    var powerBhpOptions: [String] = []
+    var regenBrakingOptions: [String] = []
+    var warrantyOptions: [String] = []
+    var serviceHistoryOptions: [String] = []
+    var numberOfOwnersOptions: [String] = []
+    
+    // MARK: - Main Actor Functions
+    @MainActor
+    func loadBulkData() async {
+        await loadProhibitedWords()
+        await loadEVFeatures()
+        await loadLocations()
+        self.subFormViewState = .loaded
+    }
     
     @MainActor
     func updateUserListing(_ listing: Listing) async {
@@ -71,7 +93,7 @@ final class EditFormViewModel: ImagePickerProtocol {
             
             try await uploadSelectedImages(for: user.id, totalSteps: totalSteps)
             
-            var listingToUpdate = Listing(id: listing.id, createdAt: Date(), imagesURL: imagesURLs, thumbnailsURL: thumbnailsURLs, make: listing.make, model: listing.model, condition: listing.condition, mileage: listing.mileage, yearOfManufacture: listing.yearOfManufacture, price: listing.price, textDescription: listing.textDescription, range: listing.range, colour: listing.colour, publicChargingTime: listing.publicChargingTime, homeChargingTime: listing.homeChargingTime, batteryCapacity: listing.batteryCapacity, powerBhp: listing.powerBhp, regenBraking: listing.regenBraking, warranty: listing.warranty, serviceHistory: listing.serviceHistory, numberOfOwners: listing.numberOfOwners, userID: listing.userID)
+            var listingToUpdate = Listing(id: listing.id, createdAt: Date(), imagesURL: imagesURLs, thumbnailsURL: thumbnailsURLs, make: listing.make, model: listing.model, bodyType: listing.bodyType, condition: listing.condition, mileage: listing.mileage, location: listing.location, yearOfManufacture: listing.yearOfManufacture, price: listing.price, textDescription: listing.textDescription, range: listing.range, colour: listing.colour, publicChargingTime: listing.publicChargingTime, homeChargingTime: listing.homeChargingTime, batteryCapacity: listing.batteryCapacity, powerBhp: listing.powerBhp, regenBraking: listing.regenBraking, warranty: listing.warranty, serviceHistory: listing.serviceHistory, numberOfOwners: listing.numberOfOwners, userID: listing.userID)
             
             // Only update images if new ones were uploaded
             if !imagesURLs.isEmpty {
@@ -120,21 +142,10 @@ final class EditFormViewModel: ImagePickerProtocol {
         }
     }
     
-    func resetState() {
-        selectedImages = Array(repeating: nil, count: 10)
-        imageSelections = Array(repeating: nil, count: 10)
-        uploadingProgress = 0.0
-        viewState = .idle
-    }
-    
-    func resetImageStateToIdle() {
-        imageViewState = .idle
-    }
-   
     @MainActor
     func loadItem(item: PhotosPickerItem, at index: Int) async {
-        isLoading[index] = true
-        defer { isLoading[index] = false }
+        isLoadingImages[index] = true
+        defer { isLoadingImages[index] = false }
         let result = await imageManager.loadItem(item: item, analyze: true)
         
         switch result {
@@ -150,25 +161,6 @@ final class EditFormViewModel: ImagePickerProtocol {
         }
     }
     
-    func deleteImage(id: String) {
-        if let index = selectedImages.firstIndex(where: { $0?.id == id }) {
-            selectedImages[index] = nil
-            imageSelections[index] = nil
-        }
-    }
-    
-    func loadProhibitedWords() async {
-        do {
-            try await prohibitedWordsService.loadProhibitedWords()
-        } catch {
-            print("DEBUG: Failed to load prohibited words: \(error)")
-        }
-    }
-    
-    var totalImageCount: Int {
-        selectedImages.compactMap({ $0 }).count
-    }
-            
     @MainActor
     func loadImagesFromURLs(_ urls: [URL]) async {
         let limitedURLs = urls.prefix(10)
@@ -176,8 +168,8 @@ final class EditFormViewModel: ImagePickerProtocol {
         for (urlIndex, url) in limitedURLs.enumerated() {
             guard urlIndex < selectedImages.count else { return }
             
-            isLoading[urlIndex] = true
-            defer { isLoading[urlIndex] = false }
+            isLoadingImages[urlIndex] = true
+            defer { isLoadingImages[urlIndex] = false }
             
             do {
                 let data = try await httpDataDownloader.fetchURL(from: url)
@@ -214,12 +206,81 @@ final class EditFormViewModel: ImagePickerProtocol {
             
             // Convert image URLs to SelectedImage instances and update the images
             await loadImagesFromURLs(newImageUrls)
-            
         } catch {
             print("DEBUG: Failed to fetch listing or load images: \(error)")
             viewState = .error(ListingFormViewStateMessages.generalError.message)
         }
     }
-
+    
+    // MARK: - Private helpers and misc
+    
+    func resetState() {
+        selectedImages = Array(repeating: nil, count: 10)
+        imageSelections = Array(repeating: nil, count: 10)
+        uploadingProgress = 0.0
+        subFormViewState = .loading
+        viewState = .idle
+    }
+    
+    func resetImageStateToIdle() {
+        imageViewState = .idle
+    }
+    
+    var totalImageCount: Int {
+        selectedImages.compactMap({ $0 }).count
+    }
+    
+    func deleteImage(id: String) {
+        if let index = selectedImages.firstIndex(where: { $0?.id == id }) {
+            selectedImages[index] = nil
+            imageSelections[index] = nil
+        }
+    }
+    
+    private func loadProhibitedWords() async {
+        do {
+            try await prohibitedWordsService.loadProhibitedWords()
+        } catch {
+            print("DEBUG: Failed to load prohibited words: \(error)")
+        }
+    }
+    
+    private func loadLocations() async {
+        do {
+            let loadedData = try await listingService.loadLocations()
+                
+            // Clear existing data in the arrays to avoid duplicates
+            availableLocations = loadedData.compactMap { $0.city }
+        
+        } catch {
+            print("DEBUG: Failed to load UK cities: \(error)")
+            self.subFormViewState = .error(ListingFormViewStateMessages.generalError.message)
+        }
+    }
+    
+    private func loadEVFeatures() async {
+        do {
+            let loadedData = try await listingService.loadEVfeatures()
+                            
+            bodyTypeOptions = loadedData.flatMap { $0.bodyType }
+            yearOptions = loadedData.flatMap { $0.yearOfManufacture }
+            conditionOptions = loadedData.flatMap { $0.condition }
+            rangeOptions = loadedData.flatMap { $0.range }
+            homeChargingTimeOptions = loadedData.flatMap { $0.homeChargingTime }
+            publicChargingTimeOptions = loadedData.flatMap { $0.publicChargingTime }
+            batteryCapacityOptions = loadedData.flatMap { $0.batteryCapacity }
+            regenBrakingOptions = loadedData.flatMap { $0.regenBraking }
+            warrantyOptions = loadedData.flatMap { $0.warranty }
+            serviceHistoryOptions = loadedData.flatMap { $0.serviceHistory }
+            numberOfOwnersOptions = loadedData.flatMap { $0.owners }
+            powerBhpOptions = loadedData.flatMap { $0.powerBhp }
+            colourOptions = loadedData.flatMap { $0.colours }
+            
+        } catch {
+            print("DEBUG: Failed to load features: \(error)")
+            self.subFormViewState = .error(ListingFormViewStateMessages.generalError.message)
+        }
+    }
+    
 }
 

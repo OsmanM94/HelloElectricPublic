@@ -121,7 +121,7 @@ private extension SearchView {
             Button("Clear") {
                 viewModel.resetState()
             }
-            .disabled(viewModel.searchText.isEmpty || !viewModel.searchedItems.isEmpty)
+            .disabled(viewModel.searchText.isEmpty && viewModel.searchedItems.isEmpty)
         }
     }
 }

@@ -29,8 +29,7 @@ struct ListingDetailView: View {
                         if !listing.imagesURL.isEmpty {
                             TabView {
                                 ForEach(listing.imagesURL, id: \.self) { imageURL in
-                                    ImageLoader(url: imageURL, contentMode: .fill, targetSize: CGSize(width: 350, height: 350))
-                                        .frame(maxWidth: .infinity, minHeight: 350)
+                                    ImageLoader(url: imageURL, contentMode: .fill, targetSize: CGSize(width: 500, height: 500))
                                         .clipped()
                                         .onTapGesture {
                                             showSheet.toggle()
@@ -41,11 +40,17 @@ struct ListingDetailView: View {
                                 SheetImages(listing: listing)
                             })
                             .tabViewStyle(.page)
-                            .frame(maxWidth: .infinity, minHeight: 350)
+                            .containerRelativeFrame([.horizontal, .vertical]) { width, axis in
+                                if axis == .horizontal {
+                                    return width
+                                } else {
+                                    return width * 0.50
+                                }
+                            }
                         } else {
                             Rectangle()
                                 .foregroundStyle(.gray.opacity(0.5))
-                                .frame(maxWidth: .infinity, minHeight: 350)
+                                .frame(maxWidth: .infinity, minHeight: 600)
                                 .overlay {
                                     Text("No Images Available")
                                         .foregroundStyle(.secondary)
@@ -73,6 +78,9 @@ struct ListingDetailView: View {
                         
                         Spacer()
                     }
+//                    .onDisappear {
+//                        ImagePrefetcher.instance.clearCache()
+//                    }
                 }
             }
         }
@@ -83,7 +91,6 @@ struct ListingDetailView: View {
 #Preview {
     ListingDetailView(listing: MockListingService.sampleData[0])
 }
-
 
 fileprivate struct SheetImages: View {
     @Environment(\.dismiss) private var dismiss
@@ -96,20 +103,16 @@ fileprivate struct SheetImages: View {
                     TabView {
                         ForEach(listing.imagesURL, id: \.self) { imageURL in
                             ZoomImages {
-                                ImageLoader(url: imageURL, contentMode: .fit, targetSize: CGSize(width: 350, height: 350))
-//                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                    .containerRelativeFrame([.horizontal,.vertical])
+                                ImageLoader(url: imageURL, contentMode: .fit, targetSize: CGSize(width: 500, height: 500))
                             }
                         }
                     }
+                    .containerRelativeFrame([.horizontal,.vertical])
                     .tabViewStyle(.page)
                     .indexViewStyle(.page(backgroundDisplayMode: .always))
-//                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .containerRelativeFrame([.horizontal,.vertical])
                 } else {
                     Rectangle()
                         .foregroundStyle(.gray.opacity(0.5))
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .overlay {
                             Text("No Images Available")
                                 .foregroundStyle(.secondary)
@@ -117,6 +120,7 @@ fileprivate struct SheetImages: View {
                         }
                 }
             }
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(action: { dismiss() }) {

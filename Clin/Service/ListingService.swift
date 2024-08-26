@@ -46,7 +46,7 @@ final class ListingService: ListingServiceProtocol {
             )
     }
     
-    func loadCities() async throws -> [Cities] {
+    func loadLocations() async throws -> [Cities] {
         try await databaseService
             .loadAll(
                 from: "uk_cities"

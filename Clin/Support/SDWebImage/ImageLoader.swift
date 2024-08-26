@@ -73,6 +73,11 @@ final class ImagePrefetcher {
         prefetcher.cancelPrefetching()
         print("DEBUG: Stopping prefetching images...")
     }
+    
+    func clearCache() {
+        SDImageCache.shared.clearMemory()
+        SDImageCache.shared.clearDisk(onCompletion: nil)
+    }
 }
 
 final class ResizingImageTransformer: NSObject, SDImageTransformer {

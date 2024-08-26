@@ -28,7 +28,7 @@ protocol ListingServiceProtocol {
     func updateListing(_ listing: Listing) async throws
     func deleteListing(at id: Int) async throws
     func loadModels() async throws -> [EVModels]
-    func loadCities() async throws -> [Cities]
+    func loadLocations() async throws -> [Cities]
     func loadEVfeatures() async throws -> [EVFeatures]
 }
 
@@ -56,7 +56,7 @@ protocol ProhibitedWordsServiceProtocol {
 protocol ImagePickerProtocol: Observable {
     var selectedImages: [SelectedImage?] { get set }
     var imageSelections: [PhotosPickerItem?] { get set }
-    var isLoading: [Bool] { get set }
+    var isLoadingImages: [Bool] { get set }
     var imageViewState: ImageViewState { get set }
     
     func loadItem(item: PhotosPickerItem, at index: Int) async

@@ -24,8 +24,10 @@ struct MockListingService: ListingServiceProtocol {
             imagesURL: [URL(string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/mock_data/tesla2.jpg")!,URL(string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/mock_data/tesla1.jpg")!,URL(string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/mock_data/tesla3.jpg")!], thumbnailsURL: [URL(string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/mock_data/tesla2.jpg")!],
             make: "Tesla",
             model: "Model S supercharger 2024",
+            bodyType: "SUV",
             condition: "Used",
             mileage: 100000,
+            location: "London",
             yearOfManufacture: "2023",
             price: 8900,
             textDescription: "A great electric vehicle with long range.",
@@ -47,8 +49,10 @@ struct MockListingService: ListingServiceProtocol {
             imagesURL: [URL(string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/mock_data/tesla1.jpg")!], thumbnailsURL: [URL(string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/mock_data/tesla1.jpg")!],
             make: "Mercedes",
             model: "Mercedes-Benz EQA Class",
+            bodyType: "Saloon",
             condition: "Used",
             mileage: 120000,
+            location: "Peterborough",
             yearOfManufacture: "2024",
             price: 9900,
             textDescription: "A great electric vehicle with long range.",
@@ -70,8 +74,10 @@ struct MockListingService: ListingServiceProtocol {
             imagesURL: [URL(string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/mock_data/tesla3.jpg")!], thumbnailsURL: [URL(string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/mock_data/tesla3.jpg")!],
             make: "BMW",
             model: "i4 M50",
+            bodyType: "Pickup",
             condition: "New",
             mileage: 5000,
+            location: "Leicester",
             yearOfManufacture: "2022",
             price: 70000,
             textDescription: "A sleek and powerful electric sedan with excellent performance.",
@@ -93,8 +99,10 @@ struct MockListingService: ListingServiceProtocol {
             imagesURL: [URL(string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/mock_data/tesla4.jpg")!], thumbnailsURL: [URL(string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/mock_data/tesla4.jpg")!],
             make: "Audi",
             model: "e-tron GT",
+            bodyType: "Truck",
             condition: "Used",
             mileage: 25000,
+            location: "Wisbech",
             yearOfManufacture: "2021",
             price: 85000,
             textDescription: "An electric grand tourer with stunning design and performance.",
@@ -116,8 +124,10 @@ struct MockListingService: ListingServiceProtocol {
             imagesURL: [URL(string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/mock_data/tesla5.jpg")!], thumbnailsURL: [URL(string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/mock_data/tesla5.jpg")!],
             make: "Nissan",
             model: "Leaf",
+            bodyType: "Estate",
             condition: "Used",
             mileage: 80000,
+            location: "March",
             yearOfManufacture: "2020",
             price: 15000,
             textDescription: "A reliable and affordable electric hatchback.",
@@ -150,7 +160,7 @@ struct MockListingService: ListingServiceProtocol {
         return MockListingService.modelsSample
     }
     
-    func loadCities() async throws -> [Cities] {
+    func loadLocations() async throws -> [Cities] {
         try await Task.sleep(nanoseconds: 2 * 1_000_000_000)
         return MockListingService.citiesSample
     }
