@@ -66,7 +66,7 @@ fileprivate struct DvlaCheckView: View {
                 TextField("", text: $registrationNumber, prompt: Text("Enter registration").foregroundStyle(.black.opacity(0.3)))
                     .foregroundStyle(.black)
                     .font(.system(size: 24, weight: .semibold))
-                    .submitLabel(.continue)
+                    .submitLabel(.go)
                     .listRowBackground(Color.yellow)
                     .multilineTextAlignment(.center)
                     .textInputAutocapitalization(.characters)
@@ -126,7 +126,7 @@ fileprivate struct CreateFormSubview: View {
     // MARK: - Sections
     
     private var makeModelSection: some View {
-        Section(header: Text("Make and model ")) {
+        Section(header: Text("Make and model "), footer: Text("Selected make and model cannot be changed later.")) {
             Picker("Make", selection: $viewModel.make) {
                 ForEach(viewModel.makeOptions, id: \.self) { make in
                     Text(make).tag(make)

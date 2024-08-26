@@ -8,6 +8,7 @@ import SwiftUI
 import PhotosUI
 import Factory
 
+
 @Observable
 final class EditFormViewModel: ImagePickerProtocol {
     // MARK: - Enums
@@ -29,7 +30,7 @@ final class EditFormViewModel: ImagePickerProtocol {
     private(set) var subFormViewState: SubFormViewState = .loading
     private(set) var uploadingProgress: Double = 0.0
     var imageViewState: ImageViewState = .idle
-   
+
     // MARK: - Image properties
     var selectedImages: [SelectedImage?] = Array(repeating: nil, count: 10)
     var imageSelections: [PhotosPickerItem?] = Array(repeating: nil, count: 10)
@@ -44,7 +45,6 @@ final class EditFormViewModel: ImagePickerProtocol {
     @ObservationIgnored @Injected(\.dvlaService) private var dvlaService
     @ObservationIgnored @Injected(\.httpDataDownloader) private var httpDataDownloader
     @ObservationIgnored @Injected(\.supabaseService) private var supabaseService
-    
     
     // MARK: - Data Arrays
     var availableLocations: [String] = []
@@ -162,30 +162,6 @@ final class EditFormViewModel: ImagePickerProtocol {
     }
     
     @MainActor
-    func loadImagesFromURLs(_ urls: [URL]) async {
-        let limitedURLs = urls.prefix(10)
-        
-        for (urlIndex, url) in limitedURLs.enumerated() {
-            guard urlIndex < selectedImages.count else { return }
-            
-            isLoadingImages[urlIndex] = true
-            defer { isLoadingImages[urlIndex] = false }
-            
-            do {
-                let data = try await httpDataDownloader.fetchURL(from: url)
-                guard let selectedImage = SelectedImage(data: data, id: url.absoluteString, photosPickerItem: nil) else {
-                    print("DEBUG: Failed to create SelectedImage from data for URL: \(url)")
-                    continue
-                }
-                selectedImages[urlIndex] = selectedImage
-            } catch {
-                print("DEBUG: Error downloading image data from URL: \(url) - \(error)")
-                viewState = .error(ListingFormViewStateMessages.errorDownloadingImages.message)
-            }
-        }
-    }
-    
-    @MainActor
     func retrieveImages(listing: Listing) async {
         guard let id = listing.id else {
             viewState = .error(ListingFormViewStateMessages.generalError.message)
@@ -234,6 +210,29 @@ final class EditFormViewModel: ImagePickerProtocol {
         if let index = selectedImages.firstIndex(where: { $0?.id == id }) {
             selectedImages[index] = nil
             imageSelections[index] = nil
+        }
+    }
+    
+    private func loadImagesFromURLs(_ urls: [URL]) async {
+        let limitedURLs = urls.prefix(10)
+        
+        for (urlIndex, url) in limitedURLs.enumerated() {
+            guard urlIndex < selectedImages.count else { return }
+            
+            isLoadingImages[urlIndex] = true
+            defer { isLoadingImages[urlIndex] = false }
+            
+            do {
+                let data = try await httpDataDownloader.fetchURL(from: url)
+                guard let selectedImage = SelectedImage(data: data, id: url.absoluteString, photosPickerItem: nil) else {
+                    print("DEBUG: Failed to create SelectedImage from data for URL: \(url)")
+                    continue
+                }
+                selectedImages[urlIndex] = selectedImage
+            } catch {
+                print("DEBUG: Error downloading image data from URL: \(url) - \(error)")
+                viewState = .error(ListingFormViewStateMessages.errorDownloadingImages.message)
+            }
         }
     }
     

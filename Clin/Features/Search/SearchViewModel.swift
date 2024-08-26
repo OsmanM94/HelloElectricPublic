@@ -10,6 +10,7 @@ import Factory
 
 @Observable
 final class SearchViewModel {
+    // MARK: - Enums
     enum ViewState {
         case idle
         case loading
@@ -22,26 +23,26 @@ final class SearchViewModel {
         case loaded
     }
     
-    var searchText: String = ""
+    // MARK: - Observable properties
+    // View state
     var viewState: ViewState = .idle
     var filterViewState: FilterViewState = .loading
     
+    // Search properties
+    var searchText: String = ""
     private(set) var searchedItems: [Listing] = []
-    private(set) var searchSuggestions: [String] = []
-    
+   
+    // Misc
     private let defaultMaxPrice: Double = 20_000
     private let defaultMaxMileage: Double = 100_000
     private(set) var isFilterApplied: Bool = false
-    
     private let table: String = "car_listing"
     
-    @ObservationIgnored
-    @Injected(\.supabaseService) private var supabaseService
-    @ObservationIgnored
-    @Injected(\.searchService) private var searchService
+    // MARK: - Dependencies
+    @ObservationIgnored @Injected(\.supabaseService) private var supabaseService
+    @ObservationIgnored @Injected(\.searchService) private var searchService
     
-    //Filter properties
-    
+    // MARK: - Filter properties
     var make: String = "Any" {
         didSet { updateFilterState() }
     }
@@ -97,12 +98,11 @@ final class SearchViewModel {
         didSet { updateFilterState() }
     }
     
-    // Available properties to fetch
+    // MARK: - Data Array
     var loadedModels: [EVModels] = []
     var makeOptions: [String] { ["Any"] + loadedModels.map { $0.make } }
     var modelOptions: [String] = []
     var availableLocations: [String] = []
-    
     var bodyTypeOptions: [String] = []
     var yearOptions: [String] = []
     var conditionOptions: [String] = []
@@ -121,6 +121,8 @@ final class SearchViewModel {
         print("DEBUG: Did init search viewmodel")
     }
     
+    // MARK: - Main actor functions
+    
     @MainActor
     func loadBulkData() async {
         self.filterViewState = .loading
@@ -130,60 +132,7 @@ final class SearchViewModel {
         self.filterViewState = .loaded
     }
     
-    private func isAnyFilterActive() -> Bool {
-        return make != "Any" ||
-        model != "Any" ||
-        location != "Any" ||
-        selectedYear != "Any" ||
-        maxPrice < defaultMaxPrice ||
-        condition != "Any" ||
-        maxMileage < defaultMaxMileage ||
-        range != "Any" ||
-        colour != "Any" ||
-        maxPublicChargingTime != "Any" ||
-        maxHomeChargingTime != "Any" ||
-        batteryCapacity != "Any" ||
-        powerBhp != "Any" ||
-        regenBraking != "Any" ||
-        warranty != "Any" ||
-        serviceHistory != "Any" ||
-        numberOfOwners != "Any"
-    }
-    
-    private func updateFilterState() {
-        isFilterApplied = isAnyFilterActive()
-    }
-    
-    @MainActor
-    func resetState() {
-        self.searchText = ""
-        self.searchedItems.removeAll()
-        viewState = .idle
-    }
-    
-    @MainActor
-    func resetFilters() {
-        make = "Any"
-        model = "Any"
-        location = "Any"
-        selectedYear = "Any"
-        maxPrice = 20_000
-        selectedYear = "Any"
-        condition = "Any"
-        maxMileage = 100_000
-        range = "Any"
-        colour = "Any"
-        maxPublicChargingTime = "Any"
-        maxHomeChargingTime = "Any"
-        batteryCapacity = "Any"
-        powerBhp = "Any"
-        regenBraking = "Any"
-        warranty = "Any"
-        serviceHistory = "Any"
-        numberOfOwners = "Any"
-    }
-    
-    // MARK: - Search
+    // Search no filters
     @MainActor
     func searchItems() async {
         guard !searchText.isEmpty else { return }
@@ -194,7 +143,7 @@ final class SearchViewModel {
             let response = try await searchItemsFromSupabase(searchText: searchText)
             print("DEBUG: Search completed successfully for text: \(searchText)")
             self.searchedItems = response
-           
+            
             if self.searchedItems.isEmpty {
                 self.viewState = .empty
             } else {
@@ -207,23 +156,7 @@ final class SearchViewModel {
         }
     }
     
-    private func searchItemsFromSupabase(searchText: String) async throws -> [Listing] {
-        do {
-            let response: [Listing] = try await supabaseService.client
-                .from(table)
-                .select()
-                .or("make.ilike.%\(searchText)%,model.ilike.%\(searchText)%")
-                .execute()
-                .value
-            print("DEBUG: Loaded \(response.count) listings from Supabase for text: \(searchText)")
-            return response
-        } catch {
-            print("DEBUG: Failed to load listings from Supabase: \(error)")
-            throw error
-        }
-    }
-    
-    // MARK: - Search with filters
+    // Search with filters
     @MainActor
     func searchFilteredItems() async {
         self.searchedItems.removeAll()
@@ -235,10 +168,14 @@ final class SearchViewModel {
             
             // Applying filters only if the value is not "Any" or empty
             if !make.isEmpty && make != "Any" {
-                query = query.eq("make", value: make)
+                query = query.ilike("make", pattern: make)
+                
+                print("DEBUG: Applied filter for make: \(make)")
             }
             if !model.isEmpty && model != "Any" {
-                query = query.eq("model", value: model)
+                query = query.ilike("model", pattern: model)
+                
+                print("DEBUG: Applied filter for model: \(model)")
             }
             if !selectedYear.isEmpty && selectedYear != "Any" {
                 query = query.eq("year", value: selectedYear)
@@ -286,7 +223,7 @@ final class SearchViewModel {
             let response: [Listing] = try await query.execute().value
             
             self.searchedItems = response
-        
+            
             if self.searchedItems.isEmpty {
                 self.viewState = .empty
             } else {
@@ -299,7 +236,77 @@ final class SearchViewModel {
         }
     }
     
-    // MARK: - Load models, cities and EV specs
+    @MainActor
+    func resetState() {
+        self.searchText = ""
+        self.searchedItems.removeAll()
+        viewState = .idle
+    }
+    
+    @MainActor
+    func resetFilters() {
+        make = "Any"
+        model = "Any"
+        location = "Any"
+        selectedYear = "Any"
+        maxPrice = 20_000
+        selectedYear = "Any"
+        condition = "Any"
+        maxMileage = 100_000
+        range = "Any"
+        colour = "Any"
+        maxPublicChargingTime = "Any"
+        maxHomeChargingTime = "Any"
+        batteryCapacity = "Any"
+        powerBhp = "Any"
+        regenBraking = "Any"
+        warranty = "Any"
+        serviceHistory = "Any"
+        numberOfOwners = "Any"
+    }
+    
+    // MARK: - Helpers and misc
+    
+    private func isAnyFilterActive() -> Bool {
+        return make != "Any" ||
+        model != "Any" ||
+        location != "Any" ||
+        selectedYear != "Any" ||
+        maxPrice < defaultMaxPrice ||
+        condition != "Any" ||
+        maxMileage < defaultMaxMileage ||
+        range != "Any" ||
+        colour != "Any" ||
+        maxPublicChargingTime != "Any" ||
+        maxHomeChargingTime != "Any" ||
+        batteryCapacity != "Any" ||
+        powerBhp != "Any" ||
+        regenBraking != "Any" ||
+        warranty != "Any" ||
+        serviceHistory != "Any" ||
+        numberOfOwners != "Any"
+    }
+    
+    private func updateFilterState() {
+        isFilterApplied = isAnyFilterActive()
+    }
+    
+    private func searchItemsFromSupabase(searchText: String) async throws -> [Listing] {
+        do {
+            let response: [Listing] = try await supabaseService.client
+                .from(table)
+                .select()
+                .or("make.ilike.%\(searchText)%,model.ilike.%\(searchText)%,year.ilike.%\(searchText)%,location.ilike.%\(searchText)%")
+                .execute()
+                .value
+            print("DEBUG: Loaded \(response.count) listings from Supabase for text: \(searchText)")
+            return response
+        } catch {
+            print("DEBUG: Failed to load listings from Supabase: \(error)")
+            throw error
+        }
+    }
+    
     private func loadModels() async {
         if loadedModels.isEmpty {
             do {
@@ -315,28 +322,13 @@ final class SearchViewModel {
         }
     }
     
-    func updateAvailableModels() {
-        if make == "Any" {
-            modelOptions = ["Any"] + loadedModels.flatMap { $0.models }
-        } else if let selectedCarMake = loadedModels.first(where: { $0.make == make }) {
-            modelOptions = ["Any"] + selectedCarMake.models
-        } else {
-            modelOptions = ["Any"]
-        }
-        
-        // Check if the current model is still valid in the new list of available models
-        if !modelOptions.contains(model) {
-            self.model = "Any"
-        }
-    }
-    
     private func loadLocations() async {
         do {
             let loadedData = try await searchService.loadCities()
-                
+            
             // Clear existing data in the arrays to avoid duplicates
             availableLocations = ["Any"] + loadedData.compactMap { $0.city }
-        
+            
         } catch {
             print("DEBUG: Failed to load UK cities: \(error)")
         }
@@ -345,7 +337,7 @@ final class SearchViewModel {
     private func loadEVFeatures() async {
         do {
             let loadedData = try await searchService.loadEVfeatures()
-                
+            
             bodyTypeOptions = ["Any"] + loadedData.flatMap { $0.bodyType }
             yearOptions = ["Any"] + loadedData.flatMap { $0.yearOfManufacture }
             conditionOptions = ["Any"] + loadedData.flatMap { $0.condition }
@@ -364,43 +356,24 @@ final class SearchViewModel {
             print("DEBUG: Failed to load ev features: \(error)")
         }
     }
+    
+    func updateAvailableModels() {
+        if make == "Any" {
+            modelOptions = ["Any"] + loadedModels.flatMap { $0.models }
+        } else if let selectedCarMake = loadedModels.first(where: { $0.make == make }) {
+            modelOptions = ["Any"] + selectedCarMake.models
+        } else {
+            modelOptions = ["Any"]
+        }
+        
+        // Check if the current model is still valid in the new list of available models
+        if !modelOptions.contains(model) {
+            self.model = "Any"
+        }
+    }
 }
 
 
 
-//    // Fetch filtered items directly from the database
-//    @MainActor
-//    func fetchFilteredItems() async {
-//        self.viewState = .loading
-//
-//        do {
-//            let query = supabaseService.client
-//                .from(table1)
-//                .select()
-//                .eq("make", value: make)
-//                .eq("model", value: model)
-//                .eq("year", value: selectedYear)
-//                .lte("price", value: maxPrice)
-//                .lte("mileage", value: maxMileage)
-//                .eq("condition", value: condition)
-//                .eq("range", value: range)
-//                .eq("colour", value: colour)
-//                .lte("public_charging", value: maxPublicChargingTime)
-//                .lte("home_charging", value: maxHomeChargingTime)
-//                .eq("battery_capacity", value: batteryCapacity)
-//                .eq("power_bhp", value: powerBhp)
-//                .eq("regen_braking", value: regenBraking)
-//                .eq("warranty", value: warranty)
-//                .eq("service_history", value: serviceHistory)
-//                .eq("owners", value: numberOfOwners)
-//
-//            let response: [Listing] = try await query.execute().value
-//
-//            self.filteredListings = response
-//            self.viewState = .loaded
-//        } catch {
-//            print("DEBUG: Error fetching filtered items from Supabase: \(error)")
-//            self.filteredListings = []
-//            self.viewState = .idle
-//        }
-//    }
+
+

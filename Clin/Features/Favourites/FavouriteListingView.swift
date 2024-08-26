@@ -12,31 +12,29 @@ struct FavouriteListingView: View {
     
     var body: some View {
         NavigationStack {
-            Group {
-                VStack(spacing: 0) {
-                    switch viewModel.viewState {
-                    case .loaded:
-                        FavouriteListingSubview()
-                        
-                    case .empty:
-                        EmptyContentView(message: "You haven't saved any listings yet.", systemImage: "heart.slash.fill")
-                        
-                    case .error(let message):
-                        ErrorView(message: message, retryAction: {
-                            Task {
-                                await viewModel.fetchUserFavorites()
-                            }
-                        })
-                    }
+            VStack {
+                switch viewModel.viewState {
+                case .loaded:
+                    FavouriteListingSubview()
+                    
+                case .empty:
+                    EmptyContentView(message: "Empty", systemImage: "heart.slash.fill")
+                    
+                case .error(let message):
+                    ErrorView(message: message, retryAction: {
+                        Task {
+                            await viewModel.loadUserFavourites()
+                        }
+                    })
                 }
-                .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
             }
+            .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
             .navigationTitle("Saved")
             .navigationBarTitleDisplayMode(.inline)
         }
         .task {
-            await viewModel.fetchUserFavorites()
-            print("DEBUG: Fetching user favourites via task modifier...")
+            await viewModel.loadUserFavourites()
+            print("DEBUG: Loading user favourites via task modifier...")
         }
     }
 }
@@ -58,7 +56,7 @@ fileprivate struct FavouriteListingSubview: View {
                         Button(role: .destructive) {
                             Task {
                               await viewModel.removeFromFavorites(favourite: favourite)
-                              await viewModel.fetchUserFavorites()
+                              await viewModel.loadUserFavourites()
                             }
                         } label: {
                             Image(systemName: "trash")
@@ -71,7 +69,7 @@ fileprivate struct FavouriteListingSubview: View {
         }
         .listStyle(.plain)
         .padding(.top)
-        .refreshable { await viewModel.fetchUserFavorites() }
+        .refreshable { await viewModel.loadUserFavourites() }
     }
 }
 

@@ -10,6 +10,7 @@ import Factory
 
 @Observable
 final class ProfileViewModel {
+    // MARK: - Enums
     enum ViewState: Equatable {
         case idle
         case loading
@@ -18,6 +19,7 @@ final class ProfileViewModel {
         case success(String)
     }
     
+    // MARK: - Observable properties
     var username: String = ""
     var imageSelection: PhotosPickerItem?
     private(set) var avatarImage: SelectedImage?
@@ -25,35 +27,22 @@ final class ProfileViewModel {
     private(set) var profile: Profile? = nil
     private(set) var viewState: ViewState = .idle
    
-    @ObservationIgnored
-    @Injected(\.prohibitedWordsService) private var prohibitedWordsService
-    @ObservationIgnored
-    @Injected(\.imageManager) private var imageManager
-    @ObservationIgnored
-    @Injected(\.profileService) private var profileService
-    
-    var isInteractionBlocked: Bool {
-        !validateUsername
-    }
+    // MARK: - Dependencies
+    @ObservationIgnored @Injected(\.prohibitedWordsService) private var prohibitedWordsService
+    @ObservationIgnored @Injected(\.imageManager) private var imageManager
+    @ObservationIgnored @Injected(\.profileService) private var profileService
     
     init() {
         print("DEBUG: Did init profile viewmodel.")
     }
     
+    // MARK: - Main actor functions
     @MainActor
     func resetState() {
         username = ""
         imageSelection = nil
         avatarImage = nil
         viewState = .idle
-    }
-    
-    func loadProhibitedWords() async {
-        do {
-            try await prohibitedWordsService.loadProhibitedWords()
-        } catch {
-            print("Failed to load prohibited words: \(error.localizedDescription)")
-        }
     }
     
     @MainActor
@@ -104,6 +93,23 @@ final class ProfileViewModel {
     }
     
     @MainActor
+    func loadItem(item: PhotosPickerItem) async {
+        let result = await imageManager.loadItem(item: item, analyze: true)
+        
+        switch result {
+        case .success(let pickedImage):
+            avatarImage = pickedImage
+        case .sensitiveContent:
+            viewState = .error(ProfileViewStateMessages.sensitiveContent.message)
+        case .analysisError:
+            viewState = .sensitiveApiNotEnabled
+        case .loadingError:
+            viewState = .error(ProfileViewStateMessages.generalError.message)
+        }
+    }
+    
+    // MARK: - Helpers and misc
+    
     private func canUpdateProfile() async -> Bool {
         guard !prohibitedWordsService.containsProhibitedWord(username) else {
             viewState = .error(ProfileViewStateMessages.inappropriateUsername.message)
@@ -124,7 +130,6 @@ final class ProfileViewModel {
         return true
     }
     
-    @MainActor
     private func shouldProceedWithUpdate() async -> Bool {
         if avatarImage == nil || avatarImage?.data == nil {
             await updateUsernameOnly()
@@ -134,7 +139,6 @@ final class ProfileViewModel {
         return true
     }
     
-    @MainActor
     private func updateUsernameOnly() async {
         do {
             let currentUser = try await profileService.getCurrentUserID()
@@ -157,20 +161,16 @@ final class ProfileViewModel {
         }
     }
     
-    @MainActor
-    func loadItem(item: PhotosPickerItem) async {
-        let result = await imageManager.loadItem(item: item, analyze: true)
-        
-        switch result {
-        case .success(let pickedImage):
-            avatarImage = pickedImage
-        case .sensitiveContent:
-            viewState = .error(ProfileViewStateMessages.sensitiveContent.message)
-        case .analysisError:
-            viewState = .sensitiveApiNotEnabled
-        case .loadingError:
-            viewState = .error(ProfileViewStateMessages.generalError.message)
+    func loadProhibitedWords() async {
+        do {
+            try await prohibitedWordsService.loadProhibitedWords()
+        } catch {
+            print("Failed to load prohibited words: \(error.localizedDescription)")
         }
+    }
+    
+    var isInteractionBlocked: Bool {
+        !validateUsername
     }
     
     var validateUsername: Bool {

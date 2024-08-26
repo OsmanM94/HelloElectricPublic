@@ -11,14 +11,16 @@ import AuthenticationServices
 import CryptoKit
 import Factory
 
-enum AuthenticationState {
-    case unauthenticated
-    case authenticating
-    case authenticated
-}
-
 @Observable
 final class AuthViewModel {
+    // MARK: - Enums
+    enum AuthenticationState {
+        case unauthenticated
+        case authenticating
+        case authenticated
+    }
+    
+    // MARK: - Observable properties
     var authenticationState: AuthenticationState = .unauthenticated
     var displayName: String = ""
     var user: User? = nil
@@ -28,9 +30,22 @@ final class AuthViewModel {
             await setupAuthStateListener()
         }
     }
-    @ObservationIgnored
-    @Injected(\.supabaseService) private var supabaseService
     
+    // MARK: - Dependencies
+    @ObservationIgnored @Injected(\.supabaseService) private var supabaseService
+    
+    // MARK: - Main actor functions
+    @MainActor
+    func signOut() async {
+        do {
+            try await supabaseService.client.auth.signOut()
+            authenticationState = .unauthenticated
+        } catch {
+            print("DEBUG: Error signing out")
+        }
+    }
+    
+    // MARK: - Helpers
     func handleAppleSignInCompletion(result: Result<ASAuthorization, Error>) {
         print("DEBUG: Starting Apple sign-in completion handling.")
         authenticationState = .authenticating
@@ -73,16 +88,6 @@ final class AuthViewModel {
         }
     }
         
-    @MainActor
-    func signOut() async {
-        do {
-            try await supabaseService.client.auth.signOut()
-            authenticationState = .unauthenticated
-        } catch {
-            print("DEBUG: Error signing out")
-        }
-    }
-    
     func setupAuthStateListener() async {
         await supabaseService.client.auth.onAuthStateChange { event, user in
             Task { @MainActor in

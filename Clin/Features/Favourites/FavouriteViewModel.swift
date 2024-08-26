@@ -10,12 +10,14 @@ import Factory
 
 @Observable
 final class FavouriteViewModel {
+    // MARK: - Enum
     enum ViewState: Equatable {
         case empty
         case loaded
         case error(String)
     }
     
+    // MARK: - ViewState messages
     enum FavouriteViewStateMessages: String, Error {
         case generalError = "An error occurred. Please try again."
         case noAuthUserFound = "No authenticated user found."
@@ -25,21 +27,23 @@ final class FavouriteViewModel {
         }
     }
     
+    // MARK: - Observable properties
     private(set) var viewState: ViewState = .empty
     private(set) var favoriteListings: [Favourite] = []
     private(set) var isFavourite: Bool = false
     
-    @ObservationIgnored
-    @Injected(\.favouriteService) private var favouriteService
-    @ObservationIgnored
-    @Injected(\.supabaseService) private var supabaseService
+    // MARK: - Dependencies
+    @ObservationIgnored @Injected(\.favouriteService) private var favouriteService
+    @ObservationIgnored @Injected(\.supabaseService) private var supabaseService
     
     init() {
         Task {
-            await fetchUserFavorites()
+            await loadUserFavourites()
             print("DEBUG: Initialising user favourites...")
         }
     }
+    
+    // MARK: - Main actor functions
     
     @MainActor
     func addToFavorites(listing: Listing) async  {
@@ -94,7 +98,7 @@ final class FavouriteViewModel {
     }
     
     @MainActor
-    func fetchUserFavorites() async  {
+    func loadUserFavourites() async  {
         guard let user = try? await supabaseService.client.auth.session.user else {
             print("DEBUG: No authenticated user found for favourites, can't fetch.")
             return
@@ -103,13 +107,9 @@ final class FavouriteViewModel {
             self.favoriteListings = try await favouriteService.loadUserFavourites(userID: user.id)
             updateViewState()
         } catch {
-            print("DEBUG: Error fetching user listings: \(error)")
+            print("DEBUG: Error loading user listings: \(error)")
             viewState = .error(FavouriteViewStateMessages.generalError.message)
         }
-    }
-    
-    func isFavourite(listing: Listing) -> Bool {
-        return favoriteListings.contains { $0.listingID == listing.id }
     }
     
     @MainActor
@@ -121,9 +121,14 @@ final class FavouriteViewModel {
         }
     }
     
-    @MainActor
+    // MARK: - Helpers and misc
+    
     private func updateViewState() {
         viewState = favoriteListings.isEmpty ? .empty : .loaded
+    }
+    
+    func isFavourite(listing: Listing) -> Bool {
+        return favoriteListings.contains { $0.listingID == listing.id }
     }
 }
 

@@ -49,6 +49,7 @@ fileprivate struct EditFormSubview: View {
     @Bindable var viewModel: EditFormViewModel
     @State var listing: Listing
     @State private var originalListing: Listing
+    @State private var hasImageChanges: Bool = false
     
     init(viewModel: EditFormViewModel, listing: Listing) {
         self._viewModel = Bindable(viewModel)
@@ -77,6 +78,9 @@ fileprivate struct EditFormSubview: View {
                 .toolbar {
                     keyboardToolbarContent
                     topBarTrailingToolbarContent
+                }
+                .onChange(of: viewModel.selectedImages) { _, _ in
+                    hasImageChanges = true
                 }
             case .error(let message):
                 ErrorView(message: message) { viewModel.resetState() }
@@ -258,7 +262,6 @@ fileprivate struct EditFormSubview: View {
     }
     
     // MARK: Toolbar
-    
     private var keyboardToolbarContent: some ToolbarContent {
         ToolbarItemGroup(placement: .keyboard) {
             Spacer(minLength: 0)
@@ -284,20 +287,20 @@ fileprivate struct EditFormSubview: View {
     }
     
     // MARK: - Apply button
-    
     private var applyButtonSection: some View {
         Section {
             Button {
                 Task {
                     await viewModel.updateUserListing(listing)
                     originalListing = listing
+                    hasImageChanges = false
                 }
             } label: {
                 Text("Apply")
                     .font(.headline)
                     .frame(maxWidth: .infinity)
             }
-            .disabled(listing == originalListing)
+            .disabled(listing == originalListing && !hasImageChanges)
         }
     }
 }

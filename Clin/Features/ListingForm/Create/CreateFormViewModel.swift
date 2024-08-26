@@ -47,7 +47,6 @@ final class CreateFormViewModel: ImagePickerProtocol {
     var warranty: String = "Select"
     var serviceHistory: String = "Select"
     var numberOfOwners: String = "Select"
-    var isPromoted: Bool = false
     
     // MARK: - Image Properties
     var selectedImages: [SelectedImage?] = Array(repeating: nil, count: 10)

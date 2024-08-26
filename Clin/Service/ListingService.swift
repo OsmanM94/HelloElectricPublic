@@ -41,23 +41,17 @@ final class ListingService: ListingServiceProtocol {
     
     func loadModels() async throws -> [EVModels] {
         try await databaseService
-            .loadAll(
-                from: "ev_make"
-            )
+            .loadAll(from: "ev_make", orderBy: "id", ascending: true)
     }
     
     func loadLocations() async throws -> [Cities] {
         try await databaseService
-            .loadAll(
-                from: "uk_cities"
-            )
+            .loadAll(from: "uk_cities", orderBy: "id", ascending: true)
     }
     
     func loadEVfeatures() async throws -> [EVFeatures] {
         try await databaseService
-            .loadAll(
-                from: "ev_features"
-            )
+            .loadAll(from: "ev_features", orderBy: "id", ascending: true)
     }
     
     func createListing(_ listing: Listing) async throws {

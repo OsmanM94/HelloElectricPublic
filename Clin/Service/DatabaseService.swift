@@ -26,11 +26,12 @@ final class DatabaseService: DatabaseServiceProtocol {
         }
     }
     
-    func loadAll<T: Decodable>(from table: String) async throws -> [T] {
+    func loadAll<T: Decodable>(from table: String, orderBy: String, ascending: Bool = true) async throws -> [T] {
         do {
             let result: [T] = try await supabaseService.client
                 .from(table)
                 .select()
+                .order(orderBy, ascending: ascending)
                 .execute()
                 .value
             return result

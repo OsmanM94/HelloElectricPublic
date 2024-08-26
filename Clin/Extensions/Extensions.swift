@@ -70,3 +70,4 @@ public extension View {
         self.modifier(SensitiveContentAnalysisModifier())
     }
 }
+

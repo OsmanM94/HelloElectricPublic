@@ -13,22 +13,16 @@ final class SearchService: SearchServiceProtocol {
     
     func loadModels() async throws -> [EVModels] {
         try await databaseService
-            .loadAll(
-                from: "ev_make"
-            )
+            .loadAll(from: "ev_make", orderBy: "make", ascending: true)
     }
     
     func loadCities() async throws -> [Cities] {
         try await databaseService
-            .loadAll(
-                from: "uk_cities"
-            )
+            .loadAll(from: "uk_cities", orderBy: "id", ascending: true)
     }
     
     func loadEVfeatures() async throws -> [EVFeatures] {
         try await databaseService
-            .loadAll(
-                from: "ev_features"
-            )
+            .loadAll(from: "ev_features", orderBy: "id", ascending: true)
     }
 }

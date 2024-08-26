@@ -107,7 +107,7 @@ private extension SearchView {
                     
                     if viewModel.isFilterApplied {
                         Circle()
-                            .foregroundStyle(.blue.gradient)
+                            .foregroundStyle(.orange.gradient)
                             .frame(width: 11, height: 11)
                             .offset(x: 1, y: -1)
                     }

@@ -8,36 +8,34 @@ import SwiftUI
 
 struct ProfileView: View {
     @State private var viewModel = ProfileViewModel()
-  
+    
     var body: some View {
         NavigationStack {
-            Group {
-                VStack(spacing: 0) {
-                    switch viewModel.viewState {
-                    case .idle:
-                        ProfileSubview(viewModel: viewModel)
-                        
-                    case .loading:
-                        ProgressView("Analyzing...").scaleEffect(1.5)
-                        
-                    case .error(let message):
-                        ErrorView(message: message, retryAction: {
-                            viewModel.resetState()
-                        })
-                        
-                    case .sensitiveApiNotEnabled:
-                        SensitiveAnalysisErrorView(retryAction: {
-                            viewModel.resetState()
-                        })
-                        
-                    case .success(let message):
-                        SuccessView(message: message, doneAction: {
-                            viewModel.resetState()
-                        })
-                    }
+            VStack {
+                switch viewModel.viewState {
+                case .idle:
+                    ProfileSubview(viewModel: viewModel)
+                    
+                case .loading:
+                    ProgressView("Analyzing...").scaleEffect(1.5)
+                    
+                case .error(let message):
+                    ErrorView(message: message, retryAction: {
+                        viewModel.resetState()
+                    })
+                    
+                case .sensitiveApiNotEnabled:
+                    SensitiveAnalysisErrorView(retryAction: {
+                        viewModel.resetState()
+                    })
+                    
+                case .success(let message):
+                    SuccessView(message: message, doneAction: {
+                        viewModel.resetState()
+                    })
                 }
-                .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
             }
+            .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
             .navigationTitle("Profile")
             .navigationBarTitleDisplayMode(.inline)
             .onDisappear { viewModel.resetState() }
@@ -97,11 +95,9 @@ fileprivate struct ProfileSubview: View {
             } label: {
                 Text("Update profile")
                     .font(.headline)
-                    .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
             }
             .disabled(viewModel.isInteractionBlocked)
-            .listRowBackground(Color(viewModel.validateUsername ? .accent : .gray.opacity(0.4)))
         }
     }
     

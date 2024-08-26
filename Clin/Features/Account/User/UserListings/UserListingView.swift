@@ -12,35 +12,33 @@ struct UserListingView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                Group {
-                    switch viewModel.viewState {
-                    case .empty:
-                        EmptyContentView(message: "No active listings found", systemImage: "tray.fill")
-                    case .success:
-                        UserListingSubview(viewModel: viewModel)
-                        
-                    case .error(let message):
-                        ErrorView(message: message, retryAction: { Task {
-                            await viewModel.fetchUserListings() } })
-                    }
+                switch viewModel.viewState {
+                case .empty:
+                    EmptyContentView(message: "No active listings found", systemImage: "tray.fill")
+                case .success:
+                    UserListingSubview(viewModel: viewModel)
+                    
+                case .error(let message):
+                    ErrorView(message: message, retryAction: { Task {
+                        await viewModel.loadUserListings() } })
                 }
-                .navigationTitle("Active listings")
-                .navigationBarTitleDisplayMode(.inline)
             }
             .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
+            .navigationTitle("Active listings")
+            .navigationBarTitleDisplayMode(.inline)
             .deleteAlert(
                 isPresented:  $viewModel.showDeleteAlert,
                 itemToDelete: $viewModel.listingToDelete
             ) { listing in
                 Task {
                     await viewModel.deleteUserListing(listing)
-                    await viewModel.fetchUserListings()
+                    await viewModel.loadUserListings()
                 }
             }
         }
         .task {
             if viewModel.userActiveListings.isEmpty {
-                await viewModel.fetchUserListings()
+                await viewModel.loadUserListings()
             }
         }
     }
@@ -75,11 +73,11 @@ fileprivate struct UserListingSubview: View {
                 0
             }
         }
-        .refreshable { await viewModel.fetchUserListings() }
+        .refreshable { await viewModel.loadUserListings() }
         .listStyle(.plain)
         .fullScreenCover(item: $viewModel.selectedListing, onDismiss: {
                 Task {
-                    await viewModel.fetchUserListings()
+                    await viewModel.loadUserListings()
                 }
             }) { listing in
                 EditFormView(listing: listing)
