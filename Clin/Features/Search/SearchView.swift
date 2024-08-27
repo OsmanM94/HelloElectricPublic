@@ -23,7 +23,7 @@ struct SearchView: View {
                     listView
                 case .loading:
                     CustomProgressView()
-                case .empty:
+                case .noResults:
                     searchBar
                     ContentUnavailableView.search
                     listView
@@ -80,9 +80,35 @@ private extension SearchView {
             ForEach(viewModel.searchedItems, id: \.id) { item in
                 NavigationLink(value: item) {
                     ListingCell(listing: item)
+                        .id(item.id)
+                }
+                .task {
+                    if item == viewModel.searchedItems.last && !viewModel.isSearching {
+                        if viewModel.isFilterApplied {
+                            await viewModel.searchFilteredItems(isLoadingMore: true)
+                        } else {
+                            await viewModel.searchItems(isLoadingMore: true)
+                        }
+                    }
                 }
             }
             .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
+            
+            if viewModel.hasMoreListings && !viewModel.searchedItems.isEmpty {
+                ProgressView()
+                    .scaleEffect(1.0)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .listRowSeparator(.hidden)
+                    .task {
+                        if !viewModel.isSearching {
+                            if viewModel.isFilterApplied {
+                            await viewModel.searchFilteredItems(isLoadingMore: true)
+                            } else {
+                            await viewModel.searchItems(isLoadingMore: true)
+                            }
+                        }
+                    }
+            }
         }
         .navigationDestination(for: Listing.self, destination: { listing in
             ListingDetailView(listing: listing)

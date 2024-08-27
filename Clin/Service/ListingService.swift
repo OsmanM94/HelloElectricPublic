@@ -34,6 +34,8 @@ final class ListingService: ListingServiceProtocol {
         try await databaseService
             .loadMultipleWithField(
                 from: "car_listing",
+                orderBy: "created_at",
+                ascending: false,
                 field: "user_id",
                 uuid: userID
             )
@@ -41,12 +43,12 @@ final class ListingService: ListingServiceProtocol {
     
     func loadModels() async throws -> [EVModels] {
         try await databaseService
-            .loadAll(from: "ev_make", orderBy: "id", ascending: true)
+            .loadAll(from: "ev_make", orderBy: "make", ascending: true)
     }
     
     func loadLocations() async throws -> [Cities] {
         try await databaseService
-            .loadAll(from: "uk_cities", orderBy: "id", ascending: true)
+            .loadAll(from: "uk_cities", orderBy: "city", ascending: true)
     }
     
     func loadEVfeatures() async throws -> [EVFeatures] {

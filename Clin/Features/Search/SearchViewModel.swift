@@ -5,7 +5,7 @@
 //  Created by asia on 13/08/2024.
 //
 
-import Foundation
+import SwiftUI
 import Factory
 
 @Observable
@@ -15,7 +15,7 @@ final class SearchViewModel {
         case idle
         case loading
         case loaded
-        case empty
+        case noResults
     }
     
     enum FilterViewState {
@@ -31,7 +31,14 @@ final class SearchViewModel {
     // Search properties
     var searchText: String = ""
     private(set) var searchedItems: [Listing] = []
-   
+    private(set) var isSearching: Bool = false
+    private var currentSearchText: String = ""
+    
+    // Pagination
+    private(set) var hasMoreListings: Bool = true
+    private(set) var currentPage: Int = 0
+    private let pageSize: Int = 10
+    
     // Misc
     private let defaultMaxPrice: Double = 20_000
     private let defaultMaxMileage: Double = 100_000
@@ -43,60 +50,24 @@ final class SearchViewModel {
     @ObservationIgnored @Injected(\.searchService) private var searchService
     
     // MARK: - Filter properties
-    var make: String = "Any" {
-        didSet { updateFilterState() }
-    }
-    var model: String = "Any" {
-        didSet { updateFilterState() }
-    }
-    var location: String = "Any" {
-        didSet { updateFilterState() }
-    }
-    var body: String = "Any" {
-        didSet { updateFilterState() }
-    }
-    var selectedYear: String = "Any" {
-        didSet { updateFilterState() }
-    }
-    var maxPrice: Double = 20_000 {
-        didSet { updateFilterState() }
-    }
-    var condition: String = "Any" {
-        didSet { updateFilterState() }
-    }
-    var maxMileage: Double = 100_000 {
-        didSet { updateFilterState() }
-    }
-    var range: String = "Any" {
-        didSet { updateFilterState() }
-    }
-    var colour: String = "Any" {
-        didSet { updateFilterState() }
-    }
-    var maxPublicChargingTime: String = "Any" {
-        didSet { updateFilterState() }
-    }
-    var maxHomeChargingTime: String = "Any" {
-        didSet { updateFilterState() }
-    }
-    var batteryCapacity: String = "Any" {
-        didSet { updateFilterState() }
-    }
-    var powerBhp: String = "Any" {
-        didSet { updateFilterState() }
-    }
-    var regenBraking: String = "Any" {
-        didSet { updateFilterState() }
-    }
-    var warranty: String = "Any" {
-        didSet { updateFilterState() }
-    }
-    var serviceHistory: String = "Any" {
-        didSet { updateFilterState() }
-    }
-    var numberOfOwners: String = "Any" {
-        didSet { updateFilterState() }
-    }
+    var make: String = "Any" { didSet { updateFilterState() } }
+    var model: String = "Any" { didSet { updateFilterState() } }
+    var location: String = "Any" { didSet { updateFilterState() } }
+    var body: String = "Any" { didSet { updateFilterState() } }
+    var selectedYear: String = "Any" { didSet { updateFilterState() } }
+    var maxPrice: Double = 20_000 { didSet { updateFilterState() } }
+    var condition: String = "Any" { didSet { updateFilterState() } }
+    var maxMileage: Double = 100_000 { didSet { updateFilterState() } }
+    var range: String = "Any" { didSet { updateFilterState() } }
+    var colour: String = "Any" { didSet { updateFilterState() } }
+    var maxPublicChargingTime: String = "Any" { didSet { updateFilterState() } }
+    var maxHomeChargingTime: String = "Any" { didSet { updateFilterState() } }
+    var batteryCapacity: String = "Any" { didSet { updateFilterState() } }
+    var powerBhp: String = "Any" { didSet { updateFilterState() } }
+    var regenBraking: String = "Any" { didSet { updateFilterState() } }
+    var warranty: String = "Any" { didSet { updateFilterState() } }
+    var serviceHistory: String = "Any" { didSet { updateFilterState() } }
+    var numberOfOwners: String = "Any" { didSet { updateFilterState() } }
     
     // MARK: - Data Array
     var loadedModels: [EVModels] = []
@@ -134,48 +105,73 @@ final class SearchViewModel {
     
     // Search no filters
     @MainActor
-    func searchItems() async {
+    func searchItems(isLoadingMore: Bool = false) async {
         guard !searchText.isEmpty else { return }
-        self.searchedItems.removeAll()
-        self.viewState = .loading
+        
+        if !isLoadingMore {
+            self.searchedItems.removeAll()
+            self.currentPage = 0
+            self.hasMoreListings = true
+            self.currentSearchText = searchText
+        }
+        
+        guard hasMoreListings else { return }
+        viewState = .loading
+        self.isSearching = true
         
         do {
-            let response = try await searchItemsFromSupabase(searchText: searchText)
-            print("DEBUG: Search completed successfully for text: \(searchText)")
-            self.searchedItems = response
+            let from = currentPage * pageSize
+            let to = from + pageSize - 1
             
-            if self.searchedItems.isEmpty {
-                self.viewState = .empty
-            } else {
-                self.viewState = .loaded
+            let response = try await searchItemsFromSupabase(searchText: currentSearchText, from: from, to: to)
+            
+            if response.count < pageSize {
+                self.hasMoreListings = false
             }
+            
+            withAnimation {
+                searchedItems.append(contentsOf: response)
+            }
+            self.currentPage += 1
+            
+            self.viewState = searchedItems.isEmpty ? .noResults : .loaded
         } catch {
             print("DEBUG: Error loading search results from Supabase: \(error)")
-            self.searchedItems = []
+            if !isLoadingMore {
+                self.searchedItems = []
+            }
             self.viewState = .idle
         }
+        self.isSearching = false
     }
     
     // Search with filters
     @MainActor
-    func searchFilteredItems() async {
-        self.searchedItems.removeAll()
-        self.viewState = .loading
+    func searchFilteredItems(isLoadingMore: Bool = false) async {
+        if !isLoadingMore {
+            self.searchedItems.removeAll()
+            self.currentPage = 0
+            self.hasMoreListings = true
+        }
+        
+        guard hasMoreListings else { return }
+        viewState = .loading
+        self.isSearching = true
+        
         do {
+            let from = currentPage * pageSize
+            let to = from + pageSize - 1
+            
             var query = supabaseService.client
                 .from(table)
                 .select()
-            
+                
             // Applying filters only if the value is not "Any" or empty
             if !make.isEmpty && make != "Any" {
-                query = query.ilike("make", pattern: make)
-                
-                print("DEBUG: Applied filter for make: \(make)")
+                query = query.eq("make", value: make)
             }
             if !model.isEmpty && model != "Any" {
-                query = query.ilike("model", pattern: model)
-                
-                print("DEBUG: Applied filter for model: \(model)")
+                query = query.eq("model", value: model)
             }
             if !selectedYear.isEmpty && selectedYear != "Any" {
                 query = query.eq("year", value: selectedYear)
@@ -219,26 +215,37 @@ final class SearchViewModel {
             if !numberOfOwners.isEmpty && numberOfOwners != "Any" {
                 query = query.eq("owners", value: numberOfOwners)
             }
+                
+            let response: [Listing] = try await query
+                .order("created_at",ascending: false)
+                .range(from: from,to: to)
+                .execute()
+                .value
             
-            let response: [Listing] = try await query.execute().value
-            
-            self.searchedItems = response
-            
-            if self.searchedItems.isEmpty {
-                self.viewState = .empty
-            } else {
-                self.viewState = .loaded
+            if response.count < pageSize {
+                self.hasMoreListings = false
             }
+            
+            withAnimation {
+                searchedItems.append(contentsOf: response)
+            }
+            self.currentPage += 1
+            
+            self.viewState = searchedItems.isEmpty ? .noResults : .loaded
         } catch {
             print("DEBUG: Error loading filtered items from Supabase: \(error)")
-            self.searchedItems = []
+            if !isLoadingMore {
+                self.searchedItems = []
+            }
             self.viewState = .idle
         }
+        self.isSearching = false
     }
     
     @MainActor
     func resetState() {
         self.searchText = ""
+        self.currentPage = 0
         self.searchedItems.removeAll()
         viewState = .idle
     }
@@ -291,12 +298,14 @@ final class SearchViewModel {
         isFilterApplied = isAnyFilterActive()
     }
     
-    private func searchItemsFromSupabase(searchText: String) async throws -> [Listing] {
+    private func searchItemsFromSupabase(searchText: String, from: Int, to: Int) async throws -> [Listing] {
         do {
             let response: [Listing] = try await supabaseService.client
                 .from(table)
                 .select()
                 .or("make.ilike.%\(searchText)%,model.ilike.%\(searchText)%,year.ilike.%\(searchText)%,location.ilike.%\(searchText)%")
+                .range(from: from, to: to)
+                .order("created_at", ascending: false)
                 .execute()
                 .value
             print("DEBUG: Loaded \(response.count) listings from Supabase for text: \(searchText)")

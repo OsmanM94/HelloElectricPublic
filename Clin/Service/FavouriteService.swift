@@ -15,6 +15,8 @@ final class FavouriteService: FavouriteServiceProtocol {
         try await databaseService
             .loadMultipleWithField(
                 from: "favourite_listing",
+                orderBy: "created_at",
+                ascending: false,
                 field: "user_id",
                 uuid: userID
             )

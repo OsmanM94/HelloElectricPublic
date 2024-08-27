@@ -11,7 +11,7 @@ protocol DatabaseServiceProtocol {
     func loadWithPagination<T: Decodable>(from table: String, orderBy: String, ascending: Bool, from: Int, to: Int) async throws -> [T]
     func loadAll<T: Decodable>(from table: String, orderBy: String, ascending: Bool) async throws -> [T]
     func loadByID<T: Decodable>(from table: String, id: Int) async throws -> T
-    func loadMultipleWithField<T: Decodable>(from table: String, field: String, uuid: UUID) async throws -> [T]
+    func loadMultipleWithField<T: Decodable>(from table: String, orderBy: String, ascending: Bool, field: String, uuid: UUID) async throws -> [T]
     func loadSingleWithField<T: Decodable>(from table: String, field: String, uuid: UUID) async throws -> T
     func insert<T: Encodable>(_ item: T, into table: String) async throws
     func update<T: Encodable>(_ item: T, in table: String, id: Int) async throws

@@ -55,12 +55,13 @@ final class DatabaseService: DatabaseServiceProtocol {
         }
     }
     
-    func loadMultipleWithField<T: Decodable>(from table: String, field: String, uuid: UUID) async throws -> [T] {
+    func loadMultipleWithField<T: Decodable>(from table: String, orderBy: String, ascending: Bool = true, field: String, uuid: UUID) async throws -> [T] {
         do {
             let result: [T] = try await supabaseService.client
                 .from(table)
                 .select()
                 .eq(field, value: uuid)
+                .order(orderBy, ascending: ascending)
                 .execute()
                 .value
             return result
