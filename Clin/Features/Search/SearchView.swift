@@ -21,12 +21,19 @@ struct SearchView: View {
                 case .idle, .loaded:
                     searchBar
                     listView
+                    
                 case .loading:
                     CustomProgressView()
+                    
                 case .noResults:
                     searchBar
                     ContentUnavailableView.search
                     listView
+                    
+                case .error(let message):
+                    ErrorView(message: message, retryAction: {
+                        viewModel.clearSearch()
+                    })
                 }
             }
             .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
@@ -60,9 +67,7 @@ private extension SearchView {
                     .textInputAutocapitalization(.never)
                     .submitLabel(.search)
                     .padding(.vertical, 8)
-                    .onSubmit {
-                        Task { await viewModel.searchItems() }
-                    }
+                    .onSubmit { Task { await viewModel.searchItems() } }
             }
             .padding(.horizontal)
             .background(Color(.systemGray6))
@@ -84,11 +89,7 @@ private extension SearchView {
                 }
                 .task {
                     if item == viewModel.searchedItems.last && !viewModel.isSearching {
-                        if viewModel.isFilterApplied {
-                            await viewModel.searchFilteredItems(isLoadingMore: true)
-                        } else {
-                            await viewModel.searchItems(isLoadingMore: true)
-                        }
+                        await viewModel.loadMoreIfNeeded()
                     }
                 }
             }
@@ -101,11 +102,7 @@ private extension SearchView {
                     .listRowSeparator(.hidden)
                     .task {
                         if !viewModel.isSearching {
-                            if viewModel.isFilterApplied {
-                            await viewModel.searchFilteredItems(isLoadingMore: true)
-                            } else {
-                            await viewModel.searchItems(isLoadingMore: true)
-                            }
+                            await viewModel.loadMoreIfNeeded()
                         }
                     }
             }
@@ -145,7 +142,7 @@ private extension SearchView {
     private var topBarLeadingToolbarContent: some ToolbarContent {
         ToolbarItem(placement: .topBarLeading) {
             Button("Clear") {
-                viewModel.resetState()
+                viewModel.clearSearch()
             }
             .disabled(viewModel.searchText.isEmpty && viewModel.searchedItems.isEmpty)
         }

@@ -11,16 +11,25 @@ import Factory
 @Observable
 final class SearchViewModel {
     // MARK: - Enums
-    enum ViewState {
+    enum ViewState: Equatable {
         case idle
         case loading
         case loaded
         case noResults
+        case error(String)
     }
     
     enum FilterViewState {
         case loading
         case loaded
+    }
+    
+    // MARK: - Error messages
+    enum SearchViewStateErrorMessages: String, Error {
+        case generalError = "An error occurred. Please try again."
+        var message: String {
+            return self.rawValue
+        }
     }
     
     // MARK: - Observable properties
@@ -103,69 +112,35 @@ final class SearchViewModel {
         self.filterViewState = .loaded
     }
     
+    @MainActor
+    func loadMoreIfNeeded() async {
+        if isFilterApplied {
+            await searchFilteredItems(isLoadingMore: true)
+        } else {
+            await searchItems(isLoadingMore: true)
+        }
+    }
+    
     // Search no filters
     @MainActor
     func searchItems(isLoadingMore: Bool = false) async {
         guard !searchText.isEmpty else { return }
         
-        if !isLoadingMore {
-            self.searchedItems.removeAll()
-            self.currentPage = 0
-            self.hasMoreListings = true
-            self.currentSearchText = searchText
+        await performSearch(isLoadingMore: isLoadingMore) { [weak self] in
+            guard let self = self else { return [] }
+            return try await self.searchItemsFromSupabase(searchText: self.currentSearchText, from: self.currentPage * self.pageSize, to: (self.currentPage + 1) * self.pageSize - 1)
         }
-        
-        guard hasMoreListings else { return }
-        viewState = .loading
-        self.isSearching = true
-        
-        do {
-            let from = currentPage * pageSize
-            let to = from + pageSize - 1
-            
-            let response = try await searchItemsFromSupabase(searchText: currentSearchText, from: from, to: to)
-            
-            if response.count < pageSize {
-                self.hasMoreListings = false
-            }
-            
-            withAnimation {
-                searchedItems.append(contentsOf: response)
-            }
-            self.currentPage += 1
-            
-            self.viewState = searchedItems.isEmpty ? .noResults : .loaded
-        } catch {
-            print("DEBUG: Error loading search results from Supabase: \(error)")
-            if !isLoadingMore {
-                self.searchedItems = []
-            }
-            self.viewState = .idle
-        }
-        self.isSearching = false
     }
     
     // Search with filters
     @MainActor
     func searchFilteredItems(isLoadingMore: Bool = false) async {
-        if !isLoadingMore {
-            self.searchedItems.removeAll()
-            self.currentPage = 0
-            self.hasMoreListings = true
-        }
-        
-        guard hasMoreListings else { return }
-        viewState = .loading
-        self.isSearching = true
-        
-        do {
-            let from = currentPage * pageSize
-            let to = from + pageSize - 1
-            
-            var query = supabaseService.client
-                .from(table)
+        await performSearch(isLoadingMore: isLoadingMore) { [weak self] in
+            guard let self = self else { return [] }
+            var query = self.supabaseService.client
+                .from(self.table)
                 .select()
-                
+            
             // Applying filters only if the value is not "Any" or empty
             if !make.isEmpty && make != "Any" {
                 query = query.eq("make", value: make)
@@ -215,39 +190,23 @@ final class SearchViewModel {
             if !numberOfOwners.isEmpty && numberOfOwners != "Any" {
                 query = query.eq("owners", value: numberOfOwners)
             }
-                
-            let response: [Listing] = try await query
-                .order("created_at",ascending: false)
-                .range(from: from,to: to)
+
+            return try await query
+                .order("created_at", ascending: false)
+                .range(from: self.currentPage * self.pageSize, to: (self.currentPage + 1) * self.pageSize - 1)
                 .execute()
                 .value
-            
-            if response.count < pageSize {
-                self.hasMoreListings = false
-            }
-            
-            withAnimation {
-                searchedItems.append(contentsOf: response)
-            }
-            self.currentPage += 1
-            
-            self.viewState = searchedItems.isEmpty ? .noResults : .loaded
-        } catch {
-            print("DEBUG: Error loading filtered items from Supabase: \(error)")
-            if !isLoadingMore {
-                self.searchedItems = []
-            }
-            self.viewState = .idle
         }
-        self.isSearching = false
     }
     
     @MainActor
-    func resetState() {
+    func clearSearch() {
         self.searchText = ""
-        self.currentPage = 0
+        self.currentSearchText = ""
         self.searchedItems.removeAll()
-        viewState = .idle
+        self.currentPage = 0
+        self.hasMoreListings = true
+        self.viewState = .idle
     }
     
     @MainActor
@@ -312,9 +271,42 @@ final class SearchViewModel {
             return response
         } catch {
             print("DEBUG: Failed to load listings from Supabase: \(error)")
+            viewState = .error(SearchViewStateErrorMessages.generalError.message)
             throw error
         }
     }
+    
+    private func performSearch(isLoadingMore: Bool, searchFunction: @escaping () async throws -> [Listing]) async {
+        if !isLoadingMore {
+            self.searchedItems.removeAll()
+            self.currentPage = 0
+            self.hasMoreListings = true
+            self.currentSearchText = searchText
+        }
+        
+        guard hasMoreListings else { return }
+        viewState = .loading
+        self.isSearching = true
+
+            do {
+                let response = try await searchFunction()
+
+                if response.count < pageSize {
+                    self.hasMoreListings = false
+                }
+
+                withAnimation {
+                    searchedItems.append(contentsOf: response)
+                }
+                self.currentPage += 1
+
+                self.viewState = searchedItems.isEmpty ? .noResults : .loaded
+            } catch {
+               print("Error searching \(error)")
+                viewState = .error(SearchViewStateErrorMessages.generalError.message)
+            }
+            self.isSearching = false
+        }
     
     private func loadModels() async {
         if loadedModels.isEmpty {
