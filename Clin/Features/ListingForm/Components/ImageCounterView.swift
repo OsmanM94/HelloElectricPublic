@@ -11,21 +11,24 @@ struct ImageCounterView: View {
     let count: Int
     
     var body: some View {
-        Image(systemName: "photo")
+        Image(systemName: count <= 0 ? "photo.badge.plus": "photo")
             .foregroundStyle(.gray)
             .font(.system(size: 24))
+            .symbolRenderingMode(.multicolor)
             .overlay(alignment: .topTrailing) {
-                Text("\(count)")
-                    .font(.system(size: 13).bold())
-                    .foregroundStyle(.white)
-                    .padding(6)
-                    .background(Color(.red))
-                    .clipShape(Circle())
-                    .offset(x: 4, y: -8)
+                if count > 0 {
+                    Text("\(count)")
+                        .font(.system(size: 13).bold())
+                        .foregroundStyle(.white)
+                        .padding(4)
+                        .background(Color(.red))
+                        .clipShape(Circle())
+                        .offset(x: 2, y: -6)
+                }
             }
     }
 }
 
 #Preview {
-    ImageCounterView(count: 1)
+    ImageCounterView(count: 0)
 }
