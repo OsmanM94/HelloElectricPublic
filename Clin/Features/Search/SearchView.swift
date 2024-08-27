@@ -10,16 +10,23 @@ import SwiftUI
 struct SearchView: View {
     @State private var viewModel = SearchViewModel()
     @State private var showingFilterView: Bool = false
-    
     @FocusState private var isPresented: Bool
     let systemImageName: String = "line.3.horizontal.decrease.circle"
     
+    let predefinedSuggestions: [String] = [
+        "Tesla Model 3",
+        "Nissan Leaf",
+        "BMW i3",
+        "Ford E-Transit"
+    ]
+    
     var body: some View {
         NavigationStack {
-            VStack {
+            VStack(alignment: .leading) {
                 switch viewModel.viewState {
                 case .idle, .loaded:
                     searchBar
+                    searchSuggestions
                     listView
                     
                 case .loading:
@@ -77,6 +84,26 @@ private extension SearchView {
         }
         .padding(.bottom)
     }
+    
+    // MARK: - Search suggestions
+    
+    private var searchSuggestions: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            ForEach(predefinedSuggestions, id: \.self) { suggestion in
+                Text("eg. \(suggestion)")
+                    .onTapGesture {
+                        viewModel.searchText = suggestion
+                        Task {
+                            await viewModel.searchItems()
+                        }
+                    }
+            }
+        }
+        .foregroundStyle(.primary)
+        .font(.body)
+        .padding()
+    }
+   
     
     // MARK: - List View
     
