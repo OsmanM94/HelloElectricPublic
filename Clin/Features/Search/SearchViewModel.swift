@@ -53,6 +53,13 @@ final class SearchViewModel {
     private let defaultMaxMileage: Double = 100_000
     private(set) var isFilterApplied: Bool = false
     private let table: String = "car_listing"
+    private var suggestionTapped: Bool = false
+    let predefinedSuggestions: [String] = [
+        "Tesla Model 3",
+        "Nissan Leaf",
+        "BMW i3",
+        "Ford E-Transit"
+    ]
     
     // MARK: - Dependencies
     @ObservationIgnored @Injected(\.supabaseService) private var supabaseService
@@ -128,7 +135,11 @@ final class SearchViewModel {
         
         await performSearch(isLoadingMore: isLoadingMore) { [weak self] in
             guard let self = self else { return [] }
-            return try await self.searchItemsFromSupabase(searchText: self.currentSearchText, from: self.currentPage * self.pageSize, to: (self.currentPage + 1) * self.pageSize - 1)
+            
+            return try await self.searchItemsFromSupabase(
+                searchText: self.currentSearchText,
+                from: self.currentPage * self.pageSize,
+                to: (self.currentPage + 1) * self.pageSize - 1)
         }
     }
     
@@ -258,11 +269,20 @@ final class SearchViewModel {
     }
     
     private func searchItemsFromSupabase(searchText: String, from: Int, to: Int) async throws -> [Listing] {
+        // Split the search text into individual words
+        let searchComponents = searchText.split(separator: " ").map { String($0) }
+        
+        // Build a dynamic `or` condition that matches any of the components
+        let orConditions = searchComponents.map { component in
+               """
+               make.ilike.%\(component)%,model.ilike.%\(component)%,year.ilike.%\(component)%,location.ilike.%\(component)%
+               """
+        }.joined(separator: ",")
         do {
             let response: [Listing] = try await supabaseService.client
                 .from(table)
                 .select()
-                .or("make.ilike.%\(searchText)%,model.ilike.%\(searchText)%,year.ilike.%\(searchText)%,location.ilike.%\(searchText)%")
+                .or(orConditions)
                 .range(from: from, to: to)
                 .order("created_at", ascending: false)
                 .execute()
@@ -370,6 +390,19 @@ final class SearchViewModel {
         // Check if the current model is still valid in the new list of available models
         if !modelOptions.contains(model) {
             self.model = "Any"
+        }
+    }
+    
+    func handleSuggestionTap(_ suggestion: String) {
+        guard !suggestionTapped else { return }
+        suggestionTapped = true
+        
+        searchText = suggestion
+        Task {
+            await searchItems()
+            DispatchQueue.main.async {
+                self.suggestionTapped = false
+            }
         }
     }
 }

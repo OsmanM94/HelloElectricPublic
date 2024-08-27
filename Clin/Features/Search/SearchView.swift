@@ -13,20 +13,17 @@ struct SearchView: View {
     @FocusState private var isPresented: Bool
     let systemImageName: String = "line.3.horizontal.decrease.circle"
     
-    let predefinedSuggestions: [String] = [
-        "Tesla Model 3",
-        "Nissan Leaf",
-        "BMW i3",
-        "Ford E-Transit"
-    ]
-    
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading) {
                 switch viewModel.viewState {
-                case .idle, .loaded:
+                case .idle:
                     searchBar
                     searchSuggestions
+                    listView
+                    
+                case .loaded:
+                    searchBar
                     listView
                     
                 case .loading:
@@ -89,13 +86,10 @@ private extension SearchView {
     
     private var searchSuggestions: some View {
         VStack(alignment: .leading, spacing: 10) {
-            ForEach(predefinedSuggestions, id: \.self) { suggestion in
+            ForEach(viewModel.predefinedSuggestions, id: \.self) { suggestion in
                 Text("eg. \(suggestion)")
                     .onTapGesture {
-                        viewModel.searchText = suggestion
-                        Task {
-                            await viewModel.searchItems()
-                        }
+                        viewModel.handleSuggestionTap(suggestion)
                     }
             }
         }
