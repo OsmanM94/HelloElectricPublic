@@ -238,7 +238,7 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		6217F30E2C2851D500EF8B2D /* App */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (6217F30F2C2851D900EF8B2D /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = App; sourceTree = "<group>"; };
 		6217F3102C28526400EF8B2D /* Models */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (6217F3222C288A6100EF8B2D /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Models; sourceTree = "<group>"; };
-		6217F3292C288EFC00EF8B2D /* MarketView */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (62B6EE182C3F229200528480 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = MarketView; sourceTree = "<group>"; };
+		6217F3292C288EFC00EF8B2D /* Market */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (62B6EE182C3F229200528480 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Market; sourceTree = "<group>"; };
 		6217F3412C2977C700EF8B2D /* Service */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (6217F3452C2977D200EF8B2D /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Service; sourceTree = "<group>"; };
 		6217F3462C297DBD00EF8B2D /* Features */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (6217F3482C297DF500EF8B2D /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Features; sourceTree = "<group>"; };
 		62259D172C40187D005197C9 /* Managers */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (62259D192C401890005197C9 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Managers; sourceTree = "<group>"; };
@@ -305,7 +305,7 @@
 				6217F3102C28526400EF8B2D /* Models */,
 				629182492C2AE5EB00DA4BAA /* Router */,
 				62C4493C2C26E236009650A3 /* Authentication */,
-				6217F3292C288EFC00EF8B2D /* MarketView */,
+				6217F3292C288EFC00EF8B2D /* Market */,
 				6217F3462C297DBD00EF8B2D /* Features */,
 				629185B42C3160F900DA4BAA /* Support */,
 				629188CB2C35BAE800DA4BAA /* Components */,

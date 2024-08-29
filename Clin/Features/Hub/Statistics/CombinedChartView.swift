@@ -2,7 +2,7 @@
 //  EducationView.swift
 //  Clin
 //
-//  Created by asia on 28/08/2024.
+//  Created by Osman on 28/08/2024.
 //
 
 import SwiftUI
@@ -45,7 +45,7 @@ struct CombinedChartView: View {
                     Text("Month").tag(0)
                     Text("Year").tag(1)
                 }
-                .pickerStyle(SegmentedPickerStyle())
+                .pickerStyle(.segmented)
                 .padding()
                 
                 ZStack {
@@ -57,15 +57,7 @@ struct CombinedChartView: View {
                 }
                 .animation(.easeInOut(duration: 0.3), value: selectedChart)
                 
-                GroupBox {
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text("Source: SMMT")
-                            .font(.headline)
-                        Text("Data for July 2024")
-                    }
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.leading)
+                
             }
         }
     }
@@ -105,6 +97,16 @@ struct YearlyChartView: View {
                 }
             }
             .padding()
+            
+            GroupBox {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Source: SMMT")
+                        .font(.headline)
+                    Text("Data for year to date 2024")
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.leading)
         }
     }
 }
@@ -144,6 +146,16 @@ struct MonthlyChartView: View {
                 }
             }
             .padding()
+            
+            GroupBox {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Source: SMMT")
+                        .font(.headline)
+                    Text("Data for July 2024")
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.leading)
         }
     }
 }

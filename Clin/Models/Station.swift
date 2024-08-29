@@ -12,6 +12,16 @@ struct Station: Identifiable, Decodable, Hashable {
     let id: Int
     let name: String
     let coordinate: CLLocationCoordinate2D
+    let connections: [Connection]
+    let operatorInfo: OperatorInfo?
+    
+    var hasFastCharging: Bool {
+        connections.contains { $0.level?.isFastChargeCapable == true }
+    }
+    
+    var isPrivateOperator: Bool {
+        operatorInfo?.isPrivateIndividual ?? false
+    }
     
     // Hashable conformance
     func hash(into hasher: inout Hasher) {
@@ -25,6 +35,8 @@ struct Station: Identifiable, Decodable, Hashable {
     enum CodingKeys: String, CodingKey {
         case id = "ID"
         case addressInfo = "AddressInfo"
+        case connections = "Connections"
+        case operatorInfo = "OperatorInfo"
     }
 
     enum AddressInfoKeys: String, CodingKey {
@@ -49,7 +61,69 @@ struct Station: Identifiable, Decodable, Hashable {
         } else {
             // Provide a default coordinate or throw an error
             coordinate = CLLocationCoordinate2D(latitude: 0, longitude: 0)
-            print("Warning: Invalid coordinates for charger \(name)")
+            print("DEBUG: Warning: Invalid coordinates for charger \(name)")
+            
         }
+        // Decode connections
+        connections = try container.decode([Connection].self, forKey: .connections)
+        
+        // Decode operator info
+        operatorInfo = try container.decodeIfPresent(OperatorInfo.self, forKey: .operatorInfo)
     }
 }
+
+// MARK: - Connection
+struct Connection: Codable {
+    let level: Level?
+    let powerKW: Double?
+    let statusType: StatusType?
+    let connectionType: ConnectionType?
+    
+
+    enum CodingKeys: String, CodingKey {
+        case level = "Level"
+        case powerKW = "PowerKW"
+        case statusType = "StatusType"
+        case connectionType = "ConnectionType"
+    }
+}
+
+// MARK: - Level
+struct Level: Codable {
+    let isFastChargeCapable: Bool?
+    let title: String? // eg. 40KW or higher
+    
+    enum CodingKeys: String, CodingKey {
+        case isFastChargeCapable = "IsFastChargeCapable"
+        case title = "Title"
+    }
+}
+
+// MARK: - Operator info
+struct OperatorInfo: Codable {
+    let isPrivateIndividual: Bool? /// eg. Private / Public
+    
+    enum CodingKeys: String, CodingKey {
+        case isPrivateIndividual = "IsPrivateIndividual"
+    }
+}
+
+// MARK: - StatusType
+struct StatusType: Codable {
+    let title: String? /// eg. "Operational"
+
+    enum CodingKeys: String, CodingKey {
+        case title = "Title"
+    }
+}
+
+// MARK: - ConnectionType
+struct ConnectionType: Codable {
+    let title: String?
+
+    enum CodingKeys: String, CodingKey {
+        case title = "Title"
+    }
+}
+
+
