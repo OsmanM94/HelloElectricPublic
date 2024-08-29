@@ -24,7 +24,7 @@ struct ErrorView: View {
             Text("")
         } actions: {
             Button {
-                retryAction()
+                 retryAction()
             } label: {
                 Text("Retry")
                     .font(.title2)

@@ -23,7 +23,7 @@ struct MockListingService: ListingServiceProtocol {
             createdAt: Date(),
             imagesURL: [URL(string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/mock_data/tesla2.jpg")!,URL(string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/mock_data/tesla1.jpg")!,URL(string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/mock_data/tesla3.jpg")!], thumbnailsURL: [URL(string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/mock_data/tesla2.jpg")!],
             make: "Tesla",
-            model: "Model S supercharger 2024",
+            model: "Model S supercharger",
             bodyType: "SUV",
             condition: "Used",
             mileage: 100000,

@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum HTTPError: Error {
+enum HTTPErrors: Error {
     case requestFailed(description: String)
     case invalidStatusCode(statuscode: Int)
     case decodingError(error: Error)

@@ -25,9 +25,7 @@ struct CreateFormView: View {
                     
                 case .loaded:
                     CreateFormSubview(viewModel: viewModel)
-                        .task {
-                            await viewModel.loadBulkData()
-                        }
+                        .task { await viewModel.loadBulkData() }
                 case .uploading:
                     CircularProgressBar(progress: viewModel.uploadingProgress)
                     
@@ -67,22 +65,20 @@ fileprivate struct DvlaCheckView: View {
                     .foregroundStyle(.black)
                     .font(.system(size: 24, weight: .semibold))
                     .submitLabel(.go)
-                    .listRowBackground(Color.yellow)
+                    .listRowBackground(Color.yellow.opacity(0.8))
                     .multilineTextAlignment(.center)
                     .textInputAutocapitalization(.characters)
                     .autocorrectionDisabled()
                     .overlay(alignment: .leading) {
                         Rectangle()
-                            .foregroundStyle(.green)
+                            .foregroundStyle(.green.opacity(0.8))
                             .frame(width: 35)
                             .scaledToFill()
                             .offset(x: -20, y: 0)
                     }
                     .onSubmit {
                         Task {
-                            guard !registrationNumber.isEmpty else {
-                                return
-                            }
+                            guard !registrationNumber.isEmpty else { return }
                             await sendDvlaRequest()
                         }
                     }
@@ -232,10 +228,18 @@ fileprivate struct CreateFormSubview: View {
     private var descriptionSection: some View {
         Section {
             TextEditor(text: $viewModel.description)
-                .frame(minHeight: 150)
+                .frame(height: 200)
                 .characterLimit($viewModel.description, limit: 500)
         } header: {
-            Text("Description (keep it simple)")
+            HStack{
+                Text("Description (keep it simple)")
+                Spacer()
+                Button("Clear text", action: { viewModel.clearDescription() })
+                    .foregroundStyle(viewModel.description.isEmpty ? .gray : .red)
+                    .font(.caption2)
+                    .disabled(viewModel.description.isEmpty)
+            }
+            
         } footer: {
             Text("\(viewModel.description.count)/500")
         }

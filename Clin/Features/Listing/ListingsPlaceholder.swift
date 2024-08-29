@@ -35,13 +35,9 @@ struct ListingsPlaceholder: View {
             }
             .listStyle(.plain)
             .shimmer(when: $isLoading)
-            .refreshable {
-                await retryAction()
-            }
+            .refreshable { await retryAction() }
         }
-        .onDisappear {
-            isLoading = false
-        }
+        .onDisappear { isLoading = false }
     }
 }
 
@@ -51,22 +47,3 @@ struct ListingsPlaceholder: View {
     }
 }
 
-
-struct SearchBarPlaceholder: View {
-    var body: some View {
-        HStack(spacing: 5) {
-            Image(systemName: "magnifyingglass")
-                .foregroundStyle(.gray)
-            
-            Text("Search")
-                .foregroundStyle(.gray)
-                .padding(.vertical, 8)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            
-        }
-        .padding(.horizontal)
-        .background(Color(.systemGray6))
-        .clipShape(RoundedRectangle(cornerRadius: 10))
-        .padding([.top, .bottom, .horizontal])
-    }
-}

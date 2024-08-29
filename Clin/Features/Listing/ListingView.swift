@@ -6,32 +6,28 @@
 //
 
 import SwiftUI
-import Factory
 
 struct ListingView: View {
     @State private var viewModel = ListingViewModel()
     
     var body: some View {
         NavigationStack {
-            Group {
-                VStack {
-                    switch viewModel.viewState {
-                    case .loading:
-                        ListingsPlaceholder(retryAction: {
-                            await viewModel.fetchListings()
-                        })
-                        
-                    case .loaded:
-                        ListingSubview(viewModel: viewModel)
-                    }
+            VStack {
+                switch viewModel.viewState {
+                case .loading:
+                    ListingsPlaceholder(retryAction: {
+                        await viewModel.loadListings()
+                    })
+                    
+                case .loaded:
+                    ListingSubview(viewModel: viewModel)
                 }
-                .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
-                .navigationTitle("Listings")
             }
+            .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
+            .navigationTitle("Listings")
         }
-        .task {
-            if viewModel.listings.isEmpty {
-                await viewModel.fetchListings()
+        .task { if viewModel.listings.isEmpty {
+                await viewModel.loadListings()
             }
         }
     }
@@ -40,7 +36,7 @@ struct ListingView: View {
 fileprivate struct ListingSubview: View {
     @Bindable var viewModel: ListingViewModel
     @State private var shouldScrollToTop: Bool = false
-  
+
     var body: some View {
         ScrollViewReader { proxy in
             List {
@@ -51,7 +47,7 @@ fileprivate struct ListingSubview: View {
                     }
                     .task {
                         if item == viewModel.listings.last {
-                            await viewModel.fetchListings()
+                            await viewModel.loadListings()
                         }
                     }
                 }
@@ -60,8 +56,7 @@ fileprivate struct ListingSubview: View {
                 if viewModel.hasMoreListings {
                     ProgressView()
                         .scaleEffect(1.0)
-                        .frame(maxWidth: .infinity, alignment: .center)
-                        .listRowSeparator(.hidden)
+                        .frame(maxWidth: .infinity)
                 }
             }
             .navigationDestination(for: Listing.self, destination: { listing in

@@ -45,8 +45,10 @@
 				EVModels.swift,
 				Favourite.swift,
 				Listing.swift,
+				News.swift,
 				Profile.swift,
 				SelectedImage.swift,
+				Station.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
 		};
@@ -81,6 +83,15 @@
 				Favourites/FavouriteCell.swift,
 				Favourites/FavouriteListingView.swift,
 				Favourites/FavouriteViewModel.swift,
+				Hub/EVData/EVCarInfoView.swift,
+				Hub/HubView.swift,
+				Hub/News/NewsCell.swift,
+				Hub/News/NewsDetailView.swift,
+				Hub/News/NewsView.swift,
+				Hub/News/NewsViewModel.swift,
+				Hub/Stations/StationsView.swift,
+				Hub/Stations/StationsViewModel.swift,
+				Hub/Statistics/CombinedChartView.swift,
 				Listing/ListingCell.swift,
 				Listing/ListingsPlaceholder.swift,
 				Listing/ListingView.swift,
@@ -180,7 +191,6 @@
 				PhotosPicker/CustomPhotoPickers.swift,
 				SDWebImage/ImageLoader.swift,
 				SensitiveContentAnalysis/SensitiveContentAnalysis.swift,
-				TimeElapsed/TimeElapsed.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
 		};
@@ -202,7 +212,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				HTTPDownloader.swift,
-				HTTPError.swift,
+				HTTPErrors.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
 		};
@@ -535,6 +545,7 @@
 				ENABLE_HARDENED_RUNTIME = NO;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We need to know your location in order to search for nearby chargers.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -574,6 +585,7 @@
 				ENABLE_HARDENED_RUNTIME = NO;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We need to know your location in order to search for nearby chargers.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;

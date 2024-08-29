@@ -71,3 +71,46 @@ public extension View {
     }
 }
 
+/// Date formatter
+public extension String {
+    // Converts the ISO 8601 date string to a Date object
+    func toDate() -> Date? {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+        dateFormatter.locale = Locale(identifier: "en_GB")
+        dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
+        return dateFormatter.date(from: self)
+    }
+    
+    // Converts the ISO 8601 date string to a formatted date string
+    func toFormattedDateString() -> String {
+        guard let date = self.toDate() else {
+            return self
+        }
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "en_GB")
+        dateFormatter.dateStyle = .medium
+        dateFormatter.timeStyle = .short
+        return dateFormatter.string(from: date)
+    }
+}
+
+/// Safely creates a `URL` instance from a `String`.
+public extension URL {
+    /// - Parameter urlString: The `String` representing the URL.
+    /// - Returns: A `URL` instance if the string is valid, otherwise `nil`.
+    static func from(_ urlString: String?) -> URL? {
+        guard let urlString = urlString else { return nil }
+        return URL(string: urlString)
+    }
+}
+
+/// Set time elapse eg. 3 days ago 
+public extension Date {
+    func timeElapsedString() -> String {
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .full
+        return formatter.localizedString(for: self, relativeTo: Date())
+    }
+}

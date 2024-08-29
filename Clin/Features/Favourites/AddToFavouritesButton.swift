@@ -21,7 +21,7 @@ struct AddToFavouritesButton: View {
                 Circle()
                     .frame(width: 30, height: 30)
                     .opacity(0.8)
-                    .foregroundStyle(Color(.white))
+                    .foregroundStyle(Color(.systemGray6))
                     .overlay {
                         Image(systemName: viewModel.isFavourite(listing: listing) ? "heart.fill" : "heart")
                             .font(.system(size: 18))

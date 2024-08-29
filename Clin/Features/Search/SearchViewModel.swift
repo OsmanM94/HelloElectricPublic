@@ -275,9 +275,10 @@ final class SearchViewModel {
         // Build a dynamic `or` condition that matches any of the components
         let orConditions = searchComponents.map { component in
                """
-               make.ilike.%\(component)%,model.ilike.%\(component)%,year.ilike.%\(component)%,location.ilike.%\(component)%
+               make.ilike.%\(component)%,model.ilike.%\(component)%
                """
         }.joined(separator: ",")
+        
         do {
             let response: [Listing] = try await supabaseService.client
                 .from(table)

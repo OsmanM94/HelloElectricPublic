@@ -346,6 +346,10 @@ final class CreateFormViewModel: ImagePickerProtocol {
         }
     }
     
+    func clearDescription() {
+        self.description = ""
+    }
+    
     func retrieveImages(listing: Listing) async {}
 }
 

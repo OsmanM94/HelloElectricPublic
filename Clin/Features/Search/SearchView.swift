@@ -93,7 +93,7 @@ private extension SearchView {
                     }
             }
         }
-        .foregroundStyle(.primary)
+        .foregroundStyle(.secondary)
         .font(.body)
         .padding()
     }

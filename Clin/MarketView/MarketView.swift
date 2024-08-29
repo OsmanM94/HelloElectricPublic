@@ -29,8 +29,14 @@ struct MarketView: View {
                     Label("Sell", systemImage: "plus")
                 }
             
-            AccountViewRouter()
+            HubView()
                 .tag(3)
+                .tabItem {
+                    Label("Hub", systemImage: "rectangle.grid.2x2.fill")
+                }
+            
+            AccountViewRouter()
+                .tag(4)
                 .tabItem {
                     Label("Account", systemImage: "person.fill")
                 }

@@ -7,7 +7,7 @@
 
 import Factory
 
-//MARK: Dependencies registration
+//MARK: Dependency registration
 extension Container {
     /// Database
     var supabaseService: Factory<SupabaseProtocol> {

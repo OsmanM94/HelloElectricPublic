@@ -11,26 +11,26 @@ class HTTPDataDownloader: HTTPDataDownloaderProtocol {
     
     func fetchData <T: Decodable>(as type: T.Type, endpoint: String) async throws -> T {
         guard let url = URL(string: endpoint) else {
-            throw HTTPError.requestFailed(description: "Invalid URL")
+            throw HTTPErrors.requestFailed(description: "Invalid URL")
         }
         let (data, response) = try await URLSession.shared.data(from: url)
         
         guard let httpResponse = response as? HTTPURLResponse else {
-            throw HTTPError.requestFailed(description: "Request failed")
+            throw HTTPErrors.requestFailed(description: "Request failed")
         }
         guard httpResponse.statusCode == 200 else {
-            throw HTTPError.invalidStatusCode(statuscode: httpResponse.statusCode)
+            throw HTTPErrors.invalidStatusCode(statuscode: httpResponse.statusCode)
         }
         do {
             return try JSONDecoder().decode(type, from: data)
         } catch {
-            throw error as? HTTPError ?? .decodingError(error: error)
+            throw error as? HTTPErrors ?? .decodingError(error: error)
         }
     }
     
     func postData<T: Decodable, U: Encodable>(as type: T.Type, to endpoint: String, body: U, headers: [String: String] = [:]) async throws -> T {
         guard let url = URL(string: endpoint) else {
-            throw HTTPError.requestFailed(description: "Invalid URL")
+            throw HTTPErrors.requestFailed(description: "Invalid URL")
         }
         
         var request = URLRequest(url: url)
@@ -45,22 +45,22 @@ class HTTPDataDownloader: HTTPDataDownloaderProtocol {
             let jsonData = try JSONEncoder().encode(body)
             request.httpBody = jsonData
         } catch {
-            throw HTTPError.encodingError(error: error)
+            throw HTTPErrors.encodingError(error: error)
         }
         
         let (data, response) = try await URLSession.shared.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse else {
-            throw HTTPError.requestFailed(description: "Request failed")
+            throw HTTPErrors.requestFailed(description: "Request failed")
         }
         guard httpResponse.statusCode == 200 else {
-            throw HTTPError.invalidStatusCode(statuscode: httpResponse.statusCode)
+            throw HTTPErrors.invalidStatusCode(statuscode: httpResponse.statusCode)
         }
         
         do {
             return try JSONDecoder().decode(type, from: data)
         } catch {
-            throw error as? HTTPError ?? .decodingError(error: error)
+            throw error as? HTTPErrors ?? .decodingError(error: error)
         }
     }
     

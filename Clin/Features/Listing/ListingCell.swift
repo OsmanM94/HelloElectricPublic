@@ -1,11 +1,10 @@
 
-
 import SwiftUI
 
 struct ListingCell: View {
     @State private var timerManager = TimerManager()
     var listing: Listing
-    
+   
     var body: some View {
         HStack(spacing: 0) {
             VStack(spacing: 0) {
@@ -29,7 +28,7 @@ struct ListingCell: View {
             }
             
             VStack(alignment: .leading, spacing: 2) {
-                Text("\(listing.make) \(listing.model)")
+                Text("\(listing.make) \(listing.model) \(listing.yearOfManufacture)")
                     .font(.headline)
                     .lineLimit(2, reservesSpace: false)
                 Text("\(listing.condition)")
@@ -39,7 +38,7 @@ struct ListingCell: View {
                     .font(.subheadline)
                 Text(listing.price, format: .currency(code: Locale.current.currency?.identifier ?? "GBP").precision(.fractionLength(0)))
                     .font(.subheadline)
-                Text("added \(timeElapsedString(since: listing.createdAt))")
+                Text("added \(listing.createdAt.timeElapsedString())")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
