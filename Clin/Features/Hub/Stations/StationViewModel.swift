@@ -4,48 +4,54 @@
 //
 //  Created by asia on 29/08/2024.
 //
-/// https://openchargemap.org/site/profile/applications
+/// API : https://openchargemap.org/site/profile/applications
 ///
 import Foundation
 import MapKit
 import Factory
 
-enum ChargerFilter {
+enum StationFilter {
     case all
     case free
     case fast
 }
 
 @Observable
-final class EVChargerMapViewModel {
+final class StationViewModel {
     // MARK: - Observable properties
-    var chargers: [Station] = []
+    var stations: [Station] = []
     private let apiKey: String = "310172e1-84a9-433e-b2f6-749b9219b007"
     private var debounceTask: Task<Void, Never>? = nil
     private let debounceDelay: TimeInterval = 1.0
     var isLoading: Bool = false
     
     // MARK: - Filtered results
-    var filteredChargers: [Station] = []
-    var selectedFilter: ChargerFilter = .all { didSet { applyFilter() } }
+    var filteredStations: [Station] = []
+    var selectedFilter: StationFilter = .all { didSet { applyFilter() } }
     
     // MARK: - Dependencies
     @ObservationIgnored @Injected(\.httpDataDownloader) private var httpDownloader
     
+    // MARK: - Cache
+//    private let cacheKeyPrefix = "stationsCacheKey"
+//    private var stationsCache: GenericCache<[Station]> {
+//        CacheManager.shared.cache(for: [Station].self)
+//    }
+    
     @MainActor
-    func fetchChargersDebounced(in region: MKCoordinateRegion?) {
+    func loadStationsDebounced(in region: MKCoordinateRegion?) {
         debounceTask?.cancel()
         
         debounceTask = Task {
             try? await Task.sleep(nanoseconds: UInt64(debounceDelay * 1_000_000_000))
-            await fetchChargers(in: region)
+            await loadStations(in: region)
         }
     }
     
   
     // MARK: - Helpers and misc
     
-    private func fetchChargers(in region: MKCoordinateRegion?) async {        
+    private func loadStations(in region: MKCoordinateRegion?) async {        
         guard let region = region else {
             print("DEBUG: No valid region provided")
             return
@@ -60,7 +66,7 @@ final class EVChargerMapViewModel {
         do {
             let stations: [Station] = try await httpDownloader.fetchData(as: [Station].self, endpoint: urlString)
             
-            self.chargers = stations
+            self.stations = stations
             applyFilter()
             isLoading = false
             print("DEBUG: Loaded data from network.")
@@ -72,26 +78,26 @@ final class EVChargerMapViewModel {
     private func applyFilter() {
         switch selectedFilter {
         case .all:
-            filteredChargers = chargers
+            filteredStations = stations
         case .free:
-            filteredChargers = chargers.filter { station in
+            filteredStations = stations.filter { station in
                 station.connections.contains { connection in
                     connection.powerKW == 0
                 }
             }
         case .fast:
-            filteredChargers = chargers.filter { $0.hasFastCharging }
+            filteredStations = stations.filter { $0.hasFastCharging }
         }
     }
     
-    func openInMaps(charger: Station) {
-       let placemark = MKPlacemark(coordinate: charger.coordinate)
+    func openInMaps(station: Station) {
+       let placemark = MKPlacemark(coordinate: station.coordinate)
        let mapItem = MKMapItem(placemark: placemark)
-       mapItem.name = charger.name
+       mapItem.name = station.name
        mapItem.openInMaps(launchOptions: [MKLaunchOptionsDirectionsModeKey: MKLaunchOptionsDirectionsModeDriving])
    }
     
-    // Extract charger, status and connection type informations
+    // Extract station, status and connection type informations
     
     func stationSpecs(for charger: Station) -> String? {
         return charger.connections.first?.level?.title

@@ -47,6 +47,7 @@
 				Listing.swift,
 				News.swift,
 				Profile.swift,
+				Registrations.swift,
 				SelectedImage.swift,
 				Station.swift,
 			);
@@ -83,15 +84,16 @@
 				Favourites/FavouriteCell.swift,
 				Favourites/FavouriteListingView.swift,
 				Favourites/FavouriteViewModel.swift,
+				Hub/Chart/ChartView.swift,
+				Hub/Chart/ChartViewModel.swift,
 				Hub/EVData/EVCarInfoView.swift,
 				Hub/HubView.swift,
 				Hub/News/NewsCell.swift,
 				Hub/News/NewsDetailView.swift,
 				Hub/News/NewsView.swift,
 				Hub/News/NewsViewModel.swift,
-				Hub/Stations/StationsView.swift,
-				Hub/Stations/StationsViewModel.swift,
-				Hub/Statistics/CombinedChartView.swift,
+				Hub/Stations/StationView.swift,
+				Hub/Stations/StationViewModel.swift,
 				Listing/ListingCell.swift,
 				Listing/ListingsPlaceholder.swift,
 				Listing/ListingView.swift,
@@ -183,6 +185,7 @@
 		629185BC2C3175A100DA4BAA /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Cache/CacheManager.swift,
 				JSONDecoder/JSONDecoder.swift,
 				JSONDecoder/JSONLoadingError.swift,
 				LazyView/LazyView.swift,

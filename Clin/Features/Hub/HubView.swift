@@ -20,7 +20,7 @@ struct HubView: View {
                     HubItemView(title: "News", imageName: "newspaper.fill")
                 }
                 
-                NavigationLink(destination: LazyView(StationsView())) {
+                NavigationLink(destination: LazyView(StationView())) {
                     HubItemView(title: "EV Stations", imageName: "ev.charger.fill")
                 }
                 
@@ -37,7 +37,7 @@ struct HubView: View {
 
 struct ChartViewContainer: View {
     var body: some View {
-        CombinedChartView()
+        ChartView()
             .navigationTitle("Registrations")
     }
 }

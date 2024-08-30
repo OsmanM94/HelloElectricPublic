@@ -8,12 +8,6 @@
 import SwiftUI
 import Charts
 
-struct FuelRegistration: Identifiable {
-    var id: Int
-    let fuelType: String
-    let count: Double
-}
-
 func colorForFuelType(_ fuelType: String) -> Color {
     switch fuelType {
     case "Electric": return .green
@@ -23,57 +17,66 @@ func colorForFuelType(_ fuelType: String) -> Color {
     }
 }
 
-struct CombinedChartView: View {
+struct ChartView: View {
+    @State private var viewModel = ChartViewModel()
     @State private var selectedChart: Int = 0
    
-    let yearlyData: [FuelRegistration] = [
-        FuelRegistration(id: 2001, fuelType: "Electric", count: 194.431),
-        FuelRegistration(id: 2002, fuelType: "Diesel", count: 74.928),
-        FuelRegistration(id: 2003, fuelType: "Petrol", count: 630.966)
-    ]
-    
-    let monthlyData: [FuelRegistration] = [
-        FuelRegistration(id: 1994, fuelType: "Electric", count: 27.335),
-        FuelRegistration(id: 1995, fuelType: "Diesel", count: 8.708),
-        FuelRegistration(id: 1996, fuelType: "Petrol", count: 76.879)
-    ]
-    
     var body: some View {
-        ScrollView(.vertical) {
-            VStack {
-                Picker("Chart Type", selection: $selectedChart) {
-                    Text("Month").tag(0)
-                    Text("Year").tag(1)
-                }
-                .pickerStyle(.segmented)
-                .padding()
+        VStack {
+            switch viewModel.viewState {
+            case .loading:
+                CustomProgressView()
                 
-                ZStack {
-                    if selectedChart == 0 {
-                        MonthlyChartView(registrations: monthlyData)
-                    } else {
-                        YearlyChartView(registrations: yearlyData)
-                    }
-                }
-                .animation(.easeInOut(duration: 0.3), value: selectedChart)
+            case .loaded:
+                loadedView
                 
-                
+            case .error(let message):
+                ErrorView(message: message, retryAction: {})
+            }
+        }
+        .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
+        .task {
+            if viewModel.monthlyData.isEmpty && viewModel.yearlyData.isEmpty {
+               try? await viewModel.loadChartData()
             }
         }
     }
 }
 
-struct YearlyChartView: View {
-    let registrations: [FuelRegistration]
+private extension ChartView {
+    var loadedView: some View {
+        VStack {
+            Picker("Chart Type", selection: $selectedChart) {
+                Text("Month").tag(0)
+                Text("Year").tag(1)
+            }
+            .pickerStyle(.segmented)
+            .padding([.bottom, .horizontal])
+            
+            ZStack {
+                if selectedChart == 0 {
+                    MonthlyChartView(viewModel: viewModel, registrations: viewModel.monthlyData)
+                } else {
+                    YearlyChartView(viewModel: viewModel, registrations: viewModel.yearlyData)
+                }
+            }
+            .animation(.easeInOut(duration: 0.3), value: selectedChart)
+        }
+    }
+}
+
+fileprivate struct YearlyChartView: View {
+    var viewModel: ChartViewModel
+    let registrations: [Registrations]
     
     var body: some View {
         VStack {
             Chart(registrations) { registration in
                 BarMark(
-                    x: .value("Fuel Type", registration.fuelType),
-                    y: .value("Count", registration.count)
+                    x: .value("Fuel Type", registration.fuelCategory),
+                    y: .value("Count", registration.registrationCount)
                 )
-                .foregroundStyle(by: .value("Fuel Type", registration.fuelType))
+                .foregroundStyle(by: .value("Fuel Type", registration.fuelCategory))
             }
             .chartForegroundStyleScale([
                 "Electric": .green,
@@ -88,11 +91,11 @@ struct YearlyChartView: View {
                 ForEach(registrations, id: \.id) { registration in
                     HStack {
                         Circle()
-                            .fill(colorForFuelType(registration.fuelType))
+                            .fill(colorForFuelType(registration.fuelCategory))
                             .frame(width: 10, height: 10)
-                        Text(registration.fuelType)
+                        Text(registration.fuelCategory)
                         Spacer()
-                        Text(registration.count, format: .number)
+                        Text(registration.registrationCount, format: .number)
                     }
                 }
             }
@@ -102,7 +105,7 @@ struct YearlyChartView: View {
                 VStack(alignment: .leading, spacing: 10) {
                     Text("Source: SMMT")
                         .font(.headline)
-                    Text("Data for year to date 2024")
+                    Text(viewModel.selectedYear)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -111,18 +114,19 @@ struct YearlyChartView: View {
     }
 }
 
-struct MonthlyChartView: View {
-    let registrations: [FuelRegistration]
+fileprivate struct MonthlyChartView: View {
+    var viewModel: ChartViewModel
+    let registrations: [Registrations]
     
     var body: some View {
         VStack(alignment: .leading) {
             Chart(registrations) { registration in
                 SectorMark(
-                    angle: .value("Count", registration.count),
+                    angle: .value("Count", registration.registrationCount),
                     innerRadius: .ratio(0.618),
                     angularInset: 1.5
                 )
-                .foregroundStyle(by: .value("Fuel Type", registration.fuelType))
+                .foregroundStyle(by: .value("Fuel Type", registration.fuelCategory))
             }
             .chartForegroundStyleScale([
                 "Electric": .green,
@@ -137,11 +141,11 @@ struct MonthlyChartView: View {
                 ForEach(registrations, id: \.id) { registration in
                     HStack {
                         Circle()
-                            .fill(colorForFuelType(registration.fuelType))
+                            .fill(colorForFuelType(registration.fuelCategory))
                             .frame(width: 10, height: 10)
-                        Text(registration.fuelType)
+                        Text(registration.fuelCategory)
                         Spacer()
-                        Text(registration.count, format: .number)
+                        Text(registration.registrationCount, format: .number)
                     }
                 }
             }
@@ -151,7 +155,7 @@ struct MonthlyChartView: View {
                 VStack(alignment: .leading, spacing: 10) {
                     Text("Source: SMMT")
                         .font(.headline)
-                    Text("Data for July 2024")
+                    Text(viewModel.selectedMonth)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -162,7 +166,7 @@ struct MonthlyChartView: View {
 
 #Preview {
     NavigationStack {
-        CombinedChartView()
+        ChartView()
             .navigationTitle("Registrations")
     }
 }

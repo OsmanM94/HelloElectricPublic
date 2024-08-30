@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct NewsView: View {
-    @State private var viewModel = NewsService()
+    @State private var viewModel = NewsViewModel()
     @State private var shouldScrollToTop: Bool = false
     
     var body: some View {
@@ -57,7 +57,7 @@ struct NewsView: View {
                 }
             }
             .listStyle(.plain)
-            .refreshable {  viewModel.resetState() }
+            .refreshable {}
             .onChange(of: shouldScrollToTop) { _, newValue in
                 if newValue, let firstArticleId = viewModel.articles.first?.id {
                     withAnimation {
@@ -68,11 +68,8 @@ struct NewsView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        shouldScrollToTop.toggle()
-                    } label: {
-                        Image(systemName: "arrow.up.circle")
-                    }
+                    Button { shouldScrollToTop.toggle() }
+                    label: { Image(systemName: "arrow.up.circle") }
                     .disabled(viewModel.articles.count <= 20)
                 }
             }

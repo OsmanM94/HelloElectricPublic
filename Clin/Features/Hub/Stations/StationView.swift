@@ -8,20 +8,20 @@
 import SwiftUI
 import MapKit
 
-struct StationsView: View {
+struct StationView: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var viewModel = EVChargerMapViewModel()
+    @State private var viewModel = StationViewModel()
     @State private var cameraPosition: MapCameraPosition = .userLocation(fallback: .automatic)
-    @State private var selectedCharger: Station?
+    @State private var selectedStation: Station?
 
     var body: some View {
         NavigationStack {
             ZStack(alignment: .topLeading) {
-                Map(position: $cameraPosition, interactionModes: .all, selection: $selectedCharger) {
+                Map(position: $cameraPosition, interactionModes: .all, selection: $selectedStation) {
                     UserAnnotation()
-                    ForEach(viewModel.filteredChargers, id: \.id) { charger in
-                        Marker(charger.name, coordinate: charger.coordinate)
-                            .tag(charger)
+                    ForEach(viewModel.filteredStations, id: \.id) { station in
+                        Marker(station.name, coordinate: station.coordinate)
+                            .tag(station)
                             .tint(.green)
                     }
                 }
@@ -31,8 +31,8 @@ struct StationsView: View {
                     MapScaleView()
                     MapPitchToggle()
                 }
-                .sheet(item: $selectedCharger) { charger in
-                    ChargerDetailView(charger: charger, viewModel: viewModel)
+                .sheet(item: $selectedStation) { station in
+                    StationDetailView(station: station, viewModel: viewModel)
                         .presentationDetents([.height(210)])
                 }
                 .onAppear {
@@ -41,7 +41,7 @@ struct StationsView: View {
                 .onMapCameraChange(frequency: .onEnd) { context in
                     viewModel.isLoading = true
                     Task {
-                        viewModel.fetchChargersDebounced(in: context.region)
+                        viewModel.loadStationsDebounced(in: context.region)
                     }
                 }
                 .navigationBarBackButtonHidden(true)
@@ -82,9 +82,9 @@ struct StationsView: View {
 
     private var filterPicker: some View {
         Picker("Filter", selection: $viewModel.selectedFilter) {
-            Text("All").tag(ChargerFilter.all)
-            Text("Free").tag(ChargerFilter.free)
-            Text("Fast").tag(ChargerFilter.fast)
+            Text("All").tag(StationFilter.all)
+            Text("Free").tag(StationFilter.free)
+            Text("Fast").tag(StationFilter.fast)
         }
         .pickerStyle(SegmentedPickerStyle())
         .padding(.trailing, 40)
@@ -92,13 +92,13 @@ struct StationsView: View {
     }
 }
 
-struct ChargerDetailView: View {
-    let charger: Station
-    @Bindable var viewModel: EVChargerMapViewModel
+fileprivate struct StationDetailView: View {
+    let station: Station
+    @Bindable var viewModel: StationViewModel
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text(charger.name)
+            Text(station.name)
                 .font(.headline)
             
             operatorTag
@@ -110,7 +110,7 @@ struct ChargerDetailView: View {
         .frame(maxWidth: .infinity , alignment: .leading)
         
         VStack(alignment: .center) {
-            Button(action: { viewModel.openInMaps(charger: charger) }) {
+            Button(action: { viewModel.openInMaps(station: station) }) {
                 Label("Open in Maps", systemImage: "map.fill")
                     .foregroundStyle(.white)
                     .padding(10)
@@ -121,14 +121,14 @@ struct ChargerDetailView: View {
     }
 
     private var operatorTag: some View {
-        Text(charger.isPrivateOperator ? "Private Operator" : "Public Operator")
+        Text(station.isPrivateOperator ? "Private Operator" : "Public Operator")
             .font(.subheadline)
-            .foregroundStyle(charger.isPrivateOperator ? .red : .green)
+            .foregroundStyle(station.isPrivateOperator ? .red : .green)
     }
     
     private var stationSpecs: some View {
         Group {
-            if let stationSpecs = viewModel.stationSpecs(for: charger) {
+            if let stationSpecs = viewModel.stationSpecs(for: station) {
                 Label(stationSpecs, systemImage: "ev.charger.fill")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
@@ -138,7 +138,7 @@ struct ChargerDetailView: View {
 
     private var statusInfo: some View {
         Group {
-            if let statusTitle = viewModel.statusTitle(for: charger) {
+            if let statusTitle = viewModel.statusTitle(for: station) {
                 Label("Status: \(statusTitle)", systemImage: "bolt.fill")
                     .font(.subheadline)
                     .foregroundStyle(.green)
@@ -148,7 +148,7 @@ struct ChargerDetailView: View {
 
     private var typeInfo: some View {
         Group {
-            if let connection = viewModel.connectionType(for: charger) {
+            if let connection = viewModel.connectionType(for: station) {
                 Label(" Type: \(connection)", systemImage: "ev.plug.dc.ccs1")
                     .font(.subheadline)
                     .foregroundStyle(.blue)
@@ -158,6 +158,6 @@ struct ChargerDetailView: View {
 }
 
 #Preview {
-    StationsView()
+    StationView()
 }
 
