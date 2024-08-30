@@ -20,24 +20,23 @@ enum StationFilter {
 final class StationViewModel {
     // MARK: - Observable properties
     var stations: [Station] = []
-    private let apiKey: String = "310172e1-84a9-433e-b2f6-749b9219b007"
-    private var debounceTask: Task<Void, Never>? = nil
-    private let debounceDelay: TimeInterval = 1.0
     var isLoading: Bool = false
+    var selectedStation: Station?
     
+    private let apiKey: String = "310172e1-84a9-433e-b2f6-749b9219b007"
+   
     // MARK: - Filtered results
     var filteredStations: [Station] = []
     var selectedFilter: StationFilter = .all { didSet { applyFilter() } }
     
+    // MARK: - Debounce properties
+    private var debounceTask: Task<Void, Never>? = nil
+    private let debounceDelay: TimeInterval = 0.5
+    
     // MARK: - Dependencies
     @ObservationIgnored @Injected(\.httpDataDownloader) private var httpDownloader
     
-    // MARK: - Cache
-//    private let cacheKeyPrefix = "stationsCacheKey"
-//    private var stationsCache: GenericCache<[Station]> {
-//        CacheManager.shared.cache(for: [Station].self)
-//    }
-    
+    // MARK: - Main actor functions
     @MainActor
     func loadStationsDebounced(in region: MKCoordinateRegion?) {
         debounceTask?.cancel()
@@ -48,10 +47,9 @@ final class StationViewModel {
         }
     }
     
-  
     // MARK: - Helpers and misc
     
-    private func loadStations(in region: MKCoordinateRegion?) async {        
+     private func loadStations(in region: MKCoordinateRegion?) async {
         guard let region = region else {
             print("DEBUG: No valid region provided")
             return
@@ -60,12 +58,11 @@ final class StationViewModel {
         let latitude = region.center.latitude
         let longitude = region.center.longitude
         let radius = min(region.span.latitudeDelta, region.span.longitudeDelta) * 111 // Approx radius in km
-        
         let urlString = "https://api.openchargemap.io/v3/poi/?output=json&latitude=\(latitude)&longitude=\(longitude)&distance=\(radius)&maxresults=20&key=\(apiKey)"
         
         do {
             let stations: [Station] = try await httpDownloader.fetchData(as: [Station].self, endpoint: urlString)
-            
+                        
             self.stations = stations
             applyFilter()
             isLoading = false
@@ -99,18 +96,17 @@ final class StationViewModel {
     
     // Extract station, status and connection type informations
     
-    func stationSpecs(for charger: Station) -> String? {
-        return charger.connections.first?.level?.title
+    func stationSpecs(for station: Station) -> String? {
+        return station.connections.first?.level?.title
     }
     
-    func statusTitle(for charger: Station) -> String? {
-        return charger.connections.first?.statusType?.title
+    func stationStatus(for station: Station) -> String? {
+        return station.connections.first?.statusType?.title
     }
 
-    func connectionType(for charger: Station) -> String? {
-        return charger.connections.first?.connectionType?.title
+    func connectionType(for station: Station) -> String? {
+        return station.connections.first?.connectionType?.title
     }
-    
 }
 
 

@@ -46,7 +46,7 @@ final class SearchViewModel {
     // Pagination
     private(set) var hasMoreListings: Bool = true
     private(set) var currentPage: Int = 0
-    private let pageSize: Int = 10
+    private let pageSize: Int = 20
     
     // Misc
     private let defaultMaxPrice: Double = 20_000
@@ -269,10 +269,8 @@ final class SearchViewModel {
     }
     
     private func searchItemsFromSupabase(searchText: String, from: Int, to: Int) async throws -> [Listing] {
-        // Split the search text into individual words
         let searchComponents = searchText.split(separator: " ").map { String($0) }
         
-        // Build a dynamic `or` condition that matches any of the components
         let orConditions = searchComponents.map { component in
                """
                make.ilike.%\(component)%,model.ilike.%\(component)%
@@ -303,10 +301,9 @@ final class SearchViewModel {
             self.currentPage = 0
             self.hasMoreListings = true
             self.currentSearchText = searchText
+            viewState = .loading
         }
-        
         guard hasMoreListings else { return }
-        viewState = .loading
         self.isSearching = true
 
             do {
@@ -315,10 +312,8 @@ final class SearchViewModel {
                 if response.count < pageSize {
                     self.hasMoreListings = false
                 }
-
-                withAnimation {
-                    searchedItems.append(contentsOf: response)
-                }
+                
+                searchedItems.append(contentsOf: response)
                 self.currentPage += 1
 
                 self.viewState = searchedItems.isEmpty ? .noResults : .loaded

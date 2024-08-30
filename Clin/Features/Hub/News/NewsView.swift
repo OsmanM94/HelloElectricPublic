@@ -52,8 +52,11 @@ struct NewsView: View {
                 
                 if viewModel.hasMoreArticles {
                     ProgressView()
-                        .scaleEffect(1.0)
-                        .frame(maxWidth: .infinity)
+                        .scaleEffect(1.2)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .background(Color.black.opacity(0.1))
+                        .id(UUID())
+                        .listRowSeparator(.hidden, edges: .all)
                 }
             }
             .listStyle(.plain)

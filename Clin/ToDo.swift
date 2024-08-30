@@ -6,7 +6,7 @@
 //
 
 
-#warning("Implement listing location")
+#warning("ADD CACHING FOR FILTERS")
 
 #warning("Add details view for User listing and Favourites")
 

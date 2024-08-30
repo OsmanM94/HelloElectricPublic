@@ -36,7 +36,8 @@ struct ListingView: View {
 fileprivate struct ListingSubview: View {
     @Bindable var viewModel: ListingViewModel
     @State private var shouldScrollToTop: Bool = false
-
+    
+    
     var body: some View {
         ScrollViewReader { proxy in
             List {
@@ -55,8 +56,11 @@ fileprivate struct ListingSubview: View {
                 
                 if viewModel.hasMoreListings {
                     ProgressView()
-                        .scaleEffect(1.0)
-                        .frame(maxWidth: .infinity)
+                        .scaleEffect(1.2)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .background(Color.black.opacity(0.1))
+                        .id(UUID())
+                        .listRowSeparator(.hidden, edges: .all)
                 }
             }
             .navigationDestination(for: Listing.self, destination: { listing in

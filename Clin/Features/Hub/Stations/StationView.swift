@@ -12,12 +12,13 @@ struct StationView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var viewModel = StationViewModel()
     @State private var cameraPosition: MapCameraPosition = .userLocation(fallback: .automatic)
-    @State private var selectedStation: Station?
-
+    @State private var currentRegion: EquatableRegion?
+    @State private var isMapLoaded: Bool = false
+    
     var body: some View {
         NavigationStack {
             ZStack(alignment: .topLeading) {
-                Map(position: $cameraPosition, interactionModes: .all, selection: $selectedStation) {
+                Map(position: $cameraPosition, selection: $viewModel.selectedStation) {
                     UserAnnotation()
                     ForEach(viewModel.filteredStations, id: \.id) { station in
                         Marker(station.name, coordinate: station.coordinate)
@@ -27,34 +28,45 @@ struct StationView: View {
                 }
                 .mapControls {
                     MapUserLocationButton()
-                    MapCompass()
                     MapScaleView()
-                    MapPitchToggle()
                 }
-                .sheet(item: $selectedStation) { station in
+                .sheet(item: $viewModel.selectedStation) { station in
                     StationDetailView(station: station, viewModel: viewModel)
-                        .presentationDetents([.height(210)])
+                        .presentationDetents([.height(220)])
+                        .presentationDragIndicator(.visible)
                 }
                 .onAppear {
                     CLLocationManager().requestWhenInUseAuthorization()
-                }
-                .onMapCameraChange(frequency: .onEnd) { context in
-                    viewModel.isLoading = true
-                    Task {
-                        viewModel.loadStationsDebounced(in: context.region)
+                    withAnimation(.easeIn(duration: 1.0)) {
+                        isMapLoaded = true
                     }
                 }
+                .onMapCameraChange() { context in
+                    viewModel.isLoading = true
+                    currentRegion = EquatableRegion(region: context.region)
+                }
+                .onMapCameraChange(frequency: .onEnd) { context in
+                    viewModel.isLoading = false
+                    Task.detached {
+                        await viewModel.loadStationsDebounced(in: context.region)
+                    }
+                }
+//                .task(id: currentRegion) {
+//                    guard let region = currentRegion?.region else { return }
+//                    viewModel.loadStationsDebounced(in: region)
+//                }
+                .opacity(isMapLoaded ? 1 : 0)
                 .navigationBarBackButtonHidden(true)
 
                 VStack {
-                    HStack {
-                        backButton
-                        Spacer()
-                        filterPicker
-                    }
-                    Spacer()
+                    backButton
                 }
-                .padding()
+                .padding(.horizontal)
+                
+                VStack {
+                    filterPicker
+                }
+                .frame(maxWidth: .infinity, alignment: .top)
             }
         }
     }
@@ -72,11 +84,10 @@ struct StationView: View {
                 }
             }
             .frame(width: 50, height: 50)
-            .background(Color.gray.opacity(0.5))
+            .background(Color(.secondarySystemBackground).opacity(0.8))
             .clipShape(Circle())
-            .foregroundStyle(.white)
+            .foregroundStyle(.green)
         }
-        .offset(x: 0, y: -15)
         .disabled(viewModel.isLoading)
     }
 
@@ -84,11 +95,11 @@ struct StationView: View {
         Picker("Filter", selection: $viewModel.selectedFilter) {
             Text("All").tag(StationFilter.all)
             Text("Free").tag(StationFilter.free)
-            Text("Fast").tag(StationFilter.fast)
+            Text("Rapid").tag(StationFilter.fast)
         }
-        .pickerStyle(SegmentedPickerStyle())
-        .padding(.trailing, 40)
-        .offset(x: 0, y: -22)
+        .pickerStyle(.menu)
+        .background(Color(.secondarySystemBackground).opacity(0.8))
+        .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 }
 
@@ -107,6 +118,7 @@ fileprivate struct StationDetailView: View {
             typeInfo
         }
         .padding()
+        .padding(.top, 20)
         .frame(maxWidth: .infinity , alignment: .leading)
         
         VStack(alignment: .center) {
@@ -138,7 +150,7 @@ fileprivate struct StationDetailView: View {
 
     private var statusInfo: some View {
         Group {
-            if let statusTitle = viewModel.statusTitle(for: station) {
+            if let statusTitle = viewModel.stationStatus(for: station) {
                 Label("Status: \(statusTitle)", systemImage: "bolt.fill")
                     .font(.subheadline)
                     .foregroundStyle(.green)
@@ -161,3 +173,14 @@ fileprivate struct StationDetailView: View {
     StationView()
 }
 
+
+fileprivate struct EquatableRegion: Equatable {
+    let region: MKCoordinateRegion
+    
+    static func == (lhs: EquatableRegion, rhs: EquatableRegion) -> Bool {
+        lhs.region.center.latitude == rhs.region.center.latitude &&
+        lhs.region.center.longitude == rhs.region.center.longitude &&
+        lhs.region.span.latitudeDelta == rhs.region.span.latitudeDelta &&
+        lhs.region.span.longitudeDelta == rhs.region.span.longitudeDelta
+    }
+}

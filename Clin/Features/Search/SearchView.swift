@@ -51,6 +51,7 @@ struct SearchView: View {
                 FilterView(viewModel: viewModel) {
                     showingFilterView = false
                 }
+                .presentationDragIndicator(.visible)
             }
         }
     }
@@ -109,7 +110,7 @@ private extension SearchView {
                         .id(item.id)
                 }
                 .task {
-                    if item == viewModel.searchedItems.last && !viewModel.isSearching {
+                    if item == viewModel.searchedItems.last && !viewModel.isSearching  {
                         await viewModel.loadMoreIfNeeded()
                     }
                 }
@@ -118,14 +119,11 @@ private extension SearchView {
             
             if viewModel.hasMoreListings && !viewModel.searchedItems.isEmpty {
                 ProgressView()
-                    .scaleEffect(1.0)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .listRowSeparator(.hidden)
-                    .task {
-                        if !viewModel.isSearching {
-                            await viewModel.loadMoreIfNeeded()
-                        }
-                    }
+                    .scaleEffect(1.2)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color.black.opacity(0.1))
+                    .id(UUID())
+                    .listRowSeparator(.hidden, edges: .all)
             }
         }
         .navigationDestination(for: Listing.self, destination: { listing in

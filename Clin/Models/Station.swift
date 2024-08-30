@@ -8,7 +8,7 @@
 import Foundation
 import MapKit
 
-struct Station: Identifiable, Decodable, Hashable {
+struct Station: Identifiable, Codable, Hashable {
     let id: Int
     let name: String
     let coordinate: CLLocationCoordinate2D
@@ -69,6 +69,19 @@ struct Station: Identifiable, Decodable, Hashable {
         
         // Decode operator info
         operatorInfo = try container.decodeIfPresent(OperatorInfo.self, forKey: .operatorInfo)
+    }
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        
+        try container.encode(id, forKey: .id)
+        
+        var addressContainer = container.nestedContainer(keyedBy: AddressInfoKeys.self, forKey: .addressInfo)
+        try addressContainer.encode(name, forKey: .title)
+        try addressContainer.encode(coordinate.latitude, forKey: .latitude)
+        try addressContainer.encode(coordinate.longitude, forKey: .longitude)
+        
+        try container.encode(connections, forKey: .connections)
+        try container.encodeIfPresent(operatorInfo, forKey: .operatorInfo)
     }
 }
 

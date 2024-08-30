@@ -24,7 +24,7 @@ struct HubView: View {
                     HubItemView(title: "EV Stations", imageName: "ev.charger.fill")
                 }
                 
-                NavigationLink(destination: LazyView(EVDataView())) {
+                NavigationLink(destination: LazyView(Showroom())) {
                     HubItemView(title: "EV Data", imageName: "bolt.car.fill")
                 }
             }
