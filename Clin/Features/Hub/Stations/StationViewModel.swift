@@ -66,7 +66,7 @@ final class StationViewModel {
             self.stations = stations
             applyFilter()
             isLoading = false
-            print("DEBUG: Loaded data from network.")
+//            print("DEBUG: Loaded data from network.")
         } catch {
             print("Error loading or decoding chargers: \(error)")
         }

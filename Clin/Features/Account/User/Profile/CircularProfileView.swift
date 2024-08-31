@@ -37,10 +37,9 @@ enum ProfileImageSize {
 }
 
 struct CircularProfileView: View {
-//    let username: String
     let size: ProfileImageSize
     var profile: Profile?
-    
+   
     var body: some View {
         HStack {
             Group {
@@ -58,14 +57,8 @@ struct CircularProfileView: View {
             .scaledToFill()
             .clipShape(Circle())
             .frame(width: size.dimension, height: size.dimension)
-            
-//            Text(username)
-//                .font(.title3)
-//                .fontWeight(.semibold)
-//                .padding(.leading)
-//            
-//            Spacer()
         }
+        .padding()
     }
 }
 

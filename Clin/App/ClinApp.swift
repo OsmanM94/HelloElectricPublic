@@ -12,6 +12,7 @@ struct ClinApp: App {
     @State private var authViewModel = AuthViewModel()
     @State private var networkMonitor = NetworkMonitor()
     @State private var favouriteViewModel = FavouriteViewModel()
+    @State private var profileViewModel = ProfileViewModel()
     
     var body: some Scene {
         WindowGroup {
@@ -19,6 +20,7 @@ struct ClinApp: App {
                 .environment(authViewModel)
                 .environment(networkMonitor)
                 .environment(favouriteViewModel)
+                .environment(profileViewModel)
         }
     }
 }

@@ -39,7 +39,7 @@ final class FavouriteViewModel {
     init() {
         Task {
             await loadUserFavourites()
-            print("DEBUG: Initialising user favourites...")
+//            print("DEBUG: Initialising user favourites...")
         }
     }
     

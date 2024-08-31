@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct ProfileView: View {
-    @State private var viewModel = ProfileViewModel()
+    @Environment(ProfileViewModel.self) private var viewModel
     
     var body: some View {
         NavigationStack {
@@ -50,13 +50,15 @@ struct ProfileView: View {
 #Preview {
     ProfileView()
         .environment(AuthViewModel())
+        .environment(ProfileViewModel())
 }
 
-fileprivate struct ProfileSubview: View {
+ struct ProfileSubview: View {
     @Bindable var viewModel: ProfileViewModel
     
     var body: some View {
         Form {
+            ProfileHeaderView(viewModel: viewModel)
             avatarSection
             usernameSection
             updateButtonSection
@@ -67,10 +69,8 @@ fileprivate struct ProfileSubview: View {
     
     private var avatarSection: some View {
         Section {
-            HStack(spacing: 0) {
-                avatarView
-                usernameText
-                Spacer(minLength: 0)
+            HStack {
+                Spacer()
                 photoPicker
             }
         }
@@ -102,27 +102,7 @@ fileprivate struct ProfileSubview: View {
     }
     
     // MARK: - UI Components
-    
-    private var avatarView: some View {
-        ZStack {
-            if let avatarImage = viewModel.avatarImage {
-                avatarImage.image.resizable()
-            } else {
-                CircularProfileView(size: .xLarge, profile: viewModel.profile)
-            }
-        }
-        .scaledToFill()
-        .clipShape(Circle())
-        .frame(width: 80, height: 80)
-    }
-    
-    private var usernameText: some View {
-        Text(viewModel.displayName)
-            .font(.title3)
-            .fontWeight(.semibold)
-            .padding(.leading)
-    }
-    
+
     private var photoPicker: some View {
         SinglePhotoPicker(
             selection: $viewModel.imageSelection,
@@ -142,4 +122,26 @@ fileprivate struct ProfileSubview: View {
     }
 }
 
-
+struct ProfileHeaderView: View {
+    @Bindable var viewModel: ProfileViewModel
+    
+    var body: some View {
+        HStack {
+            ZStack {
+                if let avatarImage = viewModel.avatarImage {
+                    avatarImage.image.resizable()
+                } else {
+                    CircularProfileView(size: .xLarge, profile: viewModel.profile)
+                }
+            }
+            .scaledToFill()
+            .clipShape(Circle())
+            .frame(width: 80, height: 80)
+            
+            Text("\(viewModel.displayName)")
+                .font(.title3)
+                .fontWeight(.semibold)
+                .padding(.leading)
+        }
+    }
+}

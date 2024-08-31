@@ -33,7 +33,10 @@ final class ProfileViewModel {
     @ObservationIgnored @Injected(\.profileService) private var profileService
     
     init() {
-        print("DEBUG: Did init profile viewmodel.")
+        print("DEBUG: Did init profile vm")
+        Task {
+            await getInitialProfile()
+        }
     }
     
     // MARK: - Main actor functions

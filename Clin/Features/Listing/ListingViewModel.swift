@@ -34,7 +34,7 @@ final class ListingViewModel {
     @ObservationIgnored @Injected(\.listingService) private var listingService
     
     init()  {
-        print("DEBUG: Did init Listing viewmodel.")
+//        print("DEBUG: Did init Listing viewmodel.")
     }
     
     @MainActor

@@ -24,7 +24,7 @@ struct ListingCell: View {
                 }
             }
             .overlay(alignment: .topTrailing) {
-                AddToFavouritesButton(listing: listing)
+                AddToFavouritesButton(listing: listing, iconSize: 18, width: 30, height: 30)
             }
             
             VStack(alignment: .leading, spacing: 2) {

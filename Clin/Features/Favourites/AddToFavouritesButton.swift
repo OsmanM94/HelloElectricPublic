@@ -10,6 +10,9 @@ import SwiftUI
 struct AddToFavouritesButton: View {
     @Environment(FavouriteViewModel.self) private var viewModel
     var listing: Listing
+    let iconSize: CGFloat
+    let width: CGFloat
+    let height: CGFloat
     
     var body: some View {
         VStack(spacing: 0) {
@@ -19,12 +22,12 @@ struct AddToFavouritesButton: View {
                 }
             } label: {
                 Circle()
-                    .frame(width: 30, height: 30)
+                    .frame(width: width, height: height)
                     .opacity(0.8)
                     .foregroundStyle(Color(.systemGray6))
                     .overlay {
                         Image(systemName: viewModel.isFavourite(listing: listing) ? "heart.fill" : "heart")
-                            .font(.system(size: 18))
+                            .font(.system(size: iconSize))
                             .foregroundStyle(.green)
                             .fontWeight(.bold)
                             .symbolEffect(.bounce, value: viewModel.isFavourite(listing: listing))
@@ -39,7 +42,6 @@ struct AddToFavouritesButton: View {
 }
 
 #Preview {
-    AddToFavouritesButton(listing: MockListingService.sampleData[0])
+    AddToFavouritesButton(listing: MockListingService.sampleData[0], iconSize: 18, width: 30, height: 30)
         .environment(FavouriteViewModel())
-        .preferredColorScheme(.dark)
 }

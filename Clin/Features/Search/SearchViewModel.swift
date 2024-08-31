@@ -105,7 +105,7 @@ final class SearchViewModel {
     var numberOfOwnersOptions: [String] = []
     
     init() {
-        print("DEBUG: Did init search viewmodel")
+//        print("DEBUG: Did init search viewmodel")
     }
     
     // MARK: - Main actor functions
