@@ -41,13 +41,19 @@ enum ListingFeatures: String, CaseIterable {
 }
 
 struct ListingDetailView: View {
-    @Environment(ProfileViewModel.self) private var profileViewModel
     
+    let columns = [GridItem(.flexible()), GridItem(.flexible())]
     @State private var showSheet: Bool = false
     @State private var showSplash: Bool = false
-    var listing: Listing
-    let columns = [GridItem(.flexible()), GridItem(.flexible())]
     
+    @State private var sellerProfileViewModel: PublicProfileViewModel
+    
+    var listing: Listing
+    
+    init(listing: Listing) {
+        _sellerProfileViewModel = State(wrappedValue: PublicProfileViewModel(sellerID: listing.userID))
+        self.listing = listing
+    }
     
     var body: some View {
         VStack {
@@ -185,18 +191,32 @@ struct ListingDetailView: View {
                             .background(Color.gray.opacity(0.1))
                             .clipShape(RoundedRectangle(cornerRadius: 10))
                             
-                            
-                            VStack(alignment: .leading, spacing: 15) {
-                                Text("Seller details")
-                                    .font(.title2)
-                                    .fontWeight(.semibold)
-                                
-                                Text("Location: \(listing.location)")
-                                    .foregroundStyle(.secondary)
-                                
-                                ProfileHeaderView(viewModel: profileViewModel)
+                            DisclosureGroup("Seller") {
+                                VStack(alignment: .leading, spacing: 15) {
+                                    
+                                    Text("Seller details")
+                                        .font(.title2)
+                                        .fontWeight(.semibold)
+                                    
+                                    Text("Location: \(listing.location)")
+                                        .foregroundStyle(.secondary)
+                                    
+                                    PublicProfileView(viewModel: sellerProfileViewModel)
+                                       
+                                }
+                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+                                .padding(.top, 10)
+                                .overlay(alignment: .topTrailing) {
+                                    ZStack {
+                                        Circle()
+                                            .foregroundStyle(.green.gradient)
+                                        Image(systemName: "phone.fill")
+                                            .foregroundStyle(.white)
+                                    }
+                                    .frame(width: 45, height: 45)
+                                    .padding(.top, 10)
+                                }
                             }
-                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
                             .padding()
                             .background(Color.gray.opacity(0.1))
                             .clipShape(RoundedRectangle(cornerRadius: 10))
@@ -208,16 +228,6 @@ struct ListingDetailView: View {
                     }
                 }
                 .scrollIndicators(.never)
-                .overlay(alignment: .bottomTrailing) {
-                    ZStack {
-                        Circle()
-                            .frame(width: 60, height: 60)
-                            .foregroundStyle(.green.gradient)
-                        Image(systemName: "phone.fill")
-                            .foregroundStyle(.white)
-                    }
-                    .padding()
-                }
             }
         }
         .navigationBarTitleDisplayMode(.inline)
@@ -227,7 +237,7 @@ struct ListingDetailView: View {
 #Preview {
     ListingDetailView(listing: MockListingService.sampleData[0])
         .environment(FavouriteViewModel())
-        .environment(ProfileViewModel())
+        .environment(PrivateProfileViewModel())
 }
 
 fileprivate struct SheetImages: View {

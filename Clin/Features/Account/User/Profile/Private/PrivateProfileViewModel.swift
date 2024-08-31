@@ -9,7 +9,7 @@ import PhotosUI
 import Factory
 
 @Observable
-final class ProfileViewModel {
+final class PrivateProfileViewModel {
     // MARK: - Enums
     enum ViewState: Equatable {
         case idle
@@ -26,7 +26,8 @@ final class ProfileViewModel {
     private(set) var displayName: String = ""
     private(set) var profile: Profile? = nil
     private(set) var viewState: ViewState = .idle
-   
+    
+    
     // MARK: - Dependencies
     @ObservationIgnored @Injected(\.prohibitedWordsService) private var prohibitedWordsService
     @ObservationIgnored @Injected(\.imageManager) private var imageManager
@@ -34,9 +35,6 @@ final class ProfileViewModel {
     
     init() {
         print("DEBUG: Did init profile vm")
-        Task {
-            await getInitialProfile()
-        }
     }
     
     // MARK: - Main actor functions
@@ -47,20 +45,20 @@ final class ProfileViewModel {
         avatarImage = nil
         viewState = .idle
     }
-    
+        
     @MainActor
-    func getInitialProfile() async {
+    func loadPrivateProfile() async {
         do {
             let userID = try await profileService.getCurrentUserID()
             let profile = try await profileService.loadProfile(for: userID)
             self.displayName = profile.username ?? ""
             self.profile = profile
         } catch {
-            debugPrint(error)
+            print(error)
             viewState = .error(ProfileViewStateMessages.generalError.message)
         }
     }
-    
+   
     @MainActor
     func updateProfileButtonTapped() async {
         guard await canUpdateProfile() else { return }

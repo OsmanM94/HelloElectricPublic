@@ -15,7 +15,7 @@ struct AccountView: View {
             Form {
                 Section("Manage") {
                     NavigationLink("Profile") {
-                        LazyView(ProfileView())
+                        LazyView(PrivateProfileView())
                     }
                     NavigationLink("My listings", destination: {
                         LazyView(UserListingView())
