@@ -11,29 +11,53 @@ struct ErrorView: View {
     var message: String
     var retryAction: () -> Void
     
+    @Environment(\.colorScheme) private var colorScheme
+    
     var body: some View {
-        ContentUnavailableView {
-            Label {
-                Text(message)
-                    .foregroundColor(.red)
-            } icon: {
-                Image(systemName: "exclamationmark.circle.fill")
-                    .foregroundColor(.red)
-            }
-        } description: {
-            Text("")
-        } actions: {
-            Button {
-                 retryAction()
-            } label: {
-                Text("Retry")
-                    .font(.title2)
-            }
+        VStack(spacing: 30) {
+            Image(systemName: "exclamationmark.triangle")
+                .font(.system(size: 60))
+                .foregroundStyle(iconColor)
             
+            Text(message)
+                .font(.headline)
+                .multilineTextAlignment(.center)
+                .foregroundStyle(.secondary)
+            
+            Button(action: retryAction) {
+                Text("Try Again")
+                    .font(.headline)
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 30)
+                    .padding(.vertical, 12)
+                    .background(buttonColor)
+                    .clipShape(RoundedRectangle(cornerRadius: 25))
+            }
         }
+        .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(backgroundColor)
+    }
+    
+    private var iconColor: Color {
+        colorScheme == .dark ? Color.yellow.opacity(0.7) : Color.orange
+    }
+    
+    private var buttonColor: Color {
+        colorScheme == .dark ? Color.green.opacity(0.7) : Color.green
+    }
+    
+    private var backgroundColor: Color {
+        colorScheme == .dark ? Color.black : Color.white
     }
 }
 
-#Preview {
-    ErrorView(message: "The selected image contains sensitive content.", retryAction: {})
+#Preview("Light Mode") {
+    ErrorView(message: "Unable to load EV listings at this time.", retryAction: {})
+        .preferredColorScheme(.light)
+}
+
+#Preview("Dark Mode") {
+    ErrorView(message: "Unable to load EV listings at this time.", retryAction: {})
+        .preferredColorScheme(.dark)
 }

@@ -54,36 +54,101 @@ struct CreateFormView: View {
     }
 }
 
+// MARK: - DVLA Check
 fileprivate struct DvlaCheckView: View {
     @Binding var registrationNumber: String
+    @State private var showInfoPopover: Bool = false
     var sendDvlaRequest: () async -> Void
-    
+
     var body: some View {
-        Form {
-            Section("UK Registration") {
-                TextField("", text: $registrationNumber, prompt: Text("Enter registration").foregroundStyle(.black.opacity(0.3)))
-                    .foregroundStyle(.black)
-                    .font(.system(size: 24, weight: .semibold))
-                    .submitLabel(.go)
-                    .listRowBackground(Color.yellow.opacity(0.8))
-                    .multilineTextAlignment(.center)
-                    .textInputAutocapitalization(.characters)
-                    .autocorrectionDisabled()
-                    .overlay(alignment: .leading) {
-                        Rectangle()
-                            .foregroundStyle(.green.opacity(0.8))
-                            .frame(width: 35)
-                            .scaledToFill()
-                            .offset(x: -20, y: 0)
+        ZStack {
+            Rectangle()
+                .foregroundStyle(Color(.secondarySystemBackground))
+                .ignoresSafeArea()
+            VStack(spacing: 20) {
+                HStack {
+                    Text("Enter UK Registration")
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
+                    
+                    Spacer()
+                    
+                    Button(action: {
+                        showInfoPopover = true
+                    }) {
+                        Image(systemName: "info.circle")
+                            .foregroundColor(.secondary)
                     }
-                    .onSubmit {
-                        Task {
-                            guard !registrationNumber.isEmpty else { return }
-                            await sendDvlaRequest()
-                        }
+                    .popover(isPresented: $showInfoPopover, arrowEdge: .top) {
+                        infoPopoverContent
                     }
+                }
+                
+                registrationPlate
+                
+                Spacer(minLength: 0)
+            }
+            .padding()
+        }
+    }
+    
+    private var registrationPlate: some View {
+        HStack(spacing: 0) {
+            Rectangle()
+                .foregroundStyle(.green)
+                .frame(width: 40)
+                .overlay {
+                    Text("UK")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundStyle(.white)
+                        .rotationEffect(.degrees(0))
+                }
+            
+            TextField("", text: $registrationNumber, prompt: Text("Enter plate").foregroundStyle(.gray.opacity(0.7)))
+                .font(.system(size: 24, weight: .bold))
+                .padding()
+                .background(Color.yellow.opacity(0.8))
+                .foregroundStyle(.black)
+                .multilineTextAlignment(.center)
+                .textInputAutocapitalization(.characters)
+                .autocorrectionDisabled()
+                .submitLabel(.go)
+                .onChange(of: registrationNumber) {
+                    registrationNumber = registrationNumber.uppercased()
+                }
+                .onSubmit {
+                    Task {
+                        guard !registrationNumber.isEmpty else { return }
+                        await sendDvlaRequest()
+                    }
+                }
+        }
+        .frame(height: 60)
+        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(Color.black, lineWidth: 3)
+        )
+        .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
+    }
+    
+    private var infoPopoverContent: some View {
+        GroupBox {
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Why is this step required?")
+                    .font(.headline)
+                    .padding(.bottom, 10)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                
+                Text("We need to check the vehicle's registration to verify if it's an electric vehicle (EV).")
+                
+                Text("This marketplace is exclusively for electric vehicles, so we can only proceed with listings for confirmed EVs.")
+                
+                Text("If the vehicle is not electric, we won't be able to continue with the listing process.")
+                    .padding(.top, 5)
             }
         }
+        .padding()
     }
 }
 

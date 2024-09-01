@@ -95,7 +95,6 @@ private extension SearchView {
             }
         }
         .foregroundStyle(.secondary)
-        .font(.body)
         .padding()
     }
    
@@ -106,7 +105,7 @@ private extension SearchView {
         List {
             ForEach(viewModel.searchedItems, id: \.id) { item in
                 NavigationLink(value: item) {
-                    ListingCell(listing: item)
+                    ListingCell(listing: item, showFavourite: true)
                         .id(item.id)
                 }
                 .task {
@@ -126,7 +125,7 @@ private extension SearchView {
             }
         }
         .navigationDestination(for: Listing.self, destination: { listing in
-            ListingDetailView(listing: listing)
+            ListingDetailView(listing: listing, showFavourite: true)
         })
         .listStyle(.plain)
     }

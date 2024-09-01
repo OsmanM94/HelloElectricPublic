@@ -15,15 +15,31 @@ struct CreateListingViewRouter: View {
         Group {
             if authViewModel.authenticationState == .authenticated {
                 CreateFormView()
-                    .overlay(
-                        !networkMonitor.isConnected ? NetworkMonitorView().background(Color.white.opacity(0.8)) : nil
-                    )
             } else {
                 AuthenticationView()
-                    .overlay(
-                        !networkMonitor.isConnected ? NetworkMonitorView().background(Color.white.opacity(0.8)) : nil
-                    )
+            }
+        }
+        .overlay(alignment: .top) {
+            if !networkMonitor.isConnected {
+                networkStatusBanner
             }
         }
     }
+    
+    private var networkStatusBanner: some View {
+        NetworkMonitorView()
+            .frame(maxWidth: .infinity)
+            .background(backgroundStyle)
+            .transition(.move(edge: .top).combined(with: .opacity))
+    }
+    
+    private var backgroundStyle: some ShapeStyle {
+        .thinMaterial
+    }
+}
+
+#Preview {
+    CreateListingViewRouter()
+        .environment(AuthViewModel())
+        .environment(NetworkMonitor())
 }

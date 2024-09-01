@@ -10,21 +10,37 @@ import SwiftUI
 struct AccountViewRouter: View {
     @Environment(AuthViewModel.self) private var authViewModel
     @Environment(NetworkMonitor.self) private var networkMonitor
-    
+   
     var body: some View {
         Group {
             if authViewModel.authenticationState == .authenticated {
                 AccountView()
-                    .overlay(
-                        !networkMonitor.isConnected ? NetworkMonitorView().background(Color.white.opacity(0.8)) : nil
-                    )
             } else {
                 AuthenticationView()
-                    .overlay(
-                        !networkMonitor.isConnected ? NetworkMonitorView().background(Color.white.opacity(0.8)) : nil
-                    )
+            }
+        }
+        .overlay(alignment: .top) {
+            if !networkMonitor.isConnected {
+                networkStatusBanner
             }
         }
     }
+    
+    private var networkStatusBanner: some View {
+        NetworkMonitorView()
+            .frame(maxWidth: .infinity)
+            .background(backgroundStyle)
+            .transition(.move(edge: .top).combined(with: .opacity))
+    }
+    
+    private var backgroundStyle: some ShapeStyle {
+        .thinMaterial
+    }
+}
+
+#Preview {
+    AccountViewRouter()
+        .environment(AuthViewModel())
+        .environment(NetworkMonitor())
 }
 

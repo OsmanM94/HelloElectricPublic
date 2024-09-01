@@ -14,42 +14,74 @@ struct AccountView: View {
         NavigationStack {
             Form {
                 Section("Manage") {
-                    NavigationLink("Profile") {
+                    NavigationLink {
                         LazyView(PrivateProfileView())
+                    } label: {
+                        Label("Profile", systemImage: "person.circle")
                     }
-                    NavigationLink("My listings", destination: {
-                        LazyView(UserListingView())
-                    })
-                    NavigationLink("Saved", destination: {
+                    
+                    NavigationLink {
+                        LazyView(UserListingsContainer())
+                    } label: {
+                        Label("My listings", systemImage: "list.bullet")
+                    }
+                    
+                    NavigationLink {
                         FavouriteListingView()
-                    })
+                    } label: {
+                        Label("Saved", systemImage: "heart")
+                    }
                 }
                 
-                Section("Safety") {
-                    NavigationLink("How to buy and sell", destination: {
-                        SafetyView()
-                    })
+                Section("Education Center") {
+                    NavigationLink {
+                        LazyView(EducationCenterView())
+                    } label: {
+                        Label("Learn more about EVs", systemImage: "book.fill")
+                    }
                 }
                 
-                DisclosureGroup("Legal") {
-                    NavigationLink("Terms and Conditions", destination: TermsAndConditionsView())
-                    NavigationLink("Privacy Policy", destination: PrivacyPolicyView())
+                Section("Legal") {
+                    NavigationLink {
+                        LazyView(LegalView())
+                    } label: {
+                        Label("Documents", systemImage: "doc.text")
+                    }
+                }
+                
+                Section("Support") {
+                    NavigationLink {
+                        LazyView(SupportCenterView())
+                    } label: {
+                        Label("Support", systemImage: "lifepreserver")
+                    }
                 }
                 
                 Section("Notifications") {
-                    Text("Notify me")
+                    Label("Manage", systemImage: "bell")
                 }
                 
                 Section("Haptic feedback") {
-                    Text("Turn on")
+                    Toggle(isOn: .constant(false)) {
+                        Label("Turn on", systemImage: "hand.tap")
+                    }
                 }
                 
-                Section("Signed in as \(authViewModel.displayName) ") {
+                Section("Signed in as \(authViewModel.displayName)") {
                     SignOutButton(action: { Task {
-                        await authViewModel.signOut() } }, description: "Sign out")
+                        await authViewModel.signOut()
+                    }}, description: "Sign out")
+                }
+                
+                Section {
+                    Button(action: {}) {
+                        Label("Delete account", systemImage: "trash")
+                            .foregroundStyle(.red)
+                            .frame(maxWidth: .infinity)
+                    }
                 }
             }
-            .navigationTitle("Settings")
+            .navigationTitle("Account")
         }
         .task {
             await authViewModel.setupAuthStateListener()
@@ -61,6 +93,12 @@ struct AccountView: View {
     AccountView()
         .environment(AuthViewModel())
         .environment(FavouriteViewModel())
+}
+
+struct UserListingsContainer: View {
+    var body: some View {
+        UserListingView()
+    }
 }
 
 fileprivate struct SignOutButton: View {

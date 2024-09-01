@@ -45,7 +45,7 @@ struct ChartViewContainer: View {
 struct NewsViewContainer: View {
     var body: some View {
         NewsView()
-            .navigationTitle("EV News") 
+            .navigationTitle("News")
     }
 }
 
@@ -56,6 +56,7 @@ struct NewsViewContainer: View {
 fileprivate struct HubItemView: View {
     let title: String
     let imageName: String
+    @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
         VStack {
@@ -64,12 +65,12 @@ fileprivate struct HubItemView: View {
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 50, height: 50)
                 .padding()
-               
+                .foregroundStyle(.green.gradient)
                 .clipShape(Circle())
             
             Text(title)
                 .font(.headline)
-                .foregroundColor(.primary)
+                .foregroundStyle(colorScheme == .dark ? .white : .black)
         }
         .frame(maxWidth: .infinity, minHeight: 150)
         .background(Color(.systemGray6))

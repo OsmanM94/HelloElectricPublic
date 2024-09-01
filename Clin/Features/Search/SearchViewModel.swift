@@ -159,6 +159,9 @@ final class SearchViewModel {
             if !model.isEmpty && model != "Any" {
                 query = query.eq("model", value: model)
             }
+            if !body.isEmpty && body != "Any" {
+                query = query.eq("body_type", value: body)
+            }
             if !selectedYear.isEmpty && selectedYear != "Any" {
                 query = query.eq("year", value: selectedYear)
             }
@@ -224,6 +227,7 @@ final class SearchViewModel {
     func resetFilters() {
         make = "Any"
         model = "Any"
+        body = "Any"
         location = "Any"
         selectedYear = "Any"
         maxPrice = 20_000
@@ -247,6 +251,7 @@ final class SearchViewModel {
     private func isAnyFilterActive() -> Bool {
         return make != "Any" ||
         model != "Any" ||
+        body != "Any" ||
         location != "Any" ||
         selectedYear != "Any" ||
         maxPrice < defaultMaxPrice ||

@@ -31,7 +31,7 @@ final class PublicProfileViewModel {
     // MARK: - Main actor functions
     @MainActor
     func loadPublicProfile(for sellerID: UUID) async {
-        // Attempt to fetch from cache first
+        // Attempt to load from cache first
         if let cachedProfile = cacheManager.cache(for: Profile.self).get(forKey: sellerID.uuidString) {
             print("DEBUG: Loaded public profile from cache")
             self.profile = cachedProfile
@@ -39,9 +39,9 @@ final class PublicProfileViewModel {
             return
         }
         
-        // Fetch from API if not cached
+        // Load from API if not cached
         do {
-            print("DEBUG: Fetching public profile from API")
+            print("DEBUG: Loading public profile from API")
             let profile = try await profileService.loadProfile(for: sellerID)
             self.profile = profile
             self.displayName = profile.username ?? ""

@@ -21,3 +21,5 @@ struct EmptyContentView: View {
 #Preview {
     EmptyContentView(message: "No listings saved", systemImage: "heart.slash.fill")
 }
+
+

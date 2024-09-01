@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct FavouriteCell: View {
-    var favourite: Favourite
+    let favourite: Favourite
     
     var body: some View {
         HStack(spacing: 0) {
