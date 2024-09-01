@@ -168,10 +168,15 @@ fileprivate struct CreateFormSubview: View {
                     mileageLocationSection
                     colourRangeSection
                     priceSection
+                    phoneSection
                     descriptionSection
                     featuresSection
+                    paymentSection
                     createButtonSection
                 }
+//                .onTapGesture {
+//                    hideKeyboard()
+//                }
                 .toolbar {
                     topBarLeadingToolbarContent
                     keyboardToolbarContent
@@ -287,6 +292,17 @@ fileprivate struct CreateFormSubview: View {
                 .opacity(viewModel.range == "Select" ? 0.8 : 1)
                 .disabled(viewModel.range == "Select")
             
+        }
+    }
+    
+    private var phoneSection: some View {
+        Section("Contact number") {
+            TextField("Phone", text: $viewModel.phoneNumber)
+                .keyboardType(.phonePad)
+                .foregroundStyle(viewModel.price == 500 ? .gray : .primary)
+                .opacity(viewModel.price == 500 ? 0.8 : 1)
+                .disabled(viewModel.price == 500)
+                .characterLimit($viewModel.phoneNumber, limit: 11)
         }
     }
 
@@ -411,6 +427,46 @@ fileprivate struct CreateFormSubview: View {
         .pickerStyle(.navigationLink)
     }
     
+    // MARK: - Promote listing (Apple Pay)
+        
+    private var paymentSection: some View {
+        Section {
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Promote Listing")
+                    .font(.headline)
+                
+                if viewModel.isPromoted {
+                    HStack {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundColor(.green)
+                        Text("Payment Complete")
+                    }
+                } else {
+                    VStack(alignment: .leading) {
+                        Text("What you get:")
+                        Text("- Listing appears at the top nationwide")
+                        Text("- Custom badge")
+                        Text("- Exclusive layout")
+                        Text("- £13.99 for 2 weeks")
+                    }
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    
+                    PaymentButton { success in
+                        viewModel.isPromoted = success
+                        if success {
+                            viewModel.isPromoted = true
+                        }
+                    }
+                    .frame(height: 45)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+                }
+            }
+            .listRowInsets(EdgeInsets())
+            .padding()
+        }
+    }
+
     // MARK: - Toolbar
     
     private var topBarLeadingToolbarContent: some ToolbarContent {

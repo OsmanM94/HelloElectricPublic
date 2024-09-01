@@ -20,6 +20,7 @@ struct Listing: Identifiable, Codable, Hashable {
     var location: String
     var yearOfManufacture: String
     var price: Double
+    var phoneNumber: String
     var textDescription: String
     var range: String
     var colour: String
@@ -32,6 +33,7 @@ struct Listing: Identifiable, Codable, Hashable {
     var serviceHistory: String
     var numberOfOwners: String
     var userID: UUID
+    var isPromoted: Bool
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -45,7 +47,8 @@ struct Listing: Identifiable, Codable, Hashable {
         case location
         case yearOfManufacture = "year"
         case price
-        case textDescription
+        case phoneNumber = "phone_number"
+        case textDescription = "text_description"
         case range
         case colour
         case publicChargingTime = "public_charging"
@@ -58,5 +61,6 @@ struct Listing: Identifiable, Codable, Hashable {
         case numberOfOwners = "owners"
         case createdAt = "created_at"
         case userID = "user_id"
+        case isPromoted = "is_promoted"
     }
 }

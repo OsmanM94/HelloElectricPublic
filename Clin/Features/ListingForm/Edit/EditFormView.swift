@@ -38,6 +38,9 @@ struct EditFormView: View {
             .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
             .navigationTitle("Edit Listing")
         }
+        .task {
+            await viewModel.retrieveImages(listing: listing)
+        }
     }
 }
 
@@ -49,7 +52,6 @@ fileprivate struct EditFormSubview: View {
     @Bindable var viewModel: EditFormViewModel
     @State var listing: Listing
     @State private var originalListing: Listing
-    @State private var hasImageChanges: Bool = false
     
     init(viewModel: EditFormViewModel, listing: Listing) {
         self._viewModel = Bindable(viewModel)
@@ -71,6 +73,7 @@ fileprivate struct EditFormSubview: View {
                     mileageLocationSection
                     colourRangeSection
                     priceSection
+                    phoneSection
                     descriptionSection
                     featuresSection
                     applyButtonSection
@@ -79,9 +82,12 @@ fileprivate struct EditFormSubview: View {
                     keyboardToolbarContent
                     topBarTrailingToolbarContent
                 }
-                .onChange(of: viewModel.selectedImages) { _, _ in
-                    hasImageChanges = true
+                .onTapGesture {
+                    hideKeyboard()
                 }
+//                .onChange(of: viewModel.selectedImages) { _, _ in
+//                    hasImageChanges = true
+//                }
             case .error(let message):
                 ErrorView(message: message) { viewModel.resetState() }
             }
@@ -171,6 +177,14 @@ fileprivate struct EditFormSubview: View {
         }
     }
     
+    private var phoneSection: some View {
+        Section("Contact number") {
+            TextField("Phone", text: $listing.phoneNumber)
+                .keyboardType(.phonePad)
+                .characterLimit($listing.phoneNumber, limit: 11)
+        }
+    }
+
     private var descriptionSection: some View {
         Section {
             TextEditor(text: $listing.textDescription)
@@ -277,9 +291,6 @@ fileprivate struct EditFormSubview: View {
         ToolbarItem(placement: .topBarTrailing) {
             NavigationLink {
                 ImagePickerGridView(viewModel: viewModel)
-                    .task {
-                        await viewModel.retrieveImages(listing: listing)
-                    }
             } label: {
                 ImageCounterView(count: viewModel.totalImageCount)
             }
@@ -293,14 +304,13 @@ fileprivate struct EditFormSubview: View {
                 Task {
                     await viewModel.updateUserListing(listing)
                     originalListing = listing
-                    hasImageChanges = false
                 }
             } label: {
                 Text("Apply")
                     .font(.headline)
                     .frame(maxWidth: .infinity)
             }
-            .disabled(listing == originalListing && !hasImageChanges)
+            .disabled(listing == originalListing)
         }
     }
 }

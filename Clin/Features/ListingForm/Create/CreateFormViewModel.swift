@@ -36,6 +36,7 @@ final class CreateFormViewModel: ImagePickerProtocol {
     var location: String = "Select"
     var selectedYear: String = "Select"
     var price: Double = 500
+    var phoneNumber: String = "07"
     var description: String = ""
     var range: String = "Select"
     var colour: String = "Select"
@@ -47,6 +48,7 @@ final class CreateFormViewModel: ImagePickerProtocol {
     var warranty: String = "Select"
     var serviceHistory: String = "Select"
     var numberOfOwners: String = "Select"
+    var isPromoted: Bool = false
     
     // MARK: - Image Properties
     var selectedImages: [SelectedImage?] = Array(repeating: nil, count: 10)
@@ -121,7 +123,7 @@ final class CreateFormViewModel: ImagePickerProtocol {
             
             try await uploadSelectedImages(for: user.id, totalSteps: totalSteps)
             
-            let listingToCreate = Listing(createdAt: Date(), imagesURL: imagesURLs, thumbnailsURL: thumbnailsURLs, make: make, model: model, bodyType: body, condition: condition, mileage: mileage, location: location, yearOfManufacture: selectedYear, price: price, textDescription: description, range: range, colour: colour, publicChargingTime: publicChargingTime, homeChargingTime: homeChargingTime, batteryCapacity: batteryCapacity, powerBhp: powerBhp, regenBraking: regenBraking, warranty: warranty, serviceHistory: serviceHistory, numberOfOwners: numberOfOwners, userID: user.id)
+            let listingToCreate = Listing(createdAt: Date(), imagesURL: imagesURLs, thumbnailsURL: thumbnailsURLs, make: make, model: model, bodyType: body, condition: condition, mileage: mileage, location: location, yearOfManufacture: selectedYear, price: price, phoneNumber: phoneNumber, textDescription: description, range: range, colour: colour, publicChargingTime: publicChargingTime, homeChargingTime: homeChargingTime, batteryCapacity: batteryCapacity, powerBhp: powerBhp, regenBraking: regenBraking, warranty: warranty, serviceHistory: serviceHistory, numberOfOwners: numberOfOwners, userID: user.id, isPromoted: isPromoted)
             
             try await listingService.createListing(listingToCreate)
             
@@ -301,6 +303,7 @@ final class CreateFormViewModel: ImagePickerProtocol {
         location = "Select"
         selectedYear = "Select"
         price = 500
+        phoneNumber = "07"
         description = ""
         range = "Select"
         colour = "Select"

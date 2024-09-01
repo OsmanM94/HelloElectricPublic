@@ -30,6 +30,7 @@ struct MockListingService: ListingServiceProtocol {
             location: "London",
             yearOfManufacture: "2023",
             price: 8900,
+            phoneNumber: "07466861602",
             textDescription: "A great electric vehicle with long range.",
             range: "396 miles",
             colour: "Red",
@@ -41,7 +42,8 @@ struct MockListingService: ListingServiceProtocol {
             warranty: "4 years",
             serviceHistory: "Full",
             numberOfOwners: "1",
-            userID: mockUserID
+            userID: mockUserID,
+            isPromoted: true
         ),
         Listing(
             id: 2,
@@ -55,6 +57,7 @@ struct MockListingService: ListingServiceProtocol {
             location: "Peterborough",
             yearOfManufacture: "2024",
             price: 9900,
+            phoneNumber: "07466861602",
             textDescription: "A great electric vehicle with long range.",
             range: "396 miles",
             colour: "Red",
@@ -66,7 +69,8 @@ struct MockListingService: ListingServiceProtocol {
             warranty: "4 years",
             serviceHistory: "Full",
             numberOfOwners: "1",
-            userID: mockUserID
+            userID: mockUserID,
+            isPromoted: true
         ),
         Listing(
             id: 3,
@@ -80,6 +84,7 @@ struct MockListingService: ListingServiceProtocol {
             location: "Leicester",
             yearOfManufacture: "2022",
             price: 70000,
+            phoneNumber: "07466861602",
             textDescription: "A sleek and powerful electric sedan with excellent performance.",
             range: "300 miles",
             colour: "Blue",
@@ -91,7 +96,8 @@ struct MockListingService: ListingServiceProtocol {
             warranty: "3 years",
             serviceHistory: "Full",
             numberOfOwners: "1",
-            userID: mockUserID
+            userID: mockUserID,
+            isPromoted: false
         ),
         Listing(
             id: 4,
@@ -105,6 +111,7 @@ struct MockListingService: ListingServiceProtocol {
             location: "Wisbech",
             yearOfManufacture: "2021",
             price: 85000,
+            phoneNumber: "07466861602",
             textDescription: "An electric grand tourer with stunning design and performance.",
             range: "238 miles",
             colour: "Black",
@@ -116,7 +123,8 @@ struct MockListingService: ListingServiceProtocol {
             warranty: "4 years",
             serviceHistory: "Full",
             numberOfOwners: "2",
-            userID: mockUserID
+            userID: mockUserID,
+            isPromoted: false
         ),
         Listing(
             id: 5,
@@ -130,6 +138,7 @@ struct MockListingService: ListingServiceProtocol {
             location: "March",
             yearOfManufacture: "2020",
             price: 15000,
+            phoneNumber: "07466861602",
             textDescription: "A reliable and affordable electric hatchback.",
             range: "150 miles",
             colour: "White",
@@ -141,7 +150,8 @@ struct MockListingService: ListingServiceProtocol {
             warranty: "2 years",
             serviceHistory: "Full",
             numberOfOwners: "1",
-            userID: mockUserID
+            userID: mockUserID,
+            isPromoted: false
         )
     ]
     

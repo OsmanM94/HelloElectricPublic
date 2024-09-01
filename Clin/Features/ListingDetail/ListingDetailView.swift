@@ -258,7 +258,7 @@ struct ListingDetailView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
             .padding(.top, 10)
             .overlay(alignment: .topTrailing) {
-                ContactButtons()
+                ContactButtons(listing: listing)
             }
         }
         .padding()
@@ -326,7 +326,6 @@ fileprivate struct SheetImages: View {
 #Preview {
     ListingDetailView(listing: MockListingService.sampleData[0], showFavourite: true)
         .environment(FavouriteViewModel())
-        .environment(PrivateProfileViewModel())
 }
 
 
@@ -346,11 +345,11 @@ fileprivate struct FeatureRow: View {
 }
 
 fileprivate struct ContactButtons: View {
-    let phoneNumber = "07466861603"
+    var listing: Listing
     
     var body: some View {
         HStack(spacing: 5) {
-            Link(destination: URL(string: "tel:\(phoneNumber)")!) {
+            Link(destination: URL(string: "tel:\(listing.phoneNumber)")!) {
                 ZStack {
                     RoundedRectangle(cornerRadius: 12)
                         .foregroundStyle(.green.gradient)
@@ -362,7 +361,7 @@ fileprivate struct ContactButtons: View {
             }
             .padding(.top, 10)
             
-            Link(destination: URL(string: "sms:\(phoneNumber)")!) {
+            Link(destination: URL(string: "sms:\(listing.phoneNumber)")!) {
                 ZStack {
                     RoundedRectangle(cornerRadius: 12)
                         .foregroundStyle(.green.gradient)

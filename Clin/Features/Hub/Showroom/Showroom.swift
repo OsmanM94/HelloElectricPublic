@@ -13,6 +13,7 @@ struct Showroom: View {
             Image(systemName: "hammer.fill")
                 .font(.system(size: 45))
             Text("Under development")
+            
         }
     }
 }

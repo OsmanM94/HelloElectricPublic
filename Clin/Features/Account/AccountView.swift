@@ -58,7 +58,9 @@ struct AccountView: View {
                 }
                 
                 Section("Notifications") {
-                    Label("Manage", systemImage: "bell")
+                    NavigationLink(destination: {}) {
+                        Label("Notifications", systemImage: "bell")
+                    }
                 }
                 
                 Section("Haptic feedback") {

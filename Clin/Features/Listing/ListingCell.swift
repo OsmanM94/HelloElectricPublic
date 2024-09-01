@@ -30,6 +30,11 @@ struct ListingCell: View {
         .overlay(alignment: .topTrailing) {
             topRightOverlay
         }
+        .overlay(alignment: .topLeading) {
+            if listing.isPromoted {
+                promotedBadge
+            }
+        }
     }
     
     private var placeholderImage: some View {
@@ -51,6 +56,21 @@ struct ListingCell: View {
                 activeStatusBadge
             }
         }
+    }
+    
+    private var promotedBadge: some View {
+        HStack(spacing: 4) {
+            Image(systemName: "star.fill")
+                .font(.system(size: 10))
+            Text("Promoted")
+                .font(.system(size: 10, weight: .semibold))
+        }
+        .padding(.horizontal, 8)
+        .padding(.vertical, 4)
+        .background(Color(.systemGray6).opacity(0.8))
+        .foregroundColor(.yellow)
+        .cornerRadius(5)
+        
     }
     
     private var activeStatusBadge: some View {
