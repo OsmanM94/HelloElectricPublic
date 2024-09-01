@@ -20,11 +20,11 @@ struct HubView: View {
                     HubItemView(title: "News", imageName: "newspaper.fill")
                 }
                 
-                NavigationLink(destination: LazyView(StationView())) {
+                NavigationLink(destination: LazyView(StatioViewContainer())) {
                     HubItemView(title: "EV Stations", imageName: "ev.charger.fill")
                 }
                 
-                NavigationLink(destination: LazyView(Showroom())) {
+                NavigationLink(destination: LazyView(ShowroomContainer())) {
                     HubItemView(title: "EV Data", imageName: "bolt.car.fill")
                 }
             }
@@ -35,17 +35,32 @@ struct HubView: View {
     }
 }
 
-struct ChartViewContainer: View {
+// MARK: - Containers
+
+fileprivate struct ChartViewContainer: View {
     var body: some View {
         ChartView()
             .navigationTitle("Registrations")
     }
 }
 
-struct NewsViewContainer: View {
+fileprivate struct NewsViewContainer: View {
     var body: some View {
         NewsView()
             .navigationTitle("News")
+    }
+}
+
+fileprivate struct StatioViewContainer: View {
+    var body: some View {
+        StationView()
+    }
+}
+
+fileprivate struct ShowroomContainer: View {
+    var body: some View {
+        Showroom()
+            .navigationTitle("Showroom")
     }
 }
 
