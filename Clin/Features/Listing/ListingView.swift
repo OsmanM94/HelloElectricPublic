@@ -60,12 +60,12 @@ struct ListingView: View {
         VStack(spacing: 5) {
             Image(systemName: "car.2.fill")
                 .font(.system(size: 50))
-                .foregroundColor(.gray)
+                .foregroundStyle(.gray)
             Text("No \(selectedVehicleType.rawValue) available")
                 .font(.headline)
             Text("Check back later for updates")
                 .font(.subheadline)
-                .foregroundColor(.gray)
+                .foregroundStyle(.gray)
         }
     }
 

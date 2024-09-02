@@ -32,7 +32,7 @@ struct SensitiveAnalysisErrorView: View {
     private var sensitiveImagesGrid: some View {
         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
             ForEach(1...3, id: \.self) { index in
-                if let image = UIImage(named: "sensitive\(index)")?.resize(300, 300) {
+                if let image = UIImage(named: "sensitive\(index)")?.resize(200, 200) {
                     Image(uiImage: image)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
@@ -68,6 +68,8 @@ struct SensitiveAnalysisErrorView: View {
                     .multilineTextAlignment(.center)
             }
             .padding()
+            .fontDesign(.rounded)
+            .bold()
         }
     }
     
@@ -88,6 +90,8 @@ struct SensitiveAnalysisErrorView: View {
             Text("Why is this required?")
                 .font(.subheadline)
                 .foregroundStyle(.blue)
+                .fontDesign(.rounded)
+                .bold()
         }
         .popover(isPresented: $showPopover) {
             whyRequiredPopover

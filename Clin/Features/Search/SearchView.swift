@@ -94,6 +94,8 @@ private extension SearchView {
                     }
             }
         }
+        .fontDesign(.rounded)
+        .bold()
         .foregroundStyle(.secondary)
         .padding()
     }

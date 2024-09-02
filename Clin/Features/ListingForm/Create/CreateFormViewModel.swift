@@ -56,6 +56,9 @@ final class CreateFormViewModel: ImagePickerProtocol {
     var isLoadingImages: [Bool] = Array(repeating: false, count: 10)
     var imagesURLs: [URL] = []
     var thumbnailsURLs: [URL] = []
+    var totalImageCount: Int {
+        selectedImages.compactMap({ $0 }).count
+    }
     
     // MARK: - DVLA Check
     var registrationNumber: String = ""
@@ -78,11 +81,7 @@ final class CreateFormViewModel: ImagePickerProtocol {
     var warrantyOptions: [String] = []
     var serviceHistoryOptions: [String] = []
     var numberOfOwnersOptions: [String] = []
-    
-    var totalImageCount: Int {
-        selectedImages.compactMap({ $0 }).count
-    }
-    
+
     // MARK: - Dependencies
     @ObservationIgnored @Injected(\.listingService) private var listingService
     @ObservationIgnored @Injected(\.prohibitedWordsService) private var prohibitedWordsService
@@ -218,6 +217,7 @@ final class CreateFormViewModel: ImagePickerProtocol {
         location != "Select" &&
         selectedYear != "Select" &&
         price > 500 &&
+        phoneNumber.isValidPhoneNumber &&
         !description.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
         range != "Select" &&
         colour != "Select" &&

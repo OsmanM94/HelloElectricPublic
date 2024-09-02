@@ -114,3 +114,20 @@ public extension Date {
         return formatter.localizedString(for: self, relativeTo: Date())
     }
 }
+
+/// This computed property takes the current string, filters out non-numeric characters, and formats it as a UK phone number (assuming the format is 07700 900 000).
+extension String {
+    var formattedPhoneNumber: String {
+        let cleaned = self.filter { $0.isNumber }
+        guard cleaned.count >= 11 else { return cleaned }
+        let firstPart = cleaned.prefix(5)
+        let secondPart = cleaned.dropFirst(5).prefix(3)
+        let thirdPart = cleaned.dropFirst(8)
+        return "\(firstPart) \(secondPart) \(thirdPart)"
+    }
+    
+    var isValidPhoneNumber: Bool {
+        let cleaned = self.filter { $0.isNumber }
+        return cleaned.count == 11
+    }
+}

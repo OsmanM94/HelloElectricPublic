@@ -88,7 +88,7 @@ struct ListingDetailView: View {
                 
                 VStack(alignment: .leading, spacing: 2) {
                     listingHeader
-                    listingPrice
+                    listingPriceAndPromotedBadge
                     Divider()
                     overviewSection
                     featuresGrid
@@ -96,6 +96,7 @@ struct ListingDetailView: View {
                     descriptionSection
                     sellerSection
                 }
+                .fontDesign(.rounded).bold()
                 .padding()
                 
                 Spacer()
@@ -130,7 +131,7 @@ struct ListingDetailView: View {
     private var noImagesAvailable: some View {
         Rectangle()
             .foregroundStyle(.gray.opacity(0.5))
-            .frame(maxWidth: .infinity, minHeight: 600)
+            .frame(maxWidth: .infinity, minHeight: 500)
             .overlay {
                 Text("No Images Available")
                     .foregroundStyle(.secondary)
@@ -149,18 +150,34 @@ struct ListingDetailView: View {
                     .fontWeight(.semibold)
                     .lineLimit(2, reservesSpace: false)
             }
-            if showFavourite {
-                Spacer()
+            
+            Spacer()
+            
+            HStack(spacing: 10) {
                 AddToFavouritesButton(listing: listing, iconSize: 22, width: 40, height: 40)
+                    .opacity(showFavourite ? 1 : 0)
+                
+                ReportButton(itemId: listing.id ?? 0, itemType: "Listing", reportEmail: "HelloElectric@support.com", iconSize: 22)
             }
         }
     }
     
-    private var listingPrice: some View {
-        Text(listing.price, format: .currency(code: Locale.current.currency?.identifier ?? "GBP").precision(.fractionLength(0)))
-            .font(.title)
-            .fontWeight(.bold)
-            .padding(.top, 20)
+    private var listingPriceAndPromotedBadge: some View {
+        HStack {
+            Text(listing.price, format: .currency(code: Locale.current.currency?.identifier ?? "GBP").precision(.fractionLength(0)))
+                .font(.title)
+            
+            Spacer()
+            
+            Text("Promoted")
+                .foregroundStyle(.yellow)
+                .padding(10)
+                .background(Color(.systemGray6))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .opacity(listing.isPromoted ? 1 : 0)
+        }
+        .fontDesign(.rounded).bold()
+        .padding(.top, 20)
     }
     
     private var overviewSection: some View {
@@ -172,6 +189,7 @@ struct ListingDetailView: View {
             
             mileageInfo
         }
+        .fontDesign(.rounded)
     }
     
     private var mileageInfo: some View {
@@ -255,6 +273,7 @@ struct ListingDetailView: View {
                     .foregroundStyle(.secondary)
                 PublicProfileView(viewModel: sellerProfileViewModel)
             }
+            
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
             .padding(.top, 10)
             .overlay(alignment: .topTrailing) {
@@ -375,3 +394,4 @@ fileprivate struct ContactButtons: View {
         }
     }
 }
+

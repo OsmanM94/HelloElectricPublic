@@ -30,6 +30,7 @@ final class EditFormViewModel: ImagePickerProtocol {
     private(set) var subFormViewState: SubFormViewState = .loading
     private(set) var uploadingProgress: Double = 0.0
     var imageViewState: ImageViewState = .idle
+    var isPromoted: Bool = false
 
     // MARK: - Image properties
     var selectedImages: [SelectedImage?] = Array(repeating: nil, count: 10)

@@ -104,7 +104,8 @@ final class ListingViewModel {
                 .select()
                 .in("body_type", values: vehicleType.databaseValues)
                 .range(from: from, to: to)
-                .order("created_at", ascending: false)
+                .order("is_promoted", ascending: false) // Sort promoted first
+                .order("created_at", ascending: false)  // Then sort by date
             
             let response: [Listing] = try await query.execute().value
             return response

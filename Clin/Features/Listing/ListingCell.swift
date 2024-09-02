@@ -31,9 +31,8 @@ struct ListingCell: View {
             topRightOverlay
         }
         .overlay(alignment: .topLeading) {
-            if listing.isPromoted {
-                promotedBadge
-            }
+            promotedBadge
+                .opacity(listing.isPromoted ? 1 : 0)
         }
     }
     
@@ -59,18 +58,16 @@ struct ListingCell: View {
     }
     
     private var promotedBadge: some View {
-        HStack(spacing: 4) {
-            Image(systemName: "star.fill")
-                .font(.system(size: 10))
-            Text("Promoted")
-                .font(.system(size: 10, weight: .semibold))
+        ZStack {
+            Rectangle()
+                .frame(width: 35, height: 18)
+                .clipShape(UnevenRoundedRectangle(topLeadingRadius: 10, bottomLeadingRadius: 0, bottomTrailingRadius: 5, topTrailingRadius: 0, style: .continuous))
+                .foregroundStyle(.yellow.gradient)
+            
+            Image(systemName: "p.circle")
+                .font(.system(size: 12))
+                .foregroundStyle(.primary)
         }
-        .padding(.horizontal, 8)
-        .padding(.vertical, 4)
-        .background(Color(.systemGray6).opacity(0.8))
-        .foregroundColor(.yellow)
-        .cornerRadius(5)
-        
     }
     
     private var activeStatusBadge: some View {
@@ -92,6 +89,7 @@ struct ListingCell: View {
     private var listingDetails: some View {
         VStack(alignment: .leading, spacing: 3) {
             Text("\(listing.make) \(listing.model) \(listing.yearOfManufacture)")
+                .foregroundStyle(listing.isPromoted ? .yellow : .primary)
                 .font(.headline)
                 .lineLimit(2, reservesSpace: false)
             Text("\(listing.condition)")
@@ -105,6 +103,7 @@ struct ListingCell: View {
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }
+        .fontDesign(.rounded).bold()
         .padding(.leading, 5)
     }
 }
@@ -114,6 +113,3 @@ struct ListingCell: View {
         .previewLayout(.sizeThatFits)
         .environment(FavouriteViewModel())
 }
-
-
-

@@ -76,18 +76,13 @@ fileprivate struct EditFormSubview: View {
                     phoneSection
                     descriptionSection
                     featuresSection
+                    promoteListingSection
                     applyButtonSection
                 }
                 .toolbar {
                     keyboardToolbarContent
                     topBarTrailingToolbarContent
                 }
-                .onTapGesture {
-                    hideKeyboard()
-                }
-//                .onChange(of: viewModel.selectedImages) { _, _ in
-//                    hasImageChanges = true
-//                }
             case .error(let message):
                 ErrorView(message: message) { viewModel.resetState() }
             }
@@ -100,6 +95,7 @@ fileprivate struct EditFormSubview: View {
     private var makeSection: some View {
         Section("Make") {
             Label(listing.make, systemImage: "lock.fill")
+                
         }
     }
     
@@ -178,11 +174,19 @@ fileprivate struct EditFormSubview: View {
     }
     
     private var phoneSection: some View {
-        Section("Contact number") {
+        Section(header: Text("Contact number"), footer: phoneSectionFooter) {
             TextField("Phone", text: $listing.phoneNumber)
                 .keyboardType(.phonePad)
-                .characterLimit($listing.phoneNumber, limit: 11)
+                .onChange(of: listing.phoneNumber) { _, newValue in
+                    listing.phoneNumber = newValue.formattedPhoneNumber
+                }
         }
+    }
+    
+    private var phoneSectionFooter: some View {
+        Text("Please enter a valid 11-digit phone number")
+            .foregroundStyle(.red.gradient)
+            .opacity(!listing.phoneNumber.isValidPhoneNumber ? 1 : 0)
     }
 
     private var descriptionSection: some View {
@@ -273,6 +277,14 @@ fileprivate struct EditFormSubview: View {
             }
         }
         .pickerStyle(.navigationLink)
+    }
+    
+    private var promoteListingSection: some View {
+        PromoteListingSection(isPromoted: $listing.isPromoted) { success in
+            if success {
+                listing.isPromoted = true
+            }
+        }
     }
     
     // MARK: Toolbar

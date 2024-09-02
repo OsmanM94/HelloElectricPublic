@@ -122,18 +122,20 @@
 		622369BA2C3D6B7100576FF4 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				CharactersLimitModifier.swift,
-				CircularProgressBar.swift,
-				CustomProgressView.swift,
-				DelayedAction.swift,
-				DeleteAlertModifier.swift,
-				EmptyContentView.swift,
-				ErrorView.swift,
-				HideKeyboard.swift,
-				SensitiveAnalysisErrorView.swift,
-				Shimmer.swift,
-				SuccessView.swift,
-				ZoomImages.swift,
+				Misc/CharactersLimitModifier.swift,
+				Misc/DelayedAction.swift,
+				Misc/DeleteAlertModifier.swift,
+				Misc/HideKeyboard.swift,
+				UI/CircularProgressBar.swift,
+				UI/CustomProgressView.swift,
+				UI/ReportButton.swift,
+				UI/Shimmer.swift,
+				UI/SupportButton.swift,
+				UI/ZoomImages.swift,
+				ViewState/EmptyContentView.swift,
+				ViewState/ErrorView.swift,
+				ViewState/SensitiveAnalysisErrorView.swift,
+				ViewState/SuccessView.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
 		};
@@ -192,6 +194,7 @@
 			membershipExceptions = (
 				ApplePay/PaymentButton.swift,
 				ApplePay/PaymentHandler.swift,
+				ApplePay/PromoteListingSection.swift,
 				Cache/CacheManager.swift,
 				JSONDecoder/JSONDecoder.swift,
 				JSONDecoder/JSONLoadingError.swift,

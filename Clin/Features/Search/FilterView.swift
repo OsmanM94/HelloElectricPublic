@@ -71,7 +71,7 @@ fileprivate struct MakeModelSection: View {
     @Bindable var viewModel: SearchViewModel
     
     var body: some View {
-        Section(header: Text("Make and model ")) {
+        Section(header: headerSection, footer: footerSection) {
             Picker("Make", selection: $viewModel.make) {
                 ForEach(viewModel.makeOptions, id: \.self) { item in
                     Text(item).tag(item)
@@ -88,6 +88,15 @@ fileprivate struct MakeModelSection: View {
             .disabled(viewModel.make.isEmpty || viewModel.make == "Any")
         }
         .pickerStyle(.navigationLink)
+        
+    }
+    
+    private var headerSection: some View {
+        Text("Made and model")
+    }
+    
+    private var footerSection: some View {
+        SupportButton(buttonText: "Missing information?")
     }
 }
 

@@ -68,7 +68,7 @@ struct ContentListView: View {
     var body: some View {
         List(content, id: \.0) { item in
             VStack(alignment: .leading, spacing: 10) {
-                Text(item.0).font(.headline)
+                Text(item.0).font(.system(size: 20, weight: .bold, design: .rounded))
                 Text(item.1)
                     .foregroundStyle(.secondary)
                     .lineSpacing(5)

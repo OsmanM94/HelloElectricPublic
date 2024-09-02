@@ -23,12 +23,12 @@ struct AddToFavouritesButton: View {
             } label: {
                 Circle()
                     .frame(width: width, height: height)
-                    .opacity(0.8)
+                    .opacity(0.6)
                     .foregroundStyle(Color(.systemGray6))
                     .overlay {
                         Image(systemName: viewModel.isFavourite(listing: listing) ? "heart.fill" : "heart")
                             .font(.system(size: iconSize))
-                            .foregroundStyle(.green)
+                            .foregroundStyle(listing.isPromoted ? .yellow : .green)
                             .fontWeight(.bold)
                             .symbolEffect(.bounce, value: viewModel.isFavourite(listing: listing))
                             .sensoryFeedback(.impact(flexibility: .soft), trigger: viewModel.isFavourite(listing: listing))

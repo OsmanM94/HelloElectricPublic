@@ -25,7 +25,7 @@ class PaymentHandler: NSObject {
     
     func startPayment(completion: @escaping PaymentCompletionHandler) {
         
-        let amount = PKPaymentSummaryItem(label: "listing promotion for 2 weeks", amount: NSDecimalNumber(string: "0.99"), type: .final)
+        let amount = PKPaymentSummaryItem(label: "listing promotion for 2 weeks", amount: NSDecimalNumber(string: "0.50"), type: .final)
         
         paymentSummaryItems = [amount];
         completionHandler = completion

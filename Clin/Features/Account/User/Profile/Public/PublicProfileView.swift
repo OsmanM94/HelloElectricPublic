@@ -22,6 +22,7 @@ struct PublicProfileView: View {
             Text("\(viewModel.displayName)")
                 .font(.title3)
                 .fontWeight(.semibold)
+                .fontDesign(.rounded)
                 .padding(.leading)
         }
     }

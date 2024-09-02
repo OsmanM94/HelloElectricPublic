@@ -67,7 +67,7 @@ fileprivate struct DvlaCheckView: View {
                 .ignoresSafeArea()
             VStack(spacing: 20) {
                 HStack {
-                    Text("Enter UK Registration")
+                    Text("UK Registration")
                         .font(.headline)
                         .foregroundStyle(.secondary)
                     
@@ -104,8 +104,8 @@ fileprivate struct DvlaCheckView: View {
                         .rotationEffect(.degrees(0))
                 }
             
-            TextField("", text: $registrationNumber, prompt: Text("Enter plate").foregroundStyle(.gray.opacity(0.7)))
-                .font(.system(size: 24, weight: .bold))
+            TextField("", text: $registrationNumber, prompt: Text("Enter registration").foregroundStyle(.gray.opacity(0.7)))
+                .font(.system(size: 24, weight: .bold, design: .rounded))
                 .padding()
                 .background(Color.yellow.opacity(0.8))
                 .foregroundStyle(.black)
@@ -133,13 +133,8 @@ fileprivate struct DvlaCheckView: View {
     }
     
     private var infoPopoverContent: some View {
-        GroupBox {
+        GroupBox("Why is this step required?") {
             VStack(alignment: .leading, spacing: 10) {
-                Text("Why is this step required?")
-                    .font(.headline)
-                    .padding(.bottom, 10)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                
                 Text("We need to check the vehicle's registration to verify if it's an electric vehicle (EV).")
                 
                 Text("This marketplace is exclusively for electric vehicles, so we can only proceed with listings for confirmed EVs.")
@@ -147,6 +142,8 @@ fileprivate struct DvlaCheckView: View {
                 Text("If the vehicle is not electric, we won't be able to continue with the listing process.")
                     .padding(.top, 5)
             }
+            .fontDesign(.rounded)
+            .padding(.top)
         }
         .padding()
     }
@@ -154,7 +151,7 @@ fileprivate struct DvlaCheckView: View {
 
 fileprivate struct CreateFormSubview: View {
     @Bindable var viewModel: CreateFormViewModel
-    
+    @State private var showLocationPopover: Bool = false
     var body: some View {
         ZStack {
             switch viewModel.subFormViewState {
@@ -165,7 +162,8 @@ fileprivate struct CreateFormSubview: View {
                     makeModelSection
                     bodyTypeSection
                     yearConditionSection
-                    mileageLocationSection
+                    mileageSection
+                    locationSection
                     colourRangeSection
                     priceSection
                     phoneSection
@@ -174,9 +172,6 @@ fileprivate struct CreateFormSubview: View {
                     paymentSection
                     createButtonSection
                 }
-//                .onTapGesture {
-//                    hideKeyboard()
-//                }
                 .toolbar {
                     topBarLeadingToolbarContent
                     keyboardToolbarContent
@@ -192,7 +187,7 @@ fileprivate struct CreateFormSubview: View {
     // MARK: - Sections
     
     private var makeModelSection: some View {
-        Section(header: Text("Make and model "), footer: Text("Selected make and model cannot be changed later.")) {
+        Section(header: Text("Make and model "), footer: makeModelFooter) {
             Picker("Make", selection: $viewModel.make) {
                 ForEach(viewModel.makeOptions, id: \.self) { make in
                     Text(make).tag(make)
@@ -207,8 +202,16 @@ fileprivate struct CreateFormSubview: View {
                 }
             }
             .disabled(viewModel.make == "Select")
+            
         }
         .pickerStyle(.navigationLink)
+    }
+    
+    private var makeModelFooter: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Selected make and model cannot be changed later.")
+            SupportButton(buttonText: "Missing information?")
+        }
     }
     
     private var bodyTypeSection: some View {
@@ -242,7 +245,7 @@ fileprivate struct CreateFormSubview: View {
         .pickerStyle(.navigationLink)
     }
     
-    private var mileageLocationSection: some View {
+    private var mileageSection: some View {
         Section("Mileage and location") {
             HStack(spacing: 15) {
                 Image(systemName: "gauge.with.needle")
@@ -254,15 +257,44 @@ fileprivate struct CreateFormSubview: View {
                     .opacity(viewModel.condition == "Select" ? 0.8 : 1)
             }
             .disabled(viewModel.condition == "Select")
-            
-            Picker("Location", systemImage: "location.fill.viewfinder", selection: $viewModel.location) {
-                ForEach(viewModel.availableLocations, id: \.self) { city in
-                    Text(city).tag(city)
-                }
-            }
-            .pickerStyle(.navigationLink)
-            .disabled(viewModel.mileage == 500)
         }
+    }
+    
+    private var locationSection: some View {
+        Section(footer: locationHeader) {
+            HStack {
+                Picker("Location", selection: $viewModel.location) {
+                    ForEach(viewModel.availableLocations, id: \.self) { city in
+                        Text(city).tag(city)
+                    }
+                }
+                .pickerStyle(.navigationLink)
+                .disabled(viewModel.mileage == 500)
+            }
+        }
+    }
+    
+    private var locationHeader: some View {
+        Button(action: { showLocationPopover.toggle() }) {
+            Image(systemName: "info.circle")
+                .foregroundStyle(.blue)
+        }
+        .popover(isPresented: $showLocationPopover, arrowEdge: .top) {
+            locationInfoPopover
+        }
+    }
+    
+    private var locationInfoPopover: some View {
+        GroupBox("Location information") {
+            VStack(alignment: .leading, spacing: 10) {
+                Text("The location selection is pre-selected for privacy reasons. We don't collect your personal location information.")
+                
+                Text("You can choose a nearby city to indicate your general area.")
+            }
+            .fontDesign(.rounded)
+            .padding(.top)
+        }
+        .padding(.horizontal)
     }
 
     private var colourRangeSection: some View {
@@ -296,14 +328,23 @@ fileprivate struct CreateFormSubview: View {
     }
     
     private var phoneSection: some View {
-        Section("Contact number") {
+        Section(header: Text("Contact number"), footer: phoneSectionFooter) {
             TextField("Phone", text: $viewModel.phoneNumber)
                 .keyboardType(.phonePad)
                 .foregroundStyle(viewModel.price == 500 ? .gray : .primary)
                 .opacity(viewModel.price == 500 ? 0.8 : 1)
                 .disabled(viewModel.price == 500)
-                .characterLimit($viewModel.phoneNumber, limit: 11)
+                .onChange(of: viewModel.phoneNumber) { _, newValue in
+                    viewModel.phoneNumber = newValue.formattedPhoneNumber
+                }
         }
+    }
+    
+    private var phoneSectionFooter: some View {
+        Text("Please enter a valid 11-digit phone number")
+            .foregroundStyle(.red.gradient)
+            .opacity(!viewModel.phoneNumber.isValidPhoneNumber ? 1 : 0)
+            .opacity(viewModel.price == 500 ? 0 : 1)
     }
 
     private var descriptionSection: some View {
@@ -430,40 +471,10 @@ fileprivate struct CreateFormSubview: View {
     // MARK: - Promote listing (Apple Pay)
         
     private var paymentSection: some View {
-        Section {
-            VStack(alignment: .leading, spacing: 10) {
-                Text("Promote Listing")
-                    .font(.headline)
-                
-                if viewModel.isPromoted {
-                    HStack {
-                        Image(systemName: "checkmark.circle.fill")
-                            .foregroundColor(.green)
-                        Text("Payment Complete")
-                    }
-                } else {
-                    VStack(alignment: .leading) {
-                        Text("What you get:")
-                        Text("- Listing appears at the top nationwide")
-                        Text("- Custom badge")
-                        Text("- Exclusive layout")
-                        Text("- £13.99 for 2 weeks")
-                    }
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    
-                    PaymentButton { success in
-                        viewModel.isPromoted = success
-                        if success {
-                            viewModel.isPromoted = true
-                        }
-                    }
-                    .frame(height: 45)
-                    .frame(maxWidth: .infinity, alignment: .trailing)
-                }
+        PromoteListingSection(isPromoted: $viewModel.isPromoted) { success in
+            if success {
+                viewModel.isPromoted = true
             }
-            .listRowInsets(EdgeInsets())
-            .padding()
         }
     }
 
@@ -492,7 +503,6 @@ fileprivate struct CreateFormSubview: View {
         }
     }
 }
-
 
 
 
