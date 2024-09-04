@@ -5,8 +5,16 @@
 //  Created by asia on 01/09/2024.
 //
 
+//
+//  PaymentHandler.swift
+//  Clin
+//
+//  Created by asia on 01/09/2024.
+//
+
 import Foundation
 import PassKit
+
 
 typealias PaymentCompletionHandler = (Bool) -> Void
 
@@ -33,7 +41,7 @@ class PaymentHandler: NSObject {
         // Create our payment request
         let paymentRequest = PKPaymentRequest()
         paymentRequest.paymentSummaryItems = paymentSummaryItems
-        paymentRequest.merchantIdentifier = "merchant.com.helloelectric.1994"
+        paymentRequest.merchantIdentifier = "merchant.com.helloelectric94"
         paymentRequest.merchantCapabilities = .threeDSecure
         paymentRequest.countryCode = "GB"
         paymentRequest.currencyCode = "GBP"
@@ -85,3 +93,4 @@ extension PaymentHandler: PKPaymentAuthorizationControllerDelegate {
         }
     }
 }
+

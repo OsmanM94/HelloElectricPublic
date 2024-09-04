@@ -23,7 +23,7 @@ final class CreateFormViewModel: ImagePickerProtocol {
     // MARK: - Observable Properties
     // View States
     private(set) var viewState: ViewState = .idle
-    private(set) var subFormViewState: SubFormViewState = .loading
+    private(set) var subFormViewState: SubFormViewState = .loaded
     private(set) var uploadingProgress: Double = 0.0
     var imageViewState: ImageViewState = .idle
     

@@ -30,10 +30,6 @@ struct ListingCell: View {
         .overlay(alignment: .topTrailing) {
             topRightOverlay
         }
-        .overlay(alignment: .topLeading) {
-            promotedBadge
-                .opacity(listing.isPromoted ? 1 : 0)
-        }
     }
     
     private var placeholderImage: some View {
@@ -50,23 +46,10 @@ struct ListingCell: View {
     private var topRightOverlay: some View {
         Group {
             if showFavourite {
-                AddToFavouritesButton(listing: listing, iconSize: 18, width: 30, height: 30)
+                AddToFavouritesButton(listing: listing, iconSize: 16, width: 32, height: 32)
             } else {
                 activeStatusBadge
             }
-        }
-    }
-    
-    private var promotedBadge: some View {
-        ZStack {
-            Rectangle()
-                .frame(width: 35, height: 18)
-                .clipShape(UnevenRoundedRectangle(topLeadingRadius: 10, bottomLeadingRadius: 0, bottomTrailingRadius: 5, topTrailingRadius: 0, style: .continuous))
-                .foregroundStyle(.yellow.gradient)
-            
-            Image(systemName: "p.circle")
-                .font(.system(size: 12))
-                .foregroundStyle(.primary)
         }
     }
     

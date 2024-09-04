@@ -60,7 +60,7 @@ private extension ChartView {
                     YearlyChartView(viewModel: viewModel, registrations: viewModel.yearlyData)
                 }
             }
-            .animation(.easeInOut(duration: 0.3), value: selectedChart)
+            .animation(.easeInOut(duration: 0.4), value: selectedChart)
         }
     }
 }
@@ -70,46 +70,50 @@ fileprivate struct YearlyChartView: View {
     let registrations: [Registrations]
     
     var body: some View {
-        VStack {
-            Chart(registrations) { registration in
-                BarMark(
-                    x: .value("Fuel Type", registration.fuelCategory),
-                    y: .value("Count", registration.registrationCount)
-                )
-                .foregroundStyle(by: .value("Fuel Type", registration.fuelCategory))
-            }
-            .chartForegroundStyleScale([
-                "Electric": .green,
-                "Diesel": .gray,
-                "Petrol": .blue
-            ])
-            .frame(height: 300)
-            .padding()
-            
-            // Legend
-            VStack(alignment: .leading) {
-                ForEach(registrations, id: \.id) { registration in
-                    HStack {
-                        Circle()
-                            .fill(colorForFuelType(registration.fuelCategory))
-                            .frame(width: 10, height: 10)
-                        Text(registration.fuelCategory)
-                        Spacer()
-                        Text(registration.registrationCount, format: .number)
+        ScrollView {
+            VStack {
+                Chart(registrations) { registration in
+                    BarMark(
+                        x: .value("Fuel Type", registration.fuelCategory),
+                        y: .value("Count", registration.registrationCount)
+                    )
+                    .foregroundStyle(by: .value("Fuel Type", registration.fuelCategory))
+                }
+                .chartForegroundStyleScale([
+                    "Electric": .green,
+                    "Diesel": .gray,
+                    "Petrol": .blue
+                ])
+                .frame(height: 300)
+                .padding()
+                .background(Color(.systemGray6), in: .rect(cornerRadius: 10))
+                .padding()
+                
+                // Legend
+                VStack(alignment: .leading) {
+                    ForEach(registrations, id: \.id) { registration in
+                        HStack {
+                            Circle()
+                                .fill(colorForFuelType(registration.fuelCategory))
+                                .frame(width: 10, height: 10)
+                            Text(registration.fuelCategory)
+                            Spacer()
+                            Text(registration.registrationCount, format: .number)
+                        }
                     }
                 }
-            }
-            .padding()
-            
-            GroupBox {
-                VStack(alignment: .leading, spacing: 10) {
-                    Text("Source: SMMT")
-                        .font(.headline)
-                    Text(viewModel.selectedYear)
+                .padding()
+                
+                GroupBox {
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("Source: SMMT")
+                            .font(.headline)
+                        Text(viewModel.selectedYear)
+                    }
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.leading)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.leading)
         }
     }
 }
@@ -119,47 +123,51 @@ fileprivate struct MonthlyChartView: View {
     let registrations: [Registrations]
     
     var body: some View {
-        VStack(alignment: .leading) {
-            Chart(registrations) { registration in
-                SectorMark(
-                    angle: .value("Count", registration.registrationCount),
-                    innerRadius: .ratio(0.618),
-                    angularInset: 1.5
-                )
-                .foregroundStyle(by: .value("Fuel Type", registration.fuelCategory))
-            }
-            .chartForegroundStyleScale([
-                "Electric": .green,
-                "Diesel": .gray,
-                "Petrol": .blue
-            ])
-            .frame(height: 300)
-            .padding()
-            
-            // Legend
+        ScrollView {
             VStack(alignment: .leading) {
-                ForEach(registrations, id: \.id) { registration in
-                    HStack {
-                        Circle()
-                            .fill(colorForFuelType(registration.fuelCategory))
-                            .frame(width: 10, height: 10)
-                        Text(registration.fuelCategory)
-                        Spacer()
-                        Text(registration.registrationCount, format: .number)
+                Chart(registrations) { registration in
+                    SectorMark(
+                        angle: .value("Count", registration.registrationCount),
+                        innerRadius: .ratio(0.618),
+                        angularInset: 1.5
+                    )
+                    .foregroundStyle(by: .value("Fuel Type", registration.fuelCategory))
+                }
+                .chartForegroundStyleScale([
+                    "Electric": .green,
+                    "Diesel": .gray,
+                    "Petrol": .blue
+                ])
+                .frame(height: 300)
+                .padding()
+                .background(Color(.systemGray6), in: .rect(cornerRadius: 10))
+                .padding()
+                
+                // Legend
+                VStack(alignment: .leading) {
+                    ForEach(registrations, id: \.id) { registration in
+                        HStack {
+                            Circle()
+                                .fill(colorForFuelType(registration.fuelCategory))
+                                .frame(width: 10, height: 10)
+                            Text(registration.fuelCategory)
+                            Spacer()
+                            Text(registration.registrationCount, format: .number)
+                        }
                     }
                 }
-            }
-            .padding()
-            
-            GroupBox {
-                VStack(alignment: .leading, spacing: 10) {
-                    Text("Source: SMMT")
-                        .font(.headline)
-                    Text(viewModel.selectedMonth)
+                .padding()
+                
+                GroupBox {
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("Source: SMMT")
+                            .font(.headline)
+                        Text(viewModel.selectedMonth)
+                    }
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.leading)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.leading)
         }
     }
 }

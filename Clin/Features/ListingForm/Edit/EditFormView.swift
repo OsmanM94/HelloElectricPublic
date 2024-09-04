@@ -280,10 +280,8 @@ fileprivate struct EditFormSubview: View {
     }
     
     private var promoteListingSection: some View {
-        PromoteListingSection(isPromoted: $listing.isPromoted) { success in
-            if success {
-                listing.isPromoted = true
-            }
+        StoreKitView(isPromoted: $listing.isPromoted) {
+            listing.isPromoted = true
         }
     }
     

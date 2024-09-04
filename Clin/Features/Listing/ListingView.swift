@@ -91,6 +91,7 @@ fileprivate struct ListingSubview: View {
             .refreshable {
                 await viewModel.refreshListings(vehicleType: selectedVehicleType)
             }
+           
             .onChange(of: shouldScrollToTop, scrollToTopHandler(proxy: proxy))
             .toolbar { scrollToTopButton }
         }
@@ -147,7 +148,7 @@ fileprivate struct ListingSubview: View {
             } label: {
                 Image(systemName: "arrow.up.circle")
             }
-            .disabled(viewModel.listings.count <= 10)
+            .disabled(viewModel.listings.count <= 20)
         }
     }
 }

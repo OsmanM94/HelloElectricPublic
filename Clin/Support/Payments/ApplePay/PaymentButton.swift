@@ -80,6 +80,7 @@ struct PaymentButton: View {
             }
         }, label: { EmptyView() })
         .buttonStyle(PaymentButtonStyle())
+        .buttonStyle(.plain)
     }
 }
 

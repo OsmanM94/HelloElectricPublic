@@ -58,7 +58,9 @@ struct AccountView: View {
                 }
                 
                 Section("Notifications") {
-                    NavigationLink(destination: {}) {
+                    NavigationLink(destination: {
+                        LazyView(NotificationsView())
+                    }) {
                         Label("Notifications", systemImage: "bell")
                     }
                 }

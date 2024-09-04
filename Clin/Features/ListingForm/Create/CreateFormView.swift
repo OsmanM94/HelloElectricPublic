@@ -210,7 +210,7 @@ fileprivate struct CreateFormSubview: View {
     private var makeModelFooter: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Selected make and model cannot be changed later.")
-            SupportButton(buttonText: "Missing information?")
+            SupportButton(buttonText: "Missing models?")
         }
     }
     
@@ -468,13 +468,10 @@ fileprivate struct CreateFormSubview: View {
         .pickerStyle(.navigationLink)
     }
     
-    // MARK: - Promote listing (Apple Pay)
-        
+    // MARK: - Promote listing (StoreKit)
     private var paymentSection: some View {
-        PromoteListingSection(isPromoted: $viewModel.isPromoted) { success in
-            if success {
-                viewModel.isPromoted = true
-            }
+        StoreKitView(isPromoted: $viewModel.isPromoted) {
+            viewModel.isPromoted = true
         }
     }
 

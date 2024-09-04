@@ -16,7 +16,7 @@ struct SuccessView: View {
     var body: some View {
         VStack(spacing: 25) {
             Image(systemName: "checkmark.circle.fill")
-                .font(.system(size: 70))
+                .font(.system(size: 60))
                 .foregroundStyle(iconColor)
             
             Text(message)

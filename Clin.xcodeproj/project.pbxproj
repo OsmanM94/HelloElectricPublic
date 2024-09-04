@@ -21,6 +21,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		620D1CED2C86F836005B17E2 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		623B8F562C62DC0700A5BD60 /* ToDo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDo.swift; sourceTree = "<group>"; };
 		62C448FD2C26CDC2009650A3 /* Clin.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Clin.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		62C449042C26CDC4009650A3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -76,6 +77,8 @@
 				Account/Legal/Privacy/PrivacyPolicyView.swift,
 				Account/Legal/Safety/SafetyView.swift,
 				Account/Legal/Terms/TermsAndConditionsView.swift,
+				Account/Notifications/NotificationManager.swift,
+				Account/Notifications/NotificationsView.swift,
 				Account/Support/SupportCenterView.swift,
 				Account/User/Profile/Private/PrivateProfileView.swift,
 				Account/User/Profile/Private/PrivateProfileViewModel.swift,
@@ -192,15 +195,16 @@
 		629185BC2C3175A100DA4BAA /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				ApplePay/PaymentButton.swift,
-				ApplePay/PaymentHandler.swift,
-				ApplePay/PromoteListingSection.swift,
 				Cache/CacheManager.swift,
 				JSONDecoder/JSONDecoder.swift,
 				JSONDecoder/JSONLoadingError.swift,
 				LazyView/LazyView.swift,
 				NetworkMonitor/NetworkMonitor.swift,
 				NetworkMonitor/NetworkMonitorView.swift,
+				Payments/ApplePay/PaymentButton.swift,
+				Payments/ApplePay/PaymentHandler.swift,
+				Payments/StoreKit2/HelloElectric.storekit,
+				Payments/StoreKit2/StoreKitView.swift,
 				PhotosPicker/CustomPhotoPickers.swift,
 				SDWebImage/ImageLoader.swift,
 				SensitiveContentAnalysis/SensitiveContentAnalysis.swift,
@@ -287,11 +291,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		620D1ACA2C867AA5005B17E2 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				620D1CED2C86F836005B17E2 /* StoreKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		62C448F42C26CDC2009650A3 = {
 			isa = PBXGroup;
 			children = (
 				62C448FF2C26CDC2009650A3 /* Clin */,
 				62C448FE2C26CDC2009650A3 /* Products */,
+				620D1ACA2C867AA5005B17E2 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};

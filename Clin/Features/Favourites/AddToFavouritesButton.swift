@@ -15,29 +15,65 @@ struct AddToFavouritesButton: View {
     let height: CGFloat
     
     var body: some View {
-        VStack(spacing: 0) {
-            Button {
-                Task {
-                    try await viewModel.toggleFavourite(for: listing)
-                }
-            } label: {
-                Circle()
-                    .frame(width: width, height: height)
-                    .opacity(0.6)
-                    .foregroundStyle(Color(.systemGray6))
-                    .overlay {
-                        Image(systemName: viewModel.isFavourite(listing: listing) ? "heart.fill" : "heart")
-                            .font(.system(size: iconSize))
-                            .foregroundStyle(listing.isPromoted ? .yellow : .green)
-                            .fontWeight(.bold)
-                            .symbolEffect(.bounce, value: viewModel.isFavourite(listing: listing))
-                            .sensoryFeedback(.impact(flexibility: .soft), trigger: viewModel.isFavourite(listing: listing))
-                    }
+        Button(action: toggleFavourite) {
+            FavouriteButtonBackground(width: width, height: height) {
+                FavouriteIcon(
+                    isPromoted: listing.isPromoted,
+                    isFavourite: viewModel.isFavourite(listing: listing),
+                    iconSize: iconSize
+                )
             }
-            .padding(.trailing, 5)
-            .padding(.top, 5)
         }
         .buttonStyle(.plain)
+        .padding(.trailing, 5)
+        .padding(.top, 5)
+    }
+    
+    private func toggleFavourite() {
+        Task {
+            try await viewModel.toggleFavourite(for: listing)
+        }
+    }
+}
+
+struct FavouriteButtonBackground<Content: View>: View {
+    let width: CGFloat
+    let height: CGFloat
+    let content: () -> Content
+    
+    var body: some View {
+        Circle()
+            .frame(width: width, height: height)
+            .opacity(0.6)
+            .foregroundStyle(Color(.systemGray6))
+            .overlay {
+                content()
+            }
+    }
+}
+
+struct FavouriteIcon: View {
+    let isPromoted: Bool
+    let isFavourite: Bool
+    let iconSize: CGFloat
+    
+    var body: some View {
+        Image(systemName: imageName)
+            .font(.system(size: iconSize))
+            .foregroundStyle(foregroundStyle)
+            .fontWeight(.bold)
+            .symbolEffect(.bounce, value: isFavourite)
+            .sensoryFeedback(.impact(flexibility: .soft), trigger: isFavourite)
+    }
+    
+    private var imageName: String {
+        isPromoted
+            ? (isFavourite ? "crown.fill" : "crown")
+            : (isFavourite ? "heart.fill" : "heart")
+    }
+    
+    private var foregroundStyle: some ShapeStyle {
+        isPromoted ? .yellow : .green
     }
 }
 
