@@ -105,22 +105,25 @@ final class SearchViewModel {
     var numberOfOwnersOptions: [String] = []
     
     init() {
-//        print("DEBUG: Did init search viewmodel")
+        Logger.debug("SearchViewModel initialized")
     }
     
     // MARK: - Main actor functions
     
     @MainActor
     func loadBulkData() async {
+        Logger.info("Starting bulk data load")
         self.filterViewState = .loading
         await loadModels()
         await loadEVFeatures()
         await loadLocations()
         self.filterViewState = .loaded
+        Logger.info("Bulk data load completed")
     }
     
     @MainActor
     func loadMoreIfNeeded() async {
+        Logger.debug("Loading more items")
         if isFilterApplied {
             await searchFilteredItems(isLoadingMore: true)
         } else {
@@ -131,8 +134,12 @@ final class SearchViewModel {
     // Search no filters
     @MainActor
     func searchItems(isLoadingMore: Bool = false) async {
-        guard !searchText.isEmpty else { return }
+        guard !searchText.isEmpty else {
+            Logger.debug("Search text is empty, skipping search")
+            return
+        }
         
+        Logger.info("Performing search without filters. Search text: '\(searchText)', isLoadingMore: \(isLoadingMore)")
         await performSearch(isLoadingMore: isLoadingMore) { [weak self] in
             guard let self = self else { return [] }
             
@@ -146,6 +153,7 @@ final class SearchViewModel {
     // Search with filters
     @MainActor
     func searchFilteredItems(isLoadingMore: Bool = false) async {
+        Logger.info("Performing filtered search. isLoadingMore: \(isLoadingMore)")
         await performSearch(isLoadingMore: isLoadingMore) { [weak self] in
             guard let self = self else { return [] }
             var query = self.supabaseService.client
@@ -155,56 +163,74 @@ final class SearchViewModel {
             // Applying filters only if the value is not "Any" or empty
             if !make.isEmpty && make != "Any" {
                 query = query.eq("make", value: make)
+                Logger.debug("Applied make filter: \(make)")
             }
             if !model.isEmpty && model != "Any" {
                 query = query.eq("model", value: model)
+                Logger.debug("Applied make filter: \(model)")
             }
             if !body.isEmpty && body != "Any" {
                 query = query.eq("body_type", value: body)
+                Logger.debug("Applied make filter: \(body)")
             }
             if !selectedYear.isEmpty && selectedYear != "Any" {
                 query = query.eq("year", value: selectedYear)
+                Logger.debug("Applied make filter: \(selectedYear)")
             }
             if maxPrice < 100000 {
                 query = query.lte("price", value: maxPrice)
+                Logger.debug("Applied make filter: \(maxPrice)")
             }
             if maxMileage < 500000 {
                 query = query.lte("mileage", value: maxMileage)
+                Logger.debug("Applied make filter: \(maxMileage)")
             }
             if !condition.isEmpty && condition != "Any" {
                 query = query.eq("condition", value: condition)
+                Logger.debug("Applied make filter: \(condition)")
             }
             if !range.isEmpty && range != "Any" {
                 query = query.eq("range", value: range)
+                Logger.debug("Applied make filter: \(range)")
             }
             if !colour.isEmpty && colour != "Any" {
                 query = query.eq("colour", value: colour)
+                Logger.debug("Applied make filter: \(colour)")
             }
             if !maxPublicChargingTime.isEmpty && maxPublicChargingTime != "Any" {
                 query = query.lte("public_charging", value: maxPublicChargingTime)
+                Logger.debug("Applied make filter: \(maxPublicChargingTime)")
             }
             if !maxHomeChargingTime.isEmpty && maxHomeChargingTime != "Any" {
                 query = query.lte("home_charging", value: maxHomeChargingTime)
+                Logger.debug("Applied make filter: \(maxHomeChargingTime)")
             }
             if !batteryCapacity.isEmpty && batteryCapacity != "Any" {
                 query = query.eq("battery_capacity", value: batteryCapacity)
+                Logger.debug("Applied make filter: \(batteryCapacity)")
             }
             if !powerBhp.isEmpty && powerBhp != "Any" {
                 query = query.eq("power_bhp", value: powerBhp)
+                Logger.debug("Applied make filter: \(powerBhp)")
             }
             if !regenBraking.isEmpty && regenBraking != "Any" {
                 query = query.eq("regen_braking", value: regenBraking)
+                Logger.debug("Applied make filter: \(regenBraking)")
             }
             if !warranty.isEmpty && warranty != "Any" {
                 query = query.eq("warranty", value: warranty)
+                Logger.debug("Applied make filter: \(warranty)")
             }
             if !serviceHistory.isEmpty && serviceHistory != "Any" {
                 query = query.eq("service_history", value: serviceHistory)
+                Logger.debug("Applied make filter: \(serviceHistory)")
             }
             if !numberOfOwners.isEmpty && numberOfOwners != "Any" {
                 query = query.eq("owners", value: numberOfOwners)
+                Logger.debug("Applied make filter: \(numberOfOwners)")
             }
-
+            
+            Logger.debug("Executing filtered query")
             return try await query
                 .order("created_at", ascending: false)
                 .range(from: self.currentPage * self.pageSize, to: (self.currentPage + 1) * self.pageSize - 1)
@@ -215,6 +241,7 @@ final class SearchViewModel {
     
     @MainActor
     func clearSearch() {
+        Logger.info("Clearing search")
         self.searchText = ""
         self.currentSearchText = ""
         self.searchedItems.removeAll()
@@ -225,6 +252,7 @@ final class SearchViewModel {
     
     @MainActor
     func resetFilters() {
+        Logger.info("Resetting all filters")
         make = "Any"
         model = "Any"
         body = "Any"
@@ -249,7 +277,7 @@ final class SearchViewModel {
     // MARK: - Helpers and misc
     
     private func isAnyFilterActive() -> Bool {
-        return make != "Any" ||
+        let isActive = make != "Any" ||
         model != "Any" ||
         body != "Any" ||
         location != "Any" ||
@@ -267,13 +295,19 @@ final class SearchViewModel {
         warranty != "Any" ||
         serviceHistory != "Any" ||
         numberOfOwners != "Any"
+        
+        Logger.debug("Filter active status: \(isActive)")
+        return isActive
     }
     
     private func updateFilterState() {
         isFilterApplied = isAnyFilterActive()
+        Logger.debug("Filter state updated. isFilterApplied: \(isFilterApplied)")
+           
     }
     
     private func searchItemsFromSupabase(searchText: String, from: Int, to: Int) async throws -> [Listing] {
+        Logger.info("Searching Supabase for: '\(searchText)', range: \(from)-\(to)")
         let searchComponents = searchText.split(separator: " ").map { String($0) }
         
         let orConditions = searchComponents.map { component in
@@ -291,16 +325,17 @@ final class SearchViewModel {
                 .order("created_at", ascending: false)
                 .execute()
                 .value
-            print("DEBUG: Loaded \(response.count) listings from Supabase for text: \(searchText)")
+            Logger.info("Loaded \(response.count) listings from Supabase for text: '\(searchText)'")
             return response
         } catch {
-            print("DEBUG: Failed to load listings from Supabase: \(error)")
+            Logger.error("Failed to load listings from Supabase: \(error)")
             viewState = .error(SearchViewStateErrorMessages.generalError.message)
             throw error
         }
     }
     
     private func performSearch(isLoadingMore: Bool, searchFunction: @escaping () async throws -> [Listing]) async {
+        Logger.info("Performing search. isLoadingMore: \(isLoadingMore)")
         if !isLoadingMore {
             self.searchedItems.removeAll()
             self.currentPage = 0
@@ -308,7 +343,10 @@ final class SearchViewModel {
             self.currentSearchText = searchText
             viewState = .loading
         }
-        guard hasMoreListings else { return }
+        guard hasMoreListings else {
+            Logger.debug("No more listings to load")
+            return
+        }
         self.isSearching = true
 
             do {
@@ -316,14 +354,16 @@ final class SearchViewModel {
 
                 if response.count < pageSize {
                     self.hasMoreListings = false
+                    Logger.debug("No more listings available")
                 }
                 
                 searchedItems.append(contentsOf: response)
                 self.currentPage += 1
 
                 self.viewState = searchedItems.isEmpty ? .noResults : .loaded
+                Logger.info("Search completed. Total items: \(searchedItems.count)")
             } catch {
-               print("Error searching \(error)")
+                Logger.error("Error searching: \(error)")
                 viewState = .error(SearchViewStateErrorMessages.generalError.message)
             }
             self.isSearching = false
@@ -331,32 +371,30 @@ final class SearchViewModel {
     
     private func loadModels() async {
         if loadedModels.isEmpty {
+            Logger.info("Loading car models")
             do {
                 self.loadedModels = try await searchService.loadModels()
-                
-                // Update available models
                 updateAvailableModels()
-                
-                print("DEBUG: Loading make and models")
+                Logger.info("Car models loaded successfully. Total makes: \(loadedModels.count)")
             } catch {
-                print("DEBUG: Failed to load car makes and models from Supabase: \(error)")
+                Logger.error("Failed to load car makes and models: \(error)")
             }
         }
     }
     
     private func loadLocations() async {
+        Logger.info("Loading locations")
         do {
             let loadedData = try await searchService.loadCities()
-            
-            // Clear existing data in the arrays to avoid duplicates
             availableLocations = ["Any"] + loadedData.compactMap { $0.city }
-            
+            Logger.info("Locations loaded successfully. Total locations: \(availableLocations.count - 1)")
         } catch {
-            print("DEBUG: Failed to load UK cities: \(error)")
+            Logger.error("Failed to load UK cities: \(error)")
         }
     }
     
     private func loadEVFeatures() async {
+        Logger.info("Loading EV features")
         do {
             let loadedData = try await searchService.loadEVfeatures()
             
@@ -373,13 +411,14 @@ final class SearchViewModel {
             numberOfOwnersOptions = ["Any"] + loadedData.flatMap { $0.owners }
             powerBhpOptions = ["Any"] + loadedData.flatMap { $0.powerBhp }
             colourOptions = ["Any"] + loadedData.flatMap { $0.colours }
-            
+            Logger.info("EV features loaded successfully")
         } catch {
-            print("DEBUG: Failed to load ev features: \(error)")
+            Logger.error("Failed to load EV features: \(error)")
         }
     }
     
     func updateAvailableModels() {
+        Logger.debug("Updating available models for make: \(make)")
         if make == "Any" {
             modelOptions = ["Any"] + loadedModels.flatMap { $0.models }
         } else if let selectedCarMake = loadedModels.first(where: { $0.make == make }) {
@@ -390,12 +429,14 @@ final class SearchViewModel {
         
         // Check if the current model is still valid in the new list of available models
         if !modelOptions.contains(model) {
+            Logger.debug("Current model '\(model)' is not valid for the new make. Resetting to 'Any'")
             self.model = "Any"
         }
     }
     
     func handleSuggestionTap(_ suggestion: String) {
         guard !suggestionTapped else { return }
+        Logger.info("Suggestion tapped: '\(suggestion)'")
         suggestionTapped = true
         
         searchText = suggestion

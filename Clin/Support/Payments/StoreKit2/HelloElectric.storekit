@@ -56,7 +56,10 @@
         "name" : "Purchase"
       },
       {
-        "current" : null,
+        "current" : {
+          "index" : 0,
+          "type" : "verification"
+        },
         "enabled" : false,
         "name" : "Verification"
       },
@@ -71,7 +74,10 @@
         "name" : "Subscription Status"
       },
       {
-        "current" : null,
+        "current" : {
+          "index" : 3,
+          "type" : "generic"
+        },
         "enabled" : false,
         "name" : "App Transaction"
       },

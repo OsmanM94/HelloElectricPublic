@@ -9,6 +9,8 @@ import SwiftUI
 import StoreKit
 
 struct StoreKitView: View {
+    @State private var viewModel = StoreKitViewModel()
+    
     @State private var showPayment: Bool = false
     @Binding var isPromoted: Bool
     var onPromotionSuccess: () -> Void
@@ -42,7 +44,7 @@ struct StoreKitView: View {
                         }
                         
                         HStack {
-                            Text("£13.99")
+                            Text("£14.99")
                                 .font(.headline)
                                 .foregroundStyle(.primary)
                             Text("for 2 weeks")
@@ -67,12 +69,15 @@ struct StoreKitView: View {
                     .frame(maxWidth: .infinity, alignment: .trailing)
                 }
             }
+            .task {
+                await viewModel.loadProducts()
+            }
             .listRowInsets(EdgeInsets())
             .padding()
         }
         .sheet(isPresented: $showPayment) {
-            StoreKitPayWall(isPromoted: $isPromoted, onPromotionSuccess: onPromotionSuccess)
-                .presentationDetents([.height(300)])
+            StoreKitPayWall(viewModel: viewModel, isPromoted: $isPromoted, onPromotionSuccess: onPromotionSuccess)
+                .presentationDetents([.height(400)])
                 .presentationDragIndicator(.visible)
         }
     }
@@ -92,133 +97,190 @@ struct BenefitRow: View {
     }
 }
 
-enum PurchaseViewState: Equatable {
-    case ready
-    case purchasing
-    case completed
-    case failed(String)
-}
-
 struct StoreKitPayWall: View {
+    @Bindable var viewModel: StoreKitViewModel
+    
     @Environment(\.dismiss) private var dismiss
     @Binding var isPromoted: Bool
-    @State private var product: Product?
-    @State private var viewState: PurchaseViewState = .ready
-    
     var onPromotionSuccess: () -> Void
     
     var body: some View {
         NavigationStack {
             VStack {
-                switch viewState {
+                switch viewModel.viewState {
                 case .ready:
                     readyView
+                    
                 case .purchasing:
-                    CustomProgressView()
+                    storeKitProgressView
+                    
                 case .completed:
                     completedView
+                    
                 case .failed(let message):
                     failedView(error: message)
                 }
             }
-            .animation(.easeInOut(duration: 0.3), value: viewState)
-            .onInAppPurchaseStart { product in
-                viewState = .purchasing
-                print("User has started buying \(product.id)")
-            }
-            .onInAppPurchaseCompletion { product, result in
-                switch result {
-                case .success(.success(let transaction)):
-                    print("Purchased successfully: \(transaction.signedDate)")
-                    isPromoted = true
-                    onPromotionSuccess()
-                    viewState = .completed
-                case .success(.userCancelled):
-                    print("User cancelled the purchase")
-                    viewState = .ready
-                case .success(.pending):
-                    print("Purchase is pending")
-                    viewState = .ready
-                case .failure(let error):
-                    print("Purchase failed: \(error.localizedDescription)")
-                    viewState = .failed("Please try again.")
-                @unknown default:
-                    viewState = .failed("Please try again.")
-                }
-            }
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button(action: { dismiss() }) {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundStyle(.gray.opacity(0.8))
-                            .font(.title2)
-                    }
-                    .buttonStyle(.plain)
-                    .disabled(viewState == .purchasing)
-                }
-            }
-        }
-        .task {
-            await loadProducts()
+            .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
+            .toolbar { toolbarView }
         }
     }
     
-    private func loadProducts() async {
-       do {
-           let products = try await Product.products(for: ["promote2weeks"])
-           if let product = products.first {
-               self.product = product
-           }
-       } catch {
-           print("Error loading products \(error)")
-       }
-   }
-    
     private var readyView: some View {
-        VStack {
-            Text("Promote")
-                .font(.title)
-                .fontDesign(.rounded).bold()
-
-            ProductView(id: "promote2weeks") {
-                Image("electric-car")
-                    .resizable()
-                    .scaledToFit()
+        VStack(spacing: 20) {
+            Text("Boost Your Visibility")
+                .font(.title2)
+                .bold()
+            
+            Text("Get your listing in front of more potential buyers.")
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
+            
+            if let product = viewModel.product {
+                CustomProductView(product: product)
+                    .padding(.horizontal)
+                
+                Button(action: {
+                    Task { await viewModel.purchase() }
+                }) {
+                    Text("Promote Now")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.large)
+               
+            } else {
+                ProgressView("Please wait...")
+                    .scaleEffect(1.5)
             }
-            .productViewStyle(.compact)
-            .padding()
         }
+        .fontDesign(.rounded)
+        .padding()
     }
     
     private var completedView: some View {
-        VStack(spacing: 15) {
+        VStack(spacing: 20) {
             Image(systemName: "checkmark.circle.fill")
                 .foregroundStyle(.green)
                 .font(.system(size: 50))
-            Text("Purchase Completed!")
+            
+            Text("Purchase Successful!")
                 .font(.title2)
-                .fontDesign(.rounded).bold()
+                .fontWeight(.bold)
+            
+            Text("Your listing is now promoted for 2 weeks.")
+                .font(.body)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
+            
+            Button(action: { dismiss() }) {
+                Text("Done")
+                    .font(.headline)
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.green.opacity(0.8))
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+            }
+            .padding(.horizontal)
+        }
+        .fontDesign(.rounded)
+        .padding()
+        .onAppear {
+            isPromoted = true
+            onPromotionSuccess()
         }
     }
     
     private func failedView(error: String) -> some View {
-        VStack(spacing: 15) {
+        VStack(spacing: 20) {
             Image(systemName: "xmark.circle.fill")
                 .foregroundStyle(.gray)
                 .font(.system(size: 50))
+            
             Text("Purchase Failed")
                 .font(.title2)
-                .fontDesign(.rounded).bold()
-            Button("Try Again") {
-                viewState = .ready
+                .fontWeight(.bold)
+            
+            Text(error)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
+            
+            Button(action: {
+                Task { await viewModel.purchase() }
+            }) {
+                Text("Try Again")
+                    .font(.headline)
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.green.opacity(0.8))
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                   
             }
-            .buttonStyle(.bordered)
-            .controlSize(.small)
+            .padding(.horizontal)
+            .disabled(viewModel.viewState == .purchasing)
+        }
+        .fontDesign(.rounded)
+        .padding()
+    }
+    
+    private var storeKitProgressView: some View {
+        VStack(spacing: 20) {
+            ProgressView()
+                .scaleEffect(2)
+            
+            Text("Processing Your Purchase")
+                .font(.headline)
+            
+            Text("Please wait while we complete your transaction.")
+                .font(.subheadline)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
+        }
+        .fontDesign(.rounded)
+        .padding()
+    }
+    
+    private var toolbarView: some ToolbarContent {
+        ToolbarItem(placement: .cancellationAction) {
+            Button(action: { dismiss() }) {
+                Image(systemName: "xmark.circle.fill")
+                    .foregroundStyle(.gray.opacity(0.8))
+                    .font(.title2)
+            }
+            .buttonStyle(.plain)
+            .disabled(viewModel.viewState == .purchasing)
+        }
+    }
+    
+    fileprivate struct CustomProductView: View {
+        let product: Product
+        
+        var body: some View {
+            VStack(spacing: 12) {
+                Text(product.displayName)
+                    .font(.headline)
+                    .fontWeight(.bold)
+                
+                Text(product.displayPrice)
+                    .font(.title3)
+                    .fontWeight(.bold)
+                    .foregroundStyle(.green.gradient)
+                
+                Text(product.description)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
             .padding()
+            .background(Color.secondary.opacity(0.1))
+            .clipShape(RoundedRectangle(cornerRadius: 15))
         }
     }
 }
 
+
 #Preview {
-    StoreKitView(isPromoted: .constant(true), onPromotionSuccess: { })
+    StoreKitView(isPromoted: .constant(false), onPromotionSuccess: { })
 }

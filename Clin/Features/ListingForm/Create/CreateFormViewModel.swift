@@ -11,6 +11,7 @@ import Factory
 
 @Observable
 final class CreateFormViewModel: ImagePickerProtocol {
+   
     // MARK: - Enums
     enum ViewState: Equatable {
         case idle, loading, uploading, loaded, success(String), error(String)
@@ -130,7 +131,6 @@ final class CreateFormViewModel: ImagePickerProtocol {
             viewState = .success(ListingFormViewStateMessages.createSuccess.message)
         } catch {
             self.viewState = .error(ListingFormViewStateMessages.generalError.message)
-            print(error)
         }
     }
     
@@ -142,7 +142,6 @@ final class CreateFormViewModel: ImagePickerProtocol {
         let nonNilImageItems = selectedImages.compactMap { $0 }
         
         guard !nonNilImageItems.isEmpty else {
-            print("Selected images are empty")
             return
         }
         
@@ -161,6 +160,7 @@ final class CreateFormViewModel: ImagePickerProtocol {
             let thumbnailURLString = try await imageManager.uploadImage(firstImageItem.data, from: bucketName, to: folderPath, targetWidth: 120, targetHeight: 120, compressionQuality: 0.4)
             if let thumbUrlString = thumbnailURLString, let url = URL(string: thumbUrlString) {
                 self.thumbnailsURLs.append(url)
+            } else {
             }
         }
     }
@@ -178,7 +178,6 @@ final class CreateFormViewModel: ImagePickerProtocol {
             }
         } catch {
             self.viewState = .error(ListingFormViewStateMessages.invalidRegistration.message)
-            print(error)
         }
     }
     
@@ -209,7 +208,7 @@ final class CreateFormViewModel: ImagePickerProtocol {
     
     // MARK: - Helpers and misc
     func isFormValid() -> Bool {
-        return make != "Select" &&
+        let isValid = make != "Select" &&
         model != "Select" &&
         body != "Select" &&
         condition != "Select" &&
@@ -230,13 +229,14 @@ final class CreateFormViewModel: ImagePickerProtocol {
         serviceHistory != "Select" &&
         numberOfOwners != "Select" &&
         !selectedImages.compactMap({ $0 }).isEmpty // Ensure at least one image is selected
+        
+        return isValid
     }
     
     private func loadProhibitedWords() async {
         do {
             try await prohibitedWordsService.loadProhibitedWords()
         } catch {
-            print("Failed to load prohibited words: \(error)")
         }
     }
     
@@ -244,11 +244,8 @@ final class CreateFormViewModel: ImagePickerProtocol {
         do {
             let loadedData = try await listingService.loadLocations()
                 
-            // Clear existing data in the arrays to avoid duplicates
             availableLocations = ["Select"] + loadedData.compactMap { $0.city }
-        
         } catch {
-            print("DEBUG: Failed to load UK cities: \(error)")
             self.subFormViewState = .error(ListingFormViewStateMessages.generalError.message)
         }
     }
@@ -272,7 +269,6 @@ final class CreateFormViewModel: ImagePickerProtocol {
             colourOptions = ["Select"] + loadedData.flatMap { $0.colours }
             
         } catch {
-            print("DEBUG: Failed to load features: \(error)")
             self.subFormViewState = .error(ListingFormViewStateMessages.generalError.message)
         }
     }
@@ -284,10 +280,7 @@ final class CreateFormViewModel: ImagePickerProtocol {
                 
                 // Update available models
                 updateAvailableModels()
-                
-                print("DEBUG: Loading make and models")
             } catch {
-                print("DEBUG: Failed to load car makes and models from Supabase: \(error)")
                 self.subFormViewState = .error(ListingFormViewStateMessages.generalError.message)
             }
         }
@@ -315,6 +308,7 @@ final class CreateFormViewModel: ImagePickerProtocol {
         warranty = "Select"
         serviceHistory = "Select"
         numberOfOwners = "Select"
+        isPromoted = false
         selectedImages = Array(repeating: nil, count: 10)
         imageSelections = Array(repeating: nil, count: 10)
         uploadingProgress = 0.0
