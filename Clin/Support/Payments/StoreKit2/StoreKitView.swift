@@ -260,6 +260,7 @@ struct StoreKitPayWall: View {
                     .foregroundStyle(.secondary)
             }
             .padding()
+            .padding(.horizontal, 25)
             .background(Color.secondary.opacity(0.1))
             .clipShape(RoundedRectangle(cornerRadius: 15))
         }

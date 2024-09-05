@@ -210,7 +210,7 @@
 				NetworkMonitor/NetworkMonitorView.swift,
 				Payments/ApplePay/PaymentButton.swift,
 				Payments/ApplePay/PaymentHandler.swift,
-				Payments/StoreKit2/HelloElectric.storekit,
+				Payments/StoreKit2/Promote.storekit,
 				Payments/StoreKit2/StoreKitView.swift,
 				Payments/StoreKit2/StoreKitViewModel.swift,
 				PhotosPicker/CustomPhotoPickers.swift,

@@ -9,7 +9,7 @@
       }
     ]
   },
-  "identifier" : "B03A4637",
+  "identifier" : "EE9CBFA8",
   "nonRenewingSubscriptions" : [
 
   ],
@@ -20,8 +20,8 @@
       "internalID" : "6670496616",
       "localizations" : [
         {
-          "description" : "Promote listing for 2 weeks",
-          "displayName" : "Promote ",
+          "description" : "for 2 weeks",
+          "displayName" : "Promote",
           "locale" : "en_GB"
         }
       ],
@@ -32,34 +32,24 @@
   ],
   "settings" : {
     "_applicationInternalID" : "6670437936",
-    "_askToBuyEnabled" : false,
     "_developerTeamID" : "VNS8ZUW75C",
     "_failTransactionsEnabled" : false,
-    "_lastSynchronizedDate" : 747164018.67323506,
+    "_lastSynchronizedDate" : 747263900.53072798,
     "_locale" : "en_GB",
     "_storefront" : "GBR",
     "_storeKitErrors" : [
       {
-        "current" : {
-          "index" : 2,
-          "type" : "generic"
-        },
+        "current" : null,
         "enabled" : false,
         "name" : "Load Products"
       },
       {
-        "current" : {
-          "index" : 1,
-          "type" : "purchase"
-        },
+        "current" : null,
         "enabled" : false,
         "name" : "Purchase"
       },
       {
-        "current" : {
-          "index" : 0,
-          "type" : "verification"
-        },
+        "current" : null,
         "enabled" : false,
         "name" : "Verification"
       },
@@ -74,10 +64,7 @@
         "name" : "Subscription Status"
       },
       {
-        "current" : {
-          "index" : 3,
-          "type" : "generic"
-        },
+        "current" : null,
         "enabled" : false,
         "name" : "App Transaction"
       },

@@ -51,17 +51,13 @@ fileprivate struct FavouriteListingSubview: View {
     var body: some View {
         List {
             ForEach(viewModel.favoriteListings, id: \.listingID) { favourite in
-                FavouriteCell(favourite: favourite)
-                    .swipeActions(allowsFullSwipe: false) {
-                        Button(role: .destructive) {
-                            Task {
-                              await viewModel.removeFromFavorites(favourite: favourite)
-                              await viewModel.loadUserFavourites()
-                            }
-                        } label: {
-                            Image(systemName: "trash")
-                        }
+                FavouriteCell(favourite: favourite, action: {
+                    Task {
+                      await viewModel.removeFromFavorites(favourite: favourite)
+                      await viewModel.loadUserFavourites()
                     }
+                })
+                    
             }
             .alignmentGuide(.listRowSeparatorLeading) { _ in
                 0

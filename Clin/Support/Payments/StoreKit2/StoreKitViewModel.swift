@@ -43,7 +43,8 @@ enum StoreError: Error {
 
 @Observable
 final class StoreKitViewModel {
-     var product: Product?
+    var product: Product?
+    let productName: String = "promote2weeks"
     var viewState: PurchaseViewState = .ready {
         didSet {
             Logger.info("ViewState changed to: \(viewState)")
@@ -85,7 +86,7 @@ final class StoreKitViewModel {
     func loadProducts() async {
         Logger.info("Loading products")
         do {
-            let products = try await Product.products(for: ["promote2weeks"])
+            let products = try await Product.products(for: [productName])
             if let product = products.first {
                 self.product = product
                 viewState = .ready

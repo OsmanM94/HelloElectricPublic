@@ -58,7 +58,7 @@
          </EnvironmentVariable>
       </EnvironmentVariables>
       <StoreKitConfigurationFileReference
-         identifier = "../../Clin/Support/Payments/StoreKit2/HelloElectric.storekit">
+         identifier = "../../Clin/Support/Payments/StoreKit2/Promote.storekit">
       </StoreKitConfigurationFileReference>
    </LaunchAction>
    <ProfileAction

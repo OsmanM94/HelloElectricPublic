@@ -17,7 +17,7 @@ struct DeleteAlertModifier<Item: Identifiable>: ViewModifier {
             .alert(isPresented: $isPresented) {
                 Alert(
                     title: Text("Delete Confirmation"),
-                    message: Text("Are you sure you want to delete this item?"),
+                    message: Text("Are you sure you want to delete this?"),
                     primaryButton: .destructive(Text("Delete")) {
                         Task {
                             if let itemToDelete = itemToDelete {
