@@ -58,20 +58,14 @@ struct FavouriteIcon: View {
     let iconSize: CGFloat
     
     var body: some View {
-        Image(systemName: imageName)
+        Image(systemName: isFavourite ? "heart.fill" : "heart")
             .font(.system(size: iconSize))
             .foregroundStyle(foregroundStyle)
             .fontWeight(.bold)
             .symbolEffect(.bounce, value: isFavourite)
             .sensoryFeedback(.impact(flexibility: .soft), trigger: isFavourite)
     }
-    
-    private var imageName: String {
-        isPromoted
-            ? (isFavourite ? "crown.fill" : "crown")
-            : (isFavourite ? "heart.fill" : "heart")
-    }
-    
+
     private var foregroundStyle: some ShapeStyle {
         isPromoted ? .yellow : .green
     }

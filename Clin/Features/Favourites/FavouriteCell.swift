@@ -11,36 +11,51 @@ struct FavouriteCell: View {
     let favourite: Favourite
     
     var body: some View {
-        HStack(spacing: 0) {
-            VStack(spacing: 0) {
-                if let firstImageURL = favourite.thumbnailsURL.first {
-                    ImageLoader(url: firstImageURL, contentMode: .fill, targetSize: CGSize(width: 120, height: 120))
-                        .frame(width: 120, height: 120)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                } else {
-                    Rectangle()
-                        .foregroundColor(.gray.opacity(0.5))
-                        .frame(width: 120, height: 120)
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                        .overlay {
-                            ProgressView()
-                                .scaleEffect(1.2)
-                        }
-                }
-            }
-        
-            VStack(alignment: .leading) {
+        HStack(spacing: 10) {
+            imageView
+            
+            VStack(alignment: .leading, spacing: 10) {
                 Text("\(favourite.make) \(favourite.model)")
                     .font(.headline)
-                    .lineLimit(2, reservesSpace: true)
-                Text("\(favourite.condition)")
-                    .font(.subheadline)
-                Text("\(favourite.mileage, format: .number) miles")
-                    .font(.subheadline)
+                    .lineLimit(2, reservesSpace: false)
+                
+                HStack(spacing: 8) {
+                    Label(favourite.condition, systemImage: "car")
+                    Label {
+                        Text("\(favourite.mileage, format: .number) miles")
+                    } icon: {
+                        Image(systemName: "speedometer")
+                    }
+
+                }
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                
                 Text(favourite.price, format: .currency(code: Locale.current.currency?.identifier ?? "GBP"))
                     .font(.subheadline)
             }
-            .padding(.leading, 5)
+        }
+        .fontDesign(.rounded).bold()
+        .padding()
+    }
+    
+    
+    private var imageView: some View {
+        Group {
+            if let firstImageURL = favourite.thumbnailsURL.first {
+                ImageLoader(url: firstImageURL, contentMode: .fill, targetSize: CGSize(width: 80, height: 80))
+                    .frame(width: 80, height: 80)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+            } else {
+                Rectangle()
+                    .foregroundStyle(.gray.opacity(0.5))
+                    .frame(width: 80, height: 80)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .overlay {
+                        ProgressView()
+                            .scaleEffect(1.2)
+                    }
+            }
         }
     }
 }

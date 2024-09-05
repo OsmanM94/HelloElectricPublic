@@ -44,7 +44,7 @@ enum StoreError: Error {
 @Observable
 final class StoreKitViewModel {
      var product: Product?
-     var viewState: PurchaseViewState = .ready {
+    var viewState: PurchaseViewState = .ready {
         didSet {
             Logger.info("ViewState changed to: \(viewState)")
         }

@@ -127,14 +127,10 @@ struct StoreKitPayWall: View {
     }
     
     private var readyView: some View {
-        VStack(spacing: 20) {
-            Text("Boost Your Visibility")
+        VStack(spacing: 30) {
+            Text("Boost your visibility")
                 .font(.title2)
                 .bold()
-            
-            Text("Get your listing in front of more potential buyers.")
-                .multilineTextAlignment(.center)
-                .padding(.horizontal)
             
             if let product = viewModel.product {
                 CustomProductView(product: product)
@@ -165,14 +161,9 @@ struct StoreKitPayWall: View {
                 .foregroundStyle(.green)
                 .font(.system(size: 50))
             
-            Text("Purchase Successful!")
+            Text("Purchase successful!")
                 .font(.title2)
                 .fontWeight(.bold)
-            
-            Text("Your listing is now promoted for 2 weeks.")
-                .font(.body)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal)
             
             Button(action: { dismiss() }) {
                 Text("Done")
@@ -231,13 +222,8 @@ struct StoreKitPayWall: View {
             ProgressView()
                 .scaleEffect(2)
             
-            Text("Processing Your Purchase")
+            Text("Processing your purchase...")
                 .font(.headline)
-            
-            Text("Please wait while we complete your transaction.")
-                .font(.subheadline)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal)
         }
         .fontDesign(.rounded)
         .padding()

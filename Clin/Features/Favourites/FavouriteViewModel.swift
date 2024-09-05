@@ -57,16 +57,33 @@ final class FavouriteViewModel {
         }
         
         let favourite = Favourite(
-                    userID: user.id,
-                    listingID: id,
-                    imagesURL: listing.imagesURL,
-                    thumbnailsURL: listing.thumbnailsURL,
-                    make: listing.make,
-                    model: listing.model,
-                    condition: listing.condition,
-                    mileage: listing.mileage,
-                    price: listing.price
-                )
+            createdAt: listing.createdAt,
+            imagesURL: listing.imagesURL,
+            thumbnailsURL: listing.thumbnailsURL,
+            make: listing.make,
+            model: listing.model,
+            bodyType: listing.bodyType,
+            condition: listing.condition,
+            mileage: listing.mileage,
+            location: listing.location,
+            yearOfManufacture: listing.yearOfManufacture,
+            price: listing.price,
+            phoneNumber: listing.phoneNumber,
+            textDescription: listing.textDescription,
+            range: listing.range,
+            colour: listing.colour,
+            publicChargingTime: listing.publicChargingTime,
+            homeChargingTime: listing.homeChargingTime,
+            batteryCapacity: listing.batteryCapacity,
+            powerBhp: listing.powerBhp,
+            regenBraking: listing.regenBraking,
+            warranty: listing.warranty,
+            serviceHistory: listing.serviceHistory,
+            numberOfOwners: listing.numberOfOwners,
+            userID: user.id,
+            listingID: id,
+            isPromoted: listing.isPromoted
+        )
         do {
             try await favouriteService.addToFavorites(favourite)
             favoriteListings.append(favourite)

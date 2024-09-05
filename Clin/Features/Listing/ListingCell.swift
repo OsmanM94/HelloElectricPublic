@@ -1,7 +1,6 @@
 
 import SwiftUI
 
-
 struct ListingCell: View {
     @State private var timerManager = TimerManager()
     let listing: Listing
