@@ -59,7 +59,7 @@ struct SensitiveContentAnalysisModifier: ViewModifier {
             .alert(isPresented: .constant(analysis.analysisState == .error(message: "Policy is disabled"))) {
                 Alert(
                     title: Text("Enable Sensitive Content Analysis to upload photos."),
-                    message: Text("To enable: Go to Settings > Privacy & Security > Sensitive Content Warning."),
+                    message: Text("Settings > Privacy & Security > Sensitive Content Warning."),
                     primaryButton: .default(Text("Go to Settings")) {
                         if let url = URL(string: UIApplication.openSettingsURLString) {
                             UIApplication.shared.open(url)

@@ -134,37 +134,6 @@ final class CreateFormViewModel: ImagePickerProtocol {
         }
     }
     
-    private func uploadSelectedImages(for userId: UUID, totalSteps: Int) async throws {
-        imagesURLs.removeAll()
-        thumbnailsURLs.removeAll()
-        
-        // Filter out non-nil imageItems
-        let nonNilImageItems = selectedImages.compactMap { $0 }
-        
-        guard !nonNilImageItems.isEmpty else {
-            return
-        }
-        
-        let folderPath = "\(userId)"
-        let bucketName = "car_images"
-        
-        for image in nonNilImageItems {
-            let imageURLString = try await imageManager.uploadImage(image.data, from: bucketName, to: folderPath, targetWidth: 500, targetHeight: 500, compressionQuality: 0.4)
-            if let urlString = imageURLString, let url = URL(string: urlString) {
-                self.imagesURLs.append(url)
-            }
-            self.uploadingProgress += 1.5 / Double(totalSteps)
-        }
-        
-        if let firstImageItem = nonNilImageItems.first {
-            let thumbnailURLString = try await imageManager.uploadImage(firstImageItem.data, from: bucketName, to: folderPath, targetWidth: 120, targetHeight: 120, compressionQuality: 0.4)
-            if let thumbUrlString = thumbnailURLString, let url = URL(string: thumbUrlString) {
-                self.thumbnailsURLs.append(url)
-            } else {
-            }
-        }
-    }
-    
     @MainActor
     func sendDvlaRequest() async {
         viewState = .loading
@@ -207,6 +176,37 @@ final class CreateFormViewModel: ImagePickerProtocol {
     }
     
     // MARK: - Helpers and misc
+    private func uploadSelectedImages(for userId: UUID, totalSteps: Int) async throws {
+        imagesURLs.removeAll()
+        thumbnailsURLs.removeAll()
+        
+        // Filter out non-nil imageItems
+        let nonNilImageItems = selectedImages.compactMap { $0 }
+        
+        guard !nonNilImageItems.isEmpty else {
+            return
+        }
+        
+        let folderPath = "\(userId)"
+        let bucketName = "car_images"
+        
+        for image in nonNilImageItems {
+            let imageURLString = try await imageManager.uploadImage(image.data, from: bucketName, to: folderPath, targetWidth: 500, targetHeight: 500, compressionQuality: 0.4)
+            if let urlString = imageURLString, let url = URL(string: urlString) {
+                self.imagesURLs.append(url)
+            }
+            self.uploadingProgress += 1.5 / Double(totalSteps)
+        }
+        
+        if let firstImageItem = nonNilImageItems.first {
+            let thumbnailURLString = try await imageManager.uploadImage(firstImageItem.data, from: bucketName, to: folderPath, targetWidth: 120, targetHeight: 120, compressionQuality: 0.4)
+            if let thumbUrlString = thumbnailURLString, let url = URL(string: thumbUrlString) {
+                self.thumbnailsURLs.append(url)
+            } else {
+            }
+        }
+    }
+    
     func isFormValid() -> Bool {
         let isValid = make != "Select" &&
         model != "Select" &&

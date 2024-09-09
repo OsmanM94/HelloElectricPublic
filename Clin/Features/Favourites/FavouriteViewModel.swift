@@ -124,7 +124,7 @@ final class FavouriteViewModel {
             self.favoriteListings = try await favouriteService.loadUserFavourites(userID: user.id)
             updateViewState()
         } catch {
-            print("DEBUG: Error loading user listings: \(error)")
+            print("DEBUG: Error loading user favs: \(error)")
             viewState = .error(FavouriteViewStateMessages.generalError.message)
         }
     }

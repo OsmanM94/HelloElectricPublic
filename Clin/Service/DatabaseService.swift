@@ -101,7 +101,7 @@ final class DatabaseService: DatabaseServiceProtocol {
         do {
             try await supabaseService.client
                 .from(table)
-                .upsert(item)
+                .update(item)
                 .eq("id", value: id)
                 .execute()
             print("DEBUG: Item updated successfully in \(table).")
@@ -114,7 +114,7 @@ final class DatabaseService: DatabaseServiceProtocol {
         do {
             try await supabaseService.client
                 .from(table)
-                .upsert(item)
+                .update(item)
                 .eq("user_id", value: userID)
                 .execute()
             print("DEBUG: Item updated successfully in \(table).")

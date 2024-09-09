@@ -15,7 +15,7 @@ struct AccountView: View {
             Form {
                 Section("Manage") {
                     NavigationLink {
-                        LazyView(PrivateProfileViewContainer())
+                       LazyView(PrivateProfileViewContainer())
                     } label: {
                         Label("Profile", systemImage: "person.circle")
                     }
@@ -30,14 +30,6 @@ struct AccountView: View {
                         LazyView(FavouriteListingContainer())
                     } label: {
                         Label("Saved", systemImage: "heart")
-                    }
-                }
-                
-                Section("Education Center") {
-                    NavigationLink {
-                        LazyView(EducationCenterContainer())
-                    } label: {
-                        Label("Learn more about EVs", systemImage: "book.fill")
                     }
                 }
                 
@@ -59,7 +51,8 @@ struct AccountView: View {
                 
                 Section("Notifications") {
                     NavigationLink(destination: {
-                        LazyView(NotificationsView())
+//                        LazyView(NotificationsView())
+                        NotificationsView()
                     }) {
                         Label("Notifications", systemImage: "bell")
                     }
@@ -116,12 +109,6 @@ fileprivate struct UserListingsContainer: View {
 fileprivate struct FavouriteListingContainer: View {
     var body: some View {
         FavouriteListingView()
-    }
-}
-
-fileprivate struct EducationCenterContainer: View {
-    var body: some View {
-        EducationCenterView()
     }
 }
 

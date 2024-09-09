@@ -24,8 +24,8 @@ struct HubView: View {
                     HubItemView(title: "EV Stations", imageName: "ev.charger.fill")
                 }
                 
-                NavigationLink(destination: LazyView(ShowroomContainer())) {
-                    HubItemView(title: "EV Data", imageName: "bolt.car.fill")
+                NavigationLink(destination: LazyView(EducationCenterContainer())) {
+                    HubItemView(title: "Education", imageName: "book.fill")
                 }
             }
             .padding()
@@ -57,10 +57,10 @@ fileprivate struct StatioViewContainer: View {
     }
 }
 
-fileprivate struct ShowroomContainer: View {
+fileprivate struct EducationCenterContainer: View {
     var body: some View {
-        Showroom()
-            .navigationTitle("Showroom")
+        EducationCenterView()
+            .navigationTitle("Education")
     }
 }
 

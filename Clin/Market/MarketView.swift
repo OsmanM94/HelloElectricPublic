@@ -12,35 +12,37 @@ struct MarketView: View {
     
     var body: some View {
         TabView(selection: $selectedTab) {
-            ListingView()
+            LazyView(ListingView())
                 .tag(0)
                 .tabItem {
                     Label("Listings", systemImage: "bolt.car")
                 }
-            SearchView()
+            LazyView(SearchView())
                 .tag(1)
                 .tabItem {
                     Label("Search", systemImage: "magnifyingglass")
                 }
             
-            CreateListingViewRouter()
+            LazyView(CreateListingViewRouter())
                 .tag(2)
                 .tabItem {
                     Label("Sell", systemImage: "plus")
                 }
             
-            HubView()
+            LazyView(HubView())
                 .tag(3)
                 .tabItem {
                     Label("Hub", systemImage: "rectangle.grid.2x2.fill")
                 }
             
+//            LazyView(AccountViewRouter())
             AccountViewRouter()
                 .tag(4)
                 .tabItem {
                     Label("Account", systemImage: "person.fill")
                 }
         }
+        .sensoryFeedback(.impact(flexibility: .soft), trigger: selectedTab)
     }
 }
 

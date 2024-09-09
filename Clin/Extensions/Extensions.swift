@@ -27,7 +27,7 @@ public extension UIImage {
         // Set scale of renderer so that 1pt == 1px
         let format = UIGraphicsImageRendererFormat()
 //        format.scale = UIScreen.main.scale
-        format.scale = 3.0
+        format.scale = 2.0
         let renderer = UIGraphicsImageRenderer(size: targetSize, format: format)
 
         // Resize the image

@@ -34,6 +34,7 @@ struct Listing: Identifiable, Codable, Hashable {
     var numberOfOwners: String
     var userID: UUID
     var isPromoted: Bool
+    var promotionActivated: Date?
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -62,5 +63,8 @@ struct Listing: Identifiable, Codable, Hashable {
         case createdAt = "created_at"
         case userID = "user_id"
         case isPromoted = "is_promoted"
+        case promotionActivated = "promotion_activated_at"
     }
 }
+
+

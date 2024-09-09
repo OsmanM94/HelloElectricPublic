@@ -1,13 +1,13 @@
 //
-//  ListingDetailView.swift
+//  FavouriteDetailView.swift
 //  Clin
 //
-//  Created by asia on 05/08/2024.
+//  Created by asia on 06/09/2024.
 //
 
 import SwiftUI
 
-enum ListingFeatures: String, CaseIterable {
+enum FavouriteFeatures: String, CaseIterable {
     case bodyType = "Body Type"
     case range = "Range"
     case publicChargingTime = "Public Charging (est.)"
@@ -28,34 +28,33 @@ enum ListingFeatures: String, CaseIterable {
     
     var title: String { rawValue }
     
-    func value(for listing: Listing) -> String {
+    func value(for favourite: Favourite) -> String {
         switch self {
-        case .bodyType: return listing.bodyType
-        case .range: return listing.range
-        case .publicChargingTime: return listing.publicChargingTime
-        case .homeChargingTime: return listing.homeChargingTime
-        case .powerBhp: return listing.powerBhp
-        case .serviceHistory: return listing.serviceHistory
+        case .bodyType: return favourite.bodyType
+        case .range: return favourite.range
+        case .publicChargingTime: return favourite.publicChargingTime
+        case .homeChargingTime: return favourite.homeChargingTime
+        case .powerBhp: return favourite.powerBhp
+        case .serviceHistory: return favourite.serviceHistory
         }
     }
 }
 
-struct ListingDetailView: View {
+// MARK: - Main View
+
+struct FavouriteDetailView: View {
     // MARK: Properties
-    let listing: Listing
-    let showFavourite: Bool
+    let favourite: Favourite
     let columns = [GridItem(.flexible()), GridItem(.flexible())]
     
-    @State private var showSheetImages: Bool = false
+    @State private var showSheet: Bool = false
     @State private var showSplash: Bool = true
-  
     @State private var sellerProfileViewModel: PublicProfileViewModel
     
     // MARK: Initialization
-    init(listing: Listing, showFavourite: Bool) {
-        self.listing = listing
-        self.showFavourite = showFavourite
-        _sellerProfileViewModel = State(wrappedValue: PublicProfileViewModel(sellerID: listing.userID))
+    init(favourite: Favourite) {
+        self.favourite = favourite
+        _sellerProfileViewModel = State(wrappedValue: PublicProfileViewModel(sellerID: favourite.userID))
     }
     
     // MARK: Body
@@ -99,10 +98,7 @@ struct ListingDetailView: View {
                 }
                 .fontDesign(.rounded).bold()
                 .padding()
-                .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                    }
-                }
+                
                 Spacer()
             }
         }
@@ -112,16 +108,16 @@ struct ListingDetailView: View {
     // MARK: Image Carousel
     private var imageCarousel: some View {
         Group {
-            if !listing.imagesURL.isEmpty {
+            if !favourite.imagesURL.isEmpty {
                 TabView {
-                    ForEach(listing.imagesURL, id: \.self) { imageURL in
+                    ForEach(favourite.imagesURL, id: \.self) { imageURL in
                         ImageLoader(url: imageURL, contentMode: .fill, targetSize: CGSize(width: 500, height: 500))
                             .clipped()
-                            .onTapGesture { showSheetImages.toggle() }
+                            .onTapGesture { showSheet.toggle() }
                     }
                 }
-                .sheet(isPresented: $showSheetImages) {
-                    SheetImages(listing: listing)
+                .sheet(isPresented: $showSheet) {
+                    SheetImages(favourite: favourite)
                 }
                 .tabViewStyle(.page)
                 .containerRelativeFrame([.horizontal, .vertical]) { width, axis in
@@ -136,9 +132,7 @@ struct ListingDetailView: View {
     private var noImagesAvailable: some View {
         Rectangle()
             .foregroundStyle(.gray.opacity(0.5))
-            .containerRelativeFrame([.horizontal, .vertical]) { width, axis in
-                axis == .horizontal ? width : width * 0.50
-            }
+            .frame(maxWidth: .infinity, minHeight: 500)
             .overlay {
                 Text("No Images Available")
                     .foregroundStyle(.secondary)
@@ -146,29 +140,22 @@ struct ListingDetailView: View {
             }
     }
     
-    // MARK: Listing Details
+    // MARK: Favourite Details
     private var listingHeader: some View {
-        HStack {
-            VStack(alignment: .leading) {
-                Text(listing.condition)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                Text("\(listing.make) \(listing.model) (\(listing.yearOfManufacture))")
-                    .font(.title3)
-                    .fontWeight(.semibold)
-                    .lineLimit(2, reservesSpace: false)
-            }
-            
-            Spacer()
-            
-            AddToFavouritesButton(listing: listing, iconSize: 22, width: 40, height: 40)
-                .opacity(showFavourite ? 1 : 0)
+        VStack(alignment: .leading) {
+            Text(favourite.condition)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+            Text("\(favourite.make) \(favourite.model) (\(favourite.yearOfManufacture))")
+                .font(.title3)
+                .fontWeight(.semibold)
+                .lineLimit(2, reservesSpace: false)
         }
     }
     
     private var listingPriceAndPromotedBadge: some View {
         HStack {
-            Text(listing.price, format: .currency(code: Locale.current.currency?.identifier ?? "GBP").precision(.fractionLength(0)))
+            Text(favourite.price, format: .currency(code: Locale.current.currency?.identifier ?? "GBP").precision(.fractionLength(0)))
                 .font(.title)
             
             Spacer()
@@ -178,7 +165,7 @@ struct ListingDetailView: View {
                 .padding(10)
                 .background(Color(.systemGray6))
                 .clipShape(RoundedRectangle(cornerRadius: 8))
-                .opacity(listing.isPromoted ? 1 : 0)
+                .opacity(favourite.isPromoted ? 1 : 0)
         }
         .fontDesign(.rounded).bold()
         .padding(.top, 20)
@@ -207,7 +194,7 @@ struct ListingDetailView: View {
                 Text("Mileage")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
-                Text("\(listing.mileage, format: .number) miles")
+                Text("\(favourite.mileage, format: .number) miles")
                     .font(.headline)
                     .fontWeight(.semibold)
             }
@@ -218,14 +205,14 @@ struct ListingDetailView: View {
     // MARK: Features
     private var featuresGrid: some View {
         LazyVGrid(columns: columns, spacing: 20) {
-            ForEach(ListingFeatures.allCases, id: \.self) { detail in
+            ForEach(FavouriteFeatures.allCases, id: \.self) { detail in
                 featureItem(for: detail)
             }
         }
         .padding()
     }
     
-    private func featureItem(for detail: ListingFeatures) -> some View {
+    private func featureItem(for detail: FavouriteFeatures) -> some View {
         VStack {
             Image(systemName: detail.iconName)
                 .font(.system(size: 24))
@@ -233,7 +220,7 @@ struct ListingDetailView: View {
             Text(detail.title)
                 .font(.caption)
                 .foregroundStyle(.secondary)
-            Text(detail.value(for: listing))
+            Text(detail.value(for: favourite))
                 .font(.subheadline)
                 .fontWeight(.medium)
         }
@@ -246,10 +233,10 @@ struct ListingDetailView: View {
     private var moreFeatures: some View {
         DisclosureGroup("More features") {
             VStack(alignment: .leading, spacing: 15) {
-                FeatureRow(title: "Number of Owners", value: listing.numberOfOwners)
-                FeatureRow(title: "Battery Capacity", value: listing.batteryCapacity)
-                FeatureRow(title: "Regenerative Braking", value: listing.regenBraking)
-                FeatureRow(title: "Colour", value: listing.colour)
+                FeatureRow(title: "Number of Owners", value: favourite.numberOfOwners)
+                FeatureRow(title: "Battery Capacity", value: favourite.batteryCapacity)
+                FeatureRow(title: "Regenerative Braking", value: favourite.regenBraking)
+                FeatureRow(title: "Colour", value: favourite.colour)
             }
             .padding(.top, 10)
         }
@@ -261,7 +248,7 @@ struct ListingDetailView: View {
     // MARK: Description
     private var descriptionSection: some View {
         DisclosureGroup("Description") {
-            Text(listing.textDescription)
+            Text(favourite.textDescription)
                 .font(.body)
                 .padding(.top, 10)
         }
@@ -277,17 +264,18 @@ struct ListingDetailView: View {
                 Text("Details")
                     .font(.title2)
                     .fontWeight(.semibold)
-                Text("Location: \(listing.location)")
+                Text("Location: \(favourite.location)")
                     .foregroundStyle(.secondary)
                 PublicProfileView(viewModel: sellerProfileViewModel)
             }
+            
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
             .padding(.top, 10)
             .overlay(alignment: .topTrailing) {
-                ContactButtons(listing: listing)
+                ContactButtons(favourite: favourite)
             }
             .overlay(alignment: .bottomTrailing) {
-                ReportButton(itemId: listing.id ?? 0, itemType: "Listing", reportEmail: "HelloElectric@support.com", iconSize: 15)
+                ReportButton(itemId: favourite.id ?? 0, itemType: "Listing", reportEmail: "HelloElectric@support.com", iconSize: 15)
             }
         }
         .padding()
@@ -301,12 +289,12 @@ struct ListingDetailView: View {
 // MARK: SheetImages
 fileprivate struct SheetImages: View {
     @Environment(\.dismiss) private var dismiss
-    var listing: Listing
+    var favourite: Favourite
     
     var body: some View {
         NavigationStack {
             ZStack {
-                if !listing.imagesURL.isEmpty {
+                if !favourite.imagesURL.isEmpty {
                     imageTabView
                 } else {
                     noImagesAvailable
@@ -323,7 +311,7 @@ fileprivate struct SheetImages: View {
     
     private var imageTabView: some View {
         TabView {
-            ForEach(listing.imagesURL, id: \.self) { imageURL in
+            ForEach(favourite.imagesURL, id: \.self) { imageURL in
                 ZoomImages {
                     ImageLoader(url: imageURL, contentMode: .fit, targetSize: CGSize(width: 500, height: 500))
                 }
@@ -371,11 +359,11 @@ fileprivate struct FeatureRow: View {
 
 // MARK: ContactButtons
 fileprivate struct ContactButtons: View {
-    var listing: Listing
+    var favourite: Favourite
     
     var body: some View {
         HStack(spacing: 5) {
-            Link(destination: URL(string: "tel:\(listing.phoneNumber)")!) {
+            Link(destination: URL(string: "tel:\(favourite.phoneNumber)")!) {
                 ZStack {
                     RoundedRectangle(cornerRadius: 12)
                         .foregroundStyle(.green.gradient)
@@ -387,7 +375,7 @@ fileprivate struct ContactButtons: View {
             }
             .padding(.top, 10)
             
-            Link(destination: URL(string: "sms:\(listing.phoneNumber)")!) {
+            Link(destination: URL(string: "sms:\(favourite.phoneNumber)")!) {
                 ZStack {
                     RoundedRectangle(cornerRadius: 12)
                         .foregroundStyle(.green.gradient)
@@ -404,8 +392,6 @@ fileprivate struct ContactButtons: View {
 
 // MARK: - Preview
 #Preview {
-    NavigationStack {
-        ListingDetailView(listing: MockListingService.sampleData[2], showFavourite: true)
-            .environment(FavouriteViewModel())
-    }
+    FavouriteDetailView(favourite: MockFavouriteService.sampleData[2])
+        .environment(FavouriteViewModel())
 }

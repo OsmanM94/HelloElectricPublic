@@ -51,17 +51,17 @@ fileprivate struct FavouriteListingSubview: View {
     var body: some View {
         List {
             ForEach(viewModel.favoriteListings, id: \.listingID) { favourite in
-                FavouriteCell(favourite: favourite, action: {
-                    Task {
-                      await viewModel.removeFromFavorites(favourite: favourite)
-                      await viewModel.loadUserFavourites()
-                    }
-                })
-                    
+                NavigationLink(destination: FavouriteDetailView(favourite: favourite)) {
+                    FavouriteCell(favourite: favourite, action: {
+                        Task {
+                            await viewModel.removeFromFavorites(favourite: favourite)
+                            await viewModel.loadUserFavourites()
+                        }
+                    })
+                    .id(favourite.id)
+                }
             }
-            .alignmentGuide(.listRowSeparatorLeading) { _ in
-                0
-            }
+            .listRowSeparator(.hidden, edges: .all)
         }
         .listStyle(.plain)
         .padding(.top)

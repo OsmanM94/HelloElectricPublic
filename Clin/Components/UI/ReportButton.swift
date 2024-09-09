@@ -18,9 +18,10 @@ struct ReportButton: View {
     var body: some View {
         Button(action: { showReportAlert = true }) {
             Image(systemName: "flag")
-                .foregroundStyle(.red.gradient)
+                .foregroundStyle(.red)
                 .font(.system(size: iconSize))
         }
+        .buttonStyle(.bordered)
         .alert("Report \(itemType)", isPresented: $showReportAlert) {
             Button("Cancel", role: .cancel) { }
             Button("Report", role: .destructive, action: reportItem)
@@ -39,8 +40,7 @@ struct ReportButton: View {
            UIApplication.shared.canOpenURL(url) {
             UIApplication.shared.open(url)
         } else {
-            print("DEBUG: Cannot open email client")
-            // You might want to handle this case, perhaps by showing an error message
+            print("Cannot open e-mail...")
         }
     }
 }

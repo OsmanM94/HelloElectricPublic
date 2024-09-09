@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct SensitiveAnalysisErrorView: View {
+    @Environment(\.colorScheme) private var colorScheme
     @State private var showPopover: Bool = false
     let retryAction: () -> Void
     
@@ -32,7 +33,7 @@ struct SensitiveAnalysisErrorView: View {
     private var sensitiveImagesGrid: some View {
         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
             ForEach(1...3, id: \.self) { index in
-                if let image = UIImage(named: "sensitive\(index)")?.resize(200, 200) {
+                if let image = UIImage(named: "sensitive\(index)")?.resize(300, 300) {
                     Image(uiImage: image)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
@@ -49,7 +50,7 @@ struct SensitiveAnalysisErrorView: View {
             VStack(spacing: 10) {
                 Image(systemName: "exclamationmark.shield.fill")
                     .font(.system(size: 40))
-                    .foregroundStyle(.yellow)
+                    .foregroundStyle(.gray)
                 
                 Text("Sensitive Content Warning Required")
                     .font(.headline)
@@ -58,7 +59,7 @@ struct SensitiveAnalysisErrorView: View {
                 
                 Text("To maintain a safe environment, please enable Sensitive Content Warning in your device settings.")
                     .font(.subheadline)
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                    
                 Text("Settings > Privacy & Security > Sensitive Content Warning")
@@ -77,13 +78,18 @@ struct SensitiveAnalysisErrorView: View {
         Button(action: retryAction) {
             Text("Retry")
                 .font(.headline)
-                .foregroundStyle(.white)
+                .foregroundColor(.white)
                 .padding(.horizontal, 40)
                 .padding(.vertical, 14)
-                .background(Color.green.gradient)
+                .background(buttonColor)
                 .clipShape(RoundedRectangle(cornerRadius: 30))
         }
     }
+    
+    private var buttonColor: Color {
+        colorScheme == .dark ? Color.green.opacity(0.8) : Color.green
+    }
+
     
     private var whyRequiredButton: some View {
         Button(action: { showPopover = true }) {
@@ -102,7 +108,7 @@ struct SensitiveAnalysisErrorView: View {
         VStack(spacing: 15) {
             Image(systemName: "questionmark.circle.fill")
                 .font(.system(size: 50))
-                .foregroundStyle(.blue)
+                .foregroundStyle(.gray)
             
             Text("Why Enable Sensitive Content Warning?")
                 .font(.headline)
@@ -118,6 +124,7 @@ struct SensitiveAnalysisErrorView: View {
             }
             .buttonStyle(.borderedProminent)
         }
+        .fontDesign(.rounded)
         .presentationCompactAdaptation(.sheet)
     }
 }

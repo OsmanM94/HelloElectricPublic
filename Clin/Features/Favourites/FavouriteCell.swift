@@ -16,8 +16,6 @@ struct FavouriteCell: View {
         VStack(spacing: 16) {
             HStack {
                 imageView
-                Spacer()
-                
                 headerView
                 
                 Spacer()
@@ -61,7 +59,7 @@ struct FavouriteCell: View {
                 Divider()
                 
                 HStack {
-                    Text(favourite.price, format: .currency(code: Locale.current.currency?.identifier ?? "GBP"))
+                    Text(favourite.price, format: .currency(code: Locale.current.currency?.identifier ?? "GBP").precision(.fractionLength(0)))
                         .font(.headline)
                         .foregroundStyle(.primary)
                     

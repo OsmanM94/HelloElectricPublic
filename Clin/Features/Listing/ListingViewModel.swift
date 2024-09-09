@@ -59,7 +59,7 @@ final class ListingViewModel {
     @ObservationIgnored @Injected(\.supabaseService) private var supabaseService
     
     init()  {
-        //print("DEBUG: Did init Listing viewmodel.")
+        print("DEBUG: Did init Listing viewmodel.")
     }
     
     // MARK: - Main actor functions

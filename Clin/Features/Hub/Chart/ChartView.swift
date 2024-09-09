@@ -8,7 +8,7 @@
 import SwiftUI
 import Charts
 
-func colorForFuelType(_ fuelType: String) -> Color {
+fileprivate func colorForFuelType(_ fuelType: String) -> Color {
     switch fuelType {
     case "Electric": return .green
     case "Diesel": return .gray
@@ -89,7 +89,7 @@ fileprivate struct YearlyChartView: View {
                 .background(Color(.systemGray6), in: .rect(cornerRadius: 10))
                 .padding()
                 
-                // Legend
+                /// Legend
                 VStack(alignment: .leading) {
                     ForEach(registrations, id: \.id) { registration in
                         HStack {
@@ -100,6 +100,7 @@ fileprivate struct YearlyChartView: View {
                             Spacer()
                             Text(registration.registrationCount, format: .number)
                         }
+                        .fontDesign(.rounded).bold()
                     }
                 }
                 .padding()
@@ -143,7 +144,7 @@ fileprivate struct MonthlyChartView: View {
                 .background(Color(.systemGray6), in: .rect(cornerRadius: 10))
                 .padding()
                 
-                // Legend
+                /// Legend
                 VStack(alignment: .leading) {
                     ForEach(registrations, id: \.id) { registration in
                         HStack {
@@ -154,6 +155,7 @@ fileprivate struct MonthlyChartView: View {
                             Spacer()
                             Text(registration.registrationCount, format: .number)
                         }
+                        .fontDesign(.rounded).bold()
                     }
                 }
                 .padding()

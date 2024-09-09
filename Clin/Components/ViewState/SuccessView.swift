@@ -37,7 +37,6 @@ struct SuccessView: View {
         }
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(backgroundColor)
     }
     
     private var iconColor: Color {
@@ -46,10 +45,6 @@ struct SuccessView: View {
     
     private var buttonColor: Color {
         colorScheme == .dark ? Color.green.opacity(0.8) : Color.green
-    }
-    
-    private var backgroundColor: Color {
-        colorScheme == .dark ? Color(UIColor.systemBackground) : Color(UIColor.systemBackground)
     }
 }
 

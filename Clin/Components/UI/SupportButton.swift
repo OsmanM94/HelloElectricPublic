@@ -13,10 +13,10 @@ struct SupportButton: View {
     let textColor: Color
     let font: Font
     
-    @State private var showAlert = false
+    @State private var showAlert: Bool = false
     
     init(
-        buttonText: String = "Missing brands?",
+        buttonText: String = "Missing models? Call support",
         textColor: Color = .blue,
         font: Font = .footnote
     ) {
@@ -33,7 +33,7 @@ struct SupportButton: View {
         }
         .alert(isPresented: $showAlert) {
             Alert(
-                title: Text("Cannot Make Call"),
+                title: Text("Sorry, cannot initiate call"),
                 message: Text("Your device is unable to make phone calls."),
                 dismissButton: .default(Text("OK"))
             )
@@ -51,5 +51,5 @@ struct SupportButton: View {
 }
 
 #Preview {
-    SupportButton(buttonText: "Missing Brands?")
+    SupportButton(buttonText: "Missing models? Call support")
 }

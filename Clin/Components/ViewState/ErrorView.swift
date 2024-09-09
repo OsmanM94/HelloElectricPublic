@@ -15,9 +15,9 @@ struct ErrorView: View {
     
     var body: some View {
         VStack(spacing: 30) {
-            Image(systemName: "exclamationmark.triangle")
-                .font(.system(size: 60))
-                .foregroundStyle(iconColor)
+            Image(systemName: "xmark.circle.fill")
+                .font(.system(size: 50))
+                .foregroundStyle(.gray)
             
             Text(message)
                 .font(.headline)
@@ -37,10 +37,6 @@ struct ErrorView: View {
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(backgroundColor)
-    }
-    
-    private var iconColor: Color {
-        colorScheme == .dark ? Color.yellow.opacity(0.7) : Color.orange
     }
     
     private var buttonColor: Color {

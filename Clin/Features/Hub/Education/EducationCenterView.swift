@@ -32,7 +32,6 @@ struct EducationCenterView: View {
             .padding()
             .padding(.bottom, 60)
         }
-        .navigationTitle("Education Center")
     }
 }
 
