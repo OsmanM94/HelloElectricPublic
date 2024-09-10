@@ -39,7 +39,7 @@ struct StoreKitView: View {
                         
                         VStack(alignment: .leading, spacing: 4) {
                             BenefitRow(icon: "arrow.up.circle.fill", text: "Listing appears at the top (nationwide)")
-                            BenefitRow(icon: "tag.fill", text: "Listing badge")
+                            BenefitRow(icon: "heart.fill", text: "Special favourite button")
                             BenefitRow(icon: "square.grid.3x3.fill", text: "Exclusive layout")
                         }
                         
@@ -77,13 +77,13 @@ struct StoreKitView: View {
         }
         .sheet(isPresented: $showPayment) {
             StoreKitPayWall(viewModel: viewModel, isPromoted: $isPromoted, onPromotionSuccess: onPromotionSuccess)
-                .presentationDetents([.height(400)])
+                .presentationDetents([.height(500)])
                 .presentationDragIndicator(.visible)
         }
     }
 }
 
-struct BenefitRow: View {
+fileprivate struct BenefitRow: View {
     let icon: String
     let text: String
     
@@ -97,12 +97,13 @@ struct BenefitRow: View {
     }
 }
 
-struct StoreKitPayWall: View {
+fileprivate struct StoreKitPayWall: View {
     @Bindable var viewModel: StoreKitViewModel
     
     @Environment(\.dismiss) private var dismiss
     @Binding var isPromoted: Bool
     var onPromotionSuccess: () -> Void
+    @State private var termsAcknowledged: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -127,7 +128,7 @@ struct StoreKitPayWall: View {
     }
     
     private var readyView: some View {
-        VStack(spacing: 30) {
+        VStack(alignment: .center, spacing: 30) {
             Text("Boost your visibility")
                 .font(.title2)
                 .bold()
@@ -135,6 +136,8 @@ struct StoreKitPayWall: View {
             if let product = viewModel.product {
                 CustomProductView(product: product)
                     .padding(.horizontal)
+                
+                PaymentDisclaimer(termsAcknowledged: $termsAcknowledged)
                 
                 Button(action: {
                     Task { await viewModel.purchase() }
@@ -145,7 +148,7 @@ struct StoreKitPayWall: View {
                 }
                 .buttonStyle(.bordered)
                 .controlSize(.large)
-               
+                .disabled(!termsAcknowledged)
             } else {
                 ProgressView("Please wait...")
                     .scaleEffect(1.5)

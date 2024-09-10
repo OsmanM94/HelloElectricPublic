@@ -88,6 +88,8 @@ struct DetailView<T: DetailItem>: View {
     @State private var showSplash: Bool = true
     @State private var sellerProfileViewModel: PublicProfileViewModel
     
+    @State private var showLocationPopover = false
+    
     // MARK: Initialization
     init(item: T, showFavourite: Bool = false) {
         self.item = item
@@ -132,9 +134,11 @@ struct DetailView<T: DetailItem>: View {
                     featuresGrid
                     moreFeatures
                     descriptionSection
+                    ListingDisclaimerView()
                     sellerSection
                 }
-                .fontDesign(.rounded).bold()
+                .fontDesign(.rounded)
+                .fontWeight(.semibold)
                 .padding()
     
                 Spacer()
@@ -284,6 +288,7 @@ struct DetailView<T: DetailItem>: View {
                 FeatureRow(title: "Regenerative Braking", value: item.regenBraking)
                 FeatureRow(title: "Colour", value: item.colour)
             }
+            .fontWeight(.regular)
             .padding(.top, 10)
         }
         .padding()
@@ -295,7 +300,7 @@ struct DetailView<T: DetailItem>: View {
     private var descriptionSection: some View {
         DisclosureGroup("Description") {
             Text(item.textDescription)
-                .font(.body)
+                .fontWeight(.regular)
                 .padding(.top, 10)
         }
         .padding()
@@ -310,11 +315,26 @@ struct DetailView<T: DetailItem>: View {
                 Text("Details")
                     .font(.title2)
                     .fontWeight(.semibold)
-                Text("Location: \(item.location)")
-                    .foregroundStyle(.secondary)
+                
+                HStack {
+                    Text("Location: \(item.location)")
+                        .foregroundStyle(.secondary)
+                    
+                    Button(action: {
+                        showLocationPopover.toggle()
+                    }) {
+                        Image(systemName: "info.circle")
+                            .foregroundStyle(.blue)
+                    }
+                    .popover(isPresented: $showLocationPopover, arrowEdge: .top) {
+                        LocationDisclaimerView()
+                            .presentationCompactAdaptation(.popover)
+                    }
+                    
+                }
+                    
                 PublicProfileView(viewModel: sellerProfileViewModel)
             }
-            
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
             .padding(.top, 10)
             .overlay(alignment: .topTrailing) {
@@ -396,7 +416,6 @@ fileprivate struct FeatureRow: View {
                 .foregroundStyle(.secondary)
             Spacer()
             Text(value)
-                .fontWeight(.medium)
         }
     }
 }
@@ -438,5 +457,4 @@ fileprivate struct ContactButtons<T: DetailItem>: View {
     DetailView(item: MockListingService.sampleData[2], showFavourite: true)
         .environment(FavouriteViewModel())
 }
-
 

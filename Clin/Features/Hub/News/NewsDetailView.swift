@@ -73,6 +73,9 @@ struct NewsDetailView: View {
                         .padding(.top)
                 }
                 .padding()
+                
+                NewsDisclaimer()
+                    .padding(.bottom)
             }
         }
         .scrollBounceBehavior(.basedOnSize)

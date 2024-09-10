@@ -5,14 +5,8 @@
 //  Created by asia on 07/08/2024.
 //
 
-
-#warning("ADD CACHING FOR FILTERS")
-
-#warning("Add details view for User listing and Favourites")
-
 #warning("Implement a way to delete the user account")
 
-#warning("Implement notifications")
 
 
 /// KNOWN ISSUES

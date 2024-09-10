@@ -9,7 +9,7 @@ import SwiftUI
 
 struct SupportButton: View {
     let buttonText: String
-    let phoneNumber: String = "07466861602"
+    let phoneNumber: String = "07466861603"
     let textColor: Color
     let font: Font
     

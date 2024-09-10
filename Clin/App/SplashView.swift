@@ -18,7 +18,7 @@ struct SplashView: View {
             Text("HelloElectric")
                 .font(.system(size: 48, weight: .bold, design: .rounded))
         
-            Text("The destination to go for electric vehicles.")
+            Text("The destination to go for EVs.")
                 .font(.system(size: 20, weight: .medium, design: .rounded))
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 20)

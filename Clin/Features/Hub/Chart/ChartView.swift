@@ -114,6 +114,8 @@ fileprivate struct YearlyChartView: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.leading)
+                
+                ChartDisclaimer()
             }
         }
     }
@@ -169,6 +171,8 @@ fileprivate struct MonthlyChartView: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.leading)
+                
+                ChartDisclaimer()
             }
         }
     }
