@@ -18,29 +18,29 @@ final class NotificationsViewModel {
     var newListings: [Notification] = []
    
     init() {
-        setupRealtimeListener()
+//        setupRealtimeListener()
     }
     
     private func setupRealtimeListener() {
-        Task {
-            let channel = supabase.client.channel("car_listing_insertions")
-            let changeStream = channel.postgresChange(InsertAction.self, table: "car_listing")
-            
-            await channel.subscribe()
-            
-            for await insert in changeStream {
-                print("Received record: \(insert.record)")
-                if let newListing = try? insert.decodeRecord(as: Notification.self, decoder: JSONDecoder()) {
-                    print("Inserted: \(newListing)")
-                    
-                    DispatchQueue.main.async {
-                        self.sendNotification(for: newListing)
-                    }
-                } else {
-                    print("Failed to decode the listing record.")
-                }
-            }
-        }
+//        Task {
+//            let channel = supabase.client.channel("car_listing_insertions")
+//            let changeStream = channel.postgresChange(InsertAction.self, table: "car_listing")
+//            
+//            await channel.subscribe()
+//            
+//            for await insert in changeStream {
+//                print("Received record: \(insert.record)")
+//                if let newListing = try? insert.decodeRecord(as: Notification.self, decoder: JSONDecoder()) {
+//                    print("Inserted: \(newListing)")
+//                    
+//                    DispatchQueue.main.async {
+//                        self.sendNotification(for: newListing)
+//                    }
+//                } else {
+//                    print("Failed to decode the listing record.")
+//                }
+//            }
+//        }
     }
     
     private func sendNotification(for listing: Notification) {

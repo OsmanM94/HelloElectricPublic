@@ -85,7 +85,7 @@ fileprivate struct ListingSubview: View {
                 listContent
             }
             .navigationDestination(for: Listing.self) { listing in
-                ListingDetailView(listing: listing, showFavourite: true)
+                DetailView(item: listing, showFavourite: true)
             }
             .listStyle(.plain)
             .refreshable {

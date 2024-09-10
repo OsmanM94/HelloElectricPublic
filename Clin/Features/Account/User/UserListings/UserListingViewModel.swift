@@ -16,16 +16,6 @@ final class UserListingViewModel {
         case error(String)
     }
     
-    // MARK: - ViewState messages
-    enum UserListingsViewStateMessages: String, Error {
-        case generalError = "An error occurred. Please try again."
-        case noAuthUserFound = "No authenticated user found."
-        case deleteSuccess = "Listing deleted succesfully."
-        var message: String {
-            return self.rawValue
-        }
-    }
-    
     // MARK: - Observable properties
     var listingToDelete: Listing?
     var selectedListing: Listing?
@@ -47,14 +37,14 @@ final class UserListingViewModel {
     func loadUserListings() async {
         do {
             guard let currentUser = try? await supabaseService.client.auth.session.user else {
-                viewState = .error(UserListingsViewStateMessages.generalError.message)
+                viewState = .error(AppError.ErrorType.generalError.message)
                 return
             }
             
             self.userActiveListings = try await listingService.loadUserListings(userID: currentUser.id)
             viewState = .success
         } catch {
-            viewState = .error(UserListingsViewStateMessages.noAuthUserFound.message)
+            viewState = .error(AppError.ErrorType.noAuthUserFound.message)
         }
         checkViewState()
     }
@@ -63,12 +53,12 @@ final class UserListingViewModel {
     func deleteUserListing(_ listing: Listing) async {
         do {
             guard let id = listing.id else {
-                viewState = .error(UserListingsViewStateMessages.noAuthUserFound.message)
+                viewState = .error(AppError.ErrorType.noAuthUserFound.message)
                 return
             }
             try await listingService.deleteListing(at: id)
         } catch {
-            viewState = .error(UserListingsViewStateMessages.generalError.message)
+            viewState = .error(AppError.ErrorType.generalError.message)
         }
     }
 

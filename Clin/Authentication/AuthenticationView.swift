@@ -52,16 +52,16 @@ fileprivate struct WelcomeText: View {
             Text("Why Sign in with Apple?")
                 .font(.title2.bold())
             
-            FeatureRow(title: "Fast and Secure", description: "Use your Apple ID for a quick and secure sign-in process.")
+            FeatureCell(title: "Fast and Secure", description: "Use your Apple ID for a quick and secure sign-in process.")
             
-            FeatureRow(title: "Privacy First", description: "Apple ensures that your personal information stays private and secure.")
+            FeatureCell(title: "Privacy First", description: "Apple ensures that your personal information stays private and secure.")
         }
         .padding(.horizontal, 30)
         .fontDesign(.rounded)
     }
 }
 
-fileprivate struct FeatureRow: View {
+fileprivate struct FeatureCell: View {
     let title: String
     let description: String
     

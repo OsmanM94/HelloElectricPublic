@@ -26,7 +26,7 @@ struct EditFormView: View {
                     CustomProgressView()
                     
                 case .uploading:
-                    CircularProgressBar(progress: viewModel.uploadingProgress)
+                    CircularProgressBar(progress: viewModel.imageManager.uploadingProgress)
                     
                 case .success(let message):
                     SuccessView(message: message, doneAction: { viewModel.resetState(); dismiss() })
@@ -52,7 +52,7 @@ fileprivate struct EditFormSubview: View {
     @Bindable var viewModel: EditFormViewModel
     @State var listing: Listing
     @State private var originalListing: Listing
-    
+   
     init(viewModel: EditFormViewModel, listing: Listing) {
         self._viewModel = Bindable(viewModel)
         self._listing = State(initialValue: listing)
@@ -300,9 +300,9 @@ fileprivate struct EditFormSubview: View {
     private var topBarTrailingToolbarContent: some ToolbarContent {
         ToolbarItem(placement: .topBarTrailing) {
             NavigationLink {
-                ImagePickerGridView(viewModel: viewModel)
+                ImagePickerGridView(viewModel: viewModel.imageManager)
             } label: {
-                ImageCounterView(count: viewModel.totalImageCount)
+                ImageCounterView(count: viewModel.imageManager.totalImageCount)
             }
         }
     }
@@ -314,13 +314,14 @@ fileprivate struct EditFormSubview: View {
                 Task {
                     await viewModel.updateUserListing(listing)
                     originalListing = listing
+                    viewModel.imageManager.resetChangeFlag()
                 }
             } label: {
                 Text("Apply")
                     .font(.headline)
                     .frame(maxWidth: .infinity)
             }
-            .disabled(listing == originalListing)
+            .disabled(listing == originalListing && !viewModel.imageManager.hasUserInitiatedChanges)
         }
     }
 }

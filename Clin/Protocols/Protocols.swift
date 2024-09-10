@@ -61,7 +61,7 @@ protocol ImagePickerProtocol: Observable {
     
     func loadItem(item: PhotosPickerItem, at index: Int) async
     func deleteImage(id: String)
-    func retrieveImages(listing: Listing) async
+    func retrieveImages(listing: Listing, id: Int) async throws
     func resetImageStateToIdle()
 }
 

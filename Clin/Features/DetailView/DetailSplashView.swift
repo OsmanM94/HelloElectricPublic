@@ -1,13 +1,12 @@
 //
-//  ListingDetailSplashView.swift
+//  DetailSplashView.swift
 //  Clin
 //
-//  Created by asia on 11/08/2024.
+//  Created by asia on 10/09/2024.
 //
-
 import SwiftUI
 
-struct ListingDetailSplashView: View {
+struct DetailSplashView: View {
     @State private var isAnimating: Bool = false
     
     var body: some View {
@@ -54,8 +53,9 @@ struct ListingDetailSplashView: View {
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 15) {
                     ForEach(0..<2) { _ in
                         Rectangle()
-                            .frame(maxWidth: .infinity, minHeight: 80)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                            .frame(maxWidth: .infinity, minHeight: 100)
+                           
+                            .clipShape(UnevenRoundedRectangle(topLeadingRadius: 12, bottomLeadingRadius: 0, bottomTrailingRadius: 0, topTrailingRadius: 12, style: .continuous))
                     }
                 }
                 .foregroundStyle(.gray.opacity(0.5))
@@ -76,5 +76,5 @@ struct ListingDetailSplashView: View {
 }
 
 #Preview {
-    ListingDetailSplashView()
+    DetailSplashView()
 }

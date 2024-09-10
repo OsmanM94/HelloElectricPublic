@@ -24,14 +24,6 @@ final class SearchViewModel {
         case loaded
     }
     
-    // MARK: - Error messages
-    enum SearchViewStateErrorMessages: String, Error {
-        case generalError = "An error occurred. Please try again."
-        var message: String {
-            return self.rawValue
-        }
-    }
-    
     // MARK: - Observable properties
     // View state
     var viewState: ViewState = .idle
@@ -329,7 +321,7 @@ final class SearchViewModel {
             return response
         } catch {
             Logger.error("Failed to load listings from Supabase: \(error)")
-            viewState = .error(SearchViewStateErrorMessages.generalError.message)
+            viewState = .error(AppError.ErrorType.generalError.message)
             throw error
         }
     }
@@ -364,7 +356,7 @@ final class SearchViewModel {
                 Logger.info("Search completed. Total items: \(searchedItems.count)")
             } catch {
                 Logger.error("Error searching: \(error)")
-                viewState = .error(SearchViewStateErrorMessages.generalError.message)
+                viewState = .error(AppError.ErrorType.generalError.message)
             }
             self.isSearching = false
         }

@@ -51,7 +51,7 @@ fileprivate struct FavouriteListingSubview: View {
     var body: some View {
         List {
             ForEach(viewModel.favoriteListings, id: \.listingID) { favourite in
-                NavigationLink(destination: FavouriteDetailView(favourite: favourite)) {
+                NavigationLink(destination: DetailView(item: favourite)) {
                     FavouriteCell(favourite: favourite, action: {
                         Task {
                             await viewModel.removeFromFavorites(favourite: favourite)

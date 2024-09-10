@@ -27,14 +27,14 @@ struct CreateFormView: View {
                     CreateFormSubview(viewModel: viewModel)
                         .task { await viewModel.loadBulkData() }
                 case .uploading:
-                    CircularProgressBar(progress: viewModel.uploadingProgress)
+                    CircularProgressBar(progress: viewModel.imageManager.uploadingProgress)
                     
                 case .success(let message):
-                    SuccessView(message: message, doneAction: { viewModel.resetState() })
+                    SuccessView(message: message, doneAction: { viewModel.resetFormDataAndState() })
                     
                 case .error(let message):
                     ErrorView(message: message, retryAction: {
-                        viewModel.resetState()
+                        viewModel.resetFormDataAndState()
                     })
                 }
             }
@@ -178,7 +178,7 @@ fileprivate struct CreateFormSubview: View {
                     topBarTrailingToolbarContent
                 }
             case .error(let message):
-                ErrorView(message: message) { viewModel.resetState() }
+                ErrorView(message: message) { viewModel.resetFormDataAndState() }
             }
         }
         .animation(.easeInOut(duration: 0.3), value: viewModel.subFormViewState)
@@ -188,20 +188,20 @@ fileprivate struct CreateFormSubview: View {
     
     private var makeModelSection: some View {
         Section(header: Text("Make and model "), footer: makeModelFooter) {
-            Picker("Make", selection: $viewModel.make) {
-                ForEach(viewModel.makeOptions, id: \.self) { make in
+            Picker("Make", selection: $viewModel.formData.make) {
+                ForEach(viewModel.dataLoader.makeOptions, id: \.self) { make in
                     Text(make).tag(make)
                 }
             }
-            .onChange(of: viewModel.make) {
+            .onChange(of: viewModel.formData.make) {
                 viewModel.updateAvailableModels()
             }
-            Picker("Model", selection: $viewModel.model) {
-                ForEach(viewModel.modelOptions, id: \.self) { model in
+            Picker("Model", selection: $viewModel.formData.model) {
+                ForEach(viewModel.dataLoader.modelOptions, id: \.self) { model in
                     Text(model).tag(model)
                 }
             }
-            .disabled(viewModel.make == "Select")
+            .disabled(viewModel.formData.make == "Select")
             
         }
         .pickerStyle(.navigationLink)
@@ -216,31 +216,31 @@ fileprivate struct CreateFormSubview: View {
     
     private var bodyTypeSection: some View {
         Section("Body Type") {
-            Picker("Body", systemImage: "car.fill", selection: $viewModel.body) {
-                ForEach(viewModel.bodyTypeOptions, id: \.self) { body in
+            Picker("Body", systemImage: "car.fill", selection: $viewModel.formData.body) {
+                ForEach(viewModel.dataLoader.bodyTypeOptions, id: \.self) { body in
                     Text(body).tag(body)
                 }
             }
-            .disabled(viewModel.make == "Select" || viewModel.model == "Select")
+            .disabled(viewModel.formData.make == "Select" || viewModel.formData.model == "Select")
         }
         .pickerStyle(.navigationLink)
     }
     
     private var yearConditionSection: some View {
         Section(header: Text("Year and condition")) {
-            Picker("Year of manufacture", systemImage: "licenseplate.fill", selection: $viewModel.selectedYear) {
-                ForEach(viewModel.yearOptions, id: \.self) { year in
+            Picker("Year of manufacture", systemImage: "licenseplate.fill", selection: $viewModel.formData.selectedYear) {
+                ForEach(viewModel.dataLoader.yearOptions, id: \.self) { year in
                     Text(year).tag(year)
                 }
             }
-            .disabled(viewModel.body == "Select")
+            .disabled(viewModel.formData.body == "Select")
             
-            Picker("Condition", systemImage: "axle.2", selection: $viewModel.condition) {
-                ForEach(viewModel.conditionOptions, id: \.self) { condition in
+            Picker("Condition", systemImage: "axle.2", selection: $viewModel.formData.condition) {
+                ForEach(viewModel.dataLoader.conditionOptions, id: \.self) { condition in
                     Text(condition).tag(condition)
                 }
             }
-            .disabled(viewModel.selectedYear == "Select")
+            .disabled(viewModel.formData.selectedYear == "Select")
         }
         .pickerStyle(.navigationLink)
     }
@@ -250,26 +250,26 @@ fileprivate struct CreateFormSubview: View {
             HStack(spacing: 15) {
                 Image(systemName: "gauge.with.needle")
                     .imageScale(.large)
-                    .foregroundStyle(viewModel.condition == "Select" ? .green.opacity(0.5) : .green)
-                TextField("Current mileage", value: $viewModel.mileage, format: .number)
+                    .foregroundStyle(viewModel.formData.condition == "Select" ? .green.opacity(0.5) : .green)
+                TextField("Current mileage", value: $viewModel.formData.mileage, format: .number)
                     .keyboardType(.decimalPad)
-                    .foregroundStyle(viewModel.condition == "Select" ? .gray : .primary)
-                    .opacity(viewModel.condition == "Select" ? 0.8 : 1)
+                    .foregroundStyle(viewModel.formData.condition == "Select" ? .gray : .primary)
+                    .opacity(viewModel.formData.condition == "Select" ? 0.8 : 1)
             }
-            .disabled(viewModel.condition == "Select")
+            .disabled(viewModel.formData.condition == "Select")
         }
     }
     
     private var locationSection: some View {
         Section(footer: locationHeader) {
             HStack {
-                Picker("Location", selection: $viewModel.location) {
-                    ForEach(viewModel.availableLocations, id: \.self) { city in
+                Picker("Location", selection: $viewModel.formData.location) {
+                    ForEach(viewModel.dataLoader.availableLocations, id: \.self) { city in
                         Text(city).tag(city)
                     }
                 }
                 .pickerStyle(.navigationLink)
-                .disabled(viewModel.mileage == 500)
+                .disabled(viewModel.formData.mileage == 500)
             }
         }
     }
@@ -299,43 +299,43 @@ fileprivate struct CreateFormSubview: View {
 
     private var colourRangeSection: some View {
         Section("Colour and range") {
-            Picker("Colour", systemImage: "paintpalette.fill" ,selection: $viewModel.colour) {
-                ForEach(viewModel.colourOptions, id: \.self) { colour in
+            Picker("Colour", systemImage: "paintpalette.fill" ,selection: $viewModel.formData.colour) {
+                ForEach(viewModel.dataLoader.colourOptions, id: \.self) { colour in
                     Text(colour).tag(colour)
                 }
             }
-            .disabled(viewModel.location == "Select")
+            .disabled(viewModel.formData.location == "Select")
             
-            Picker("Driving range", systemImage: "road.lanes", selection: $viewModel.range) {
-                ForEach(viewModel.rangeOptions, id: \.self) { range in
+            Picker("Driving range", systemImage: "road.lanes", selection: $viewModel.formData.range) {
+                ForEach(viewModel.dataLoader.rangeOptions, id: \.self) { range in
                     Text(range).tag(range)
                 }
             }
-            .disabled(viewModel.colour == "Select")
+            .disabled(viewModel.formData.colour == "Select")
         }
         .pickerStyle(.navigationLink)
     }
     
     private var priceSection: some View {
         Section("Price") {
-            TextField("Asking price", value: $viewModel.price, format: .currency(code: "GBP").precision(.fractionLength(0)))
+            TextField("Asking price", value: $viewModel.formData.price, format: .currency(code: "GBP").precision(.fractionLength(0)))
                 .keyboardType(.decimalPad)
-                .foregroundStyle(viewModel.range == "Select" ? .gray : .primary)
-                .opacity(viewModel.range == "Select" ? 0.8 : 1)
-                .disabled(viewModel.range == "Select")
+                .foregroundStyle(viewModel.formData.range == "Select" ? .gray : .primary)
+                .opacity(viewModel.formData.range == "Select" ? 0.8 : 1)
+                .disabled(viewModel.formData.range == "Select")
             
         }
     }
     
     private var phoneSection: some View {
         Section(header: Text("Contact number"), footer: phoneSectionFooter) {
-            TextField("Phone", text: $viewModel.phoneNumber)
+            TextField("Phone", text: $viewModel.formData.phoneNumber)
                 .keyboardType(.phonePad)
-                .foregroundStyle(viewModel.price == 500 ? .gray : .primary)
-                .opacity(viewModel.price == 500 ? 0.8 : 1)
-                .disabled(viewModel.price == 500)
-                .onChange(of: viewModel.phoneNumber) { _, newValue in
-                    viewModel.phoneNumber = newValue.formattedPhoneNumber
+                .foregroundStyle(viewModel.formData.price == 500 ? .gray : .primary)
+                .opacity(viewModel.formData.price == 500 ? 0.8 : 1)
+                .disabled(viewModel.formData.price == 500)
+                .onChange(of: viewModel.formData.phoneNumber) { _, newValue in
+                    viewModel.formData.phoneNumber = newValue.formattedPhoneNumber
                 }
         }
     }
@@ -343,27 +343,27 @@ fileprivate struct CreateFormSubview: View {
     private var phoneSectionFooter: some View {
         Text("Please enter a valid 11-digit phone number")
             .foregroundStyle(.red.gradient)
-            .opacity(!viewModel.phoneNumber.isValidPhoneNumber ? 1 : 0)
-            .opacity(viewModel.price == 500 ? 0 : 1)
+            .opacity(!viewModel.formData.phoneNumber.isValidPhoneNumber ? 1 : 0)
+            .opacity(viewModel.formData.price == 500 ? 0 : 1)
     }
 
     private var descriptionSection: some View {
         Section {
-            TextEditor(text: $viewModel.description)
+            TextEditor(text: $viewModel.formData.description)
                 .frame(height: 200)
-                .characterLimit($viewModel.description, limit: 500)
+                .characterLimit($viewModel.formData.description, limit: 500)
         } header: {
             HStack{
                 Text("Description (keep it simple)")
                 Spacer()
-                Button("Clear text", action: { viewModel.clearDescription() })
-                    .foregroundStyle(viewModel.description.isEmpty ? .gray : .red)
+                Button("Clear text", action: { viewModel.formData.clearDescription() })
+                    .foregroundStyle(viewModel.formData.description.isEmpty ? .gray : .red)
                     .font(.caption2)
-                    .disabled(viewModel.description.isEmpty)
+                    .disabled(viewModel.formData.description.isEmpty)
             }
             
         } footer: {
-            Text("\(viewModel.description.count)/500")
+            Text("\(viewModel.formData.description.count)/500")
         }
     }
     
@@ -402,76 +402,76 @@ fileprivate struct CreateFormSubview: View {
     // MARK: - Feature Sections
     
     private var homeChargingTime: some View {
-        Picker("Home", selection: $viewModel.homeChargingTime) {
-            ForEach(viewModel.homeChargingTimeOptions, id: \.self) { time in
+        Picker("Home", selection: $viewModel.formData.homeChargingTime) {
+            ForEach(viewModel.dataLoader.homeChargingTimeOptions, id: \.self) { time in
                 Text(time).tag(time)
             }
         }
         .pickerStyle(.navigationLink)
-        .disabled(viewModel.price <= 500)
+        .disabled(viewModel.formData.price <= 500)
     }
     
     private var publicChargingTime: some View {
-        Picker("Public", selection: $viewModel.publicChargingTime) {
-            ForEach(viewModel.publicChargingTimeOptions, id: \.self) { time in
+        Picker("Public", selection: $viewModel.formData.publicChargingTime) {
+            ForEach(viewModel.dataLoader.publicChargingTimeOptions, id: \.self) { time in
                 Text(time).tag(time)
             }
         }
         .pickerStyle(.navigationLink)
-        .disabled(viewModel.homeChargingTime == "Select")
+        .disabled(viewModel.formData.homeChargingTime == "Select")
     }
     
     private var additionalDataSection: some View {
         Section {
-            Picker("Power BHP", selection: $viewModel.powerBhp) {
-                ForEach(viewModel.powerBhpOptions, id: \.self) { power in
+            Picker("Power BHP", selection: $viewModel.formData.powerBhp) {
+                ForEach(viewModel.dataLoader.powerBhpOptions, id: \.self) { power in
                     Text(power).tag(power)
                 }
             }
-            .disabled(viewModel.publicChargingTime == "Select")
+            .disabled(viewModel.formData.publicChargingTime == "Select")
             
-            Picker("Battery capacity", selection: $viewModel.batteryCapacity) {
-                ForEach(viewModel.batteryCapacityOptions, id: \.self) { battery in
+            Picker("Battery capacity", selection: $viewModel.formData.batteryCapacity) {
+                ForEach(viewModel.dataLoader.batteryCapacityOptions, id: \.self) { battery in
                     Text(battery).tag(battery)
                 }
             }
-            .disabled(viewModel.powerBhp == "Select")
+            .disabled(viewModel.formData.powerBhp == "Select")
             
-            Picker("Regen braking", selection: $viewModel.regenBraking) {
-                ForEach(viewModel.regenBrakingOptions, id: \.self) { regen in
+            Picker("Regen braking", selection: $viewModel.formData.regenBraking) {
+                ForEach(viewModel.dataLoader.regenBrakingOptions, id: \.self) { regen in
                     Text(regen).tag(regen)
                 }
             }
-            .disabled(viewModel.batteryCapacity == "Select")
+            .disabled(viewModel.formData.batteryCapacity == "Select")
             
-            Picker("Warranty", selection: $viewModel.warranty) {
-                ForEach(viewModel.warrantyOptions, id: \.self) { warranty in
+            Picker("Warranty", selection: $viewModel.formData.warranty) {
+                ForEach(viewModel.dataLoader.warrantyOptions, id: \.self) { warranty in
                     Text(warranty).tag(warranty)
                 }
             }
-            .disabled(viewModel.regenBraking == "Select")
+            .disabled(viewModel.formData.regenBraking == "Select")
             
-            Picker("Service history", selection: $viewModel.serviceHistory) {
-                ForEach(viewModel.serviceHistoryOptions, id: \.self) { service in
+            Picker("Service history", selection: $viewModel.formData.serviceHistory) {
+                ForEach(viewModel.dataLoader.serviceHistoryOptions, id: \.self) { service in
                     Text(service).tag(service)
                 }
             }
-            .disabled(viewModel.warranty == "Select")
+            .disabled(viewModel.formData.warranty == "Select")
             
-            Picker("Owners", selection: $viewModel.numberOfOwners) {
-                ForEach(viewModel.numberOfOwnersOptions, id: \.self) { owners in
+            Picker("Owners", selection: $viewModel.formData.numberOfOwners) {
+                ForEach(viewModel.dataLoader.numberOfOwnersOptions, id: \.self) { owners in
                     Text(owners).tag(owners)
                 }
             }
-            .disabled(viewModel.serviceHistory == "Select" && viewModel.numberOfOwners == "Select")
+            .disabled(viewModel.formData.serviceHistory == "Select" && viewModel.formData.numberOfOwners == "Select")
         }
         .pickerStyle(.navigationLink)
     }
     
-    // MARK: - Promote listing (StoreKit)
+    // MARK: - Promote listing (via StoreKit2)
     private var paymentSection: some View {
-        StoreKitView(isPromoted: $viewModel.isPromoted) {
-            viewModel.isPromoted = true
+        StoreKitView(isPromoted: $viewModel.formData.isPromoted) {
+            viewModel.formData.isPromoted = true
         }
     }
 
@@ -479,7 +479,7 @@ fileprivate struct CreateFormSubview: View {
     
     private var topBarLeadingToolbarContent: some ToolbarContent {
         ToolbarItem(placement: .topBarLeading) {
-            Button("Cancel", action: viewModel.resetState)
+            Button("Cancel", action: viewModel.resetFormDataAndState)
         }
     }
     
@@ -493,9 +493,9 @@ fileprivate struct CreateFormSubview: View {
     private var topBarTrailingToolbarContent: some ToolbarContent {
         ToolbarItem(placement: .topBarTrailing) {
             NavigationLink {
-                ImagePickerGridView(viewModel: viewModel)
+                ImagePickerGridView(viewModel: viewModel.imageManager)
             } label: {
-                ImageCounterView(count: viewModel.totalImageCount)
+                ImageCounterView(count: viewModel.imageManager.totalImageCount)
             }
         }
     }

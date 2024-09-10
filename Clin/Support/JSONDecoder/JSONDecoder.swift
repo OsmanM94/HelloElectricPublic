@@ -9,7 +9,7 @@ import Foundation
 
 func loadAsync<T: Decodable>(_ filename: String) async throws -> T {
     guard let file = Bundle.main.url(forResource: filename, withExtension: nil) else {
-        throw JSONLoadingError.fileNotFound(filename)
+        throw AppError.error(.fileNotFound(filename))
     }
     do {
         let data = try Data(contentsOf: file)
@@ -17,9 +17,9 @@ func loadAsync<T: Decodable>(_ filename: String) async throws -> T {
         return try decoder.decode(T.self, from: data)
         
     } catch let error as DecodingError {
-        throw JSONLoadingError.dataParsingError(error)
+        throw AppError.error(.dataParsingError(error))
         
     } catch {
-        throw JSONLoadingError.dataLoadingError(error)
+        throw AppError.error(.dataLoadingError(error))
     }
 }

@@ -72,7 +72,7 @@ fileprivate struct UserListingSubview: View {
     }
     
     private func listingRow(for listing: Listing) -> some View {
-        NavigationLink(destination: ListingDetailView(listing: listing, showFavourite: false)) {
+        NavigationLink(destination: DetailView(item: listing, showFavourite: false)) {
             ListingCell(listing: listing, showFavourite: false)
                 .id(listing.id)
                 .swipeActions(allowsFullSwipe: false) {

@@ -65,7 +65,7 @@ extension ImagePickerGridView {
 
 
 #Preview {
-    ImagePickerGridView(viewModel: EditFormViewModel())
+    ImagePickerGridView(viewModel: EditFormImageManager())
 }
 
 

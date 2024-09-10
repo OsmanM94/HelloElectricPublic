@@ -17,16 +17,6 @@ final class FavouriteViewModel {
         case error(String)
     }
     
-    // MARK: - ViewState messages
-    enum FavouriteViewStateMessages: String, Error {
-        case generalError = "An error occurred. Please try again."
-        case noAuthUserFound = "No authenticated user found."
-        
-        var message: String {
-            return self.rawValue
-        }
-    }
-    
     // MARK: - Observable properties
     private(set) var viewState: ViewState = .empty
     private(set) var favoriteListings: [Favourite] = []
@@ -91,7 +81,7 @@ final class FavouriteViewModel {
             print("DEBUG: Listing added to favourites successfully.")
         } catch {
             print("DEBUG: Error creating listing: \(error)")
-            viewState = .error(FavouriteViewStateMessages.generalError.message)
+            viewState = .error(AppError.ErrorType.generalError.message)
         }
     }
     
@@ -110,7 +100,7 @@ final class FavouriteViewModel {
             print("DEBUG: Listing removed from favorites successfully.")
         } catch {
             print("DEBUG: Error removing listing from favorites: \(error)")
-            viewState = .error(FavouriteViewStateMessages.generalError.message)
+            viewState = .error(AppError.ErrorType.generalError.message)
         }
     }
     
@@ -125,7 +115,7 @@ final class FavouriteViewModel {
             updateViewState()
         } catch {
             print("DEBUG: Error loading user favs: \(error)")
-            viewState = .error(FavouriteViewStateMessages.generalError.message)
+            viewState = .error(AppError.ErrorType.generalError.message)
         }
     }
     

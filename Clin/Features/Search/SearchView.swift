@@ -127,7 +127,7 @@ private extension SearchView {
             }
         }
         .navigationDestination(for: Listing.self, destination: { listing in
-            ListingDetailView(listing: listing, showFavourite: true)
+            DetailView(item: listing, showFavourite: true)
         })
         .listStyle(.plain)
     }

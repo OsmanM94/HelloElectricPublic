@@ -21,7 +21,6 @@ struct ReportButton: View {
                 .foregroundStyle(.red)
                 .font(.system(size: iconSize))
         }
-        .buttonStyle(.bordered)
         .alert("Report \(itemType)", isPresented: $showReportAlert) {
             Button("Cancel", role: .cancel) { }
             Button("Report", role: .destructive, action: reportItem)

@@ -76,14 +76,9 @@ final class AuthViewModel {
                     self.displayName = userEmail
                 }
                                 
-            } catch let error as AuthenticationErrors {
-                print("DEBUG: AppleAuthError encountered: \(error.localizedDescription)")
-                authenticationState = .unauthenticated
-                dump(error)
             } catch {
                 print("DEBUG: Unexpected error encountered: \(error.localizedDescription)")
                 authenticationState = .unauthenticated
-                dump(error)
             }
         }
     }

@@ -54,8 +54,7 @@ final class PrivateProfileViewModel {
             self.displayName = profile.username ?? ""
             self.profile = profile
         } catch {
-            print(error)
-            viewState = .error(ProfileViewStateMessages.generalError.message)
+            viewState = .error(AppError.ErrorType.generalError.message)
         }
     }
    
@@ -71,7 +70,7 @@ final class PrivateProfileViewModel {
             let imageURLString = try await imageManager.uploadImage(avatarImage!.data, from: bucketName, to: folderPath,targetWidth: 80, targetHeight: 80, compressionQuality: 0.4)
             
             guard let imageURL = URL(string: imageURLString ?? "") else {
-                viewState = .error(ProfileViewStateMessages.generalError.message)
+                viewState = .error(AppError.ErrorType.generalError.message)
                 return
             }
             
@@ -86,10 +85,9 @@ final class PrivateProfileViewModel {
             self.profile?.avatarURL = imageURL
             self.username = ""
             
-            viewState = .success(ProfileViewStateMessages.success.message)
+            viewState = .success(AppError.ErrorType.profileUpdateSuccess.message)
         } catch {
-            debugPrint(error)
-            viewState = .error(ProfileViewStateMessages.sensitiveApiNotEnabled.message)
+            viewState = .error(AppError.ErrorType.sensitiveApiNotEnabled.message)
         }
     }
     
@@ -101,11 +99,11 @@ final class PrivateProfileViewModel {
         case .success(let pickedImage):
             avatarImage = pickedImage
         case .sensitiveContent:
-            viewState = .error(ProfileViewStateMessages.sensitiveContent.message)
+            viewState = .error(AppError.ErrorType.sensitiveContent.message)
         case .analysisError:
             viewState = .sensitiveApiNotEnabled
         case .loadingError:
-            viewState = .error(ProfileViewStateMessages.generalError.message)
+            viewState = .error(AppError.ErrorType.generalError.message)
         }
     }
     
@@ -113,7 +111,7 @@ final class PrivateProfileViewModel {
     
     private func canUpdateProfile() async -> Bool {
         guard !prohibitedWordsService.containsProhibitedWord(username) else {
-            viewState = .error(ProfileViewStateMessages.inappropriateUsername.message)
+            viewState = .error(AppError.ErrorType.inappropriateUsername.message)
             return false
         }
         
@@ -125,7 +123,7 @@ final class PrivateProfileViewModel {
         }
         
         guard avatarImage?.data != nil else {
-            viewState = .error(ProfileViewStateMessages.generalError.message)
+            viewState = .error(AppError.ErrorType.generalError.message)
             return false
         }
         return true
@@ -155,10 +153,9 @@ final class PrivateProfileViewModel {
             
             self.profile?.username = username
             self.username = ""
-            viewState = .success(ProfileViewStateMessages.success.message)
+            viewState = .success(AppError.ErrorType.profileUpdateSuccess.message)
         } catch {
-            debugPrint(error)
-            viewState = .error(ProfileViewStateMessages.generalError.message)
+            viewState = .error(AppError.ErrorType.generalError.message)
         }
     }
     
@@ -166,7 +163,7 @@ final class PrivateProfileViewModel {
         do {
             try await prohibitedWordsService.loadProhibitedWords()
         } catch {
-            print("Failed to load prohibited words: \(error.localizedDescription)")
+            viewState = .error(AppError.ErrorType.generalError.message)
         }
     }
     
