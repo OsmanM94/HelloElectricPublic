@@ -18,9 +18,9 @@ struct ImageCounterView: View {
             .overlay(alignment: .topTrailing) {
                 if count > 0 {
                     Text("\(count)")
-                        .font(.system(size: 13).bold())
+                        .font(.system(size: 12).bold())
                         .foregroundStyle(.white)
-                        .padding(4)
+                        .padding(5)
                         .background(Color(.red))
                         .clipShape(Circle())
                         .offset(x: 2, y: -6)
@@ -30,5 +30,5 @@ struct ImageCounterView: View {
 }
 
 #Preview {
-    ImageCounterView(count: 0)
+    ImageCounterView(count: 10)
 }

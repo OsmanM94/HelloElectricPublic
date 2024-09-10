@@ -66,7 +66,7 @@ protocol ImagePickerProtocol: Observable {
 }
 
 protocol HTTPDataDownloaderProtocol {
-    func fetchData <T: Decodable>(as type: T.Type, endpoint: String) async throws -> T
+    func loadData <T: Decodable>(as type: T.Type, endpoint: String) async throws -> T
     func postData<T: Decodable, U: Encodable>(as type: T.Type, to endpoint: String, body: U, headers: [String: String]) async throws -> T
     func fetchURL(from url: URL) async throws -> Data
 }

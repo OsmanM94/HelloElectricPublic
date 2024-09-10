@@ -147,7 +147,7 @@ private extension SearchView {
                 ZStack(alignment: .topTrailing) {
                     Image(systemName: systemImageName)
                     
-                    if viewModel.isFilterApplied {
+                    if viewModel.filters.isFilterApplied {
                         Circle()
                             .foregroundStyle(.orange.gradient)
                             .frame(width: 11, height: 11)

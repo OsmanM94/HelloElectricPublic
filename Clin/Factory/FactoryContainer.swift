@@ -51,4 +51,37 @@ extension Container {
     var searchService: Factory<SearchServiceProtocol> {
         Factory(self) { SearchService() }
     }
+    
+    /// ViewModels
+    var createFormDataModel: Factory<CreateFormDataModel> {
+        Factory(self) { CreateFormDataModel() }
+    }
+    
+    var createFormImageManager: Factory<CreateFormImageManager> {
+        Factory(self) { CreateFormImageManager() }
+    }
+    
+    var createFormDataLoader: Factory<CreateFormDataLoader> {
+        Factory(self) { CreateFormDataLoader() }
+    }
+    
+    var editFormImageManager: Factory<EditFormImageManager> {
+        Factory(self) { EditFormImageManager() }
+    }
+    
+    var editFormDataLoader: Factory<EditFormDataLoader> {
+        Factory(self) { EditFormDataLoader() }
+    }
+    
+    var searchDataLoader: Factory<SearchDataLoader> {
+        Factory(self) { SearchDataLoader() }
+    }
+    
+    var searchFilters: Factory<SearchFilters> {
+        Factory(self) { SearchFilters() }
+    }
+    
+    var searchLogic: Factory<SearchLogic> {
+        Factory(self) { SearchLogic() }
+    }
 }

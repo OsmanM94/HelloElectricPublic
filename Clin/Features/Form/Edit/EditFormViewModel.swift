@@ -25,13 +25,13 @@ final class EditFormViewModel {
     private(set) var subFormViewState: SubFormViewState = .loading
     var isPromoted: Bool = false
     
-    // MARK: - ViewModels
-    var imageManager = EditFormImageManager()
-    var dataLoader = EditFormDataLoader()
-
     // MARK: - Dependencies
+    // Services
     @ObservationIgnored @Injected(\.listingService) private var listingService
     @ObservationIgnored @Injected(\.supabaseService) private var supabaseService
+    // ViewModels
+    @ObservationIgnored @Injected(\.editFormImageManager) var imageManager
+    @ObservationIgnored @Injected(\.editFormDataLoader) var dataLoader
     
     // MARK: - Data Arrays
     var availableLocations: [String] = []
@@ -114,7 +114,6 @@ final class EditFormViewModel {
         viewState = .idle
     }
 }
-
 
 @Observable
 final class EditFormImageManager: ImagePickerProtocol {
@@ -284,7 +283,7 @@ final class EditFormDataLoader {
     // MARK: - Methods
     func loadBulkData() async throws {
         try await loadProhibitedWords()
-        try await loadEVFeatures()
+        try await loadFeatures()
         try await loadLocations()
     }
     
@@ -302,12 +301,12 @@ final class EditFormDataLoader {
         availableLocations = ["Select"] + loadedData.compactMap { $0.city }
     }
     
-    private func loadEVFeatures() async throws {
+    private func loadFeatures() async throws {
         let loadedData = try await listingService.loadEVfeatures()
-        populateEVOptions(with: loadedData)
+        populateFeatures(with: loadedData)
     }
     
-    private func populateEVOptions(with loadedData: [EVFeatures]) {
+    private func populateFeatures(with loadedData: [EVFeatures]) {
         bodyTypeOptions = ["Select"] + loadedData.flatMap { $0.bodyType }
         yearOptions = ["Select"] + loadedData.flatMap { $0.yearOfManufacture }
         conditionOptions = ["Select"] + loadedData.flatMap { $0.condition }

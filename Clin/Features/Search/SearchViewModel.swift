@@ -19,9 +19,10 @@ final class SearchViewModel {
         case error(String)
     }
     
-    enum FilterViewState {
+    enum FilterViewState: Equatable {
         case loading
         case loaded
+        case error(String)
     }
     
     // MARK: - Observable properties
@@ -41,10 +42,6 @@ final class SearchViewModel {
     private let pageSize: Int = 20
     
     // Misc
-    private let defaultMaxPrice: Double = 20_000
-    private let defaultMaxMileage: Double = 100_000
-    private(set) var isFilterApplied: Bool = false
-    private let table: String = "car_listing"
     private var suggestionTapped: Bool = false
     let predefinedSuggestions: [String] = [
         "Tesla Model 3",
@@ -54,10 +51,212 @@ final class SearchViewModel {
     ]
     
     // MARK: - Dependencies
-    @ObservationIgnored @Injected(\.supabaseService) private var supabaseService
+    @ObservationIgnored @Injected(\.searchFilters) var filters
+    @ObservationIgnored @Injected(\.searchDataLoader) var dataLoader
+    @ObservationIgnored @Injected(\.searchLogic) private var searchLogic
+    
+    init() {
+        Logger.debug("SearchViewModel initialized")
+    }
+    
+    // MARK: - Main actor functions
+    
+    @MainActor
+    func loadBulkData() async {
+        do {
+            try await dataLoader.loadBulkData()
+            updateAvailableModels()
+            self.filterViewState = .loaded
+        } catch {
+            self.filterViewState = .error(AppError.ErrorType.generalError.message)
+        }
+    }
+
+    @MainActor
+    func loadMoreIfNeeded() async {
+        if filters.isFilterApplied {
+            await searchFilteredItems(isLoadingMore: true)
+        } else {
+            await searchItems(isLoadingMore: true)
+        }
+    }
+    
+    // Search no filters
+    @MainActor
+    func searchItems(isLoadingMore: Bool = false) async {
+        guard !searchText.isEmpty else { return }
+    
+        await performSearch(isLoadingMore: isLoadingMore) { [weak self] in
+            guard let self = self else { return [] }
+            
+            return try await self.searchLogic.searchItems(
+                searchText: self.currentSearchText,
+                from: self.currentPage * self.pageSize,
+                to: (self.currentPage + 1) * self.pageSize - 1)
+        }
+    }
+    
+    // Search with filters
+    @MainActor
+    func searchFilteredItems(isLoadingMore: Bool = false) async {
+        await performSearch(isLoadingMore: isLoadingMore) { [weak self] in
+            guard let self = self else { return [] }
+            return try await self.searchLogic.searchFilteredItems(
+                filters: self.filters,
+                from: self.currentPage * self.pageSize,
+                to: (self.currentPage + 1) * self.pageSize - 1
+            )
+        }
+    }
+    
+    @MainActor
+    func clearSearch() {
+        self.searchText = ""
+        self.currentSearchText = ""
+        self.searchedItems.removeAll()
+        self.currentPage = 0
+        self.hasMoreListings = true
+        self.viewState = .idle
+    }
+    
+    @MainActor
+    func resetFilters() {
+        filters.reset()
+    }
+    
+    func handleSuggestionTap(_ suggestion: String) {
+        guard !suggestionTapped else { return }
+        suggestionTapped = true
+        
+        searchText = suggestion
+        Task {
+            await searchItems()
+            DispatchQueue.main.async {
+                self.suggestionTapped = false
+            }
+        }
+    }
+    
+    // MARK: - Helpers and misc
+    
+    private func performSearch(isLoadingMore: Bool, searchFunction: @escaping () async throws -> [Listing]) async {
+        if !isLoadingMore {
+            self.searchedItems.removeAll()
+            self.currentPage = 0
+            self.hasMoreListings = true
+            self.currentSearchText = searchText
+            viewState = .loading
+        }
+        guard hasMoreListings else { return }
+        
+        self.isSearching = true
+
+        do {
+            let response = try await searchFunction()
+
+            if response.count < pageSize {
+                self.hasMoreListings = false
+            }
+            
+            searchedItems.append(contentsOf: response)
+            self.currentPage += 1
+
+            self.viewState = searchedItems.isEmpty ? .noResults : .loaded
+        } catch {
+            viewState = .error(AppError.ErrorType.generalError.message)
+        }
+        self.isSearching = false
+    }
+    
+    func updateAvailableModels() {
+        let newModel = dataLoader.updateAvailableModels(make: self.filters.make, currentModel: self.filters.model)
+        self.filters.updateModel(newModel)
+    }
+}
+
+@Observable
+final class SearchDataLoader {
+    // MARK: - Data Arrays
+    var loadedModels: [EVModels] = []
+    var makeOptions: [String] { ["Any"] + loadedModels.map { $0.make } }
+    var modelOptions: [String] = ["Any"]
+    var availableLocations: [String] = []
+    var bodyTypeOptions: [String] = []
+    var yearOptions: [String] = []
+    var conditionOptions: [String] = []
+    var rangeOptions: [String] = []
+    var colourOptions: [String] = []
+    var publicChargingTimeOptions: [String] = []
+    var homeChargingTimeOptions: [String] = []
+    var batteryCapacityOptions: [String] = []
+    var powerBhpOptions: [String] = []
+    var regenBrakingOptions: [String] = []
+    var warrantyOptions: [String] = []
+    var serviceHistoryOptions: [String] = []
+    var numberOfOwnersOptions: [String] = []
+    
+    // MARK: - Dependencies
     @ObservationIgnored @Injected(\.searchService) private var searchService
     
-    // MARK: - Filter properties
+    // MARK: - Methods
+    func loadBulkData() async throws {
+        do {
+            try await loadModels()
+            try await loadFeatures()
+            try await loadLocations()
+        } catch {
+            Logger.error("Error loading bulk data: \(error)")
+        }
+    }
+    
+    func updateAvailableModels(make: String, currentModel: String) -> String {
+        if make == "Any" {
+            modelOptions = ["Any"] + loadedModels.flatMap { $0.models }
+        } else if let selectedCarMake = loadedModels.first(where: { $0.make == make }) {
+            modelOptions = ["Any"] + selectedCarMake.models
+        } else {
+            modelOptions = ["Any"]
+        }
+        
+        return modelOptions.contains(currentModel) ? currentModel : "Any"
+    }
+    
+    // MARK: - Private Methods
+    private func loadLocations() async throws {
+        let loadedData = try await searchService.loadCities()
+        availableLocations = ["Any"] + loadedData.compactMap { $0.city }
+    }
+    
+    private func loadFeatures() async throws {
+        let loadedData = try await searchService.loadEVfeatures()
+        populateFeatures(with: loadedData)
+    }
+    
+    private func loadModels() async throws {
+        if loadedModels.isEmpty {
+            loadedModels = try await searchService.loadModels()
+        }
+    }
+    
+    private func populateFeatures(with loadedData: [EVFeatures]) {
+        bodyTypeOptions = ["Any"] + loadedData.flatMap { $0.bodyType }
+        yearOptions = ["Any"] + loadedData.flatMap { $0.yearOfManufacture }
+        conditionOptions = ["Any"] + loadedData.flatMap { $0.condition }
+        rangeOptions = ["Any"] + loadedData.flatMap { $0.range }
+        homeChargingTimeOptions = ["Any"] + loadedData.flatMap { $0.homeChargingTime }
+        publicChargingTimeOptions = ["Any"] + loadedData.flatMap { $0.publicChargingTime }
+        batteryCapacityOptions = ["Any"] + loadedData.flatMap { $0.batteryCapacity }
+        regenBrakingOptions = ["Any"] + loadedData.flatMap { $0.regenBraking }
+        warrantyOptions = ["Any"] + loadedData.flatMap { $0.warranty }
+        serviceHistoryOptions = ["Any"] + loadedData.flatMap { $0.serviceHistory }
+        numberOfOwnersOptions = ["Any"] + loadedData.flatMap { $0.owners }
+        powerBhpOptions = ["Any"] + loadedData.flatMap { $0.powerBhp }
+        colourOptions = ["Any"] + loadedData.flatMap { $0.colours }
+    }
+}
+
+@Observable
+final class SearchFilters {
     var make: String = "Any" { didSet { updateFilterState() } }
     var model: String = "Any" { didSet { updateFilterState() } }
     var location: String = "Any" { didSet { updateFilterState() } }
@@ -77,181 +276,20 @@ final class SearchViewModel {
     var serviceHistory: String = "Any" { didSet { updateFilterState() } }
     var numberOfOwners: String = "Any" { didSet { updateFilterState() } }
     
-    // MARK: - Data Array
-    var loadedModels: [EVModels] = []
-    var makeOptions: [String] { ["Any"] + loadedModels.map { $0.make } }
-    var modelOptions: [String] = []
-    var availableLocations: [String] = []
-    var bodyTypeOptions: [String] = []
-    var yearOptions: [String] = []
-    var conditionOptions: [String] = []
-    var rangeOptions: [String] = []
-    var colourOptions: [String] = []
-    var publicChargingTimeOptions: [String] = []
-    var homeChargingTimeOptions: [String] = []
-    var batteryCapacityOptions: [String] = []
-    var powerBhpOptions: [String] = []
-    var regenBrakingOptions: [String] = []
-    var warrantyOptions: [String] = []
-    var serviceHistoryOptions: [String] = []
-    var numberOfOwnersOptions: [String] = []
+    private(set) var isFilterApplied: Bool = false
     
-    init() {
-        Logger.debug("SearchViewModel initialized")
+    func updateModel(_ newModel: String) {
+        self.model = newModel
+        updateFilterState()
     }
     
-    // MARK: - Main actor functions
-    
-    @MainActor
-    func loadBulkData() async {
-        Logger.info("Starting bulk data load")
-        self.filterViewState = .loading
-        await loadModels()
-        await loadEVFeatures()
-        await loadLocations()
-        self.filterViewState = .loaded
-        Logger.info("Bulk data load completed")
-    }
-    
-    @MainActor
-    func loadMoreIfNeeded() async {
-        Logger.debug("Loading more items")
-        if isFilterApplied {
-            await searchFilteredItems(isLoadingMore: true)
-        } else {
-            await searchItems(isLoadingMore: true)
-        }
-    }
-    
-    // Search no filters
-    @MainActor
-    func searchItems(isLoadingMore: Bool = false) async {
-        guard !searchText.isEmpty else {
-            Logger.debug("Search text is empty, skipping search")
-            return
-        }
-        
-        Logger.info("Performing search without filters. Search text: '\(searchText)', isLoadingMore: \(isLoadingMore)")
-        await performSearch(isLoadingMore: isLoadingMore) { [weak self] in
-            guard let self = self else { return [] }
-            
-            return try await self.searchItemsFromSupabase(
-                searchText: self.currentSearchText,
-                from: self.currentPage * self.pageSize,
-                to: (self.currentPage + 1) * self.pageSize - 1)
-        }
-    }
-    
-    // Search with filters
-    @MainActor
-    func searchFilteredItems(isLoadingMore: Bool = false) async {
-        Logger.info("Performing filtered search. isLoadingMore: \(isLoadingMore)")
-        await performSearch(isLoadingMore: isLoadingMore) { [weak self] in
-            guard let self = self else { return [] }
-            var query = self.supabaseService.client
-                .from(self.table)
-                .select()
-            
-            // Applying filters only if the value is not "Any" or empty
-            if !make.isEmpty && make != "Any" {
-                query = query.eq("make", value: make)
-                Logger.debug("Applied make filter: \(make)")
-            }
-            if !model.isEmpty && model != "Any" {
-                query = query.eq("model", value: model)
-                Logger.debug("Applied make filter: \(model)")
-            }
-            if !body.isEmpty && body != "Any" {
-                query = query.eq("body_type", value: body)
-                Logger.debug("Applied make filter: \(body)")
-            }
-            if !selectedYear.isEmpty && selectedYear != "Any" {
-                query = query.eq("year", value: selectedYear)
-                Logger.debug("Applied make filter: \(selectedYear)")
-            }
-            if maxPrice < 100000 {
-                query = query.lte("price", value: maxPrice)
-                Logger.debug("Applied make filter: \(maxPrice)")
-            }
-            if maxMileage < 500000 {
-                query = query.lte("mileage", value: maxMileage)
-                Logger.debug("Applied make filter: \(maxMileage)")
-            }
-            if !condition.isEmpty && condition != "Any" {
-                query = query.eq("condition", value: condition)
-                Logger.debug("Applied make filter: \(condition)")
-            }
-            if !range.isEmpty && range != "Any" {
-                query = query.eq("range", value: range)
-                Logger.debug("Applied make filter: \(range)")
-            }
-            if !colour.isEmpty && colour != "Any" {
-                query = query.eq("colour", value: colour)
-                Logger.debug("Applied make filter: \(colour)")
-            }
-            if !maxPublicChargingTime.isEmpty && maxPublicChargingTime != "Any" {
-                query = query.lte("public_charging", value: maxPublicChargingTime)
-                Logger.debug("Applied make filter: \(maxPublicChargingTime)")
-            }
-            if !maxHomeChargingTime.isEmpty && maxHomeChargingTime != "Any" {
-                query = query.lte("home_charging", value: maxHomeChargingTime)
-                Logger.debug("Applied make filter: \(maxHomeChargingTime)")
-            }
-            if !batteryCapacity.isEmpty && batteryCapacity != "Any" {
-                query = query.eq("battery_capacity", value: batteryCapacity)
-                Logger.debug("Applied make filter: \(batteryCapacity)")
-            }
-            if !powerBhp.isEmpty && powerBhp != "Any" {
-                query = query.eq("power_bhp", value: powerBhp)
-                Logger.debug("Applied make filter: \(powerBhp)")
-            }
-            if !regenBraking.isEmpty && regenBraking != "Any" {
-                query = query.eq("regen_braking", value: regenBraking)
-                Logger.debug("Applied make filter: \(regenBraking)")
-            }
-            if !warranty.isEmpty && warranty != "Any" {
-                query = query.eq("warranty", value: warranty)
-                Logger.debug("Applied make filter: \(warranty)")
-            }
-            if !serviceHistory.isEmpty && serviceHistory != "Any" {
-                query = query.eq("service_history", value: serviceHistory)
-                Logger.debug("Applied make filter: \(serviceHistory)")
-            }
-            if !numberOfOwners.isEmpty && numberOfOwners != "Any" {
-                query = query.eq("owners", value: numberOfOwners)
-                Logger.debug("Applied make filter: \(numberOfOwners)")
-            }
-            
-            Logger.debug("Executing filtered query")
-            return try await query
-                .order("created_at", ascending: false)
-                .range(from: self.currentPage * self.pageSize, to: (self.currentPage + 1) * self.pageSize - 1)
-                .execute()
-                .value
-        }
-    }
-    
-    @MainActor
-    func clearSearch() {
-        Logger.info("Clearing search")
-        self.searchText = ""
-        self.currentSearchText = ""
-        self.searchedItems.removeAll()
-        self.currentPage = 0
-        self.hasMoreListings = true
-        self.viewState = .idle
-    }
-    
-    @MainActor
-    func resetFilters() {
-        Logger.info("Resetting all filters")
+    func reset() {
         make = "Any"
         model = "Any"
         body = "Any"
         location = "Any"
         selectedYear = "Any"
         maxPrice = 20_000
-        selectedYear = "Any"
         condition = "Any"
         maxMileage = 100_000
         range = "Any"
@@ -266,17 +304,19 @@ final class SearchViewModel {
         numberOfOwners = "Any"
     }
     
-    // MARK: - Helpers and misc
+    private func updateFilterState() {
+        isFilterApplied = isAnyFilterActive()
+    }
     
     private func isAnyFilterActive() -> Bool {
-        let isActive = make != "Any" ||
+        return make != "Any" ||
         model != "Any" ||
         body != "Any" ||
         location != "Any" ||
         selectedYear != "Any" ||
-        maxPrice < defaultMaxPrice ||
+        maxPrice < 20_000 ||
         condition != "Any" ||
-        maxMileage < defaultMaxMileage ||
+        maxMileage < 100_000 ||
         range != "Any" ||
         colour != "Any" ||
         maxPublicChargingTime != "Any" ||
@@ -287,161 +327,63 @@ final class SearchViewModel {
         warranty != "Any" ||
         serviceHistory != "Any" ||
         numberOfOwners != "Any"
-        
-        Logger.debug("Filter active status: \(isActive)")
-        return isActive
-    }
-    
-    private func updateFilterState() {
-        isFilterApplied = isAnyFilterActive()
-        Logger.debug("Filter state updated. isFilterApplied: \(isFilterApplied)")
-           
-    }
-    
-    private func searchItemsFromSupabase(searchText: String, from: Int, to: Int) async throws -> [Listing] {
-        Logger.info("Searching Supabase for: '\(searchText)', range: \(from)-\(to)")
-        let searchComponents = searchText.split(separator: " ").map { String($0) }
-        
-        let orConditions = searchComponents.map { component in
-               """
-               make.ilike.%\(component)%,model.ilike.%\(component)%
-               """
-        }.joined(separator: ",")
-        
-        do {
-            let response: [Listing] = try await supabaseService.client
-                .from(table)
-                .select()
-                .or(orConditions)
-                .range(from: from, to: to)
-                .order("created_at", ascending: false)
-                .execute()
-                .value
-            Logger.info("Loaded \(response.count) listings from Supabase for text: '\(searchText)'")
-            return response
-        } catch {
-            Logger.error("Failed to load listings from Supabase: \(error)")
-            viewState = .error(AppError.ErrorType.generalError.message)
-            throw error
-        }
-    }
-    
-    private func performSearch(isLoadingMore: Bool, searchFunction: @escaping () async throws -> [Listing]) async {
-        Logger.info("Performing search. isLoadingMore: \(isLoadingMore)")
-        if !isLoadingMore {
-            self.searchedItems.removeAll()
-            self.currentPage = 0
-            self.hasMoreListings = true
-            self.currentSearchText = searchText
-            viewState = .loading
-        }
-        guard hasMoreListings else {
-            Logger.debug("No more listings to load")
-            return
-        }
-        self.isSearching = true
-
-            do {
-                let response = try await searchFunction()
-
-                if response.count < pageSize {
-                    self.hasMoreListings = false
-                    Logger.debug("No more listings available")
-                }
-                
-                searchedItems.append(contentsOf: response)
-                self.currentPage += 1
-
-                self.viewState = searchedItems.isEmpty ? .noResults : .loaded
-                Logger.info("Search completed. Total items: \(searchedItems.count)")
-            } catch {
-                Logger.error("Error searching: \(error)")
-                viewState = .error(AppError.ErrorType.generalError.message)
-            }
-            self.isSearching = false
-        }
-    
-    private func loadModels() async {
-        if loadedModels.isEmpty {
-            Logger.info("Loading car models")
-            do {
-                self.loadedModels = try await searchService.loadModels()
-                updateAvailableModels()
-                Logger.info("Car models loaded successfully. Total makes: \(loadedModels.count)")
-            } catch {
-                Logger.error("Failed to load car makes and models: \(error)")
-            }
-        }
-    }
-    
-    private func loadLocations() async {
-        Logger.info("Loading locations")
-        do {
-            let loadedData = try await searchService.loadCities()
-            availableLocations = ["Any"] + loadedData.compactMap { $0.city }
-            Logger.info("Locations loaded successfully. Total locations: \(availableLocations.count - 1)")
-        } catch {
-            Logger.error("Failed to load UK cities: \(error)")
-        }
-    }
-    
-    private func loadEVFeatures() async {
-        Logger.info("Loading EV features")
-        do {
-            let loadedData = try await searchService.loadEVfeatures()
-            
-            bodyTypeOptions = ["Any"] + loadedData.flatMap { $0.bodyType }
-            yearOptions = ["Any"] + loadedData.flatMap { $0.yearOfManufacture }
-            conditionOptions = ["Any"] + loadedData.flatMap { $0.condition }
-            rangeOptions = ["Any"] + loadedData.flatMap { $0.range }
-            homeChargingTimeOptions = ["Any"] + loadedData.flatMap { $0.homeChargingTime }
-            publicChargingTimeOptions = ["Any"] + loadedData.flatMap { $0.publicChargingTime }
-            batteryCapacityOptions = ["Any"] + loadedData.flatMap { $0.batteryCapacity }
-            regenBrakingOptions = ["Any"] + loadedData.flatMap { $0.regenBraking }
-            warrantyOptions = ["Any"] + loadedData.flatMap { $0.warranty }
-            serviceHistoryOptions = ["Any"] + loadedData.flatMap { $0.serviceHistory }
-            numberOfOwnersOptions = ["Any"] + loadedData.flatMap { $0.owners }
-            powerBhpOptions = ["Any"] + loadedData.flatMap { $0.powerBhp }
-            colourOptions = ["Any"] + loadedData.flatMap { $0.colours }
-            Logger.info("EV features loaded successfully")
-        } catch {
-            Logger.error("Failed to load EV features: \(error)")
-        }
-    }
-    
-    func updateAvailableModels() {
-        Logger.debug("Updating available models for make: \(make)")
-        if make == "Any" {
-            modelOptions = ["Any"] + loadedModels.flatMap { $0.models }
-        } else if let selectedCarMake = loadedModels.first(where: { $0.make == make }) {
-            modelOptions = ["Any"] + selectedCarMake.models
-        } else {
-            modelOptions = ["Any"]
-        }
-        
-        // Check if the current model is still valid in the new list of available models
-        if !modelOptions.contains(model) {
-            Logger.debug("Current model '\(model)' is not valid for the new make. Resetting to 'Any'")
-            self.model = "Any"
-        }
-    }
-    
-    func handleSuggestionTap(_ suggestion: String) {
-        guard !suggestionTapped else { return }
-        Logger.info("Suggestion tapped: '\(suggestion)'")
-        suggestionTapped = true
-        
-        searchText = suggestion
-        Task {
-            await searchItems()
-            DispatchQueue.main.async {
-                self.suggestionTapped = false
-            }
-        }
     }
 }
 
-
-
+/// This class needs to be moved into SearchService when possible please.
+final class SearchLogic {
+    @Injected(\.supabaseService) private var supabaseService
+    private let table: String = "car_listing"
+    
+    func searchItems(searchText: String, from: Int, to: Int) async throws -> [Listing] {
+        let searchComponents = searchText.split(separator: " ").map { String($0) }
+        
+        let orConditions = searchComponents.map { component in
+            """
+            make.ilike.%\(component)%,model.ilike.%\(component)%
+            """
+        }.joined(separator: ",")
+        
+        return try await supabaseService.client
+            .from(table)
+            .select()
+            .or(orConditions)
+            .range(from: from, to: to)
+            .order("created_at", ascending: false)
+            .execute()
+            .value
+    }
+    
+    func searchFilteredItems(filters: SearchFilters, from: Int, to: Int) async throws -> [Listing] {
+        var query = supabaseService.client
+            .from(table)
+            .select()
+        
+        // Apply filters
+        if filters.make != "Any" { query = query.eq("make", value: filters.make) }
+        if filters.model != "Any" { query = query.eq("model", value: filters.model) }
+        if filters.body != "Any" { query = query.eq("body_type", value: filters.body) }
+        if filters.selectedYear != "Any" { query = query.eq("year", value: filters.selectedYear) }
+        if filters.maxPrice < 100000 { query = query.lte("price", value: filters.maxPrice) }
+        if filters.maxMileage < 500000 { query = query.lte("mileage", value: filters.maxMileage) }
+        if filters.condition != "Any" { query = query.eq("condition", value: filters.condition) }
+        if filters.range != "Any" { query = query.eq("range", value: filters.range) }
+        if filters.colour != "Any" { query = query.eq("colour", value: filters.colour) }
+        if filters.maxPublicChargingTime != "Any" { query = query.lte("public_charging", value: filters.maxPublicChargingTime) }
+        if filters.maxHomeChargingTime != "Any" { query = query.lte("home_charging", value: filters.maxHomeChargingTime) }
+        if filters.batteryCapacity != "Any" { query = query.eq("battery_capacity", value: filters.batteryCapacity) }
+        if filters.powerBhp != "Any" { query = query.eq("power_bhp", value: filters.powerBhp) }
+        if filters.regenBraking != "Any" { query = query.eq("regen_braking", value: filters.regenBraking) }
+        if filters.warranty != "Any" { query = query.eq("warranty", value: filters.warranty) }
+        if filters.serviceHistory != "Any" { query = query.eq("service_history", value: filters.serviceHistory) }
+        if filters.numberOfOwners != "Any" { query = query.eq("owners", value: filters.numberOfOwners) }
+        
+        return try await query
+            .order("created_at", ascending: false)
+            .range(from: from, to: to)
+            .execute()
+            .value
+    }
+}
 
 

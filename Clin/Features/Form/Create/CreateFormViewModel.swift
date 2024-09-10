@@ -25,19 +25,19 @@ final class CreateFormViewModel {
     // View States
     private(set) var viewState: ViewState = .idle
     private(set) var subFormViewState: SubFormViewState = .loading
-    
-    // View Models
-    var formData = CreateFormDataModel()
-    var imageManager = CreateFormImageManager()
-    var dataLoader = CreateFormDataLoader()
-    
+
     // MARK: - DVLA Check
     var registrationNumber: String = ""
     
     // MARK: - Dependencies
+    // Services
     @ObservationIgnored @Injected(\.listingService) private var listingService
     @ObservationIgnored @Injected(\.dvlaService) private var dvlaService
     @ObservationIgnored @Injected(\.supabaseService) private var supabaseService
+    // ViewModels
+    @ObservationIgnored @Injected(\.createFormDataModel) var formData
+    @ObservationIgnored @Injected(\.createFormImageManager) var imageManager
+    @ObservationIgnored @Injected(\.createFormDataLoader) var dataLoader
     
     // MARK: - Main Actor Methods
     @MainActor
@@ -53,7 +53,7 @@ final class CreateFormViewModel {
     @MainActor
     func createListing() async {
         guard isFormValid() else {
-            viewState = .error("Please fill all required fields and select at least one image.")
+            viewState = .error(AppError.ErrorType.formInvalid.message)
             return
         }
         guard await validateTextDescription() else { return }
@@ -348,7 +348,7 @@ final class CreateFormDataLoader {
     func loadBulkData() async throws {
         try await loadProhibitedWords()
         try await loadModels()
-        try await loadEVFeatures()
+        try await loadFeatures()
         try await loadLocations()
     }
     
@@ -378,9 +378,9 @@ final class CreateFormDataLoader {
         availableLocations = ["Select"] + loadedData.compactMap { $0.city }
     }
     
-    private func loadEVFeatures() async throws {
+    private func loadFeatures() async throws {
         let loadedData = try await listingService.loadEVfeatures()
-        populateEVOptions(with: loadedData)
+        populateFeatures(with: loadedData)
     }
     
     private func loadModels() async throws {
@@ -389,7 +389,7 @@ final class CreateFormDataLoader {
         }
     }
     
-    private func populateEVOptions(with loadedData: [EVFeatures]) {
+    private func populateFeatures(with loadedData: [EVFeatures]) {
         bodyTypeOptions = ["Select"] + loadedData.flatMap { $0.bodyType }
         yearOptions = ["Select"] + loadedData.flatMap { $0.yearOfManufacture }
         conditionOptions = ["Select"] + loadedData.flatMap { $0.condition }

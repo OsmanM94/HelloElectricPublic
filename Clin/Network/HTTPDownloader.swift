@@ -9,7 +9,7 @@ import Foundation
 
 class HTTPDataDownloader: HTTPDataDownloaderProtocol {
     
-    func fetchData <T: Decodable>(as type: T.Type, endpoint: String) async throws -> T {
+    func loadData <T: Decodable>(as type: T.Type, endpoint: String) async throws -> T {
         guard let url = URL(string: endpoint) else {
             throw AppError.ErrorType.requestFailed(description: "Invalid URL")
         }
