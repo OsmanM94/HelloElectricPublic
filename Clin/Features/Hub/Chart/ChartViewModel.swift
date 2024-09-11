@@ -60,9 +60,7 @@ final class ChartViewModel {
             viewState = .loaded
             print("DEBUG: Got data from API.")
         } catch {
-            // Handle error state
-            viewState = .error("Error loading chart data.")
-            print("DEBUG: Error loading chart data: \(error)")
+            viewState = .error(AppError.ErrorType.generalError.message)
         }
     }
     

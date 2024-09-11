@@ -89,35 +89,54 @@ fileprivate struct YearlyChartView: View {
                 .background(Color(.systemGray6), in: .rect(cornerRadius: 10))
                 .padding()
                 
-                /// Legend
-                VStack(alignment: .leading) {
-                    ForEach(registrations, id: \.id) { registration in
-                        HStack {
-                            Circle()
-                                .fill(colorForFuelType(registration.fuelCategory))
-                                .frame(width: 10, height: 10)
-                            Text(registration.fuelCategory)
-                            Spacer()
-                            Text(registration.registrationCount, format: .number)
-                        }
-                        .fontDesign(.rounded).bold()
-                    }
-                }
-                .padding()
+                legendSection
                 
-                GroupBox {
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text("Source: SMMT")
-                            .font(.headline)
-                        Text(viewModel.selectedYear)
-                    }
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.leading)
+                sourceSection
+                
+                explanationSection
                 
                 ChartDisclaimer()
             }
         }
+    }
+    
+    private var legendSection: some View {
+        VStack(alignment: .leading) {
+            ForEach(registrations, id: \.id) { registration in
+                HStack {
+                    Circle()
+                        .fill(colorForFuelType(registration.fuelCategory))
+                        .frame(width: 10, height: 10)
+                    Text(registration.fuelCategory)
+                    Spacer()
+                    Text(registration.registrationCount, format: .number)
+                }
+                .fontDesign(.rounded).bold()
+            }
+        }
+        .padding()
+    }
+    
+    private var sourceSection: some View {
+        GroupBox {
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Source: SMMT")
+                    .font(.headline)
+                Text(viewModel.selectedYear)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.leading)
+    }
+    
+    private var explanationSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Yearly Vehicle Registrations")
+                .font(.headline)
+            Text("This chart shows the distribution of vehicle registrations by fuel type for the current year. It provides a comprehensive view of the market share for electric, diesel, and petrol vehicles over the entire year.")
+                .font(.subheadline)
+        }
+        .padding()
     }
 }
 
@@ -126,7 +145,7 @@ fileprivate struct MonthlyChartView: View {
     let registrations: [Registrations]
     
     var body: some View {
-        ScrollView {
+        ScrollView(.vertical) {
             VStack(alignment: .leading) {
                 Chart(registrations) { registration in
                     SectorMark(
@@ -146,35 +165,54 @@ fileprivate struct MonthlyChartView: View {
                 .background(Color(.systemGray6), in: .rect(cornerRadius: 10))
                 .padding()
                 
-                /// Legend
-                VStack(alignment: .leading) {
-                    ForEach(registrations, id: \.id) { registration in
-                        HStack {
-                            Circle()
-                                .fill(colorForFuelType(registration.fuelCategory))
-                                .frame(width: 10, height: 10)
-                            Text(registration.fuelCategory)
-                            Spacer()
-                            Text(registration.registrationCount, format: .number)
-                        }
-                        .fontDesign(.rounded).bold()
-                    }
-                }
-                .padding()
+                legendSection
+               
+                sourceSection
                 
-                GroupBox {
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text("Source: SMMT")
-                            .font(.headline)
-                        Text(viewModel.selectedMonth)
-                    }
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.leading)
+                explanationSection
                 
                 ChartDisclaimer()
             }
         }
+    }
+    
+    private var legendSection: some View {
+        VStack(alignment: .leading) {
+            ForEach(registrations, id: \.id) { registration in
+                HStack {
+                    Circle()
+                        .fill(colorForFuelType(registration.fuelCategory))
+                        .frame(width: 10, height: 10)
+                    Text(registration.fuelCategory)
+                    Spacer()
+                    Text(registration.registrationCount, format: .number)
+                }
+                .fontDesign(.rounded).bold()
+            }
+        }
+        .padding()
+    }
+    
+    private var sourceSection: some View {
+        GroupBox {
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Source: SMMT")
+                    .font(.headline)
+                Text(viewModel.selectedMonth)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.leading)
+    }
+    
+    private var explanationSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Monthly Vehicle Registrations")
+                .font(.headline)
+            Text("This pie chart illustrates the proportion of vehicle registrations by fuel type for the above month. It provides a snapshot of the market share for electric, diesel, and petrol vehicles in this specific month.")
+                .font(.subheadline)
+        }
+        .padding()
     }
 }
 

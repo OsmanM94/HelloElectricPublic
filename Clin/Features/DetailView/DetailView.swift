@@ -85,16 +85,15 @@ struct DetailView<T: DetailItem>: View {
     let columns = [GridItem(.flexible()), GridItem(.flexible())]
     
     @State private var showSheetImages: Bool = false
+    @State private var showLocationPopover: Bool = false
     @State private var showSplash: Bool = true
-    @State private var sellerProfileViewModel: PublicProfileViewModel
-    
-    @State private var showLocationPopover = false
+    @State private var sellerProfileViewModel: ListingProfileViewModel
     
     // MARK: Initialization
     init(item: T, showFavourite: Bool = false) {
         self.item = item
         self.showFavourite = showFavourite
-        _sellerProfileViewModel = State(wrappedValue: PublicProfileViewModel(sellerID: item.userID))
+        _sellerProfileViewModel = State(wrappedValue: ListingProfileViewModel(sellerID: item.userID))
     }
     
     // MARK: Body
@@ -332,7 +331,7 @@ struct DetailView<T: DetailItem>: View {
                     }
                 }
                     
-                PublicProfileView(viewModel: sellerProfileViewModel)
+                ListingProfileView(viewModel: sellerProfileViewModel)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
             .padding(.top, 10)

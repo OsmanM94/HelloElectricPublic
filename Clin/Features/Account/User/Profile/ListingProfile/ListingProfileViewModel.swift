@@ -9,9 +9,14 @@ import Foundation
 import Factory
 
 @Observable
-final class PublicProfileViewModel {
+final class ListingProfileViewModel {
     // MARK: - Observable properties
     private(set) var displayName: String = ""
+    private(set) var address: String = ""
+    private(set) var postcode: String = ""
+    private(set) var location: String = ""
+    private(set) var website: String = ""
+    private(set) var companyNumber: String = ""
     private(set) var profile: Profile? = nil
 
     var sellerID: UUID?
@@ -36,6 +41,11 @@ final class PublicProfileViewModel {
             print("DEBUG: Loaded public profile from cache")
             self.profile = cachedProfile
             self.displayName = cachedProfile.username ?? ""
+            self.address = cachedProfile.address ?? ""
+            self.postcode = cachedProfile.postcode ?? ""
+            self.location = cachedProfile.location ?? ""
+            self.website = cachedProfile.website ?? ""
+            self.companyNumber = cachedProfile.companyNumber ?? ""
             return
         }
         
@@ -45,6 +55,11 @@ final class PublicProfileViewModel {
             let profile = try await profileService.loadProfile(for: sellerID)
             self.profile = profile
             self.displayName = profile.username ?? ""
+            self.address = profile.address ?? ""
+            self.postcode = profile.postcode ?? ""
+            self.location = profile.location ?? ""
+            self.website = profile.website ?? ""
+            self.companyNumber = profile.companyNumber ?? ""
             
             // Cache the profile
             cacheManager.cache(for: Profile.self).set(profile, forKey: sellerID.uuidString)

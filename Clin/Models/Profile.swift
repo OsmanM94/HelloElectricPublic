@@ -6,7 +6,7 @@
 //
 import Foundation
 
-struct Profile: Codable {
+struct Profile: Codable, Equatable {
     var id: Int?
     var username: String?
     var avatarURL: URL?

@@ -84,4 +84,4 @@ extension Container {
     var searchLogic: Factory<SearchLogic> {
         Factory(self) { SearchLogic() }
     }
-}
+ }

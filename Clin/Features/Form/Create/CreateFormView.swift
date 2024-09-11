@@ -81,6 +81,9 @@ fileprivate struct DvlaCheckView: View {
                     }
                     .popover(isPresented: $showInfoPopover, arrowEdge: .top) {
                         infoPopoverContent
+                            .presentationCompactAdaptation(.sheet)
+                            .presentationDetents([.medium])
+                            .presentationDragIndicator(.visible)
                     }
                 }
                 

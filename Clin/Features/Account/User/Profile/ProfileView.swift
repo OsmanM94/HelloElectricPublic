@@ -8,7 +8,7 @@ import SwiftUI
 
 struct ProfileView: View {
     @State private var viewModel = ProfileViewModel()
-  
+    
     var body: some View {
         NavigationStack {
             VStack {
@@ -51,10 +51,29 @@ struct ProfileView: View {
         .environment(AuthViewModel())
 }
 
-struct ProfileSubview: View {
+fileprivate struct ProfileSubview: View {
     @Bindable var viewModel: ProfileViewModel
     @State private var showDealerTermsAndConditions: Bool = false
     @FocusState private var focusedField: Field?
+    
+    @State private var originalUsername: String
+    @State private var originalIsDealer: Bool
+    @State private var originalAddress: String
+    @State private var originalLocation: String
+    @State private var originalPostcode: String
+    @State private var originalWebsite: String
+    @State private var originalCompanyNumber: String
+    
+    init(viewModel: ProfileViewModel) {
+        self._viewModel = Bindable(viewModel)
+        self._originalUsername = State(initialValue: viewModel.username)
+        self._originalIsDealer = State(initialValue: viewModel.isDealer)
+        self._originalAddress = State(initialValue: viewModel.address)
+        self._originalLocation = State(initialValue: viewModel.location)
+        self._originalPostcode = State(initialValue: viewModel.postcode)
+        self._originalWebsite = State(initialValue: viewModel.website)
+        self._originalCompanyNumber = State(initialValue: viewModel.companyNumber)
+    }
     
     enum Field: Hashable {
         case address, city, postcode, website, companyNumber
@@ -70,6 +89,9 @@ struct ProfileSubview: View {
         .sheet(isPresented: $showDealerTermsAndConditions) {
             DealerTermsAndConditionsView()
         }
+        .onAppear {
+            updateOriginalValues()
+        }
     }
     
     // MARK: - Sections
@@ -83,10 +105,10 @@ struct ProfileSubview: View {
             }
         }
     }
-    
+
     private var usernameSection: some View {
         Section(footer: Text("Must be between 3-20 characters")) {
-            TextField("Username (public)", text: $viewModel.username)
+            TextField("Public name", text: $viewModel.username)
                 .textContentType(.username)
                 .textInputAutocapitalization(.never)
                 .submitLabel(.done)
@@ -182,14 +204,37 @@ struct ProfileSubview: View {
                 Task {
                     await viewModel.updateProfileButtonTapped()
                     await viewModel.loadProfile()
+                    updateOriginalValues()
                 }
             } label: {
                 Text("Update profile")
                     .font(.headline)
                     .frame(maxWidth: .infinity)
             }
-            .disabled(viewModel.isInteractionBlocked)
+            .disabled(!hasChanges || viewModel.isInteractionBlocked)
         }
+    }
+    
+    // MARK: - Tracks profile changes and update only if necessary
+    private var hasChanges: Bool {
+        viewModel.username != originalUsername ||
+        viewModel.isDealer != originalIsDealer ||
+        viewModel.address != originalAddress ||
+        viewModel.location != originalLocation ||
+        viewModel.postcode != originalPostcode ||
+        viewModel.website != originalWebsite ||
+        viewModel.companyNumber != originalCompanyNumber ||
+        viewModel.avatarImage != nil
+    }
+    
+    private func updateOriginalValues() {
+        originalUsername = viewModel.username
+        originalIsDealer = viewModel.isDealer
+        originalAddress = viewModel.address
+        originalLocation = viewModel.location
+        originalPostcode = viewModel.postcode
+        originalWebsite = viewModel.website
+        originalCompanyNumber = viewModel.companyNumber
     }
     
     // MARK: - UI Components
