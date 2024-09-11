@@ -12,10 +12,12 @@ struct Profile: Codable {
     var avatarURL: URL?
     var updatedAt: Date?
     var userID: UUID
-//    var isDealer: Bool?
-//    var address: String?
-//    var postCode: String?
-//    var location: String?
+    var isDealer: Bool?
+    var address: String?
+    var postcode: String?
+    var location: String?
+    var website: String?
+    var companyNumber: String?
   
     enum CodingKeys: String, CodingKey {
         case id
@@ -23,9 +25,11 @@ struct Profile: Codable {
         case avatarURL = "avatar_url"
         case updatedAt = "updated_at"
         case userID = "user_id"
-//        case isDealer = "is_dealer"
-//        case address = "address"
-//        case postCode = "post_code"
-//        case location = "location"
+        case isDealer = "is_dealer"
+        case address = "address"
+        case postcode = "postcode"
+        case location = "location"
+        case website = "website"
+        case companyNumber = "company_number"
     }
 }

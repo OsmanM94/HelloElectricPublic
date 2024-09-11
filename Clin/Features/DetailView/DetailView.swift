@@ -326,11 +326,10 @@ struct DetailView<T: DetailItem>: View {
                         Image(systemName: "info.circle")
                             .foregroundStyle(.blue)
                     }
-                    .popover(isPresented: $showLocationPopover, arrowEdge: .top) {
+                    .popover(isPresented: $showLocationPopover, arrowEdge: .bottom) {
                         LocationDisclaimerView()
                             .presentationCompactAdaptation(.popover)
                     }
-                    
                 }
                     
                 PublicProfileView(viewModel: sellerProfileViewModel)

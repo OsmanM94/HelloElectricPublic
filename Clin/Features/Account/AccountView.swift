@@ -96,7 +96,7 @@ struct AccountView: View {
 
 fileprivate struct PrivateProfileViewContainer: View {
     var body: some View {
-        PrivateProfileView()
+        ProfileView()
     }
 }
 

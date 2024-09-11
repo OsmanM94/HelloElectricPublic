@@ -44,6 +44,7 @@ enum AppError: Error, LocalizedError {
         case sensitiveContent
         case sensitiveApiNotEnabled
         case profileUpdateSuccess
+        case profileImageUploadFailed
         
         // Listing Form Errors
         case inappropriateField
@@ -113,6 +114,8 @@ enum AppError: Error, LocalizedError {
                 return "Couldn't load data from file: \(error.localizedDescription)"
             case .dataParsingError(let error):
                 return "Couldn't parse data: \(error.localizedDescription)"
+            case .profileImageUploadFailed:
+                return "Failed to upload image, please try again."
             }
         }
     }
