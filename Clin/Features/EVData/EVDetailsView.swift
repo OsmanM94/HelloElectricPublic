@@ -48,13 +48,8 @@ struct EVDetailsView: View {
             if let images = evData.image1, !images.isEmpty {
                 TabView {
                     ForEach(images, id: \.self) { imageURL in
-                        AsyncImage(url: URL(string: imageURL)) { image in
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .clipped()
-                        } placeholder: {
-                            ProgressView()
+                        ZoomImages {
+                            ImageLoader(url: imageURL, contentMode: .fit, targetSize: CGSize(width: 350, height: 350))
                         }
                     }
                 }

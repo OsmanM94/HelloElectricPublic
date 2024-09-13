@@ -33,7 +33,7 @@ struct EVListView: View {
             .navigationTitle("Database")
         }
         .task {
-            if viewModel.database.isEmpty {
+            if viewModel.evDatabase.isEmpty {
                 await viewModel.loadEVDatabase()
             }
         }
@@ -41,13 +41,14 @@ struct EVListView: View {
     
     private var listContent: some View {
         List {
-            ForEach(viewModel.database, id: \.id) { ev in
+            ForEach(viewModel.evDatabase, id: \.id) { ev in
                 NavigationLink(destination: EVDetailsView(evData: ev)) {
                     EVRowView(ev: ev)
+                        .id(ev.id)
                 }
             }
             
-            if viewModel.hasMoreListings && !viewModel.database.isEmpty {
+            if viewModel.hasMoreListings && !viewModel.evDatabase.isEmpty {
                 loadingIndicator
                     .task {
                         await viewModel.loadMoreEVDatabase()

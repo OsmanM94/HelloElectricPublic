@@ -13,16 +13,9 @@ struct EVRowView: View {
     var body: some View {
         HStack {
             if let imageURL = ev.image1?.first {
-                AsyncImage(url: URL(string: imageURL)) { image in
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 50, height: 50)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                } placeholder: {
-                    ProgressView()
-                        .frame(width: 50, height: 50)
-                }
+                ImageLoader(url: imageURL, contentMode: .fill, targetSize: CGSize(width: 50, height: 50))
+                    .frame(width: 50, height: 50)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
             } else {
                 RoundedRectangle(cornerRadius: 8)
                     .fill(Color.gray.opacity(0.3))

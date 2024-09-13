@@ -16,7 +16,7 @@ final class EVDatabaseService: EVDatabaseServiceProtocol {
             .loadWithPagination(
                 from: "ev_database",
                 orderBy: "car_name",
-                ascending: false,
+                ascending: true,
                 from: from,
                 to: to
             )

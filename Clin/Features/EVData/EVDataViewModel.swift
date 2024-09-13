@@ -19,7 +19,7 @@ final class EVDataViewModel {
     }
     
     // MARK: - Observable properties
-    private(set) var database: [EVDatabase] = []
+    private(set) var evDatabase: [EVDatabase] = []
     private(set) var viewState: ViewState = .loading
     
     // MARK: - Pagination control
@@ -55,7 +55,7 @@ final class EVDataViewModel {
     private func resetPagination() {
         self.currentPage = 0
         self.hasMoreListings = true
-        self.database = []
+        self.evDatabase = []
     }
     
     private func loadEVs() async {
@@ -67,9 +67,9 @@ final class EVDataViewModel {
             
             if newEVs.isEmpty {
                 hasMoreListings = false
-                viewState = database.isEmpty ? .empty : .loaded
+                viewState = evDatabase.isEmpty ? .empty : .loaded
             } else {
-                database.append(contentsOf: newEVs)
+                evDatabase.append(contentsOf: newEVs)
                 viewState = .loaded
             }
         } catch {

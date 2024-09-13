@@ -83,7 +83,7 @@ struct EVDatabase: Codable, Identifiable, Hashable {
         miscellaneousHeatPump,
         miscellaneousHPStandardEquipment: String?
     
-    let image1: [String]?
+    let image1: [URL]?
     
     let availableOrderFrom,
         firstDeliveryExpected,
@@ -222,10 +222,7 @@ extension EVDatabase {
         miscellaneousRoofRails: "Optional",
         miscellaneousHeatPump: "Optional",
         miscellaneousHPStandardEquipment: "No",
-        image1: [
-            "https://ev-database.org/img/auto/Volkswagen_ID4_2024/Volkswagen_ID4_2024-01@2x.jpg",
-            "https://ev-database.org/img/auto/Volkswagen_ID4_2024/Volkswagen_ID4_2024-02@2x.jpg"
-        ],
+        image1: [URL(string: "https://ev-database.org/img/auto/Volkswagen_ID4_2024/Volkswagen_ID4_2024-01@2x.jpg")!,URL(string: "https://ev-database.org/img/auto/Volkswagen_ID4_2024/Volkswagen_ID4_2024-02@2x.jpg")!],
         availableOrderFrom: "Now",
         firstDeliveryExpected: "Q1 2024",
         performanceTorque: "310 Nm",
@@ -233,3 +230,4 @@ extension EVDatabase {
         id: 1
     )
 }
+

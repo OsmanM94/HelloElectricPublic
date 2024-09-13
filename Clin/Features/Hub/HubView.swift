@@ -59,8 +59,9 @@ fileprivate struct StatioViewContainer: View {
 
 fileprivate struct EducationCenterContainer: View {
     var body: some View {
-        EducationCenterView()
-            .navigationTitle("Education")
+//        EducationCenterView()
+        EVListView()
+//            .navigationTitle("Education")
     }
 }
 
