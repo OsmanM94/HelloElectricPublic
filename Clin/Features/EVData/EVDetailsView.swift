@@ -10,7 +10,6 @@ import SwiftUI
 struct EVDetailsView: View {
     let evData: EVDatabase
     
-    @State private var expandedTerms: Set<String> = []
     @State private var showGlossary: Bool = false
     
     var body: some View {
@@ -29,21 +28,18 @@ struct EVDetailsView: View {
                     miscellaneousSection
                 }
                 .padding(.horizontal)
-                
-                legendSection
             }
         }
         .navigationTitle("Details")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button("EV Terms") {
-                    showGlossary.toggle()
-                }
+                Button("Glossary") { showGlossary.toggle() }
             }
         }
         .sheet(isPresented: $showGlossary) {
             EVGlossaryView()
+                .presentationDragIndicator(.visible)
         }
     }
     
@@ -79,7 +75,7 @@ struct EVDetailsView: View {
             .frame(height: 300)
             .overlay(
                 Text("No images available")
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
             )
     }
     
@@ -167,45 +163,46 @@ struct EVDetailsView: View {
             infoRow("Roof Load", evData.dimensionsRoofLoad)
         }
     }
-        
-        private var towingSection: some View {
-            VStack(alignment: .leading, spacing: 10) {
-                sectionHeader("Towing")
-                
-                infoRow("Towing Capability", evData.dimensionsTow)
-                infoRow("Towing Unbraked", evData.dimensionsTowingUnbraked)
-                infoRow("Towing Braked", evData.dimensionsTowingBraked)
-            }
+    
+    private var towingSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            sectionHeader("Towing")
+            
+            infoRow("Towing Capability", evData.dimensionsTow)
+            infoRow("Towing Unbraked", evData.dimensionsTowingUnbraked)
+            infoRow("Towing Braked", evData.dimensionsTowingBraked)
         }
-        
-        private var efficiencySection: some View {
-            VStack(alignment: .leading, spacing: 10) {
-                sectionHeader("Efficiency")
-                
-                infoRow("Real Range Consumption", evData.efficiencyRealRangeConsumption)
-                infoRow("Fuel Equivalent", evData.efficiencyFuelEquivalent)
-            }
+    }
+    
+    private var efficiencySection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            sectionHeader("Efficiency")
+            
+            infoRow("Real Range Consumption", evData.efficiencyRealRangeConsumption)
+            infoRow("Fuel Equivalent", evData.efficiencyFuelEquivalent)
         }
-        
-        private var miscellaneousSection: some View {
-            VStack(alignment: .leading, spacing: 10) {
-                sectionHeader("Miscellaneous")
-                
-                infoRow("Seats", evData.miscellaneousSeats)
-                infoRow("Turning Circle", evData.miscellaneousTurningCircle)
-                infoRow("Platform", evData.miscellaneousPlatform)
-                infoRow("Body", evData.miscellaneousBody)
-                infoRow("Segment", evData.miscellaneousSegment)
-                infoRow("Roof Rails", evData.miscellaneousRoofRails)
-                infoRow("Heat Pump", evData.miscellaneousHeatPump)
-                infoRow("HP Standard Equipment", evData.miscellaneousHPStandardEquipment)
-                infoRow("Available to Order From", evData.availableOrderFrom)
-                infoRow("First Delivery Expected", evData.firstDeliveryExpected)
-            }
+    }
+    
+    private var miscellaneousSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            sectionHeader("Miscellaneous")
+            
+            infoRow("Seats", evData.miscellaneousSeats)
+            infoRow("Turning Circle", evData.miscellaneousTurningCircle)
+            infoRow("Platform", evData.miscellaneousPlatform)
+            infoRow("Body", evData.miscellaneousBody)
+            infoRow("Segment", evData.miscellaneousSegment)
+            infoRow("Roof Rails", evData.miscellaneousRoofRails)
+            infoRow("Heat Pump", evData.miscellaneousHeatPump)
+            infoRow("HP Standard Equipment", evData.miscellaneousHPStandardEquipment)
+            infoRow("Available to Order From", evData.availableOrderFrom)
+            infoRow("First Delivery Expected", evData.firstDeliveryExpected)
         }
+    }
     
     private func sectionHeader(_ title: String) -> some View {
         Text(title)
+            .foregroundStyle(.green.gradient)
             .font(.title3)
             .fontDesign(.rounded)
             .bold()
@@ -221,158 +218,77 @@ struct EVDetailsView: View {
                 .foregroundStyle(.secondary)
         }
     }
-    
-    private var legendSection: some View {
-           VStack(alignment: .leading, spacing: 15) {
-               Text("Legend")
-                   .font(.title2)
-                   .fontWeight(.bold)
-               
-               ForEach(termExplanations, id: \.term) { termExplanation in
-                   legendRow(for: termExplanation)
-               }
-           }
-           .padding()
-           .background(Color(.systemBackground))
-           .clipShape(RoundedRectangle(cornerRadius: 10))
-           .shadow(radius: 1)
-           .padding()
-       }
-       
-       private func legendRow(for termExplanation: TermExplanation) -> some View {
-           VStack(alignment: .leading, spacing: 5) {
-               HStack {
-                   Text(termExplanation.term)
-                       .font(.headline)
-                   
-                   Spacer()
-                   
-                   Image(systemName: "questionmark.circle")
-                       .foregroundStyle(.blue)
-                       .onTapGesture {
-                           withAnimation {
-                               if expandedTerms.contains(termExplanation.term) {
-                                   expandedTerms.remove(termExplanation.term)
-                               } else {
-                                   expandedTerms.insert(termExplanation.term)
-                               }
-                           }
-                       }
-               }
-               
-               if expandedTerms.contains(termExplanation.term) {
-                   Text(termExplanation.explanation)
-                       .font(.subheadline)
-                       .foregroundColor(.secondary)
-                       .padding(.top, 5)
-                       .transition(.opacity)
-               }
-           }
-       }
 }
 
-struct TermExplanation {
+fileprivate struct TermExplanation {
     let term: String
     let explanation: String
 }
 
-let termExplanations: [TermExplanation] = [
-    TermExplanation(term: "Segment", explanation: "The market segment the vehicle belongs to (e.g., A: mini cars, B: small cars, C: medium cars, D: large cars, E: executive cars, F: luxury cars)."),
-    TermExplanation(term: "Heat Pump", explanation: "An energy-efficient heating and cooling system that transfers heat instead of generating it, improving the vehicle's range in cold weather."),
-    TermExplanation(term: "Turning Circle", explanation: "The diameter of the smallest circular turn that the car is capable of making."),
-    // Add more term explanations here...
-]
-
-struct EVGlossaryView: View {
+fileprivate struct EVGlossaryView: View {
+    let termExplanations: [TermExplanation] = [
+        TermExplanation(term: "Segment", explanation: "The market segment the vehicle belongs to (e.g., A: mini cars, B: small cars, C: medium cars, D: large cars, E: executive cars, F: luxury cars)."),
+        TermExplanation(term: "Heat Pump", explanation: "An energy-efficient heating and cooling system that transfers heat instead of generating it, improving the vehicle's range in cold weather."),
+        TermExplanation(term: "Turning Circle", explanation: "The diameter of the smallest circular turn that the car is capable of making."),
+        TermExplanation(term: "Cathode Material", explanation: "The material used in the cathode of the battery, which influences the battery's performance, longevity, and energy density."),
+        TermExplanation(term: "Pouch Cell", explanation: "A type of battery cell design that uses a flexible outer layer, allowing for a lighter and more adaptable battery configuration."),
+        TermExplanation(term: "Nominal Voltage", explanation: "The standard operating voltage of a battery pack under normal conditions."),
+        TermExplanation(term: "Drive", explanation: "Refers to the drivetrain configuration of the vehicle, such as Front-Wheel Drive (FWD), Rear-Wheel Drive (RWD), or All-Wheel Drive (AWD)."),
+        TermExplanation(term: "Battery Architecture", explanation: "The structural design of the battery pack, including how cells are arranged and connected."),
+        TermExplanation(term: "Autocharge", explanation: "A feature allowing compatible charging stations to recognize the vehicle and initiate charging automatically without manual input."),
+        TermExplanation(term: "Roof Load", explanation: "The maximum weight that can be safely carried on the vehicle's roof, typically when using roof racks."),
+        TermExplanation(term: "Payload", explanation: "The total weight of passengers and cargo that the vehicle can carry, excluding its own weight."),
+        TermExplanation(term: "Towing Capacity", explanation: "The maximum weight that the vehicle can tow, including both braked and unbraked trailers."),
+        TermExplanation(term: "Fuel Equivalent", explanation: "A comparison of the vehicle's energy consumption with traditional fuel vehicles, expressed in liters per 100 miles."),
+        TermExplanation(term: "Platform", explanation: "The underlying architecture or chassis that the vehicle is built on, often shared across multiple models within a manufacturer."),
+        TermExplanation(term: "Nominal Capacity", explanation: "The total amount of energy that a battery can theoretically store, often measured in kilowatt-hours (kWh)."),
+        TermExplanation(term: "Gross Weight", explanation: "The total weight of the vehicle including all passengers, cargo, and accessories when fully loaded."),
+        TermExplanation(term: "Wheelbase", explanation: "The distance between the front and rear axles of the vehicle, affecting stability, handling, and interior space."),
+        TermExplanation(term: "Charging Speed", explanation: "The rate at which the vehicle's battery is charged, usually measured in kilometers per hour (km/h) or kilowatts (kW)."),
+        TermExplanation(term: "Battery Warranty", explanation: "The period or mileage for which the manufacturer guarantees the battery pack, typically covering defects and degradation below a certain level."),
+        TermExplanation(term: "Pack Configuration", explanation: "The specific arrangement and grouping of battery cells within the pack, impacting overall performance and efficiency."),
+        TermExplanation(term: "Cargo Volume", explanation: "The amount of storage space available in the vehicle's trunk or cargo area, measured in liters (L)."),
+        TermExplanation(term: "Drive Modes", explanation: "Various settings that alter the vehicle's performance characteristics, such as efficiency, sport, or off-road modes."),
+        TermExplanation(term: "Range", explanation: "The estimated distance the vehicle can travel on a full charge under specific conditions, such as city or highway driving."),
+        TermExplanation(term: "Charging Ports", explanation: "Connectors used for recharging the vehicle's battery, with different standards like Type 2 or CCS offering varied charging speeds."),
+        TermExplanation(term: "Torque", explanation: "A measure of rotational force, indicating the vehicle's ability to accelerate, especially from a standstill."),
+        TermExplanation(term: "Form Factor", explanation: "The physical shape and size of the battery cells, which can influence how they fit into the battery pack and overall vehicle design."),
+        TermExplanation(term: "Home Charging", explanation: "Charging the vehicle at home using a standard outlet or a dedicated home charger, usually at lower speeds compared to rapid charging stations.")
+    ]
+    @State private var isAnimating: Bool = false
+    
     var body: some View {
-        
-            List(termExplanations, id: \.term) { termExplanation in
-                VStack(alignment: .leading) {
-                    Text(termExplanation.term)
-                        .font(.headline)
-                    Text(termExplanation.explanation)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+        VStack {
+            if isAnimating {
+                List(termExplanations, id: \.term) { termExplanation in
+                    VStack(alignment: .leading) {
+                        Text(termExplanation.term)
+                            .font(.headline)
+                            .fontDesign(.rounded)
+                            .bold()
+                        Text(termExplanation.explanation)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(.top)
                 }
+                .listStyle(.plain)
+            } else {
+                CustomProgressView()
             }
-            .navigationTitle("Glossary")
-        
+        }
+        .onAppear {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: {
+                withAnimation(.easeInOut) {
+                    isAnimating = true
+                }
+            })
+        }
     }
 }
 
 #Preview {
     NavigationStack {
-        EVDetailsView(
-            evData: EVDatabase(
-                availability: "Available",
-                availableSince: "2024",
-                rangeCityCold: "300 km",
-                rangeHighwayCold: "250 km",
-                rangeCombinedCold: "275 km",
-                rangeCityMild: "350 km",
-                rangeHighwayMild: "300 km",
-                rangeCombinedMild: "325 km",
-                performanceAcceleration0_62_Mph: "7.5 sec",
-                performanceTopSpeed: "180 km/h",
-                electricRange: "510 km",
-                totalPower: "150 kW",
-                drive: "Rear Wheel Drive",
-                batteryNominalCapacity: "77 kWh",
-                batteryType: "Lithium-ion",
-                numberOfCells: "288",
-                batteryArchitecture: "Pouch",
-                batteryWarranty: "8 years",
-                warrantyMileage: "160,000 km",
-                batteryUseableCapacity: "82 kWh",
-                batteryCathodeMaterial: "NMC 811",
-                batteryPackConfiguration: "12 modules, 24 cells each",
-                batteryNominalVoltage: "352 V",
-                batteryFormFactor: "Pouch",
-                batteryName: "ID.4 Pro Battery",
-                chargingHomePort: "Type 2",
-                chargingHomePortLocation: "Right rear",
-                chargingHomeChargePower: "11 kW AC",
-                chargingHomeChargeTime: "7h 30min",
-                chargingHomeChargeSpeed: "50 km/h",
-                chargingHomeChargePowerMax: "11 kW",
-                chargingHomeAutochargeSupported: "Yes",
-                chargingRapidPort: "CCS",
-                chargingRapidPortLocation: "Right rear",
-                chargingRapidChargeSpeed: "550 km/h",
-                chargingRapidAutochargeSupported: "Yes",
-                efficiencyRealRangeConsumption: "18 kWh/100km",
-                efficiencyFuelEquivalent: "2.0 L/100km",
-                dimensionsAndWeightLenght: "4.58 m",
-                dimensionsAndWeightWidth: "1.85 m",
-                dimensionsAndWeightWidthMirrors: "2.11 m",
-                dimensionsAndWeightWheelbase: "2.77 m",
-                dimensionsAndWeightWeightUnladen: "2,124 kg",
-                dimensionsGrossWeight: "2,660 kg",
-                dimensionsPayload: "536 kg",
-                dimensionsCargoVolume: "543 L",
-                dimensionsCargoVolumeMax: "1,575 L",
-                dimensionsRoofLoad: "75 kg",
-                dimensionsTow: "Yes",
-                dimensionsTowingUnbraked: "750 kg",
-                dimensionsTowingBraked: "1,000 kg",
-                miscellaneousSeats: "5",
-                miscellaneousTurningCircle: "10.2 m",
-                miscellaneousPlatform: "MEB",
-                miscellaneousBody: "SUV",
-                miscellaneousSegment: "D",
-                miscellaneousRoofRails: "Optional",
-                miscellaneousHeatPump: "Optional",
-                miscellaneousHPStandardEquipment: "No",
-                image1: [
-                    "https://ev-database.org/img/auto/Volkswagen_ID4_2024/Volkswagen_ID4_2024-01@2x.jpg",
-                    "https://ev-database.org/img/auto/Volkswagen_ID4_2024/Volkswagen_ID4_2024-02@2x.jpg"
-                ],
-                availableOrderFrom: "Now",
-                firstDeliveryExpected: "Q1 2024",
-                performanceTorque: "310 Nm",
-                carName: "Volkswagen ID.4 (2024)",
-                id: 1
-            )
-        )
+        EVDetailsView(evData: EVDatabase.sampleData)
     }
 }

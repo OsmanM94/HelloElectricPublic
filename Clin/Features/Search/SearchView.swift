@@ -107,7 +107,7 @@ private extension SearchView {
         List {
             ForEach(viewModel.searchedItems, id: \.id) { item in
                 NavigationLink(value: item) {
-                    ListingCell(listing: item, showFavourite: true)
+                    ListingRowView(listing: item, showFavourite: true)
                         .id(item.id)
                 }
                 .task {

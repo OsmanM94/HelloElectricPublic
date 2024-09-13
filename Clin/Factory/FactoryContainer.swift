@@ -56,6 +56,10 @@ extension Container {
         Factory(self) { CompaniesHouseService() }
     }
     
+    var evDatabase: Factory<EVDatabaseServiceProtocol> {
+        Factory(self) { EVDatabaseService() }
+    }
+    
     /// ViewModels
     var createFormDataModel: Factory<CreateFormDataModel> {
         Factory(self) { CreateFormDataModel() }

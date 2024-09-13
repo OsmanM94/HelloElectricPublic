@@ -91,7 +91,6 @@ fileprivate struct ListingSubview: View {
             .refreshable {
                 await viewModel.refreshListings(vehicleType: selectedVehicleType)
             }
-           
             .onChange(of: shouldScrollToTop, scrollToTopHandler(proxy: proxy))
             .toolbar { scrollToTopButton }
         }
@@ -112,7 +111,7 @@ fileprivate struct ListingSubview: View {
     
     private func listingRow(for item: Listing) -> some View {
         NavigationLink(value: item) {
-            ListingCell(listing: item, showFavourite: true)
+            ListingRowView(listing: item, showFavourite: true)
                 .id(item.id)
         }
         .task {

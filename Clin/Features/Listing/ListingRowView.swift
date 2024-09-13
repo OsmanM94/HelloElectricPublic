@@ -1,7 +1,7 @@
 
 import SwiftUI
 
-struct ListingCell: View {
+struct ListingRowView: View {
     @State private var timerManager = TimerManager()
     let listing: Listing
     let showFavourite: Bool
@@ -91,7 +91,7 @@ struct ListingCell: View {
 }
 
 #Preview {
-    ListingCell(listing: MockListingService.sampleData[0], showFavourite: true)
+    ListingRowView(listing: MockListingService.sampleData[0], showFavourite: true)
         .previewLayout(.sizeThatFits)
         .environment(FavouriteViewModel())
 }

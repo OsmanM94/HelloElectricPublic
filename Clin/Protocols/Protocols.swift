@@ -32,6 +32,10 @@ protocol ListingServiceProtocol {
     func loadEVfeatures() async throws -> [EVFeatures]
 }
 
+protocol EVDatabaseServiceProtocol {
+    func loadPaginatedEVs(from: Int, to: Int) async throws -> [EVDatabase]
+}
+
 protocol FavouriteServiceProtocol {
     func loadUserFavourites(userID: UUID) async throws -> [Favourite]
     func addToFavorites(_ favourite: Favourite) async throws

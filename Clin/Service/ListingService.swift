@@ -9,7 +9,7 @@ import Foundation
 import Factory
 
 final class ListingService: ListingServiceProtocol {
-    @Injected(\.databaseService) var databaseService: DatabaseServiceProtocol
+    @Injected(\.databaseService) private var databaseService
     
     func loadPaginatedListings(from: Int,to: Int) async throws -> [Listing] {
         try await databaseService

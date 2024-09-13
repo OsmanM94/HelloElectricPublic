@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct FavouriteCell: View {
+struct FavouriteRowView: View {
     let favourite: Favourite
     let action: () async -> Void
     @State private var showDeleteAlert = false
@@ -129,7 +129,7 @@ struct FavouriteCell: View {
 }
 
 #Preview {
-    FavouriteCell(favourite: MockFavouriteService.sampleData[0], action: {})
+    FavouriteRowView(favourite: MockFavouriteService.sampleData[0], action: {})
         .previewLayout(.sizeThatFits)
         .padding()
 }
