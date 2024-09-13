@@ -9,24 +9,40 @@ import Foundation
 
 class HTTPDataDownloader: HTTPDataDownloaderProtocol {
     
-    func loadData <T: Decodable>(as type: T.Type, endpoint: String) async throws -> T {
-        guard let url = URL(string: endpoint) else {
-            throw AppError.ErrorType.requestFailed(description: "Invalid URL")
+    func loadData<T: Decodable>(
+            as type: T.Type,
+            endpoint: String,
+            headers: [String: String]? = nil
+        ) async throws -> T {
+            
+            guard let url = URL(string: endpoint) else {
+                throw AppError.ErrorType.requestFailed(description: "Invalid URL")
+            }
+            
+            var request = URLRequest(url: url)
+            request.httpMethod = "GET"
+            
+            // Add headers to the request if provided
+            headers?.forEach { key, value in
+                request.setValue(value, forHTTPHeaderField: key)
+            }
+            
+            let (data, response) = try await URLSession.shared.data(for: request)
+            
+            guard let httpResponse = response as? HTTPURLResponse else {
+                throw AppError.ErrorType.requestFailed(description: "Request failed")
+            }
+            
+            guard httpResponse.statusCode == 200 else {
+                throw AppError.ErrorType.invalidStatusCode(statuscode: httpResponse.statusCode)
+            }
+            
+            do {
+                return try JSONDecoder().decode(type, from: data)
+            } catch {
+                throw AppError.ErrorType.decodingError(error: error)
+            }
         }
-        let (data, response) = try await URLSession.shared.data(from: url)
-        
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw AppError.ErrorType.requestFailed(description: "Request failed")
-        }
-        guard httpResponse.statusCode == 200 else {
-            throw AppError.ErrorType.invalidStatusCode(statuscode: httpResponse.statusCode)
-        }
-        do {
-            return try JSONDecoder().decode(type, from: data)
-        } catch {
-            throw AppError.ErrorType.decodingError(error: error)
-        }
-    }
     
     func postData<T: Decodable, U: Encodable>(as type: T.Type, to endpoint: String, body: U, headers: [String: String] = [:]) async throws -> T {
         guard let url = URL(string: endpoint) else {

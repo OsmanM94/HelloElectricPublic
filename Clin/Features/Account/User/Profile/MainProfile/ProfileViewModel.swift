@@ -19,12 +19,18 @@ final class ProfileViewModel {
         case success(String)
     }
     
+    enum CompaniesHouse {
+        case idle
+        case success
+    }
+    
     // MARK: - Observable properties
     var imageSelection: PhotosPickerItem?
     private(set) var avatarImage: SelectedImage?
     private(set) var displayName: String = ""
     private(set) var profile: Profile? = nil
-    private(set) var viewState: ViewState = .loading
+    var viewState: ViewState = .loading
+    var companiesHouseViewState: CompaniesHouse = .idle
     
     var username: String = ""
     var isDealer: Bool = false
@@ -34,39 +40,100 @@ final class ProfileViewModel {
     var companyNumber: String = ""
     var website: String = "https://"
     
+    // Tracks if the profile was updated so we don't update Supabase redundant
     var isProfileUpdated: Bool = false
+    
+    // Companies house checks
+    var getCompanyNumber: String = ""
 
     // MARK: - Dependencies
     @ObservationIgnored @Injected(\.prohibitedWordsService) private var prohibitedWordsService
     @ObservationIgnored @Injected(\.imageManager) private var imageManager
     @ObservationIgnored @Injected(\.profileService) private var profileService
+    @ObservationIgnored @Injected(\.companiesHouse) private var companiesHouseService
     
     init() {
         print("DEBUG: Did init profile vm")
     }
     
     // MARK: - Main actor functions
+    
+    @MainActor
+    func loadCompanyInfo() async {
+        guard !companyNumber.isEmpty else { return }
+        viewState = .loading
+        
+        do {
+            let companyInfo = try await companiesHouseService.loadCompanyDetails(companyNumber: getCompanyNumber)
+            
+            if companyInfo.companyStatus.lowercased() == "dissolved" {
+                self.viewState = .error(AppError.ErrorType.companyDissolved.message)
+                return
+            }
+            
+            // Update properties from API response
+            self.username = companyInfo.companyName
+            self.companyNumber = companyInfo.companyNumber
+            
+            self.companiesHouseViewState = .success
+            self.viewState = .idle
+        } catch {
+            self.viewState = .error(AppError.ErrorType.companyLoadingFailure.message)
+        }
+    }
+    
     @MainActor
     func resetState() {
+        imageSelection = nil
+        avatarImage = nil
+        displayName = ""
+        viewState = .idle
+        companiesHouseViewState = .idle
+        
         username = ""
         isDealer = false
-        isProfileUpdated = false
         address = ""
         location = ""
         postcode = ""
-        website = ""
-        imageSelection = nil
-        avatarImage = nil
-        viewState = .loading
+        companyNumber = ""
+        website = "https://"
+        
+        isProfileUpdated = false
+        getCompanyNumber = ""
     }
     
     @MainActor
     func resetStateToIdle() {
         imageSelection = nil
         avatarImage = nil
+        username = ""
+       
+        companiesHouseViewState = .idle
         viewState = .idle
     }
+    
+    @MainActor
+    func enableDealerStatus() {
+        isDealer = true
+        companiesHouseViewState = .idle
+        username = ""
+    }
+    
+    @MainActor
+    func disableDealerStatus() {
+        isDealer = false
+        companiesHouseViewState = .idle
         
+        username = ""
+        getCompanyNumber = ""
+        companyNumber = ""
+        address = ""
+        location = ""
+        postcode = ""
+        website = "https://"
+    }
+    
+   
     @MainActor
     func loadProfile() async {
         do {
@@ -77,6 +144,7 @@ final class ProfileViewModel {
             await loadProhibitedWords()
             
             self.profile = profile
+            self.username = ""
             
             // Only set to idle if we haven't updated profile
             if !isProfileUpdated {
@@ -89,8 +157,8 @@ final class ProfileViewModel {
     
     @MainActor
     func updateProfileButtonTapped() async {
-        guard !prohibitedWordsService.containsProhibitedWord(username) else {
-            viewState = .error(AppError.ErrorType.inappropriateUsername.message)
+        guard checkForProhibitedWords() else {
+            isProfileUpdated = true
             return
         }
         
@@ -134,6 +202,7 @@ final class ProfileViewModel {
             self.profile = updatedProfile
             self.displayName = username
             isProfileUpdated = true
+            
             viewState = .success(AppError.ErrorType.profileUpdateSuccess.message)
         } catch {
             viewState = .error(AppError.ErrorType.sensitiveApiNotEnabled.message)
@@ -157,6 +226,25 @@ final class ProfileViewModel {
     }
     
     // MARK: - Private methods
+    
+    private func checkForProhibitedWords() -> Bool {
+        let fieldsToCheck = [
+            "username": username,
+            "address": address,
+            "location": location,
+            "postcode": postcode,
+            "companyNumber": companyNumber,
+            "website": website
+        ]
+        let prohibitedWordsCheck = prohibitedWordsService.containsProhibitedWords(in: fieldsToCheck)
+        
+        if prohibitedWordsCheck.values.contains(true) {
+            _ = prohibitedWordsCheck.filter { $0.value }.keys.joined(separator: ", ")
+            viewState = .error(AppError.ErrorType.inappropriateTextfieldInput.message)
+            return false
+        }
+        return true
+    }
     
     private func updateViewModelFromProfile(_ profile: Profile) {
         self.displayName = profile.username ?? ""
@@ -212,4 +300,44 @@ final class ProfileViewModel {
 
 
 
-
+//
+//@MainActor
+//func resetDealerInfo() {
+//    // Reset dealer-specific information
+//    getCompanyNumber = ""
+//    username = ""
+//    address = ""
+//    location = ""
+//    postcode = ""
+//    website = "https://"
+//    companyNumber = ""
+//    isDealer = false
+////        companiesHouseViewState = .idle
+//}
+//
+//@MainActor
+//func resetEverything() {
+//    getCompanyNumber = ""
+//    username = ""
+//    address = ""
+//    location = ""
+//    postcode = ""
+//    website = "https://"
+//    companyNumber = ""
+//    imageSelection = nil
+//    avatarImage = nil
+//    isDealer = false
+////        companiesHouseViewState = .idle
+//    viewState = .idle
+//}
+//
+//@MainActor
+//func resetStateToIdle() {
+//    imageSelection = nil
+//    avatarImage = nil
+//    username = ""
+////        resetDealerInfo()
+//   
+//    companiesHouseViewState = .idle
+//    viewState = .idle
+//}

@@ -69,8 +69,8 @@ final class EditFormViewModel {
                 return
             }
             
-            let fieldsToCheck = [listing.textDescription]
-            guard !dataLoader.prohibitedWordsService.containsProhibitedWords(in: fieldsToCheck) else {
+            let fieldToCheck = listing.textDescription
+            guard !dataLoader.prohibitedWordsService.containsProhibitedWord(fieldToCheck) else {
                 viewState = .error(AppError.ErrorType.inappropriateField.message)
                 return
             }

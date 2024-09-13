@@ -49,6 +49,15 @@ struct AccountView: View {
                     }
                 }
                 
+                Section("What is next?") {
+                    NavigationLink {
+                        UpdatesView()
+                    } label: {
+                        Label("Upcoming updates", systemImage: "chart.line.uptrend.xyaxis")
+                    }
+
+                }
+                
                 Section("Notifications") {
                     NavigationLink(destination: {
 //                        LazyView(NotificationsView())
@@ -72,7 +81,7 @@ struct AccountView: View {
                 
                 Section {
                     Button(action: {}) {
-                        Label("Delete account", systemImage: "trash")
+                        Text("Delete account")
                             .foregroundStyle(.red)
                             .frame(maxWidth: .infinity)
                     }

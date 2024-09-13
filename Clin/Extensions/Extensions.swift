@@ -131,3 +131,10 @@ extension String {
         return cleaned.count == 11
     }
 }
+
+// Extension to convert API Key to Base64
+extension String {
+    func toBase64() -> String {
+        return Data(self.utf8).base64EncodedString()
+    }
+}

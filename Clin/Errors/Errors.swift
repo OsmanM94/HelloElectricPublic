@@ -40,7 +40,7 @@ enum AppError: Error, LocalizedError {
         case deleteSuccess
         
         // Profile Errors
-        case inappropriateUsername
+        case inappropriateTextfieldInput
         case sensitiveContent
         case sensitiveApiNotEnabled
         case profileUpdateSuccess
@@ -59,6 +59,10 @@ enum AppError: Error, LocalizedError {
         case fileNotFound(String)
         case dataLoadingError(Error)
         case dataParsingError(Error)
+        
+        // Companies House
+        case companyDissolved
+        case companyLoadingFailure
         
         var message: String {
             switch self {
@@ -86,8 +90,8 @@ enum AppError: Error, LocalizedError {
                 return "No authenticated user found."
             case .deleteSuccess:
                 return "Listing deleted successfully."
-            case .inappropriateUsername:
-                return "Please choose a different username."
+            case .inappropriateTextfieldInput:
+                return "Inappropriate fields found."
             case .sensitiveContent:
                 return "The selected image contains sensitive content. Please choose a different image."
             case .sensitiveApiNotEnabled:
@@ -116,6 +120,10 @@ enum AppError: Error, LocalizedError {
                 return "Couldn't parse data: \(error.localizedDescription)"
             case .profileImageUploadFailed:
                 return "Failed to upload image, please try again."
+            case .companyDissolved:
+                return "Sorry, company is dissolved."
+            case .companyLoadingFailure:
+                return "Sorry, company not found..."
             }
         }
     }

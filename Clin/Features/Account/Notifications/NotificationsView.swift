@@ -6,27 +6,28 @@
 //
 
 import SwiftUI
-import UserNotifications
 
 struct NotificationsView: View {
-    @State private var manager = NotificationsViewModel()
     
     var body: some View {
-        VStack {
-            Text("Listings count: \(manager.newListings.count)")
-            List(manager.newListings) { listing in
-                VStack(alignment: .leading) {
-                    Text("\(listing.make) \(listing.model)")
-                        .font(.headline)
-                }
-            }
+        VStack(alignment: .center, spacing: 60) {
+        
+            Image(systemName: "hammer")
+                .font(.system(size: 50))
+            
+            Text("Coming soon")
+                .font(.title2)
+                .fontDesign(.rounded).bold()
         }
-        .onAppear {
-            manager.requestNotificationPermissions()
-        }
+        .frame(maxWidth: .infinity, alignment: .center)
+        .padding()
+        .padding(.bottom, 80)
+        .navigationTitle("Notifications")
     }
 }
 
 #Preview {
-    NotificationsView()
+    NavigationStack {
+        NotificationsView()
+    }
 }

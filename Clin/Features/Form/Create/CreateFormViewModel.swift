@@ -107,8 +107,8 @@ final class CreateFormViewModel {
     
     // MARK: - Private Methods
     private func validateTextDescription() async -> Bool {
-        let fieldsToCheck = [formData.description]
-        guard !dataLoader.prohibitedWordsService.containsProhibitedWords(in: fieldsToCheck) else {
+        let fieldsToCheck = formData.description
+        guard !dataLoader.prohibitedWordsService.containsProhibitedWord(fieldsToCheck) else {
             viewState = .error(AppError.ErrorType.inappropriateField.message)
             return false
         }

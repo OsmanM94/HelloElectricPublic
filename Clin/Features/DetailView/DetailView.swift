@@ -380,8 +380,8 @@ fileprivate struct SheetImages<T: DetailItem>: View {
                 }
             }
         }
-        .containerRelativeFrame([.horizontal,.vertical])
         .tabViewStyle(.page)
+        .containerRelativeFrame([.horizontal, .vertical]) 
         .indexViewStyle(.page(backgroundDisplayMode: .always))
     }
     

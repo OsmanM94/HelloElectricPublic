@@ -52,6 +52,10 @@ extension Container {
         Factory(self) { SearchService() }
     }
     
+    var companiesHouse: Factory<CompaniesHouseServiceProtocol> {
+        Factory(self) { CompaniesHouseService() }
+    }
+    
     /// ViewModels
     var createFormDataModel: Factory<CreateFormDataModel> {
         Factory(self) { CreateFormDataModel() }

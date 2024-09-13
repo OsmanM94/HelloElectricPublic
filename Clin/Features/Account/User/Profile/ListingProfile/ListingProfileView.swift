@@ -28,8 +28,8 @@ struct ListingProfileView: View {
                             .fontWeight(.medium)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 4)
-                            .background(Color.blue.opacity(0.1))
-                            .foregroundStyle(.blue)
+                            .background(Color.green.opacity(0.1))
+                            .foregroundStyle(.green)
                             .clipShape(RoundedRectangle(cornerRadius: 4))
                     }
                 }

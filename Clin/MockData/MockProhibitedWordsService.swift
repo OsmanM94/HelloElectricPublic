@@ -8,6 +8,11 @@
 import Foundation
 
 struct MockProhibitedWordsService: ProhibitedWordsServiceProtocol {
+    func containsProhibitedWords(in fields: [String : String]) -> [String : Bool] {
+        return [:]
+    }
+    
+    
     var prohibitedWords: Set<String>
     
     func loadProhibitedWords() async throws {
@@ -18,9 +23,7 @@ struct MockProhibitedWordsService: ProhibitedWordsServiceProtocol {
         return true
     }
     
-    func containsProhibitedWords(in fields: [String]) -> Bool {
-        return true
-    }
+    
     
     // Implement the required methods with mock behavior
 }

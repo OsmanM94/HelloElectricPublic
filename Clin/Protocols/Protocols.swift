@@ -50,7 +50,7 @@ protocol ProhibitedWordsServiceProtocol {
     var prohibitedWords: Set<String> { get }
     func loadProhibitedWords() async throws
     func containsProhibitedWord(_ text: String) -> Bool
-    func containsProhibitedWords(in fields: [String]) -> Bool
+    func containsProhibitedWords(in fields: [String: String]) -> [String: Bool]
 }
 
 protocol ImagePickerProtocol: Observable {
@@ -66,9 +66,15 @@ protocol ImagePickerProtocol: Observable {
 }
 
 protocol HTTPDataDownloaderProtocol {
-    func loadData <T: Decodable>(as type: T.Type, endpoint: String) async throws -> T
+    func loadData <T: Decodable>(as type: T.Type, endpoint: String, headers: [String: String]?) async throws -> T
     func postData<T: Decodable, U: Encodable>(as type: T.Type, to endpoint: String, body: U, headers: [String: String]) async throws -> T
     func fetchURL(from url: URL) async throws -> Data
+}
+
+extension HTTPDataDownloaderProtocol {
+    func loadData<T: Decodable>(as type: T.Type, endpoint: String) async throws -> T {
+        try await loadData(as: type, endpoint: endpoint, headers: nil)
+    }
 }
 
 protocol DvlaServiceProtocol {

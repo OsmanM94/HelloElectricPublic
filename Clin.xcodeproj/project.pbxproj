@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		623B8F572C62DC0700A5BD60 /* ToDo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 623B8F562C62DC0700A5BD60 /* ToDo.swift */; };
 		629185B82C31614500DA4BAA /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 629185B72C31614500DA4BAA /* SDWebImageSwiftUI */; };
 		62BE33342C72500D006C0584 /* Factory in Frameworks */ = {isa = PBXBuildFile; productRef = 62BE33332C72500D006C0584 /* Factory */; };
 		62C449052C26CDC4009650A3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 62C449042C26CDC4009650A3 /* Assets.xcassets */; };
@@ -22,7 +21,6 @@
 
 /* Begin PBXFileReference section */
 		620D1CED2C86F836005B17E2 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
-		623B8F562C62DC0700A5BD60 /* ToDo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDo.swift; sourceTree = "<group>"; };
 		626973352C8B528B00690EF9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		62C448FD2C26CDC2009650A3 /* Clin.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Clin.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		62C449042C26CDC4009650A3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -44,6 +42,7 @@
 			membershipExceptions = (
 				Cities.swift,
 				Dvla.swift,
+				EVDatabase.swift,
 				EVFeatures.swift,
 				EVModels.swift,
 				Favourite.swift,
@@ -60,6 +59,7 @@
 		6217F3452C2977D200EF8B2D /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				CompanyHouseService.swift,
 				DatabaseService.swift,
 				DvlaService.swift,
 				FavouriteService.swift,
@@ -83,19 +83,19 @@
 				Account/Notifications/NotificationsView.swift,
 				Account/Notifications/NotificationsViewModel.swift,
 				Account/Support/SupportCenterView.swift,
-				Account/User/CompanyHouse.swift,
-				Account/User/CompanyInfoView.swift,
-				Account/User/Profile/CircularProfileView.swift,
+				Account/UpdatesWall/UpdatesView.swift,
+				Account/User/Profile/Components/CircularProfileView.swift,
 				Account/User/Profile/ListingProfile/ListingProfileView.swift,
 				Account/User/Profile/ListingProfile/ListingProfileViewModel.swift,
-				Account/User/Profile/ProfileView.swift,
-				Account/User/Profile/ProfileViewModel.swift,
+				Account/User/Profile/MainProfile/ProfileView.swift,
+				Account/User/Profile/MainProfile/ProfileViewModel.swift,
 				Account/User/UserListings/UserListingView.swift,
 				Account/User/UserListings/UserListingViewModel.swift,
 				DetailView/DetailSplashView.swift,
 				DetailView/DetailView.swift,
 				DetailView/ListingDisclaimerView.swift,
 				DetailView/LocationDisclaimerView.swift,
+				EVData/EVDetailsView.swift,
 				Favourites/AddToFavouritesButton.swift,
 				Favourites/FavouriteCell.swift,
 				Favourites/FavouriteListingView.swift,
@@ -187,6 +187,7 @@
 				MockHTTPDataDownloader.swift,
 				MockImageManager.swift,
 				MockListingService.swift,
+				MockProfileService.swift,
 				MockProhibitedWordsService.swift,
 				MockSearchService.swift,
 			);
@@ -367,7 +368,6 @@
 				629189ED2C36FEB400DA4BAA /* Resources */,
 				62C449042C26CDC4009650A3 /* Assets.xcassets */,
 				62C449072C26CDC4009650A3 /* Preview Content */,
-				623B8F562C62DC0700A5BD60 /* ToDo.swift */,
 			);
 			path = Clin;
 			sourceTree = "<group>";
@@ -465,7 +465,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				623B8F572C62DC0700A5BD60 /* ToDo.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

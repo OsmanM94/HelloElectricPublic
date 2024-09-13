@@ -63,8 +63,9 @@ fileprivate struct DvlaCheckView: View {
     var body: some View {
         ZStack {
             Rectangle()
-                .foregroundStyle(Color(.secondarySystemBackground))
+                .foregroundStyle(Color(.systemGray6))
                 .ignoresSafeArea()
+            
             VStack(spacing: 20) {
                 HStack {
                     Text("UK Registration")
@@ -74,10 +75,10 @@ fileprivate struct DvlaCheckView: View {
                     Spacer()
                     
                     Button(action: {
-                        showInfoPopover = true
+                        showInfoPopover.toggle()
                     }) {
                         Image(systemName: "info.circle")
-                            .foregroundColor(.secondary)
+                            .foregroundStyle(.blue)
                     }
                     .popover(isPresented: $showInfoPopover, arrowEdge: .top) {
                         infoPopoverContent
@@ -88,8 +89,8 @@ fileprivate struct DvlaCheckView: View {
                 }
                 
                 registrationPlate
-                
-                Spacer(minLength: 0)
+        
+                Spacer()
             }
             .padding()
         }
@@ -136,18 +137,21 @@ fileprivate struct DvlaCheckView: View {
     }
     
     private var infoPopoverContent: some View {
-        GroupBox("Why is this step required?") {
-            VStack(alignment: .leading, spacing: 10) {
-                Text("We need to check the vehicle's registration to verify if it's an electric vehicle (EV).")
-                
-                Text("This marketplace is exclusively for electric vehicles, so we can only proceed with listings for confirmed EVs.")
-                
-                Text("If the vehicle is not electric, we won't be able to continue with the listing process.")
-                    .padding(.top, 5)
-            }
-            .fontDesign(.rounded)
-            .padding(.top)
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Why is this step required?")
+                .fontDesign(.rounded).bold()
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.bottom)
+            
+            Text("We need to check the vehicle's registration to verify if it's an electric vehicle (EV).")
+            
+            Text("This marketplace is exclusively for electric vehicles, so we can only proceed with listings for confirmed EVs.")
+            
+            Text("If the vehicle is not electric, we won't be able to continue with the listing process.")
+            
+            Text("Hybrid vehicles and other fuel types are not accepted.")
         }
+        .fontDesign(.rounded)
         .padding()
     }
 }

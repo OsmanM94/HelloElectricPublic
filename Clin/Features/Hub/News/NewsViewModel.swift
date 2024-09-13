@@ -57,7 +57,7 @@ final class NewsViewModel {
         let urlString = "https://newsapi.org/v2/everything?q=Electric+Vehicle+EV&language=en&sortBy=relevancy&pageSize=\(pageSize)&page=\(currentPage)&apiKey=\(secondKey)"
         
         do {
-            let newsResponse: NewsResponse = try await dataDownloader.loadData(as: NewsResponse.self, endpoint: urlString)
+            let newsResponse: NewsResponse = try await dataDownloader.loadData(as: NewsResponse.self, endpoint: urlString, headers: nil)
             
             if newsResponse.status == "ok" {
                 let newArticles = newsResponse.articles

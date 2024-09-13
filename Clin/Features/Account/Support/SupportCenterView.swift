@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SupportCenterView: View {
-    let phoneNumber = "07466861603"
+    let phoneNumber: String = "07466861603"
     
     var body: some View {
         ScrollView(.vertical) {
@@ -39,6 +39,10 @@ struct SupportCenterView: View {
                 Text("Our support team is available 9AM - 17PM.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
+                
+                Text("Or")
+                
+                Text("support@helloelectric.co.uk")
             }
             .padding()
             

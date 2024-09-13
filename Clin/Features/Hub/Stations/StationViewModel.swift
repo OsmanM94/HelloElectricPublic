@@ -61,7 +61,7 @@ final class StationViewModel {
         let urlString = "https://api.openchargemap.io/v3/poi/?output=json&latitude=\(latitude)&longitude=\(longitude)&distance=\(radius)&maxresults=20&key=\(apiKey)"
         
         do {
-            let stations: [Station] = try await httpDownloader.loadData(as: [Station].self, endpoint: urlString)
+            let stations: [Station] = try await httpDownloader.loadData(as: [Station].self, endpoint: urlString, headers: nil)
                         
             self.stations = stations
             applyFilter()
