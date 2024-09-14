@@ -10,7 +10,7 @@ import SwiftUI
 struct ReportButton: View {
     let itemId: Int
     let itemType: String
-    let reportEmail: String
+    let reportEmail = "helloElectric@support.com"
     let iconSize: CGFloat
     
     @State private var showReportAlert: Bool = false
@@ -45,5 +45,5 @@ struct ReportButton: View {
 }
 
 #Preview {
-    ReportButton(itemId: 1994, itemType: "Listing", reportEmail: "helloelectric@support.com", iconSize: 22)
+    ReportButton(itemId: 1994, itemType: "Listing", iconSize: 22)
 }

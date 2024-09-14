@@ -339,7 +339,7 @@ struct DetailView<T: DetailItem>: View {
                 ContactButtons(item: item)
             }
             .overlay(alignment: .bottomTrailing) {
-                ReportButton(itemId: item.id ?? 0, itemType: "Listing", reportEmail: "HelloElectric@support.com", iconSize: 15)
+                ReportButton(itemId: item.id ?? 0, itemType: "Listing", iconSize: 15)
             }
         }
         .padding()

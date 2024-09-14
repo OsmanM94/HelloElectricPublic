@@ -89,10 +89,11 @@ final class SearchViewModel {
         await performSearch(isLoadingMore: isLoadingMore) { [weak self] in
             guard let self = self else { return [] }
             
-            return try await self.searchLogic.searchItems(
-                searchText: self.currentSearchText,
-                from: self.currentPage * self.pageSize,
-                to: (self.currentPage + 1) * self.pageSize - 1)
+            return try await self.searchLogic
+                .searchItems(
+                    searchText: self.currentSearchText,
+                    from: self.currentPage * self.pageSize,
+                    to: ( self.currentPage + 1) * self.pageSize - 1)
         }
     }
     

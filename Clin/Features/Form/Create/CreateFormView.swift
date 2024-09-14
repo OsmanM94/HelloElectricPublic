@@ -286,22 +286,26 @@ fileprivate struct CreateFormSubview: View {
             Image(systemName: "info.circle")
                 .foregroundStyle(.blue)
         }
-        .popover(isPresented: $showLocationPopover, arrowEdge: .top) {
+        .sheet(isPresented: $showLocationPopover) {
             locationInfoPopover
+                .presentationDetents([.medium])
+                .presentationDragIndicator(.visible)
         }
     }
     
     private var locationInfoPopover: some View {
-        GroupBox("Location information") {
-            VStack(alignment: .leading, spacing: 10) {
-                Text("The location selection is pre-selected for privacy reasons. We don't collect your personal location information.")
-                
-                Text("You can choose a nearby city to indicate your general area.")
-            }
-            .fontDesign(.rounded)
-            .padding(.top)
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Location information")
+                .font(.title3)
+                .bold()
+                .padding(.bottom)
+            
+            Text("The location selection is pre-selected for privacy reasons. We don't collect your personal location information.")
+            
+            Text("You can choose a nearby city to indicate your general area.")
         }
-        .padding(.horizontal)
+        .fontDesign(.rounded)
+        .padding()
     }
 
     private var colourRangeSection: some View {
