@@ -62,25 +62,10 @@ private extension SearchView {
     // MARK: - Search bar
     
     private var searchBar: some View {
-        VStack(spacing: 0) {
-            HStack(spacing: 5) {
-                Image(systemName: "magnifyingglass")
-                    .foregroundStyle(.gray)
-                
-                TextField("", text: $viewModel.searchText, prompt: Text("Search").foregroundStyle(.gray))
-                    .autocorrectionDisabled()
-                    .textInputAutocapitalization(.never)
-                    .submitLabel(.search)
-                    .padding(.vertical, 8)
-                    .onSubmit { Task { await viewModel.searchItems() } }
-            }
-            .padding(.horizontal)
-            .background(Color(.systemGray6))
-            .clipShape(RoundedRectangle(cornerRadius: 10))
-            .padding(.horizontal)
-            .focused($isPresented)
-        }
-        .padding(.bottom)
+        SearchBarView(searchText: $viewModel.searchText, onSubmit: {
+            Task { await viewModel.searchItems() }
+        })
+        .focused($isPresented)
     }
     
     // MARK: - Search suggestions

@@ -144,6 +144,7 @@
 				UI/CircularProgressBar.swift,
 				UI/CustomProgressView.swift,
 				UI/ReportButton.swift,
+				UI/SearchBarView.swift,
 				UI/Shimmer.swift,
 				UI/SupportButton.swift,
 				UI/ZoomImages.swift,

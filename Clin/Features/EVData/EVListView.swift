@@ -9,6 +9,7 @@ import SwiftUI
 
 struct EVListView: View {
     @State private var viewModel = EVDataViewModel()
+    @FocusState private var isPresented: Bool
     
     var body: some View {
         NavigationStack {
@@ -18,25 +19,39 @@ struct EVListView: View {
                     CustomProgressView()
                     
                 case .loaded:
+                    searchBar
                     listContent
                     
                 case .empty:
+                    searchBar
                     emptyStateView
                     
                 case .error(let message):
                     ErrorView(message: message, retryAction: {
-                        viewModel.resetState()
+                        viewModel.resetStateToLoaded()
                     })
                 }
             }
             .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
             .navigationTitle("Database")
+            .toolbar {
+                topBarLeadingToolbarContent
+                keyboardToolbarContent
+            }
+            //.onDisappear { viewModel.resetState() }
         }
         .task {
             if viewModel.evDatabase.isEmpty {
                 await viewModel.loadEVDatabase()
             }
         }
+    }
+    
+    private var searchBar: some View {
+        SearchBarView(searchText: $viewModel.searchText) {
+            await viewModel.searchItems()
+        }
+        .focused($isPresented)
     }
     
     private var listContent: some View {
@@ -54,6 +69,23 @@ struct EVListView: View {
                         await viewModel.loadMoreEVDatabase()
                     }
             }
+        }
+        .listStyle(.plain)
+    }
+    
+    private var topBarLeadingToolbarContent: some ToolbarContent {
+        ToolbarItem(placement: .topBarTrailing) {
+            Button("Clear") {
+                viewModel.clearSearch()
+            }
+            .disabled(viewModel.searchText.isEmpty)
+        }
+    }
+    
+    private var keyboardToolbarContent: some ToolbarContent {
+        ToolbarItemGroup(placement: .keyboard) {
+            Spacer(minLength: 0)
+            Button { isPresented = false } label: { Text("Done") }
         }
     }
     
@@ -76,6 +108,7 @@ struct EVListView: View {
                 .font(.subheadline)
                 .foregroundStyle(.gray)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
     }
 }
 

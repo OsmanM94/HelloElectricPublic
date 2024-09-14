@@ -16,6 +16,7 @@ struct EVDetailsView: View {
         ScrollView(.vertical) {
             VStack(alignment: .leading, spacing: 20) {
                 imageCarousel
+                vehicleNameSection
                 
                 Group {
                     performanceSection
@@ -72,6 +73,14 @@ struct EVDetailsView: View {
                 Text("No images available")
                     .foregroundStyle(.secondary)
             )
+    }
+    
+    private var vehicleNameSection: some View {
+        Text(evData.carName ?? "N/A")
+            .font(.title3)
+            .fontDesign(.rounded)
+            .bold()
+            .padding(.horizontal)
     }
     
     private var performanceSection: some View {
