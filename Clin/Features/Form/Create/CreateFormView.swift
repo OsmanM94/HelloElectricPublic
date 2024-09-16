@@ -9,43 +9,65 @@ import SwiftUI
 
 struct CreateFormView: View {
     @State private var viewModel = CreateFormViewModel()
+    @Bindable var authViewModel: AuthViewModel
     
     var body: some View {
         NavigationStack {
             VStack {
-                switch viewModel.viewState {
-                case .idle:
-                    DvlaCheckView(
-                        registrationNumber: $viewModel.registrationNumber,
-                        sendDvlaRequest:
-                            { await viewModel.sendDvlaRequest() })
+                switch authViewModel.viewState {
+                case .unauthenticated:
+                    AuthenticationView()
                     
                 case .loading:
                     CustomProgressView()
                     
-                case .loaded:
-                    CreateFormSubview(viewModel: viewModel)
-                        .task { await viewModel.loadBulkData() }
-                case .uploading:
-                    CircularProgressBar(progress: viewModel.imageManager.uploadingProgress)
-                    
-                case .success(let message):
-                    SuccessView(message: message, doneAction: { viewModel.resetFormDataAndState() })
+                case .authenticated:
+                    mainContent
                     
                 case .error(let message):
-                    ErrorView(message: message, retryAction: {
-                        viewModel.resetFormDataAndState()
-                    })
+                    ErrorView(message: message) {
+                        authViewModel.resetState()
+                    }
                 }
             }
-            .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
-            .navigationTitle("Selling")
+            .animation(.easeInOut(duration: 0.3), value: authViewModel.viewState)
         }
+    }
+    
+    private var mainContent: some View {
+        VStack {
+            switch viewModel.viewState {
+            case .idle:
+                DvlaCheckView(
+                    registrationNumber: $viewModel.registrationNumber,
+                    sendDvlaRequest:
+                        { await viewModel.sendDvlaRequest() })
+                
+            case .loading:
+                CustomProgressView()
+                
+            case .loaded:
+                CreateFormSubview(viewModel: viewModel)
+                    .task { await viewModel.loadBulkData() }
+            case .uploading:
+                CircularProgressBar(progress: viewModel.imageManager.uploadingProgress)
+                
+            case .success(let message):
+                SuccessView(message: message, doneAction: { viewModel.resetFormDataAndState() })
+                
+            case .error(let message):
+                ErrorView(message: message, retryAction: {
+                    viewModel.resetFormDataAndState()
+                })
+            }
+        }
+        .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
+        .navigationTitle("Selling")
     }
 }
 
 #Preview("DVLA") {
-    CreateFormView()
+    CreateFormView(authViewModel: AuthViewModel())
 }
 
 #Preview("Loaded") {

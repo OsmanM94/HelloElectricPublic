@@ -20,6 +20,7 @@ struct UserListingView: View {
             .deleteAlert(
                 isPresented: $viewModel.showDeleteAlert,
                 itemToDelete: $viewModel.listingToDelete,
+                message: "Are you sure you want to delete this listing?",
                 deleteAction: deleteListingAction
             )
         }

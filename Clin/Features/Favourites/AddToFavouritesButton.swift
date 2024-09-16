@@ -44,7 +44,6 @@ struct FavouriteButtonBackground<Content: View>: View {
     var body: some View {
         Circle()
             .frame(width: width, height: height)
-            .opacity(0.6)
             .foregroundStyle(Color(.systemGray6))
             .overlay {
                 content()
@@ -53,6 +52,8 @@ struct FavouriteButtonBackground<Content: View>: View {
 }
 
 struct FavouriteIcon: View {
+    @Environment(\.colorScheme) private var colorScheme
+    
     let isPromoted: Bool
     let isFavourite: Bool
     let iconSize: CGFloat
@@ -67,7 +68,11 @@ struct FavouriteIcon: View {
     }
 
     private var foregroundStyle: some ShapeStyle {
-        isPromoted ? .yellow : .green
+        if isPromoted {
+            return .green
+        } else {
+            return colorScheme == .dark ? .white : .black
+        }
     }
 }
 

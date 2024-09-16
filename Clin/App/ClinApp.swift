@@ -10,7 +10,6 @@ import SwiftUI
 @main
 struct ClinApp: App {
     @State private var authViewModel = AuthViewModel()
-    @State private var networkMonitor = NetworkMonitor()
     @State private var favouriteViewModel = FavouriteViewModel()
     @State private var accountViewModel = AccountViewModel()
     
@@ -24,7 +23,6 @@ struct ClinApp: App {
                 } else {
                     MarketView()
                         .environment(authViewModel)
-                        .environment(networkMonitor)
                         .environment(favouriteViewModel)
                         .environment(accountViewModel)
                 }

@@ -210,10 +210,10 @@ struct DetailView<T: DetailItem>: View {
             Spacer()
             
             Text("Promoted")
-                .foregroundStyle(.yellow)
                 .padding(10)
+                .foregroundStyle(.green.gradient)
                 .background(Color(.systemGray6))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .clipShape(RoundedRectangle(cornerRadius: 5))
                 .opacity(item.isPromoted ? 1 : 0)
         }
         .fontDesign(.rounded).bold()
@@ -452,7 +452,7 @@ fileprivate struct ContactButtons<T: DetailItem>: View {
 
 // MARK: - Preview
 #Preview {
-    DetailView(item: MockListingService.sampleData[2], showFavourite: true)
+    DetailView(item: MockListingService.sampleData[0], showFavourite: true)
         .environment(FavouriteViewModel())
 }
 

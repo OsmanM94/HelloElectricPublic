@@ -8,13 +8,14 @@
 import SwiftUI
 
 struct UpdatesView: View {
-    let features: [String] = ["Notifications", "Chat messaging", "Website"]
+    let features: [String] = ["Notifications", "Chat messaging","CarPlay Support" , "Website"]
     
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("What features are coming next?")
                 .font(.title2)
-                .fontDesign(.rounded).bold()
+                .fontDesign(.rounded)
+                .bold()
             
             ForEach(features.indices, id: \.self) { index in
                 Text("\(index + 1). \(features[index])")

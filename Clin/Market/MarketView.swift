@@ -8,7 +8,10 @@
 import SwiftUI
 
 struct MarketView: View {
+    @Environment(AuthViewModel.self) private var authViewModel
     @Environment(AccountViewModel.self) private var accountViewModel
+    
+    @State private var networkMonitor = NetworkMonitor()
     @State private var selectedTab: Int = 0
     
     var body: some View {
@@ -18,16 +21,27 @@ struct MarketView: View {
                 .tabItem {
                     Label("Listings", systemImage: "bolt.car")
                 }
+            
             LazyView(SearchView())
                 .tag(1)
                 .tabItem {
                     Label("Search", systemImage: "magnifyingglass")
                 }
+                .overlay(alignment: .top) {
+                    if !networkMonitor.isConnected {
+                        networkStatusBanner
+                    }
+                }
             
-            LazyView(CreateListingViewRouter())
+            LazyView(CreateFormView(authViewModel: authViewModel))
                 .tag(2)
                 .tabItem {
                     Label("Sell", systemImage: "plus")
+                }
+                .overlay(alignment: .top) {
+                    if !networkMonitor.isConnected {
+                        networkStatusBanner
+                    }
                 }
             
             LazyView(HubView())
@@ -35,11 +49,21 @@ struct MarketView: View {
                 .tabItem {
                     Label("Hub", systemImage: "rectangle.grid.2x2.fill")
                 }
+                .overlay(alignment: .top) {
+                    if !networkMonitor.isConnected {
+                        networkStatusBanner
+                    }
+                }
             
-            LazyView(AccountViewRouter())
+            LazyView(AccountView(authViewModel: authViewModel))
                 .tag(4)
                 .tabItem {
                     Label("Account", systemImage: "person.fill")
+                }
+                .overlay(alignment: .top) {
+                    if !networkMonitor.isConnected {
+                        networkStatusBanner
+                    }
                 }
         }
         .onChange(of: selectedTab) { _, newTab in
@@ -49,17 +73,24 @@ struct MarketView: View {
                 intensity = 0.5
             case 1:
                 intensity = 0.5
-            case 2: // "Sell" tab
+            case 2:
                 intensity = 0.7
             case 3:
                 intensity = 0.5
-            case 4: // "Account" tab
+            case 4:
                 intensity = 0.5
             default:
-                intensity = 0.5 // Default soft intensity
+                intensity = 0.5
             }
             accountViewModel.navigationSensoryFeedback(intensity: intensity)
         }
+    }
+    
+    private var networkStatusBanner: some View {
+        NetworkMonitorView()
+            .frame(maxWidth: .infinity)
+            .background(.thinMaterial)
+            .transition(.move(edge: .top).combined(with: .opacity))
     }
 }
 
@@ -67,6 +98,6 @@ struct MarketView: View {
     let _ = PreviewsProvider.shared.container.listingService.register { MockListingService() }
     MarketView()
         .environment(AuthViewModel())
-        .environment(NetworkMonitor())
         .environment(FavouriteViewModel())
+        .environment(AccountViewModel())
 }

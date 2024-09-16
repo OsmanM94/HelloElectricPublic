@@ -9,8 +9,6 @@ import SwiftUI
 
 struct NetworkMonitorView: View {
     
-    @Environment(NetworkMonitor.self) private var networkMonitor
-    
     var body: some View {
         ContentUnavailableView {
             Label("Disconnected", systemImage: "antenna.radiowaves.left.and.right")
@@ -31,5 +29,4 @@ struct NetworkMonitorView: View {
 
 #Preview {
     NetworkMonitorView()
-        .environment(NetworkMonitor())
 }

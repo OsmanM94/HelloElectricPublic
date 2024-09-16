@@ -32,6 +32,27 @@ struct LegalView: View {
             .navigationTitle("Legal")
             .navigationBarTitleDisplayMode(.inline)
             
+            GroupBox("Got questions?") {
+                VStack(alignment: .leading) {
+                    NavigationLink("Call support") {
+                        SupportCenterView()
+                    }
+                    .padding(.top, 8)
+                }
+                .padding()
+            }
+            .padding()
+            .overlay(alignment: .topTrailing) {
+                Image(systemName: "questionmark.circle.fill")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 30, height: 30)
+                    .padding()
+                    .foregroundStyle(.green.gradient)
+                    .clipShape(Circle())
+                    .padding()
+            }
+            
             Spacer()
         }
     }
@@ -42,6 +63,7 @@ struct LegalView: View {
 }
 
 fileprivate struct LegalItemView: View {
+    @Environment(\.colorScheme) private var colorScheme
     let title: String
     let imageName: String
     
@@ -58,13 +80,22 @@ fileprivate struct LegalItemView: View {
             
             Text(title)
                 .font(.headline)
-                .foregroundStyle(.primary)
+                .foregroundStyle(foregroundStyle)
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity, minHeight: 150)
         .background(Color(.systemGray6))
         .clipShape(RoundedRectangle(cornerRadius: 10))
     }
+    
+    private var foregroundStyle: some ShapeStyle {
+        if colorScheme == .dark {
+            return .white
+        } else {
+            return .black
+        }
+    }
+
 }
 
 

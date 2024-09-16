@@ -85,7 +85,7 @@ struct FavouriteRowView: View {
         }
         .deleteAlert(
             isPresented: $showDeleteAlert,
-            itemToDelete: .constant(favourite),
+            itemToDelete: .constant(favourite), message: "Are you sure?",
             deleteAction: { _ in await action() }
         )
        

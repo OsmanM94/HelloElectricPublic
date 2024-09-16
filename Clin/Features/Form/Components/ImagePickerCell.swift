@@ -81,7 +81,8 @@ struct ImagePickerCell<ViewModel: ImagePickerProtocol>: View {
         }
         .deleteAlert(
             isPresented: $showDeleteAlert,
-            itemToDelete: $itemToDelete
+            itemToDelete: $itemToDelete,
+            message: "Are you sure?"
         ) { item in
              viewModel.deleteImage(id: item.id)
         }

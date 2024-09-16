@@ -64,6 +64,10 @@ enum AppError: Error, LocalizedError {
         case companyDissolved
         case companyLoadingFailure
         
+        // Authentication
+        case errorSigningOut
+        case errorDeletingAccount
+        
         var message: String {
             switch self {
             case .requestFailed(let description):
@@ -124,6 +128,10 @@ enum AppError: Error, LocalizedError {
                 return "Sorry, company is dissolved."
             case .companyLoadingFailure:
                 return "Sorry, company not found..."
+            case .errorSigningOut:
+                return "Sorry, error signing out. Try again"
+            case .errorDeletingAccount:
+                return "Sorry, error deleting account. Try again"
             }
         }
     }

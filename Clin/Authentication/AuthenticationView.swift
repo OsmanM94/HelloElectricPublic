@@ -49,7 +49,7 @@ struct AuthenticationView: View {
 fileprivate struct WelcomeText: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            Text("Why Sign in with Apple?")
+            Text("Why continue with Apple?")
                 .font(.title2.bold())
             
             FeatureCell(title: "Fast and Secure", description: "Use your Apple ID for a quick and secure sign-in process.")

@@ -16,9 +16,7 @@ struct EVRowView: View {
             
             VStack(alignment: .leading, spacing: 8) {
                 carNameAndYear
-                
                 priceView
-            
                 specsView
             }
         }

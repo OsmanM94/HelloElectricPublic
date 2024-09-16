@@ -29,6 +29,9 @@ struct ListingRowView: View {
         .overlay(alignment: .topTrailing) {
             topRightOverlay
         }
+        .overlay(alignment: .bottomLeading) {
+            bottomLeftOverlay
+        }
     }
     
     private var placeholderImage: some View {
@@ -52,6 +55,22 @@ struct ListingRowView: View {
         }
     }
     
+    private var bottomLeftOverlay: some View {
+        ZStack {
+            Rectangle()
+                .frame(width: 80, height: 20)
+                .foregroundStyle(Color(.systemGray6))
+                
+                .clipShape(UnevenRoundedRectangle(topLeadingRadius: 0, bottomLeadingRadius: 10, bottomTrailingRadius: 0, topTrailingRadius: 5))
+            Text("Promoted")
+                .font(.subheadline)
+                .foregroundStyle(.green.gradient)
+                .fontDesign(.rounded)
+                .fontWeight(.semibold)
+        }
+        .opacity(listing.isPromoted ? 1 : 0)
+    }
+    
     private var activeStatusBadge: some View {
         HStack(spacing: 2) {
             Circle()
@@ -71,7 +90,6 @@ struct ListingRowView: View {
     private var listingDetails: some View {
         VStack(alignment: .leading, spacing: 3) {
             Text("\(listing.make) \(listing.model) \(listing.yearOfManufacture)")
-                .foregroundStyle(listing.isPromoted ? .yellow : .primary)
                 .font(.headline)
                 .lineLimit(2, reservesSpace: false)
             Text("\(listing.condition)")
