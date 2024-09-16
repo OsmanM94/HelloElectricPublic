@@ -11,7 +11,7 @@ struct EVDetailsView: View {
     let evData: EVDatabase
     
     @State private var showGlossary: Bool = false
-    
+    @State private var showSplashView: Bool = true
     var body: some View {
         ScrollView(.vertical) {
             VStack(alignment: .leading, spacing: 20) {
@@ -19,14 +19,18 @@ struct EVDetailsView: View {
                 vehicleNameSection
                 
                 Group {
-                    performanceSection
-                    rangeSection
-                    batterySection
-                    chargingSection
-                    dimensionsSection
-                    towingSection
-                    efficiencySection
-                    miscellaneousSection
+                    if showSplashView {
+                        EVDetailsSplashView()
+                    } else {
+                        performanceSection
+                        rangeSection
+                        batterySection
+                        chargingSection
+                        dimensionsSection
+                        towingSection
+                        efficiencySection
+                        miscellaneousSection
+                    }
                 }
                 .padding(.horizontal)
             }
@@ -41,6 +45,13 @@ struct EVDetailsView: View {
         .sheet(isPresented: $showGlossary, onDismiss: { showGlossary = false }) {
             EVGlossaryView()
                 .presentationDragIndicator(.visible)
+        }
+        .onAppear {
+            performAfterDelay(0.5) {
+                withAnimation(.easeInOut) {
+                    showSplashView = false
+                }
+            }
         }
     }
     
@@ -257,11 +268,13 @@ fileprivate struct EVGlossaryView: View {
         TermExplanation(term: "Form Factor", explanation: "The physical shape and size of the battery cells, which can influence how they fit into the battery pack and overall vehicle design."),
         TermExplanation(term: "Home Charging", explanation: "Charging the vehicle at home using a standard outlet or a dedicated home charger, usually at lower speeds compared to rapid charging stations.")
     ]
-    @State private var isAnimating: Bool = false
+    @State private var showSplashView: Bool = true
     
     var body: some View {
         VStack {
-            if isAnimating {
+            if showSplashView {
+                CustomProgressView()
+            } else {
                 List(termExplanations, id: \.term) { termExplanation in
                     VStack(alignment: .leading) {
                         Text(termExplanation.term)
@@ -275,18 +288,15 @@ fileprivate struct EVGlossaryView: View {
                     .padding(.top)
                 }
                 .listStyle(.plain)
-            } else {
-                CustomProgressView()
             }
         }
         .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
+            performAfterDelay(0.5) {
                 withAnimation(.easeInOut) {
-                    isAnimating = true
+                    showSplashView = false
                 }
-            })
+            }
         }
-        .onDisappear { isAnimating = false }
     }
 }
 

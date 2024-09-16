@@ -10,8 +10,8 @@ import SwiftUI
 struct ReportButton: View {
     let itemId: Int
     let itemType: String
-    let reportEmail = "helloElectric@support.com"
     let iconSize: CGFloat
+    let supportEmail = AppConstants.Contact.supportEmail
     
     @State private var showReportAlert: Bool = false
     
@@ -33,7 +33,7 @@ struct ReportButton: View {
         let subject = "Reporting \(itemType): \(itemId)"
         let body = "I would like to report the \(itemType.lowercased()) with ID: \(itemId)"
         
-        let urlString = "mailto:\(reportEmail)?subject=\(subject.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")&body=\(body.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")"
+        let urlString = "mailto:\(supportEmail)?subject=\(subject.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")&body=\(body.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")"
         
         if let url = URL(string: urlString),
            UIApplication.shared.canOpenURL(url) {

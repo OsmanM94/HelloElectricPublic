@@ -98,14 +98,19 @@ struct DetailView<T: DetailItem>: View {
     
     // MARK: Body
     var body: some View {
-        VStack {
-            if showSplash {
-                splashView
-            } else {
-                mainContent
+        ScrollView {
+            VStack {
+                imageCarousel
+                if showSplash {
+                    
+                    splashView
+                } else {
+                    mainContent
+                }
             }
+            .navigationBarTitleDisplayMode(.inline)
         }
-        .navigationBarTitleDisplayMode(.inline)
+        .scrollIndicators(.hidden)
     }
     
     // MARK: Subviews
@@ -121,29 +126,24 @@ struct DetailView<T: DetailItem>: View {
     }
     
     private var mainContent: some View {
-        ScrollView(.vertical) {
-            VStack(alignment: .leading, spacing: 0) {
-                imageCarousel
-                
-                VStack(alignment: .leading, spacing: 2) {
-                    itemHeader
-                    itemPriceAndPromotedBadge
-                    Divider()
-                    overviewSection
-                    featuresGrid
-                    moreFeatures
-                    descriptionSection
-                    ListingDisclaimerView()
-                    sellerSection
-                }
-                .fontDesign(.rounded)
-                .fontWeight(.semibold)
-                .padding()
-    
-                Spacer()
+        VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading, spacing: 2) {
+                itemHeader
+                itemPriceAndPromotedBadge
+                Divider()
+                overviewSection
+                featuresGrid
+                moreFeatures
+                descriptionSection
+                ListingDisclaimerView()
+                sellerSection
             }
+            .fontDesign(.rounded)
+            .fontWeight(.semibold)
+            .padding()
+            
+            Spacer()
         }
-        .scrollIndicators(.never)
     }
     
     // MARK: Image Carousel

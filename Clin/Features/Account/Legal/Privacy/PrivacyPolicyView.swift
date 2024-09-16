@@ -15,7 +15,7 @@ struct PrivacyPolicyView: View {
         ("Sharing of Information", "We do not share your personal information with third parties without your consent, except as necessary to provide our services or comply with the law."),
         ("Security", "We implement security measures to protect your personal information."),
         ("Changes to this Privacy Policy", "We may update this privacy policy from time to time."),
-        ("Contact Us", "If you have any questions about this privacy policy, please contact us at support@evmarketplace.com.")
+        ("Contact Us", "If you have any questions about this privacy policy, please contact us at \(AppConstants.Contact.supportEmail).")
     ]
     
     var body: some View {

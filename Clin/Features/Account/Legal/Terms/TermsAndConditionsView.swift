@@ -10,14 +10,14 @@ import SwiftUI
 struct TermsAndConditionsView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var showDealerDetails: Bool = false
-
+    
     let generalSections = [
         ("Introduction", "Welcome to our EV marketplace application. By using our app, you agree to comply with and be bound by the following terms and conditions."),
         ("Use of the App", "You agree to use the app only for lawful purposes and in accordance with these terms."),
         ("Listings", "You are responsible for the accuracy of the information provided in your listings."),
         ("Privacy", "Your use of the app is also governed by our Privacy Policy."),
         ("Changes to Terms", "We reserve the right to modify these terms at any time."),
-        ("Contact Us", "If you have any questions about these terms, please contact us at support@evmarketplace.com.")
+        ("Contact Us", "If you have any questions about these terms, please contact us at \(AppConstants.Contact.supportEmail)")
     ]
     
     var body: some View {

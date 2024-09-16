@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SupportCenterView: View {
-    let phoneNumber: String = "07466861603"
+    let phoneNumber = AppConstants.Contact.phoneNumber
     
     var body: some View {
         ScrollView(.vertical) {
@@ -42,10 +42,10 @@ struct SupportCenterView: View {
                 
                 Text("Or")
                 
-                Text("support@helloelectric.co.uk")
+                Text("helloelectric@support.com")
+                    
             }
             .padding()
-            
             .navigationTitle("Support")
             .navigationBarTitleDisplayMode(.inline)
         }

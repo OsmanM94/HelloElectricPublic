@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct MarketView: View {
+    @Environment(AccountViewModel.self) private var accountViewModel
     @State private var selectedTab: Int = 0
     
     var body: some View {
@@ -35,12 +36,29 @@ struct MarketView: View {
                     Label("Hub", systemImage: "rectangle.grid.2x2.fill")
                 }
             
-//            LazyView(AccountViewRouter())
-            AccountViewRouter()
+            LazyView(AccountViewRouter())
                 .tag(4)
                 .tabItem {
                     Label("Account", systemImage: "person.fill")
                 }
+        }
+        .onChange(of: selectedTab) { _, newTab in
+            let intensity: CGFloat
+            switch newTab {
+            case 0:
+                intensity = 0.5
+            case 1:
+                intensity = 0.5
+            case 2: // "Sell" tab
+                intensity = 0.7
+            case 3:
+                intensity = 0.5
+            case 4: // "Account" tab
+                intensity = 0.5
+            default:
+                intensity = 0.5 // Default soft intensity
+            }
+            accountViewModel.navigationSensoryFeedback(intensity: intensity)
         }
     }
 }

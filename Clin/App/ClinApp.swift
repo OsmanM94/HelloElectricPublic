@@ -12,26 +12,26 @@ struct ClinApp: App {
     @State private var authViewModel = AuthViewModel()
     @State private var networkMonitor = NetworkMonitor()
     @State private var favouriteViewModel = FavouriteViewModel()
+    @State private var accountViewModel = AccountViewModel()
     
-    @State private var isActive: Bool = false
+    @State private var showSplashView: Bool = true
     
     var body: some Scene {
         WindowGroup {
             Group {
-                if isActive {
+                if showSplashView {
+                    SplashView()
+                } else {
                     MarketView()
                         .environment(authViewModel)
                         .environment(networkMonitor)
                         .environment(favouriteViewModel)
-                } else {
-                    SplashView()
+                        .environment(accountViewModel)
                 }
             }
             .onAppear {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                    withAnimation(.easeInOut) {
-                        self.isActive = true
-                    }
+                performAfterDelay(2.0) {
+                    withAnimation(.easeInOut) { showSplashView = false }
                 }
             }
         }

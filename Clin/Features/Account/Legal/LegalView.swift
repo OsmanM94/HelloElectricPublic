@@ -24,14 +24,15 @@ struct LegalView: View {
                     LegalItemView(title: "Terms and Conditions", imageName: "doc.text.fill")
                 }
                 
-                NavigationLink(destination: LazyView(CookieView())) {
-                    LegalItemView(title: "Cookie Policy", imageName: "leaf.fill")
+                NavigationLink(destination: LazyView(DisclaimerView())) {
+                    LegalItemView(title: "Disclaimer", imageName: "hand.raised.fill")
                 }
             }
             .padding()
-            .padding(.bottom, 60)
             .navigationTitle("Legal")
             .navigationBarTitleDisplayMode(.inline)
+            
+            Spacer()
         }
     }
 }
@@ -57,8 +58,8 @@ fileprivate struct LegalItemView: View {
             
             Text(title)
                 .font(.headline)
-                .foregroundColor(.primary)
-                .multilineTextAlignment(.center)  // Ensure text is centered
+                .foregroundStyle(.primary)
+                .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity, minHeight: 150)
         .background(Color(.systemGray6))

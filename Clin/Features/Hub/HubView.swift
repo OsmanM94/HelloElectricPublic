@@ -29,8 +29,36 @@ struct HubView: View {
                 }
             }
             .padding()
-            .padding(.bottom, 60)
             .navigationTitle("Hub")
+            
+            GroupBox("EV Database") {
+                VStack(alignment: .leading) {
+                    Text("Browse electric vehicles, sourced directly from manufacturers, offering detailed information on models, specifications, and more.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .padding(.top, 4)
+                    
+                    NavigationLink("Browse Database") {
+                        LazyView(EVDatabaseContainer())
+                    }
+                    .padding(.top, 8)
+                    
+                }
+                .padding()
+            }
+            .padding()
+            .overlay(alignment: .topTrailing) {
+                Image(systemName: "info.circle.fill")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 30, height: 30)
+                    .padding()
+                    .foregroundStyle(.green.gradient)
+                    .clipShape(Circle())
+                    .padding()
+            }
+            
+            Spacer()
         }
     }
 }
@@ -59,9 +87,15 @@ fileprivate struct StatioViewContainer: View {
 
 fileprivate struct EducationCenterContainer: View {
     var body: some View {
-//        EducationCenterView()
+        EducationCenterView()
+            .navigationTitle("Education")
+    }
+}
+
+fileprivate struct EVDatabaseContainer: View {
+    var body: some View {
         EVListView()
-//            .navigationTitle("Education")
+            .navigationTitle("Database")
     }
 }
 

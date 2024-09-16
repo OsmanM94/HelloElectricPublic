@@ -9,6 +9,7 @@ import SwiftUI
 
 struct AccountView: View {
     @Environment(AuthViewModel.self) private var authViewModel
+    @Environment(AccountViewModel.self) private var accountViewModel
     
     var body: some View {
         NavigationStack {
@@ -49,7 +50,7 @@ struct AccountView: View {
                     }
                 }
                 
-                Section("What is next?") {
+                Section("What's next?") {
                     NavigationLink {
                         UpdatesView()
                     } label: {
@@ -60,23 +61,26 @@ struct AccountView: View {
                 
                 Section("Notifications") {
                     NavigationLink(destination: {
-//                        LazyView(NotificationsView())
-                        NotificationsView()
+                        LazyView(NotificationsView())
                     }) {
                         Label("Notifications", systemImage: "bell")
                     }
                 }
                 
-                Section("Haptic feedback") {
-                    Toggle(isOn: .constant(false)) {
-                        Label("Turn on", systemImage: "hand.tap")
+                Section {
+                    Toggle(isOn: Bindable(accountViewModel).navigationHaptic) {
+                        Label("Haptic Feedback", systemImage: "hand.tap")
                     }
                 }
                 
                 Section("Signed in as \(authViewModel.displayName)") {
-                    SignOutButton(action: { Task {
-                        await authViewModel.signOut()
-                    }}, description: "Sign out")
+                    Button {
+                        Task { await authViewModel.signOut() }
+                    } label: {
+                        Text("Sign out")
+                            .foregroundStyle(.red)
+                            .frame(maxWidth: .infinity)
+                    }
                 }
                 
                 Section {
@@ -84,6 +88,15 @@ struct AccountView: View {
                         Text("Delete account")
                             .foregroundStyle(.red)
                             .frame(maxWidth: .infinity)
+                    }
+                }
+                
+                Section {
+                    HStack {
+                        Text("Version")
+                        Spacer()
+                        Text(AppConstants.App.version)
+                            .foregroundStyle(.secondary)
                     }
                 }
             }
@@ -121,36 +134,6 @@ fileprivate struct FavouriteListingContainer: View {
     }
 }
 
-fileprivate struct SignOutButton: View {
-    let action: () -> Void
-    let description: String
-    @State private var isSigningOut: Bool = false
-    
-    var body: some View {
-        VStack(spacing: 0) {
-            Button(role: .destructive, action: {
-                withAnimation(.easeInOut(duration: 0.5)) {
-                    isSigningOut = true
-                }
-                performAfterDelay(0.3) {
-                    action()
-                    isSigningOut = false
-                }
-            }, label: {
-                if isSigningOut {
-                    ProgressView()
-                        .scaleEffect(1.5)
-                        .frame(maxWidth: .infinity)
-                } else {
-                    Text("Sign Out")
-                        .foregroundStyle(.red)
-                        .frame(maxWidth: .infinity)
-                }
-            })
-        }
-        .buttonStyle(.plain)
-    }
-}
 
 
 

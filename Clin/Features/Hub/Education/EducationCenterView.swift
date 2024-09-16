@@ -30,7 +30,8 @@ struct EducationCenterView: View {
                 }
             }
             .padding()
-            .padding(.bottom, 60)
+            
+            Spacer()
         }
     }
 }

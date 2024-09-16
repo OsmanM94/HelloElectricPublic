@@ -9,9 +9,10 @@ import SwiftUI
 
 struct SupportButton: View {
     let buttonText: String
-    let phoneNumber: String = "07466861603"
     let textColor: Color
     let font: Font
+    
+    let phoneNumber = AppConstants.Contact.phoneNumber
     
     @State private var showAlert: Bool = false
     
@@ -38,6 +39,7 @@ struct SupportButton: View {
                 dismissButton: .default(Text("OK"))
             )
         }
+        .onDisappear { showAlert = false }
     }
     
     private func promptPhoneCall() {

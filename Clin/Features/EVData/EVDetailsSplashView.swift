@@ -10,9 +10,6 @@ import SwiftUI
 struct EVDetailsSplashView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            noImagesAvailable
-                .padding(.bottom)
-            
             infoRow("Acceleration (0-62 mph)", "5 sec")
             infoRow("Top Speed", "100 mph")
             infoRow("Total Power", "100 kWh")

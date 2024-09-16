@@ -75,7 +75,8 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Account/AccountView.swift,
-				Account/Legal/CookieView.swift,
+				Account/AccountViewModel.swift,
+				Account/Legal/Disclaimer/DisclaimerView.swift,
 				Account/Legal/LegalView.swift,
 				Account/Legal/Privacy/PrivacyPolicyView.swift,
 				Account/Legal/Safety/SafetyView.swift,
@@ -218,6 +219,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Cache/CacheManager.swift,
+				Constants/Constants.swift,
 				JSONDecoder/JSONDecoder.swift,
 				LazyView/LazyView.swift,
 				NetworkMonitor/NetworkMonitor.swift,

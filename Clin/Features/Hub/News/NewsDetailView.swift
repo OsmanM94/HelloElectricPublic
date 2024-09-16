@@ -8,12 +8,11 @@
 import SwiftUI
 
 struct NewsDetailView: View {
-    @Environment(\.dismiss) private var dismiss
     let article: NewsArticle
     
     var body: some View {
-        ScrollView {
-            ZStack(alignment: .topLeading) {
+        ScrollView(.vertical) {
+            VStack {
                 if let url = URL.from(article.urlToImage) {
                     ImageLoader(url: url, contentMode: .fill,
                                 targetSize: CGSize(width: 350, height: 350))
@@ -28,19 +27,6 @@ struct NewsDetailView: View {
                                 .font(.headline)
                         }
                         .frame(maxWidth: .infinity, minHeight: 300)
-                }
-             
-                Button(action: {
-                   dismiss()
-                }) {
-                    Image(systemName: "chevron.left")
-                        .font(.title2)
-                        .padding()
-                        .background(Color.black.opacity(0.5))
-                        .clipShape(Circle())
-                        .foregroundStyle(.white)
-                        .padding()
-                        .padding(.top, 20)
                 }
             }
             
@@ -79,9 +65,7 @@ struct NewsDetailView: View {
             }
         }
         .scrollBounceBehavior(.basedOnSize)
-        .ignoresSafeArea()
         .navigationBarTitleDisplayMode(.inline)
-        .navigationBarBackButtonHidden()
     }
 }
 
