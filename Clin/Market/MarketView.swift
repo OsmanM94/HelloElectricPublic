@@ -42,7 +42,6 @@ struct MarketView: View {
                     Label("Account", systemImage: "person.fill")
                 }
         }
-        .sensoryFeedback(.impact(flexibility: .soft), trigger: selectedTab)
     }
 }
 

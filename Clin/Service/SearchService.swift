@@ -25,4 +25,28 @@ final class SearchService: SearchServiceProtocol {
         try await databaseService
             .loadAll(from: "ev_features", orderBy: "id", ascending: true)
     }
+    
+    func searchWithPaginationAndFilter(or: String, from: Int, to: Int) async throws -> [Listing] {
+        try await databaseService
+            .searchPaginatedDataWithOrFilter(
+                from: "car_listing",
+                filter: or,
+                from: from,
+                to: to,
+                orderBy: "created_at",
+                ascending: false
+            )
+    }
+    
+    func searchFilteredItems(filters: [String: Any], from: Int, to: Int) async throws -> [Listing] {
+        try await databaseService
+            .searchWithComplexFilter(
+                from: "car_listing",
+                filters: filters,
+                from: from,
+                to: to,
+                orderBy: "created_at",
+                ascending: false
+            )
+    }
 }

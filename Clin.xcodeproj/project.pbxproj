@@ -93,6 +93,7 @@
 				Account/User/UserListings/UserListingView.swift,
 				Account/User/UserListings/UserListingViewModel.swift,
 				EVData/EVDataViewModel.swift,
+				EVData/EVDetailsSplashView.swift,
 				EVData/EVDetailsView.swift,
 				EVData/EVListView.swift,
 				EVData/EVRowView.swift,

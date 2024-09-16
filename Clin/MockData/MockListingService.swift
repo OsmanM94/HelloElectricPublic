@@ -8,7 +8,7 @@
 import Foundation
 
 struct MockListingService: ListingServiceProtocol {
-    
+   
     static let mockUserID = UUID(uuidString: "123e4567-e89b-12d3-a456-426614174000")!
     
     static var modelsSample: [EVModels] = [EVModels(id: 1, make: "Tesla", models: ["Model2","Model3"])]
@@ -196,5 +196,10 @@ struct MockListingService: ListingServiceProtocol {
     
     func deleteListing(at id: Int) async throws {
         MockListingService.sampleData.removeAll { $0.id == id }
+    }
+    
+    func searchListings(vehicleType: VehicleType, from: Int, to: Int) async throws -> [Listing] {
+        try await Task.sleep(nanoseconds: 2 * 1_000_000_000)
+        return MockListingService.sampleData
     }
 }

@@ -11,6 +11,7 @@ import Foundation
 struct EVDatabase: Codable, Identifiable, Hashable {
     let availability,
         availableSince,
+        carName,
         rangeCityCold,
         rangeHighwayCold: String?
     
@@ -46,17 +47,17 @@ struct EVDatabase: Codable, Identifiable, Hashable {
     
     let chargingHomeChargeTime,
         chargingHomeChargeSpeed,
-        chargingHomeChargePowerMax,
         chargingHomeAutochargeSupported: String?
     
     let chargingRapidPort,
         chargingRapidPortLocation,
         chargingRapidChargeSpeed,
+        chargingRapidChargeTime,
         chargingRapidAutochargeSupported: String?
     
     let efficiencyRealRangeConsumption,
         efficiencyFuelEquivalent,
-        dimensionsAndWeightLenght,
+        dimensionsAndWeightLength,
         dimensionsAndWeightWidth: String?
     
     let dimensionsAndWeightWidthMirrors,
@@ -85,16 +86,17 @@ struct EVDatabase: Codable, Identifiable, Hashable {
     
     let image1: [URL]?
     
-    let availableOrderFrom,
-        firstDeliveryExpected,
-        performanceTorque,
-        carName: String?
+    let firstDeliveryExpected,
+        performanceTorque: String?
+    
+    let carPrice: Double?
     
     let id: Int?
 
     enum CodingKeys: String, CodingKey {
         case availability
         case availableSince = "available_since"
+        case carName = "car_name"
         case rangeCityCold = "range_city_cold"
         case rangeHighwayCold = "range_highway_cold"
         case rangeCombinedCold = "range_combined_cold"
@@ -123,15 +125,15 @@ struct EVDatabase: Codable, Identifiable, Hashable {
         case chargingHomeChargePower = "charging_home_charge_power"
         case chargingHomeChargeTime = "charging_home_charge_time"
         case chargingHomeChargeSpeed = "charging_home_charge_speed"
-        case chargingHomeChargePowerMax = "charging_home_charge_power_max"
         case chargingHomeAutochargeSupported = "charging_home_autocharge_supported"
         case chargingRapidPort = "charging_rapid_port"
         case chargingRapidPortLocation = "charging_rapid_port_location"
+        case chargingRapidChargeTime = "charging_rapid_charge_time"
         case chargingRapidChargeSpeed = "charging_rapid_charge_speed"
         case chargingRapidAutochargeSupported = "charging_rapid_autocharge_supported"
         case efficiencyRealRangeConsumption = "efficiency_real_range_consumption"
         case efficiencyFuelEquivalent = "efficiency_fuel_equivalent"
-        case dimensionsAndWeightLenght = "dimensions_and_weight_lenght"
+        case dimensionsAndWeightLength = "dimensions_and_weight_lenght"
         case dimensionsAndWeightWidth = "dimensions_and_weight_width"
         case dimensionsAndWeightWidthMirrors = "dimensions_and_weight_width_mirrors"
         case dimensionsAndWeightWheelbase = "dimensions_and_weight_wheelbase"
@@ -153,10 +155,9 @@ struct EVDatabase: Codable, Identifiable, Hashable {
         case miscellaneousHeatPump = "miscellaneous_heat_pump"
         case miscellaneousHPStandardEquipment = "miscellaneous_hp_standard_equipment"
         case image1 = "image_1"
-        case availableOrderFrom = "available_order_from"
         case firstDeliveryExpected = "first_delivery_expected"
         case performanceTorque = "performance_torque"
-        case carName = "car_name"
+        case carPrice = "car_price"
         case id
     }
 }
@@ -165,6 +166,7 @@ extension EVDatabase {
     static let sampleData: EVDatabase = EVDatabase(
         availability: "Available",
         availableSince: "2024",
+        carName: "Volkswagen ID.4 (2024)",
         rangeCityCold: "300 km",
         rangeHighwayCold: "250 km",
         rangeCombinedCold: "275 km",
@@ -193,15 +195,15 @@ extension EVDatabase {
         chargingHomeChargePower: "11 kW AC",
         chargingHomeChargeTime: "7h 30min",
         chargingHomeChargeSpeed: "50 km/h",
-        chargingHomeChargePowerMax: "11 kW",
         chargingHomeAutochargeSupported: "Yes",
         chargingRapidPort: "CCS",
         chargingRapidPortLocation: "Right rear",
         chargingRapidChargeSpeed: "550 km/h",
+        chargingRapidChargeTime: "17 mins",
         chargingRapidAutochargeSupported: "Yes",
         efficiencyRealRangeConsumption: "18 kWh/100km",
         efficiencyFuelEquivalent: "2.0 L/100km",
-        dimensionsAndWeightLenght: "4.58 m",
+        dimensionsAndWeightLength: "4.58 m",
         dimensionsAndWeightWidth: "1.85 m",
         dimensionsAndWeightWidthMirrors: "2.11 m",
         dimensionsAndWeightWheelbase: "2.77 m",
@@ -211,7 +213,7 @@ extension EVDatabase {
         dimensionsCargoVolume: "543 L",
         dimensionsCargoVolumeMax: "1,575 L",
         dimensionsRoofLoad: "75 kg",
-        dimensionsTow: "Yes",
+        dimensionsTow: "No",
         dimensionsTowingUnbraked: "750 kg",
         dimensionsTowingBraked: "1,000 kg",
         miscellaneousSeats: "5",
@@ -223,10 +225,9 @@ extension EVDatabase {
         miscellaneousHeatPump: "Optional",
         miscellaneousHPStandardEquipment: "No",
         image1: [URL(string: "https://ev-database.org/img/auto/Volkswagen_ID4_2024/Volkswagen_ID4_2024-01@2x.jpg")!,URL(string: "https://ev-database.org/img/auto/Volkswagen_ID4_2024/Volkswagen_ID4_2024-02@2x.jpg")!],
-        availableOrderFrom: "Now",
         firstDeliveryExpected: "Q1 2024",
         performanceTorque: "310 Nm",
-        carName: "Volkswagen ID.4 (2024)",
+        carPrice: 17000,
         id: 1
     )
 }

@@ -85,28 +85,36 @@ final class SearchViewModel {
     @MainActor
     func searchItems(isLoadingMore: Bool = false) async {
         guard !searchText.isEmpty else { return }
-    
-        await performSearch(isLoadingMore: isLoadingMore) { [weak self] in
-            guard let self = self else { return [] }
-            
-            return try await self.searchLogic
-                .searchItems(
-                    searchText: self.currentSearchText,
-                    from: self.currentPage * self.pageSize,
-                    to: ( self.currentPage + 1) * self.pageSize - 1)
+
+        do {
+            try await performSearch(isLoadingMore: isLoadingMore) { [weak self] in
+                guard let self = self else { return [] }
+                
+                return try await self.searchLogic
+                    .searchItems(
+                        searchText: self.currentSearchText,
+                        from: self.currentPage * self.pageSize,
+                        to: (self.currentPage + 1) * self.pageSize - 1)
+            }
+        } catch {
+            self.viewState = .error(AppError.ErrorType.generalError.message)
         }
     }
     
     // Search with filters
     @MainActor
     func searchFilteredItems(isLoadingMore: Bool = false) async {
-        await performSearch(isLoadingMore: isLoadingMore) { [weak self] in
-            guard let self = self else { return [] }
-            return try await self.searchLogic.searchFilteredItems(
-                filters: self.filters,
-                from: self.currentPage * self.pageSize,
-                to: (self.currentPage + 1) * self.pageSize - 1
-            )
+        do {
+            try await performSearch(isLoadingMore: isLoadingMore) { [weak self] in
+                guard let self = self else { return [] }
+                return try await self.searchLogic.searchFilteredItems(
+                    filters: self.filters,
+                    from: self.currentPage * self.pageSize,
+                    to: (self.currentPage + 1) * self.pageSize - 1
+                )
+            }
+        } catch {
+            self.viewState = .error(AppError.ErrorType.generalError.message)
         }
     }
     
@@ -125,6 +133,7 @@ final class SearchViewModel {
         filters.reset()
     }
     
+    // MARK: - Methods
     func handleSuggestionTap(_ suggestion: String) {
         guard !suggestionTapped else { return }
         suggestionTapped = true
@@ -138,9 +147,13 @@ final class SearchViewModel {
         }
     }
     
-    // MARK: - Helpers and misc
+    func updateAvailableModels() {
+        let newModel = dataLoader.updateAvailableModels(make: self.filters.make, currentModel: self.filters.model)
+        self.filters.updateModel(newModel)
+    }
     
-    private func performSearch(isLoadingMore: Bool, searchFunction: @escaping () async throws -> [Listing]) async {
+    // MARK: - Private methods
+    private func performSearch(isLoadingMore: Bool, searchFunction: @escaping () async throws -> [Listing]) async throws{
         if !isLoadingMore {
             self.searchedItems.removeAll()
             self.currentPage = 0
@@ -167,11 +180,6 @@ final class SearchViewModel {
             viewState = .error(AppError.ErrorType.generalError.message)
         }
         self.isSearching = false
-    }
-    
-    func updateAvailableModels() {
-        let newModel = dataLoader.updateAvailableModels(make: self.filters.make, currentModel: self.filters.model)
-        self.filters.updateModel(newModel)
     }
 }
 
@@ -331,12 +339,12 @@ final class SearchFilters {
     }
 }
 
-/// This class needs to be moved into SearchService when possible please.
 final class SearchLogic {
-    @Injected(\.supabaseService) private var supabaseService
-    private let table: String = "car_listing"
+    // MARK: - Dependencies
+    @Injected(\.searchService) private var searchService
     
-    func searchItems(searchText: String, from: Int, to: Int) async throws -> [Listing] {
+    // MARK: - Search methods
+    func searchItems(searchText: String, from: Int, to: Int) async throws  -> [Listing] {
         let searchComponents = searchText.split(separator: " ").map { String($0) }
         
         let orConditions = searchComponents.map { component in
@@ -345,45 +353,31 @@ final class SearchLogic {
             """
         }.joined(separator: ",")
         
-        return try await supabaseService.client
-            .from(table)
-            .select()
-            .or(orConditions)
-            .range(from: from, to: to)
-            .order("created_at", ascending: false)
-            .execute()
-            .value
+        return try await searchService.searchWithPaginationAndFilter(or: orConditions, from: from, to: to)
     }
-    
+        
     func searchFilteredItems(filters: SearchFilters, from: Int, to: Int) async throws -> [Listing] {
-        var query = supabaseService.client
-            .from(table)
-            .select()
+        var filterDict: [String: Any] = [:]
         
-        // Apply filters
-        if filters.make != "Any" { query = query.eq("make", value: filters.make) }
-        if filters.model != "Any" { query = query.eq("model", value: filters.model) }
-        if filters.body != "Any" { query = query.eq("body_type", value: filters.body) }
-        if filters.selectedYear != "Any" { query = query.eq("year", value: filters.selectedYear) }
-        if filters.maxPrice < 100000 { query = query.lte("price", value: filters.maxPrice) }
-        if filters.maxMileage < 500000 { query = query.lte("mileage", value: filters.maxMileage) }
-        if filters.condition != "Any" { query = query.eq("condition", value: filters.condition) }
-        if filters.range != "Any" { query = query.eq("range", value: filters.range) }
-        if filters.colour != "Any" { query = query.eq("colour", value: filters.colour) }
-        if filters.maxPublicChargingTime != "Any" { query = query.lte("public_charging", value: filters.maxPublicChargingTime) }
-        if filters.maxHomeChargingTime != "Any" { query = query.lte("home_charging", value: filters.maxHomeChargingTime) }
-        if filters.batteryCapacity != "Any" { query = query.eq("battery_capacity", value: filters.batteryCapacity) }
-        if filters.powerBhp != "Any" { query = query.eq("power_bhp", value: filters.powerBhp) }
-        if filters.regenBraking != "Any" { query = query.eq("regen_braking", value: filters.regenBraking) }
-        if filters.warranty != "Any" { query = query.eq("warranty", value: filters.warranty) }
-        if filters.serviceHistory != "Any" { query = query.eq("service_history", value: filters.serviceHistory) }
-        if filters.numberOfOwners != "Any" { query = query.eq("owners", value: filters.numberOfOwners) }
+        if filters.make != "Any" { filterDict["make"] = filters.make }
+        if filters.model != "Any" { filterDict["model"] = filters.model }
+        if filters.body != "Any" { filterDict["body_type"] = filters.body }
+        if filters.selectedYear != "Any" { filterDict["year"] = filters.selectedYear }
+        if filters.maxPrice < 100000 { filterDict["price"] = filters.maxPrice }
+        if filters.maxMileage < 500000 { filterDict["mileage"] = filters.maxMileage }
+        if filters.condition != "Any" { filterDict["condition"] = filters.condition }
+        if filters.range != "Any" { filterDict["range"] = filters.range }
+        if filters.colour != "Any" { filterDict["colour"] = filters.colour }
+        if filters.maxPublicChargingTime != "Any" { filterDict["public_charging"] = filters.maxPublicChargingTime }
+        if filters.maxHomeChargingTime != "Any" { filterDict["home_charging"] = filters.maxHomeChargingTime }
+        if filters.batteryCapacity != "Any" { filterDict["battery_capacity"] = filters.batteryCapacity }
+        if filters.powerBhp != "Any" { filterDict["power_bhp"] = filters.powerBhp }
+        if filters.regenBraking != "Any" { filterDict["regen_braking"] = filters.regenBraking }
+        if filters.warranty != "Any" { filterDict["warranty"] = filters.warranty }
+        if filters.serviceHistory != "Any" { filterDict["service_history"] = filters.serviceHistory }
+        if filters.numberOfOwners != "Any" { filterDict["owners"] = filters.numberOfOwners }
         
-        return try await query
-            .order("created_at", ascending: false)
-            .range(from: from, to: to)
-            .execute()
-            .value
+        return try await searchService.searchFilteredItems(filters: filterDict, from: from, to: to)
     }
 }
 

@@ -10,18 +10,7 @@ import Factory
 
 final class ListingService: ListingServiceProtocol {
     @Injected(\.databaseService) private var databaseService
-    
-    func loadPaginatedListings(from: Int,to: Int) async throws -> [Listing] {
-        try await databaseService
-            .loadWithPagination(
-                from: "car_listing",
-                orderBy: "created_at",
-                ascending: false,
-                from: from,
-                to: to
-            )
-    }
-    
+        
     func loadListing(id: Int) async throws -> Listing {
         try await databaseService
             .loadByID(
@@ -79,4 +68,18 @@ final class ListingService: ListingServiceProtocol {
                 id: id
             )
     }
+    
+    func searchListings(vehicleType: VehicleType, from: Int, to: Int) async throws -> [Listing] {
+        try await databaseService
+            .loadPaginatedDataWithListFilter(
+                from: "car_listing",
+                filter: "body_type", values: vehicleType.databaseValues,
+                orderBy: "is_promoted",
+                orderBy2: "created_at",
+                ascending: false,
+                from: from,
+                to: to
+            )
+    }
 }
+

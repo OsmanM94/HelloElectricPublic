@@ -8,7 +8,10 @@ import SwiftUI
 import PhotosUI
 
 protocol DatabaseServiceProtocol {
-    func loadWithPagination<T: Decodable>(from table: String, orderBy: String, ascending: Bool, from: Int, to: Int) async throws -> [T]
+    func loadPaginatedData<T: Decodable>(from table: String, orderBy: String, ascending: Bool, from: Int, to: Int) async throws -> [T]
+    func loadPaginatedDataWithListFilter<T: Decodable>(from table: String, filter: String, values: [String], orderBy: String, orderBy2: String, ascending: Bool, from: Int, to: Int) async throws -> [T]
+    func searchPaginatedDataWithOrFilter<T: Decodable> (from table: String, filter: String, from: Int, to: Int, orderBy: String, ascending: Bool) async throws -> [T]
+    func searchWithComplexFilter<T: Decodable>(from table: String,filters: [String: Any],from: Int,to: Int, orderBy:String, ascending: Bool) async throws -> [T]
     func loadAll<T: Decodable>(from table: String, orderBy: String, ascending: Bool) async throws -> [T]
     func loadByID<T: Decodable>(from table: String, id: Int) async throws -> T
     func loadMultipleWithField<T: Decodable>(from table: String, orderBy: String, ascending: Bool, field: String, uuid: UUID) async throws -> [T]
@@ -21,7 +24,6 @@ protocol DatabaseServiceProtocol {
 }
 
 protocol ListingServiceProtocol {
-    func loadPaginatedListings(from: Int, to: Int) async throws -> [Listing]
     func loadListing(id: Int) async throws -> Listing
     func loadUserListings(userID: UUID) async throws -> [Listing]
     func createListing(_ listing: Listing) async throws
@@ -30,6 +32,7 @@ protocol ListingServiceProtocol {
     func loadModels() async throws -> [EVModels]
     func loadLocations() async throws -> [Cities]
     func loadEVfeatures() async throws -> [EVFeatures]
+    func searchListings(vehicleType: VehicleType, from: Int, to: Int) async throws -> [Listing]
 }
 
 protocol EVDatabaseServiceProtocol {
@@ -95,4 +98,6 @@ protocol SearchServiceProtocol {
     func loadModels() async throws -> [EVModels]
     func loadCities() async throws -> [Cities]
     func loadEVfeatures() async throws -> [EVFeatures]
+    func searchWithPaginationAndFilter(or: String, from: Int, to: Int) async throws -> [Listing]
+    func searchFilteredItems(filters: [String: Any], from: Int, to: Int) async throws -> [Listing]
 }

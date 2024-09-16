@@ -56,7 +56,6 @@ final class ListingViewModel {
     
     // MARK: - Dependencies
     @ObservationIgnored @Injected(\.listingService) private var listingService
-    @ObservationIgnored @Injected(\.supabaseService) private var supabaseService
     
     init()  {
         print("DEBUG: Did init Listing viewmodel.")
@@ -72,7 +71,7 @@ final class ListingViewModel {
         }
         
         do {
-            let newListings = try await searchItemsFromSupabase(
+            let newListings = try await listingService.searchListings(
                 vehicleType: vehicleType,
                 from: currentPage * pageSize,
                 to: currentPage * pageSize + pageSize - 1
@@ -96,24 +95,6 @@ final class ListingViewModel {
         self.hasMoreListings = true
     }
     
-    private func searchItemsFromSupabase(vehicleType: VehicleType, from: Int, to: Int) async throws -> [Listing] {
-        do {
-            let query = supabaseService.client
-                .from("car_listing")
-                .select()
-                .in("body_type", values: vehicleType.databaseValues)
-                .range(from: from, to: to)
-                .order("is_promoted", ascending: false) // Sort promoted first
-                .order("created_at", ascending: false)  // Then sort by date
-            
-            let response: [Listing] = try await query.execute().value
-            return response
-        } catch {
-            print("DEBUG: Failed to load listings from Supabase: \(error)")
-            throw error
-        }
-    }
-    
     private func updateListings(with newListings: [Listing], isRefresh: Bool) {
         if newListings.count < pageSize {
             self.hasMoreListings = false
@@ -133,7 +114,7 @@ final class ListingViewModel {
     private func loadListings() async throws -> [Listing] {
         let from = currentPage * pageSize
         let to = from + pageSize - 1
-        return try await listingService.loadPaginatedListings(from: from, to: to)
+        return try await listingService.searchListings(vehicleType: VehicleType.cars, from: from, to: to)
     }
     
     private func updateListings(with newListings: [Listing]) {

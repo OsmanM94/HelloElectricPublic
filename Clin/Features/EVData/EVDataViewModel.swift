@@ -112,7 +112,9 @@ final class EVDataViewModel {
     @MainActor
     func resetStateToLoaded() {
         resetPagination()
-        viewState = .loaded
+        Task {
+            await loadEVs()
+        }
     }
     
     // MARK: - Private methods
@@ -134,7 +136,7 @@ final class EVDataViewModel {
             .select()
             .or(orConditions)
             .range(from: from, to: to)
-            .order("available_since", ascending: false)
+            .order("car_name", ascending: false)
             .execute()
             .value
     }
@@ -145,7 +147,7 @@ final class EVDataViewModel {
                 from: currentPage * pageSize,
                 to: (currentPage * pageSize) + pageSize - 1
             )
-            
+           
             if newEVs.isEmpty {
                 hasMoreListings = false
                 viewState = evDatabase.isEmpty ? .empty : .loaded

@@ -38,7 +38,7 @@ struct EVDetailsView: View {
                 Button("Glossary") { showGlossary.toggle() }
             }
         }
-        .sheet(isPresented: $showGlossary) {
+        .sheet(isPresented: $showGlossary, onDismiss: { showGlossary = false }) {
             EVGlossaryView()
                 .presentationDragIndicator(.visible)
         }
@@ -138,7 +138,6 @@ struct EVDetailsView: View {
                 infoRow("Home Charge Power", evData.chargingHomeChargePower)
                 infoRow("Home Charge Time", evData.chargingHomeChargeTime)
                 infoRow("Home Charge Speed", evData.chargingHomeChargeSpeed)
-                infoRow("Home Charge Power Max", evData.chargingHomeChargePowerMax)
                 infoRow("Home Autocharge Supported", evData.chargingHomeAutochargeSupported)
             }
             
@@ -155,7 +154,7 @@ struct EVDetailsView: View {
         VStack(alignment: .leading, spacing: 10) {
             sectionHeader("Dimensions & Weight")
             
-            infoRow("Length", evData.dimensionsAndWeightLenght)
+            infoRow("Length", evData.dimensionsAndWeightLength)
             infoRow("Width", evData.dimensionsAndWeightWidth)
             infoRow("Width (with mirrors)", evData.dimensionsAndWeightWidthMirrors)
             infoRow("Wheelbase", evData.dimensionsAndWeightWheelbase)
@@ -199,7 +198,6 @@ struct EVDetailsView: View {
             infoRow("Roof Rails", evData.miscellaneousRoofRails)
             infoRow("Heat Pump", evData.miscellaneousHeatPump)
             infoRow("HP Standard Equipment", evData.miscellaneousHPStandardEquipment)
-            infoRow("Available to Order From", evData.availableOrderFrom)
             infoRow("First Delivery Expected", evData.firstDeliveryExpected)
         }
     }
@@ -282,12 +280,13 @@ fileprivate struct EVGlossaryView: View {
             }
         }
         .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
                 withAnimation(.easeInOut) {
                     isAnimating = true
                 }
             })
         }
+        .onDisappear { isAnimating = false }
     }
 }
 

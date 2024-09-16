@@ -13,7 +13,7 @@ final class EVDatabaseService: EVDatabaseServiceProtocol {
     
     func loadPaginatedEVs(from: Int,to: Int) async throws -> [EVDatabase] {
         try await databaseService
-            .loadWithPagination(
+            .loadPaginatedData(
                 from: "ev_database",
                 orderBy: "car_name",
                 ascending: true,

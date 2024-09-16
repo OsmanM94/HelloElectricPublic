@@ -8,6 +8,14 @@
 import Foundation
 
 final class MockSearchService: SearchServiceProtocol {
+    func searchFilteredItems(filters: [String : Any], from: Int, to: Int) async throws -> [Listing] {
+        return MockListingService.sampleData
+    }
+    
+    func searchWithPaginationAndFilter(or: String, from: Int, to: Int) async throws -> [Listing] {
+        return MockListingService.sampleData
+    }
+    
     private let mockEVModels: [EVModels] = [
           EVModels(id: 1, make: "Tesla", models: ["Model S", "Model 3"]),
           EVModels(id: 2, make: "Nissan", models: ["Leaf"])
