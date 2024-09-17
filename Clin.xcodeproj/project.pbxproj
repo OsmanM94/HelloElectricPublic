@@ -74,6 +74,7 @@
 		6217F3482C297DF500EF8B2D /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Account/AboutUs/AboutUsView.swift,
 				Account/AccountView.swift,
 				Account/AccountViewModel.swift,
 				Account/Legal/Disclaimer/DisclaimerView.swift,
@@ -145,10 +146,10 @@
 				Misc/ValidationIcon.swift,
 				UI/CircularProgressBar.swift,
 				UI/CustomProgressView.swift,
+				UI/MissingDataSupport.swift,
 				UI/ReportButton.swift,
 				UI/SearchBarView.swift,
 				UI/Shimmer.swift,
-				UI/SupportButton.swift,
 				UI/ZoomImages.swift,
 				ViewState/EmptyContentView.swift,
 				ViewState/ErrorView.swift,

@@ -58,7 +58,7 @@ struct ListingRowView: View {
     private var bottomLeftOverlay: some View {
         ZStack {
             Rectangle()
-                .frame(width: 80, height: 20)
+                .frame(width: 80, height: 25)
                 .foregroundStyle(Color(.systemGray6))
                 
                 .clipShape(UnevenRoundedRectangle(topLeadingRadius: 0, bottomLeadingRadius: 10, bottomTrailingRadius: 0, topTrailingRadius: 5))

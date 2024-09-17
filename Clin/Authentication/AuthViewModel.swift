@@ -56,9 +56,7 @@ final class AuthViewModel {
             // Ensure the user is authenticated
             guard let user = try? await supabaseService.client.auth.session.user else { return }
             
-            // Delete the user's data from your database (if needed)
-            // This step depends on your data structure and requirements
-            // For example:
+            // Delete the user's data from database
             try await deleteUserData(userId: user.id)
             
             // Delete the user's account from Supabase
@@ -76,24 +74,22 @@ final class AuthViewModel {
     }
     
     @MainActor
-    func resetState() {
-        viewState = .unauthenticated
-    }
-    
-    // Helper function to delete user data (implement as needed)
-    private func deleteUserData(userId: UUID) async throws {
-        do {
-            try await supabaseService.client
-                .from("car_listing")
-                .delete()
-                .eq("user_id", value: userId)
-                .execute()
-        } catch {
-            throw error
+    func setupAuthStateListener() async {
+        await supabaseService.client.auth.onAuthStateChange { event, user in
+            Task {
+                self.user = user?.user
+                self.viewState = user?.user == nil ? .unauthenticated : .authenticated
+                self.displayName = user?.user.email ?? UUID().uuidString
+            }
         }
     }
     
-    // MARK: - Helpers
+    @MainActor
+    func resetState() {
+        viewState = .unauthenticated
+    }
+   
+    // MARK: - Methods
     func handleAppleSignInCompletion(result: Result<ASAuthorization, Error>) {
         viewState = .loading
         Task {
@@ -118,6 +114,8 @@ final class AuthViewModel {
                 
                 if let userEmail = credential.email {
                     self.displayName = userEmail
+                } else {
+                    self.displayName = UUID().uuidString
                 }
                                 
             } catch {
@@ -126,13 +124,16 @@ final class AuthViewModel {
         }
     }
         
-    func setupAuthStateListener() async {
-        await supabaseService.client.auth.onAuthStateChange { event, user in
-            Task { @MainActor in
-                self.user = user?.user
-                self.viewState = user?.user == nil ? .unauthenticated : .authenticated
-                self.displayName = user?.user.email ?? ""
-            }
+    // MARK: - Private methods
+    private func deleteUserData(userId: UUID) async throws {
+        do {
+            try await supabaseService.client
+                .from("car_listing")
+                .delete()
+                .eq("user_id", value: userId)
+                .execute()
+        } catch {
+            throw error
         }
     }
 }

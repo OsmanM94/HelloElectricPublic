@@ -17,8 +17,8 @@ struct AccountView: View {
             VStack {
                 switch authViewModel.viewState {
                 case .unauthenticated:
-                    AuthenticationView()
-                    
+//                    AuthenticationView()
+                    accountContent
                 case .loading:
                     CustomProgressView()
                     
@@ -35,106 +35,147 @@ struct AccountView: View {
         }
     }
     
+    // MARK: - Main content
     private var accountContent: some View {
         Form {
-            Section("Manage") {
-                NavigationLink {
-                   LazyView(PrivateProfileViewContainer())
-                } label: {
-                    Label("Profile", systemImage: "person.circle")
-                }
-                
-                NavigationLink {
-                    LazyView(UserListingsContainer())
-                } label: {
-                    Label("My listings", systemImage: "list.bullet")
-                }
-                
-                NavigationLink {
-                    LazyView(FavouriteListingContainer())
-                } label: {
-                    Label("Saved", systemImage: "heart")
-                }
-            }
+            manageSection
+            legalSection
+            supportSection
+            aboutUsSection
+            whatsNextSection
+            notificationsSection
+            hapticSection
             
-            Section("Legal") {
-                NavigationLink {
-                    LazyView(LegalView())
-                } label: {
-                    Label("Documents", systemImage: "doc.text")
-                }
-            }
+            signOutSection
+            deleteAccountSection
             
-            Section("Support") {
-                NavigationLink {
-                    LazyView(SupportCenterView())
-                } label: {
-                    Label("Support", systemImage: "lifepreserver")
-                }
-            }
-            
-            Section("What's next?") {
-                NavigationLink {
-                    UpdatesView()
-                } label: {
-                    Label("Upcoming updates", systemImage: "chart.line.uptrend.xyaxis")
-                }
-
-            }
-            
-            Section("Notifications") {
-                NavigationLink(destination: {
-                    LazyView(NotificationsView())
-                }) {
-                    Label("Notifications", systemImage: "bell")
-                }
-            }
-            
-            Section {
-                Toggle(isOn: Bindable(accountViewModel).navigationHaptic) {
-                    Label("Haptic Feedback", systemImage: "hand.tap")
-                }
-            }
-            
-            Section("Signed in as \(authViewModel.displayName)") {
-                Button {
-                    Task { await authViewModel.signOut() }
-                } label: {
-                    Text("Sign out")
-                        .foregroundStyle(.red)
-                        .frame(maxWidth: .infinity)
-                }
-            }
-            
-            Section(footer: Text("All associated data will be deleted.")) {
-                Button(action: {
-                    authViewModel.showDeleteAlert.toggle()
-                }) {
-                    Text("Delete account")
-                        .foregroundStyle(.red)
-                        .frame(maxWidth: .infinity)
-                }
-            }
-            
-            Section {
-                HStack {
-                    Text("Version")
-                    Spacer()
-                    Text(AppConstants.App.version)
-                        .foregroundStyle(.secondary)
-                }
-            }
+            appVersionSection
         }
         .navigationTitle("Account")
         .alert("Delete Account", isPresented: $authViewModel.showDeleteAlert) {
             Button("Cancel", role: .cancel) { }
             Button("Delete", role: .destructive) {
-                Task {
-                    await authViewModel.deleteAccount()
-                }
+                Task { await authViewModel.deleteAccount() }
             }
         } message: {
             Text("Are you sure you want to delete your account? This action cannot be undone.")
+        }
+    }
+    
+    // MARK: Sections
+    private var manageSection: some View {
+        Section("Manage") {
+            NavigationLink {
+               LazyView(PrivateProfileViewContainer())
+            } label: {
+                Label("Profile", systemImage: "person.circle")
+            }
+            
+            NavigationLink {
+                LazyView(UserListingsContainer())
+            } label: {
+                Label("My listings", systemImage: "list.bullet")
+            }
+            
+            NavigationLink {
+                LazyView(FavouriteListingContainer())
+            } label: {
+                Label("Saved", systemImage: "heart")
+            }
+        }
+    }
+    
+    private var legalSection: some View {
+        Section("Legal") {
+            NavigationLink {
+                LazyView(LegalView())
+            } label: {
+                Label("Documents", systemImage: "doc.text")
+            }
+        }
+    }
+    
+    private var supportSection: some View {
+        Section("Support") {
+            NavigationLink {
+                LazyView(SupportCenterView())
+            } label: {
+                Label("Support", systemImage: "lifepreserver")
+            }
+        }
+    }
+    
+    private var aboutUsSection: some View {
+        Section("Our mission") {
+            NavigationLink {
+                LazyView(AboutUsView())
+            } label: {
+                Label("About us", systemImage: "network")
+            }
+        }
+    }
+    
+    private var whatsNextSection: some View {
+        Section("What's next?") {
+            NavigationLink {
+                UpdatesView()
+            } label: {
+                Label("Upcoming updates", systemImage: "chart.line.uptrend.xyaxis")
+            }
+
+        }
+    }
+    
+    private var notificationsSection: some View {
+        Section("Notifications") {
+            NavigationLink(destination: {
+                LazyView(NotificationsView())
+            }) {
+                Label("Notifications", systemImage: "bell")
+            }
+        }
+    }
+    
+    private var hapticSection: some View {
+        Section {
+            Toggle(isOn: Bindable(accountViewModel).navigationHaptic) {
+                Label("Haptic Feedback", systemImage: "hand.tap")
+            }
+        }
+    }
+    
+    private var signOutSection: some View {
+        Section("Signed in as \(authViewModel.displayName)") {
+            Button {
+                Task { await authViewModel.signOut() }
+            } label: {
+                Text("Sign out")
+                    .foregroundStyle(.red)
+                    .frame(maxWidth: .infinity)
+            }
+        }
+    }
+    
+    private var deleteAccountSection: some View {
+        Section(footer: Text("All associated data will be deleted.")) {
+            Button(action: {
+                authViewModel.showDeleteAlert.toggle()
+            }) {
+                Text("Delete account")
+                    .foregroundStyle(.red)
+                    .frame(maxWidth: .infinity)
+            }
+        }
+    }
+    
+    private var appVersionSection: some View {
+        Section {
+            HStack {
+                Text("Version")
+                Spacer()
+                Text(AppConstants.App.version)
+                    .foregroundStyle(.secondary)
+            }
         }
     }
 }

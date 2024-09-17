@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct SupportButton: View {
+struct MissingDataSupport: View {
     let buttonText: String
     let textColor: Color
     let font: Font
@@ -53,5 +53,5 @@ struct SupportButton: View {
 }
 
 #Preview {
-    SupportButton(buttonText: "Missing models? Call support")
+    MissingDataSupport(buttonText: "Missing models? Call support")
 }

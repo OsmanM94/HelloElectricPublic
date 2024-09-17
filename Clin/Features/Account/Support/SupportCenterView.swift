@@ -42,7 +42,7 @@ struct SupportCenterView: View {
                 
                 Text("Or")
                 
-                Text("helloelectric@support.com")
+                Text("helloe@myyahoo.com")
                     
             }
             .padding()

@@ -9,7 +9,7 @@ import Foundation
 
 struct AppConstants {
     struct Contact {
-        static let supportEmail = "support@yahoo.com"
+        static let supportEmail = "helloe@myyahoo.com"
         static let phoneNumber = "07466861603"
     }
     

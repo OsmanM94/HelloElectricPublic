@@ -100,7 +100,7 @@ fileprivate struct MakeModelSection: View {
     }
     
     private var footerSection: some View {
-        SupportButton(buttonText: "Missing models?")
+        MissingDataSupport(buttonText: "Missing models?")
     }
 }
 
