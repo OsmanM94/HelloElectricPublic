@@ -95,7 +95,6 @@ final class ListingViewModel {
     private func resetPagination() {
         self.currentPage = 0
         self.hasMoreListings = true
-        self.viewState = .loading
     }
     
     private func updateListings(with newListings: [Listing], isRefresh: Bool) {
