@@ -135,8 +135,8 @@ struct DetailView<T: DetailItem>: View {
                 featuresGrid
                 moreFeatures
                 descriptionSection
-                ListingDisclaimerView()
                 sellerSection
+                disclaimerSection
             }
             .fontDesign(.rounded)
             .fontWeight(.semibold)
@@ -341,6 +341,15 @@ struct DetailView<T: DetailItem>: View {
             .overlay(alignment: .bottomTrailing) {
                 ReportButton(itemId: item.id ?? 0, itemType: "Listing", iconSize: 15)
             }
+        }
+        .padding()
+        .background(Color.gray.opacity(0.1))
+        .clipShape(RoundedRectangle(cornerRadius: 10))
+    }
+    
+    private var disclaimerSection: some View {
+        DisclosureGroup("Disclaimer") {
+            ListingDisclaimerView()
         }
         .padding()
         .background(Color.gray.opacity(0.1))

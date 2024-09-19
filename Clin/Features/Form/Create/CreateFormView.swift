@@ -21,7 +21,7 @@ struct CreateFormView: View {
                     
                 case .loading:
                     CustomProgressView(message: "Authenticating...")
-                    
+                 
                 case .authenticated:
                     mainContent
                     

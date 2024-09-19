@@ -271,7 +271,7 @@ final class SearchFilters {
     var location: String = "Any" { didSet { updateFilterState() } }
     var body: String = "Any" { didSet { updateFilterState() } }
     var selectedYear: String = "Any" { didSet { updateFilterState() } }
-    var maxPrice: Double = 20_000 { didSet { updateFilterState() } }
+    var maxPrice: Double = 100_000 { didSet { updateFilterState() } }
     var condition: String = "Any" { didSet { updateFilterState() } }
     var maxMileage: Double = 100_000 { didSet { updateFilterState() } }
     var range: String = "Any" { didSet { updateFilterState() } }
@@ -298,7 +298,7 @@ final class SearchFilters {
         body = "Any"
         location = "Any"
         selectedYear = "Any"
-        maxPrice = 20_000
+        maxPrice = 100_000
         condition = "Any"
         maxMileage = 100_000
         range = "Any"
@@ -323,7 +323,7 @@ final class SearchFilters {
         body != "Any" ||
         location != "Any" ||
         selectedYear != "Any" ||
-        maxPrice < 20_000 ||
+        maxPrice < 100_000 ||
         condition != "Any" ||
         maxMileage < 100_000 ||
         range != "Any" ||
