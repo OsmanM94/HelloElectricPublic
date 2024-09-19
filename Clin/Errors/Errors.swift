@@ -71,6 +71,10 @@ enum AppError: Error, LocalizedError {
         // News
         case failedToLoadNews
         
+        // FaceID
+        case biometricsNotAvailable
+        case authenticationFailed
+        
         var message: String {
             switch self {
             case .requestFailed(let description):
@@ -137,6 +141,10 @@ enum AppError: Error, LocalizedError {
                 return "Sorry, error deleting account. Try again"
             case .failedToLoadNews:
                 return "Sorry, failed to load news."
+            case .biometricsNotAvailable:
+                return "Biometric authentication is not available on this device."
+            case .authenticationFailed:
+                return "Authentication failed. Please try again."
             }
         }
     }

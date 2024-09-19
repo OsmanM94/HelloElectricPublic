@@ -33,9 +33,7 @@ struct FaceIDView: View {
             }
         }
         .animation(.easeInOut(duration: 0.3), value: faceID.viewState)
-        .task(id: faceID.viewState == .idle, {
-            await faceID.authenticate()
-        })
+        .task { await faceID.authenticate() }
     }
     
     private var idleView: some View {

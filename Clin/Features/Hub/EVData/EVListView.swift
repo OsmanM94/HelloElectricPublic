@@ -66,9 +66,7 @@ struct EVListView: View {
            }
            .pickerStyle(.menu)
            .onChange(of: viewModel.databaseFilter) { _, newValue in
-               Task {
-                   await viewModel.loadEVDatabase()
-               }
+               Task { await viewModel.loadEVDatabase() }
            }
        }
     
@@ -84,9 +82,7 @@ struct EVListView: View {
     
             if viewModel.hasMoreListings && !viewModel.evDatabase.isEmpty {
                 loadingIndicator
-                    .task {
-                        await viewModel.loadMoreEVDatabase()
-                    }
+                    .task { await viewModel.loadMoreFromDatabase() }
             }
         }
         .listStyle(.plain)
@@ -171,7 +167,7 @@ fileprivate struct InfoSheetView: View {
     private var mainContent: some View {
         VStack(alignment: .leading, spacing: 20) {
             
-            Text("Welcome to our comprehensive Electric Vehicle (EV) database. This resource is designed to provide you with the most up-to-date and accurate information about electric vehicles available in the market.")
+            Text("Welcome to our Electric Vehicle (EV) database. This resource is designed to provide you with the most up-to-date and accurate information about electric vehicles available in the market.")
             
             VStack(alignment: .leading, spacing: 10) {
                 Text("Key Features:")

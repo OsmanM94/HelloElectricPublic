@@ -19,20 +19,6 @@ final class FaceID {
         case error(String)
     }
     
-    enum FaceIDError {
-        case biometricsNotAvailable
-        case authenticationFailed
-        
-        var errorDescription: String {
-            switch self {
-            case .biometricsNotAvailable:
-                return "Biometric authentication is not available on this device."
-            case .authenticationFailed:
-                return "Authentication failed. Please try again."
-            }
-        }
-    }
-    
     private var context: LAContext?
     var viewState: ViewState = .idle
     
@@ -48,7 +34,7 @@ final class FaceID {
         var error: NSError?
         
         guard context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) else {
-            viewState = .error(FaceIDError.biometricsNotAvailable.errorDescription)
+            viewState = .error(AppError.ErrorType.biometricsNotAvailable.message)
             return
         }
         
@@ -61,10 +47,10 @@ final class FaceID {
             if success {
                 viewState = .authenticated
             } else {
-                viewState = .error(FaceIDError.authenticationFailed.errorDescription)
+                viewState = .error(AppError.ErrorType.authenticationFailed.message)
             }
         } catch {
-            viewState = .error(FaceIDError.authenticationFailed.errorDescription)
+            viewState = .error(AppError.ErrorType.authenticationFailed.message)
         }
     }
     

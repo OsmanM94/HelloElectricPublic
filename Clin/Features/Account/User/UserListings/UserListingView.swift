@@ -8,6 +8,7 @@ import SwiftUI
 
 struct UserListingView: View {
     @State private var viewModel = UserListingViewModel()
+    @State private var isEditing: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -23,6 +24,11 @@ struct UserListingView: View {
                 message: "Are you sure you want to delete this listing?",
                 deleteAction: deleteListingAction
             )
+            .toolbar {
+                Button(isEditing ? "Done" : "Edit") {
+                    isEditing.toggle()
+                }
+            }
         }
         .task {
             if viewModel.userActiveListings.isEmpty {
@@ -36,8 +42,10 @@ struct UserListingView: View {
         switch viewModel.viewState {
         case .empty:
             EmptyContentView(message: "Empty", systemImage: "tray.fill")
+            
         case .success:
-            UserListingSubview(viewModel: viewModel)
+            contentSubview
+            
         case .error(let message):
             ErrorView(message: message, retryAction: {
                 Task { loadListingsAction } })
@@ -52,18 +60,15 @@ struct UserListingView: View {
     private func loadListingsAction() async {
         await viewModel.loadUserListings()
     }
-}
-
-fileprivate struct UserListingSubview: View {
-    @Bindable var viewModel: UserListingViewModel
     
-    var body: some View {
+    private var contentSubview: some View {
         List {
             ForEach(viewModel.userActiveListings, id: \.id) { listing in
-                listingRow(for: listing)
+                LazyView(listingRow(for: listing))
             }
             .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
         }
+        .environment(\.editMode, .constant(isEditing ? .active : .inactive))
         .refreshable { await viewModel.loadUserListings() }
         .listStyle(.plain)
         .fullScreenCover(item: $viewModel.selectedListing, onDismiss: dismissEditView) { listing in
@@ -73,28 +78,44 @@ fileprivate struct UserListingSubview: View {
     }
     
     private func listingRow(for listing: Listing) -> some View {
-        NavigationLink(destination: DetailView(item: listing, showFavourite: false)) {
-            ListingRowView(listing: listing, showFavourite: false)
-                .id(listing.id)
-                .swipeActions(allowsFullSwipe: false) {
+        HStack {
+            NavigationLink(destination: DetailView(item: listing, showFavourite: false)) {
+                ListingRowView(listing: listing, showFavourite: false)
+                    .id(listing.id)
+            }
+            
+            if isEditing {
+                VStack(alignment: .leading, spacing: 30) {
                     deleteButton(for: listing)
+                        .foregroundStyle(.red)
                     editButton(for: listing)
+                        .foregroundStyle(.yellow)
                 }
+                .buttonStyle(.plain)
+            }
+        }
+        .swipeActions(allowsFullSwipe: false) {
+            deleteButton(for: listing)
+            editButton(for: listing)
         }
     }
     
     private func deleteButton(for listing: Listing) -> some View {
-        Button("Delete") {
+        Button(action: {
             viewModel.listingToDelete = listing
             viewModel.showDeleteAlert.toggle()
+        }) {
+            Label("Delete", systemImage: "trash")
         }
         .tint(.red)
     }
     
     private func editButton(for listing: Listing) -> some View {
-        Button("Edit") {
+        Button(action: {
             viewModel.selectedListing = listing
             viewModel.showingEditView = true
+        }) {
+            Label("Edit", systemImage: "pencil")
         }
         .tint(.yellow)
     }

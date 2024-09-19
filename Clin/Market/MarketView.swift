@@ -81,13 +81,6 @@ struct MarketView: View {
             accountViewModel.navigationSensoryFeedback(intensity: intensity)
         }
     }
-    
-    private var networkStatusBanner: some View {
-        NetworkMonitorView()
-            .frame(maxWidth: .infinity)
-            .background(.thinMaterial)
-            .transition(.move(edge: .top).combined(with: .opacity))
-    }
 }
 
 #Preview {

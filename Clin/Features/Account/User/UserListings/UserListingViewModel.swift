@@ -9,7 +9,7 @@ import Factory
 
 @Observable
 final class UserListingViewModel {
-    // MARK: - Enums
+    // MARK: - Enum
     enum ViewState: Equatable {
         case empty
         case success
@@ -62,7 +62,7 @@ final class UserListingViewModel {
         }
     }
 
-    // MARK: - Helpers
+    // MARK: - Private methods
     private func checkViewState() {
         if userActiveListings.isEmpty {
             viewState = .empty

@@ -6,6 +6,7 @@
 //
 import SwiftUI
 
+/// Perform action after a delay
 func performAfterDelay(_ delay: TimeInterval, action: @escaping () -> Void) {
     DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
         action()

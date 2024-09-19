@@ -143,7 +143,7 @@ final class EVDataViewModel {
     }
     
     @MainActor
-    func loadMoreEVDatabase() async {
+    func loadMoreFromDatabase() async {
         guard hasMoreListings, viewState != .loading else { return }
         await loadEVs()
     }

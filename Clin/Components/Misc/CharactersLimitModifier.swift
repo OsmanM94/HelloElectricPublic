@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// Limit the number of characters in a textfield or texteditor
 struct CharacterLimitModifier: ViewModifier {
     @Binding var text: String
     let limit: Int

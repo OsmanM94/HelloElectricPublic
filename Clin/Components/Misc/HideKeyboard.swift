@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// Hide keyboard
 func hideKeyboard() {
     UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
 }
