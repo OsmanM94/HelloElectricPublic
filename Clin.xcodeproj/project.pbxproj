@@ -19,6 +19,19 @@
 		62C449DA2C27469D009650A3 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 62C449D92C27469D009650A3 /* Supabase */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		62CEBF112C9C76DA0046CCBA /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		620D1CED2C86F836005B17E2 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		626973352C8B528B00690EF9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -390,6 +403,7 @@
 				62C448F92C26CDC2009650A3 /* Sources */,
 				62C448FA2C26CDC2009650A3 /* Frameworks */,
 				62C448FB2C26CDC2009650A3 /* Resources */,
+				62CEBF112C9C76DA0046CCBA /* Embed Watch Content */,
 			);
 			buildRules = (
 			);

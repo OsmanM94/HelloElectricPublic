@@ -13,12 +13,13 @@ final class FavouriteViewModel {
     // MARK: - Enum
     enum ViewState: Equatable {
         case empty
+        case loading
         case loaded
         case error(String)
     }
     
     // MARK: - Observable properties
-    private(set) var viewState: ViewState = .empty
+    private(set) var viewState: ViewState = .loading
     private(set) var favoriteListings: [Favourite] = []
     private(set) var isFavourite: Bool = false
     
@@ -37,10 +38,8 @@ final class FavouriteViewModel {
     
     @MainActor
     func addToFavorites(listing: Listing) async  {
-        guard let user = try? await supabaseService.client.auth.session.user else {
-            print("DEBUG: No authenticated user found, can't add to favourites.")
-            return
-        }
+        guard let user = try? await supabaseService.client.auth.session.user else { return }
+        
         guard let id = listing.id else {
             print("DEBUG: Listing ID is missing for favourites.")
             return
@@ -87,10 +86,8 @@ final class FavouriteViewModel {
     
     @MainActor
     func removeFromFavorites(favourite: Favourite) async  {
-        guard let user = try? await supabaseService.client.auth.session.user else {
-            print("DEBUG: No authenticated user found for favourites.")
-            return
-        }
+        guard let user = try? await supabaseService.client.auth.session.user else { return }
+        
         do {
             try await favouriteService.removeFromFavorites(favourite, for: user.id)
             
@@ -99,39 +96,31 @@ final class FavouriteViewModel {
             }
             print("DEBUG: Listing removed from favorites successfully.")
         } catch {
-            print("DEBUG: Error removing listing from favorites: \(error)")
-            viewState = .error(AppError.ErrorType.generalError.message)
+            self.viewState = .error(AppError.ErrorType.generalError.message)
         }
     }
     
     @MainActor
     func loadUserFavourites() async  {
-        guard let user = try? await supabaseService.client.auth.session.user else {
-            print("DEBUG: No authenticated user found for favourites, can't fetch.")
-            return
-        }
+        guard let user = try? await supabaseService.client.auth.session.user else { return }
+        
         do {
-            self.favoriteListings = try await favouriteService.loadUserFavourites(userID: user.id)
-            updateViewState()
+            let listings = try await favouriteService.loadUserFavourites(userID: user.id)
+            self.favoriteListings = listings
+            
+            self.viewState = listings.isEmpty ? .empty : .loaded
         } catch {
-            print("DEBUG: Error loading user favs: \(error)")
             viewState = .error(AppError.ErrorType.generalError.message)
         }
     }
     
     @MainActor
-    func toggleFavourite(for listing: Listing) async throws {
+    func toggleFavourite(for listing: Listing) async {
         if let favourite = favoriteListings.first(where: { $0.listingID == listing.id }) {
              await removeFromFavorites(favourite: favourite)
         } else {
              await addToFavorites(listing: listing)
         }
-    }
-    
-    // MARK: - Helpers and misc
-    
-    private func updateViewState() {
-        viewState = favoriteListings.isEmpty ? .empty : .loaded
     }
     
     func isFavourite(listing: Listing) -> Bool {

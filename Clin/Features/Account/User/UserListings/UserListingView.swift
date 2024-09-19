@@ -20,7 +20,7 @@ struct UserListingView: View {
             .navigationBarTitleDisplayMode(.inline)
             .deleteAlert(
                 isPresented: $viewModel.showDeleteAlert,
-                itemToDelete: $viewModel.listingToDelete,
+                itemToDelete: $viewModel.listingToDelete, // listingToDelete
                 message: "Are you sure you want to delete this listing?",
                 deleteAction: deleteListingAction
             )
@@ -42,6 +42,9 @@ struct UserListingView: View {
         switch viewModel.viewState {
         case .empty:
             EmptyContentView(message: "Empty", systemImage: "tray.fill")
+            
+        case .loading:
+            CustomProgressView(message: "Loading...")
             
         case .success:
             contentSubview
@@ -102,7 +105,7 @@ struct UserListingView: View {
     
     private func deleteButton(for listing: Listing) -> some View {
         Button(action: {
-            viewModel.listingToDelete = listing
+            viewModel.listingToDelete = listing // listingToDelete
             viewModel.showDeleteAlert.toggle()
         }) {
             Label("Delete", systemImage: "trash")

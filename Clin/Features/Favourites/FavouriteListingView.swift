@@ -14,11 +14,14 @@ struct FavouriteListingView: View {
         NavigationStack {
             VStack {
                 switch viewModel.viewState {
-                case .loaded:
-                    FavouriteListingSubview()
-                    
                 case .empty:
                     EmptyContentView(message: "Empty", systemImage: "heart.slash.fill")
+                    
+                case .loading:
+                    CustomProgressView(message: "Loading...")
+                    
+                case .loaded:
+                    FavouriteListingSubview()
                     
                 case .error(let message):
                     ErrorView(message: message, retryAction: {

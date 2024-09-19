@@ -9,6 +9,7 @@ import SwiftUI
 
 struct AddToFavouritesButton: View {
     @Environment(FavouriteViewModel.self) private var viewModel
+    
     var listing: Listing
     let iconSize: CGFloat
     let width: CGFloat
@@ -31,7 +32,7 @@ struct AddToFavouritesButton: View {
     
     private func toggleFavourite() {
         Task {
-            try await viewModel.toggleFavourite(for: listing)
+            await viewModel.toggleFavourite(for: listing)
         }
     }
 }
