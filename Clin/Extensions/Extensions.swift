@@ -27,7 +27,7 @@ public extension UIImage {
         // Set scale of renderer so that 1pt == 1px
         let format = UIGraphicsImageRendererFormat()
 //        format.scale = UIScreen.main.scale
-        format.scale = 2.5
+        format.scale = 3.0
         let renderer = UIGraphicsImageRenderer(size: targetSize, format: format)
 
         // Resize the image
@@ -136,5 +136,19 @@ extension String {
 extension String {
     func toBase64() -> String {
         return Data(self.utf8).base64EncodedString()
+    }
+}
+
+// This adds a network monitor view, you can call it using  .withNetworkStatusBanner(networkMonitor)
+extension View {
+    func withNetworkStatusBanner(_ networkMonitor: NetworkMonitor) -> some View {
+        self.overlay(alignment: .top) {
+            if !networkMonitor.isConnected {
+                NetworkMonitorView()
+                    .frame(maxWidth: .infinity)
+                    .background(.thinMaterial)
+                    .transition(.move(edge: .top).combined(with: .opacity))
+            }
+        }
     }
 }

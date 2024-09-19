@@ -17,7 +17,7 @@ struct ProfileView: View {
                     ProfileSubview(viewModel: viewModel)
                     
                 case .loading:
-                    CustomProgressView()
+                    CustomProgressView(message: "Loading profile...")
                     
                 case .error(let message):
                     ErrorView(message: message, retryAction: {
@@ -158,7 +158,7 @@ fileprivate struct ProfileSubview: View {
                 .submitLabel(.send)
                 .onSubmit {
                     Task {
-                        guard !viewModel.getCompanyNumber.isEmpty else { return }
+//                        guard !viewModel.getCompanyNumber.isEmpty else { return }
                         await viewModel.loadCompanyInfo()
                         isCompanyVerified = viewModel.companiesHouseViewState == .success
                     }
@@ -170,7 +170,7 @@ fileprivate struct ProfileSubview: View {
     private var verifiedCompanyInfo: some View {
         HStack {
             Image(systemName: "checkmark.circle.fill")
-                .foregroundStyle(.green)
+                .foregroundStyle(.accent)
             VStack(alignment: .leading) {
                 Text(viewModel.displayName)
                     .font(.subheadline)

@@ -211,7 +211,7 @@ struct DetailView<T: DetailItem>: View {
             
             Text("Promoted")
                 .padding(10)
-                .foregroundStyle(.green.gradient)
+                .foregroundStyle(.accent.gradient)
                 .background(Color(.systemGray6))
                 .clipShape(RoundedRectangle(cornerRadius: 5))
                 .opacity(item.isPromoted ? 1 : 0)
@@ -237,7 +237,7 @@ struct DetailView<T: DetailItem>: View {
         HStack(spacing: 15) {
             Image(systemName: "gauge.with.needle")
                 .font(.system(size: 24))
-                .foregroundStyle(.green)
+                .foregroundStyle(.accent)
             
             VStack(alignment: .leading, spacing: 4) {
                 Text("Mileage")

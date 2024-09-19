@@ -15,7 +15,7 @@ struct NewsView: View {
         VStack {
             switch viewModel.viewState {
             case .idle:
-                CustomProgressView()
+                CustomProgressView(message: "Loading...")
                 
             case .loaded:
                 newsList

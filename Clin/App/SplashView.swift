@@ -16,6 +16,7 @@ struct SplashView: View {
                 .frame(width: 100, height: 100)
             
             Text("HelloElectric")
+                .foregroundStyle(.accent)
                 .font(.system(size: 48, weight: .bold, design: .rounded))
         
             Text("The destination to go for EVs.")

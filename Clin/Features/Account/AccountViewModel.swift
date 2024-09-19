@@ -6,9 +6,13 @@
 //
 
 import SwiftUI
+import Factory
 
 @Observable
 final class AccountViewModel {
+    
+    @ObservationIgnored @Injected(\.faceID) var faceID
+    
     var navigationHaptic: Bool {
         get {
             access(keyPath: \.navigationHaptic)
@@ -17,6 +21,18 @@ final class AccountViewModel {
         set {
             withMutation(keyPath: \.navigationHaptic) {
                 UserDefaults.standard.setValue(newValue, forKey: "navigationHaptic")
+            }
+        }
+    }
+    
+    var faceIDisEnabled: Bool {
+        get {
+            access(keyPath: \.faceIDisEnabled)
+            return UserDefaults.standard.bool(forKey: "faceIDisEnabled")
+        }
+        set {
+            withMutation(keyPath: \.faceIDisEnabled) {
+                UserDefaults.standard.setValue(newValue, forKey: "faceIDisEnabled")
             }
         }
     }

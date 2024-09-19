@@ -14,7 +14,19 @@ struct MarketView: View {
     @State private var networkMonitor = NetworkMonitor()
     @State private var selectedTab: Int = 0
     
+    @State private var showFaceID: Bool = true
+    
     var body: some View {
+        VStack {
+            if accountViewModel.faceIDisEnabled && showFaceID {
+                FaceIDView(onAuthentication: { showFaceID = false })
+            } else {
+                tabViewContent
+            }
+        }
+    }
+    
+    private var tabViewContent: some View {
         TabView(selection: $selectedTab) {
             LazyView(ListingView())
                 .tag(0)
@@ -27,44 +39,28 @@ struct MarketView: View {
                 .tabItem {
                     Label("Search", systemImage: "magnifyingglass")
                 }
-                .overlay(alignment: .top) {
-                    if !networkMonitor.isConnected {
-                        networkStatusBanner
-                    }
-                }
+                .withNetworkStatusBanner(networkMonitor)
             
             LazyView(CreateFormView(authViewModel: authViewModel))
                 .tag(2)
                 .tabItem {
                     Label("Sell", systemImage: "plus")
                 }
-                .overlay(alignment: .top) {
-                    if !networkMonitor.isConnected {
-                        networkStatusBanner
-                    }
-                }
+                .withNetworkStatusBanner(networkMonitor)
             
             LazyView(HubView())
                 .tag(3)
                 .tabItem {
                     Label("Hub", systemImage: "rectangle.grid.2x2.fill")
                 }
-                .overlay(alignment: .top) {
-                    if !networkMonitor.isConnected {
-                        networkStatusBanner
-                    }
-                }
+                .withNetworkStatusBanner(networkMonitor)
             
             LazyView(AccountView(authViewModel: authViewModel))
                 .tag(4)
                 .tabItem {
                     Label("Account", systemImage: "person.fill")
                 }
-                .overlay(alignment: .top) {
-                    if !networkMonitor.isConnected {
-                        networkStatusBanner
-                    }
-                }
+                .withNetworkStatusBanner(networkMonitor)
         }
         .onChange(of: selectedTab) { _, newTab in
             let intensity: CGFloat

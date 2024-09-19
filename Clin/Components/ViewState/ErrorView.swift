@@ -40,7 +40,7 @@ struct ErrorView: View {
     }
     
     private var buttonColor: Color {
-        colorScheme == .dark ? Color.green.opacity(0.7) : Color.green
+        colorScheme == .dark ? Color.accent.opacity(0.7) : Color.accent
     }
     
     private var backgroundColor: Color {

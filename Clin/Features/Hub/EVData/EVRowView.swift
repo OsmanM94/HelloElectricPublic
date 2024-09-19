@@ -14,10 +14,10 @@ struct EVRowView: View {
         HStack(spacing: 16) {
             carImage
             
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: 12) {
                 carNameAndYear
-                priceView
                 specsView
+                secondSpecsView
             }
         }
     }
@@ -25,13 +25,13 @@ struct EVRowView: View {
     private var carImage: some View {
         Group {
             if let imageURL = ev.image1?.first {
-                ImageLoader(url: imageURL, contentMode: .fill, targetSize: CGSize(width: 100, height: 100))
-                    .frame(width: 100, height: 100)
+                ImageLoader(url: imageURL, contentMode: .fill, targetSize: CGSize(width: 130, height: 130))
+                    .frame(width: 130, height: 130)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
             } else {
                 RoundedRectangle(cornerRadius: 12)
                     .fill(Color.gray.opacity(0.3))
-                    .frame(width: 100, height: 100)
+                    .frame(width: 130, height: 130)
                     .overlay(
                         Image(systemName: "car.fill")
                             .foregroundStyle(.gray)
@@ -47,36 +47,68 @@ struct EVRowView: View {
             Text(ev.carName ?? "N/A")
                 .font(.headline)
                 .foregroundStyle(.primary)
+            
             Text(ev.availableSince ?? "N/A")
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.yellow)
         }
     }
     
     private var priceView: some View {
-        Text(ev.carPrice ?? 0, format: .currency(code: Locale.current.currency?.identifier ?? "GBP").precision(.fractionLength(0)))
-            .font(.title3)
-            .fontWeight(.bold)
-            .foregroundStyle(.green.gradient)
+        VStack(spacing: 4) {
+            Text("Price")
+                .font(.caption)
+                .foregroundStyle(.accent)
+            Text(ev.carPrice ?? 0, format: .currency(code: Locale.current.currency?.identifier ?? "GBP").precision(.fractionLength(0)))
+                .font(.caption)
+                .fontWeight(.bold)
+        }
     }
     
     private var specsView: some View {
-        HStack(spacing: 16) {
-            specItem(icon: "bolt.car", value: ev.electricRange ?? "N/A")
-            specItem(icon: "fuelpump", value: ev.efficiencyRealRangeConsumption ?? "N/A")
-            specItem(icon: "link", value: ev.dimensionsTow == "Yes" ? "Towing" : "No towing")
+        HStack {
+            specItem(text: "Top Speed", value: ev.performanceTopSpeed ?? "N/A")
+            Spacer()
+            
+            specItemNumeric(text: "Range", value: ev.electricRange ?? 0, type: "mi")
+            Spacer()
+            
+            specItemNumeric(text: "0-62", value: ev.performanceAcceleration0_62_Mph ?? 0, type: "sec")
         }
     }
     
-    private func specItem(icon: String, value: String) -> some View {
-        HStack(spacing: 4) {
-            Image(systemName: icon)
-                .foregroundStyle(.gray)
-            Text(value)
-                .font(.caption)
-                .foregroundStyle(.secondary)
+    private var secondSpecsView: some View {
+        HStack {
+            specItem(text: "Rapid Charge", value: ev.chargingRapidChargeSpeed ?? "N/A")
+            Spacer()
+            specItemNumeric(text: "Efficiency", value: ev.efficiencyRealRangeConsumption ?? 0, type: "Wh/mi")
+            Spacer()
+            priceView
         }
     }
+    
+    private func specItem(text: String, value: String) -> some View {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(text)
+                    .font(.caption2)
+                    .foregroundStyle(.accent)
+                Text(value)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        
+        private func specItemNumeric(text: String, value: Int, type: String) -> some View {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(text)
+                    .font(.caption2)
+                    .foregroundStyle(.accent)
+                
+                Text("\(value) \(type)")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
 }
 
 #Preview {

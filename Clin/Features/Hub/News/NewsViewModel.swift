@@ -26,7 +26,7 @@ final class NewsViewModel {
     // MARK: - Pagination
     private(set) var hasMoreArticles: Bool = true
     private(set) var currentPage: Int = 1
-    private let pageSize: Int = 20
+    private let pageSize: Int = 25
     
     // MARK: - Dependencies
     @ObservationIgnored @Injected(\.httpDataDownloader) private var dataDownloader
@@ -70,10 +70,10 @@ final class NewsViewModel {
                 viewState = .loaded
                 print("DEBUG: Got articles from API for page \(currentPage - 1)")
             } else {
-                viewState = .error("Failed to load news")
+                viewState = .error(AppError.ErrorType.failedToLoadNews.message)
             }
         } catch {
-            viewState = .error("Failed to load news: \(error)")
+            viewState = .error(AppError.ErrorType.failedToLoadNews.message)
         }
     }
     

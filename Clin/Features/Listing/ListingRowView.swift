@@ -58,13 +58,13 @@ struct ListingRowView: View {
     private var bottomLeftOverlay: some View {
         ZStack {
             Rectangle()
-                .frame(width: 80, height: 25)
+                .frame(width: 80, height: 22)
                 .foregroundStyle(Color(.systemGray6))
                 
                 .clipShape(UnevenRoundedRectangle(topLeadingRadius: 0, bottomLeadingRadius: 10, bottomTrailingRadius: 0, topTrailingRadius: 5))
             Text("Promoted")
-                .font(.subheadline)
-                .foregroundStyle(.green.gradient)
+                .font(.caption)
+                .foregroundStyle(.accent)
                 .fontDesign(.rounded)
                 .fontWeight(.semibold)
         }
@@ -75,7 +75,7 @@ struct ListingRowView: View {
         HStack(spacing: 2) {
             Circle()
                 .frame(width: 8, height: 8)
-                .foregroundStyle(.green.gradient)
+                .foregroundStyle(.accent.gradient)
             Text("Active")
                 .font(.caption2)
         }

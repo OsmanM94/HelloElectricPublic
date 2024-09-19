@@ -11,7 +11,7 @@ import Factory
 @Observable
 final class ListingProfileViewModel {
     // MARK: - Observable properties
-    private(set) var displayName: String = ""
+    private(set) var displayName: String = "Private Seller"
     private(set) var address: String = ""
     private(set) var postcode: String = ""
     private(set) var location: String = ""

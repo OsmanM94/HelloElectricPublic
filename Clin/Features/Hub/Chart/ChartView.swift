@@ -10,7 +10,7 @@ import Charts
 
 fileprivate func colorForFuelType(_ fuelType: String) -> Color {
     switch fuelType {
-    case "Electric": return .green
+    case "Electric": return .accent
     case "Diesel": return .gray
     case "Petrol": return .blue
     default: return .black
@@ -25,7 +25,7 @@ struct ChartView: View {
         VStack {
             switch viewModel.viewState {
             case .loading:
-                CustomProgressView()
+                CustomProgressView(message: "Loading...")
                 
             case .loaded:
                 loadedView
@@ -80,7 +80,7 @@ fileprivate struct YearlyChartView: View {
                     .foregroundStyle(by: .value("Fuel Type", registration.fuelCategory))
                 }
                 .chartForegroundStyleScale([
-                    "Electric": .green,
+                    "Electric": .accent,
                     "Diesel": .gray,
                     "Petrol": .blue
                 ])
@@ -111,7 +111,6 @@ fileprivate struct YearlyChartView: View {
                     Spacer()
                     Text(registration.registrationCount, format: .number)
                 }
-                .fontDesign(.rounded).bold()
             }
         }
         .padding()
@@ -156,7 +155,7 @@ fileprivate struct MonthlyChartView: View {
                     .foregroundStyle(by: .value("Fuel Type", registration.fuelCategory))
                 }
                 .chartForegroundStyleScale([
-                    "Electric": .green,
+                    "Electric": .accent,
                     "Diesel": .gray,
                     "Petrol": .blue
                 ])
@@ -187,7 +186,6 @@ fileprivate struct MonthlyChartView: View {
                     Spacer()
                     Text(registration.registrationCount, format: .number)
                 }
-                .fontDesign(.rounded).bold()
             }
         }
         .padding()

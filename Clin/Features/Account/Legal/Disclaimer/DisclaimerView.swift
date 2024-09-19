@@ -48,7 +48,7 @@ struct DisclaimerView: View {
                             HStack(alignment: .center, spacing: 15) {
                                 Text("•")
                                     .font(.headline)
-                                    .foregroundStyle(.green)
+                                    .foregroundStyle(.accent)
                                 Text(section.1[index])
                                     .font(.subheadline)
                             }

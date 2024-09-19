@@ -9,8 +9,7 @@ import SwiftUI
 
 struct ListingView: View {
     @State private var viewModel = ListingViewModel()
-    @State private var selectedVehicleType: VehicleType = .cars
-
+    
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
@@ -22,22 +21,22 @@ struct ListingView: View {
         }
         .task {
             if viewModel.listings.isEmpty {
-                await viewModel.loadListings(vehicleType: selectedVehicleType)
+                await viewModel.loadListings()
             }
         }
     }
     
     private var vehicleTypePicker: some View {
-           Picker("Vehicle Type", selection: $selectedVehicleType) {
+        Picker("Vehicle Type", selection: $viewModel.selectedVehicleType) {
                ForEach(VehicleType.allCases, id: \.self) { type in
                    Text(type.rawValue).tag(type)
                }
            }
            .pickerStyle(.segmented)
            .padding()
-           .onChange(of: selectedVehicleType) { _, newValue in
+           .onChange(of: viewModel.selectedVehicleType) { _, newValue in
                Task {
-                   await viewModel.loadListings(isRefresh: true, vehicleType: newValue)
+                   await viewModel.loadListings(isRefresh: true)
                }
            }
        }
@@ -47,8 +46,10 @@ struct ListingView: View {
         switch viewModel.viewState {
         case .loading:
             ListingsPlaceholder(retryAction: loadListings)
+            
         case .loaded:
             ListingSubview(viewModel: viewModel)
+            
         case .empty:
             Spacer()
             emptyStateView
@@ -61,7 +62,7 @@ struct ListingView: View {
             Image(systemName: "car.2.fill")
                 .font(.system(size: 50))
                 .foregroundStyle(.gray)
-            Text("No \(selectedVehicleType.rawValue) available")
+            Text("No \(viewModel.selectedVehicleType.rawValue) available")
                 .font(.headline)
             Text("Check back later for updates")
                 .font(.subheadline)
@@ -70,7 +71,7 @@ struct ListingView: View {
     }
 
     private func loadListings() async {
-        await viewModel.loadListings(vehicleType: selectedVehicleType)
+        await viewModel.loadListings()
     }
 }
 
@@ -116,7 +117,7 @@ fileprivate struct ListingSubview: View {
         }
         .task {
             if item == viewModel.listings.last {
-                await viewModel.loadListings(vehicleType: selectedVehicleType)
+                await viewModel.loadListings()
             }
         }
     }

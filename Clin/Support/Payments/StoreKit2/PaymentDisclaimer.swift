@@ -25,7 +25,7 @@ struct PaymentDisclaimer: View {
                 )
             HStack {
                 Image(systemName: termsAcknowledged ? "checkmark.square.fill" : "square")
-                    .foregroundColor(termsAcknowledged ? .green : .secondary)
+                    .foregroundColor(termsAcknowledged ? .accent : .secondary)
                 Text("I acknowledge that this purchase is non-refundable")
                     .font(.caption)
                     .foregroundColor(.secondary)

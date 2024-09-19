@@ -46,6 +46,8 @@ final class ListingViewModel {
     private(set) var listings: [Listing] = []
     private(set) var viewState: ViewState = .loading
     var isDoubleTap: Bool = false
+    
+    // MARK: - Filter
     var selectedVehicleType: VehicleType = .cars
     
     // MARK: - Pagination
@@ -63,7 +65,7 @@ final class ListingViewModel {
     
     // MARK: - Main actor functions
     @MainActor
-    func loadListings(isRefresh: Bool = false, vehicleType: VehicleType) async {
+    func loadListings(isRefresh: Bool = false) async {
         if isRefresh {
             resetPagination()
         } else {
@@ -72,7 +74,7 @@ final class ListingViewModel {
         
         do {
             let newListings = try await listingService.searchListings(
-                vehicleType: vehicleType,
+                vehicleType: self.selectedVehicleType,
                 from: currentPage * pageSize,
                 to: currentPage * pageSize + pageSize - 1
             )
@@ -86,13 +88,14 @@ final class ListingViewModel {
     // Refresh listings
     @MainActor
     func refreshListings(vehicleType: VehicleType) async {
-        await loadListings(isRefresh: true, vehicleType: vehicleType)
+        await loadListings(isRefresh: true)
     }
     
     // MARK: - Helpers
     private func resetPagination() {
         self.currentPage = 0
         self.hasMoreListings = true
+        self.viewState = .loading
     }
     
     private func updateListings(with newListings: [Listing], isRefresh: Bool) {
@@ -110,23 +113,5 @@ final class ListingViewModel {
         
         print("DEBUG: \(isRefresh ? "Refreshed" : "Loaded") \(newListings.count) listings...")
     }
-    
-    private func loadListings() async throws -> [Listing] {
-        let from = currentPage * pageSize
-        let to = from + pageSize - 1
-        return try await listingService.searchListings(vehicleType: VehicleType.cars, from: from, to: to)
-    }
-    
-    private func updateListings(with newListings: [Listing]) {
-        if newListings.count < pageSize {
-            self.hasMoreListings = false
-        }
-        
-        self.listings = newListings
-        self.currentPage += 1
-        
-        print("DEBUG: Loaded \(newListings.count) listings...")
-    }
-    
 }
 

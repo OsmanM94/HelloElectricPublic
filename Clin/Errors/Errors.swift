@@ -68,6 +68,9 @@ enum AppError: Error, LocalizedError {
         case errorSigningOut
         case errorDeletingAccount
         
+        // News
+        case failedToLoadNews
+        
         var message: String {
             switch self {
             case .requestFailed(let description):
@@ -75,9 +78,9 @@ enum AppError: Error, LocalizedError {
             case .invalidStatusCode(let statuscode):
                 return "Invalid status code \(statuscode)"
             case .decodingError(let error):
-                return "Decoding error: \(error.localizedDescription)"
+                return "Decoding error: \(error)"
             case .encodingError(let error):
-                return "Encoding error: \(error.localizedDescription)"
+                return "Encoding error: \(error)"
             case .invalidCredential:
                 return "The Apple ID credential is invalid. Please try signing in again."
             case .missingIDToken:
@@ -87,7 +90,7 @@ enum AppError: Error, LocalizedError {
             case .credentialNotFound:
                 return "Your Apple ID credential was not found. Please sign in again."
             case .unknownAuthError(let error):
-                return "An unknown authentication error occurred: \(error.localizedDescription)"
+                return "An unknown authentication error occurred: \(error)"
             case .generalError:
                 return "An error occurred. Please try again."
             case .noAuthUserFound:
@@ -119,9 +122,9 @@ enum AppError: Error, LocalizedError {
             case .fileNotFound(let filename):
                 return "Couldn't find \(filename) in main bundle."
             case .dataLoadingError(let error):
-                return "Couldn't load data from file: \(error.localizedDescription)"
+                return "Couldn't load data from file: \(error)"
             case .dataParsingError(let error):
-                return "Couldn't parse data: \(error.localizedDescription)"
+                return "Couldn't parse data: \(error)"
             case .profileImageUploadFailed:
                 return "Failed to upload image, please try again."
             case .companyDissolved:
@@ -132,6 +135,8 @@ enum AppError: Error, LocalizedError {
                 return "Sorry, error signing out. Try again"
             case .errorDeletingAccount:
                 return "Sorry, error deleting account. Try again"
+            case .failedToLoadNews:
+                return "Sorry, failed to load news."
             }
         }
     }

@@ -12,13 +12,13 @@ struct EVListView: View {
     
     @State private var showInfoSheet: Bool = false
     @FocusState private var isPresented: Bool
-    
+
     var body: some View {
         NavigationStack {
             VStack {
                 switch viewModel.viewState {
                 case .loading:
-                    CustomProgressView()
+                    CustomProgressView(message: "Loading...")
                     
                 case .loaded:
                     searchBar
@@ -36,7 +36,7 @@ struct EVListView: View {
             }
             .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
             .toolbar {
-                topBarLeadingToolbarContent
+                topBarTrailingToolbarContent
                 keyboardToolbarContent
             }
             .sheet(isPresented: $showInfoSheet) {
@@ -58,6 +58,20 @@ struct EVListView: View {
         .focused($isPresented)
     }
     
+    private var vehicleTypePicker: some View {
+        Picker("Vehicle Type", selection: $viewModel.databaseFilter) {
+               ForEach(DatabaseFilter.allCases, id: \.self) { type in
+                   Text(type.rawValue).tag(type)
+               }
+           }
+           .pickerStyle(.menu)
+           .onChange(of: viewModel.databaseFilter) { _, newValue in
+               Task {
+                   await viewModel.loadEVDatabase()
+               }
+           }
+       }
+    
     private var listContent: some View {
         List {
             ForEach(viewModel.evDatabase, id: \.id) { ev in
@@ -67,7 +81,7 @@ struct EVListView: View {
                 }
                 .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
             }
-            
+    
             if viewModel.hasMoreListings && !viewModel.evDatabase.isEmpty {
                 loadingIndicator
                     .task {
@@ -78,22 +92,26 @@ struct EVListView: View {
         .listStyle(.plain)
     }
     
-    private var topBarLeadingToolbarContent: some ToolbarContent {
+    private var topBarTrailingToolbarContent: some ToolbarContent {
         ToolbarItemGroup(placement: .topBarTrailing) {
-            Button("Clear") {
-                viewModel.clearSearch()
-            }
-            .disabled(viewModel.searchText.isEmpty)
+            vehicleTypePicker
             
             Button(action: { showInfoSheet.toggle() }) {
                 Image(systemName: "info.circle")
+                    .foregroundStyle(.blue)
             }
         }
     }
     
     private var keyboardToolbarContent: some ToolbarContent {
         ToolbarItemGroup(placement: .keyboard) {
+            Button("Clear") {
+                viewModel.clearSearch()
+            }
+            .disabled(viewModel.searchText.isEmpty)
+            
             Spacer(minLength: 0)
+            
             Button { isPresented = false } label: { Text("Done") }
         }
     }
@@ -131,7 +149,7 @@ fileprivate struct InfoSheetView: View {
             
                 Group {
                     if showSplashView {
-                        CustomProgressView()
+                        CustomProgressView(message: "")
                             .frame(height: 600)
                     } else {
                         mainContent
@@ -190,7 +208,9 @@ fileprivate struct InfoSheetView: View {
 }
 
 #Preview {
-    EVListView()
+    NavigationStack {
+        EVListView()
+    }
 }
 
 

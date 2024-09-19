@@ -69,7 +69,7 @@ struct FavouriteIcon: View {
 
     private var foregroundStyle: some ShapeStyle {
         if isPromoted {
-            return .green
+            return .accent
         } else {
             return colorScheme == .dark ? .white : .black
         }

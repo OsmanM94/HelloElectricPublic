@@ -48,15 +48,15 @@ struct CircularProgressBar: View {
     }
     
     private var backgroundGradient: LinearGradient {
-        LinearGradient(gradient: Gradient(colors: [.green.opacity(0.3), .blue.opacity(0.3)]), startPoint: .topLeading, endPoint: .bottomTrailing)
+        LinearGradient(gradient: Gradient(colors: [.accent.opacity(0.3), .blue.opacity(0.3)]), startPoint: .topLeading, endPoint: .bottomTrailing)
     }
     
     private var foregroundGradient: LinearGradient {
-        LinearGradient(gradient: Gradient(colors: [.green, .blue]), startPoint: .topLeading, endPoint: .bottomTrailing)
+        LinearGradient(gradient: Gradient(colors: [.accent, .blue]), startPoint: .topLeading, endPoint: .bottomTrailing)
     }
     
     private var textGradient: LinearGradient {
-        LinearGradient(gradient: Gradient(colors: [.green, .blue]), startPoint: .leading, endPoint: .trailing)
+        LinearGradient(gradient: Gradient(colors: [.accent, .blue]), startPoint: .leading, endPoint: .trailing)
     }
     
     private var shadowColor: Color {

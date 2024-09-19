@@ -24,12 +24,8 @@ struct StoreKitView: View {
                 if isPromoted {
                     HStack {
                         Image(systemName: "checkmark.circle.fill")
-                            .foregroundStyle(.green.gradient)
-                        Text("Promoted.")
-                        Spacer()
-                        Text("Currently promoted.")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(.accent.gradient)
+                        Text("Promotion added.")
                     }
                 } else {
                     VStack(alignment: .leading, spacing: 8) {
@@ -90,7 +86,7 @@ fileprivate struct BenefitRow: View {
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: 8) {
             Image(systemName: icon)
-                .foregroundStyle(.green.gradient)
+                .foregroundStyle(.accent.gradient)
                 .frame(width: 20)
             Text(text)
         }
@@ -161,7 +157,7 @@ fileprivate struct StoreKitPayWall: View {
     private var completedView: some View {
         VStack(spacing: 20) {
             Image(systemName: "checkmark.circle.fill")
-                .foregroundStyle(.green)
+                .foregroundStyle(.accent)
                 .font(.system(size: 50))
             
             Text("Purchase successful!")
@@ -174,7 +170,7 @@ fileprivate struct StoreKitPayWall: View {
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(Color.green.opacity(0.8))
+                    .background(Color.accent.opacity(0.8))
                     .clipShape(RoundedRectangle(cornerRadius: 10))
             }
             .padding(.horizontal)
@@ -209,7 +205,7 @@ fileprivate struct StoreKitPayWall: View {
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(Color.green.opacity(0.8))
+                    .background(Color.accent.opacity(0.8))
                     .clipShape(RoundedRectangle(cornerRadius: 10))
                    
             }
@@ -256,7 +252,7 @@ fileprivate struct StoreKitPayWall: View {
                 Text(product.displayPrice)
                     .font(.title3)
                     .fontWeight(.bold)
-                    .foregroundStyle(.green.gradient)
+                    .foregroundStyle(.accent.gradient)
                 
                 Text(product.description)
                     .font(.caption)

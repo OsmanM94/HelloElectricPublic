@@ -9,6 +9,7 @@ import SwiftUI
 
 struct CreateFormView: View {
     @State private var viewModel = CreateFormViewModel()
+    
     @Bindable var authViewModel: AuthViewModel
     
     var body: some View {
@@ -19,7 +20,7 @@ struct CreateFormView: View {
                     AuthenticationView()
                     
                 case .loading:
-                    CustomProgressView()
+                    CustomProgressView(message: "Authenticating...")
                     
                 case .authenticated:
                     mainContent
@@ -44,7 +45,7 @@ struct CreateFormView: View {
                         { await viewModel.sendDvlaRequest() })
                 
             case .loading:
-                CustomProgressView()
+                CustomProgressView(message: "Loading...")
                 
             case .loaded:
                 CreateFormSubview(viewModel: viewModel)
@@ -68,11 +69,14 @@ struct CreateFormView: View {
 
 #Preview("DVLA") {
     CreateFormView(authViewModel: AuthViewModel())
+        .environment(AuthViewModel())
+       
 }
 
 #Preview("Loaded") {
     NavigationStack {
         CreateFormSubview(viewModel: CreateFormViewModel())
+            .environment(AuthViewModel())
     }
 }
 
@@ -121,7 +125,7 @@ fileprivate struct DvlaCheckView: View {
     private var registrationPlate: some View {
         HStack(spacing: 0) {
             Rectangle()
-                .foregroundStyle(.green)
+                .foregroundStyle(.accent)
                 .frame(width: 40)
                 .overlay {
                     Text("UK")
@@ -185,7 +189,7 @@ fileprivate struct CreateFormSubview: View {
         ZStack {
             switch viewModel.subFormViewState {
             case .loading:
-                CustomProgressView()
+                CustomProgressView(message: "Loading...")
             case .loaded:
                 Form {
                     makeModelSection
@@ -279,7 +283,7 @@ fileprivate struct CreateFormSubview: View {
             HStack(spacing: 15) {
                 Image(systemName: "gauge.with.needle")
                     .imageScale(.large)
-                    .foregroundStyle(viewModel.formData.condition == "Select" ? .green.opacity(0.5) : .green)
+                    .foregroundStyle(viewModel.formData.condition == "Select" ? .accent.opacity(0.5) : .accent)
                 TextField("Current mileage", value: $viewModel.formData.mileage, format: .number)
                     .keyboardType(.decimalPad)
                     .foregroundStyle(viewModel.formData.condition == "Select" ? .gray : .primary)

@@ -32,7 +32,7 @@ struct SupportCenterView: View {
                             .fontWeight(.semibold)
                     }
                     .padding()
-                    .background(Color.green.opacity(0.8))
+                    .background(Color.accent.opacity(0.8))
                     .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
                 

@@ -7,6 +7,51 @@
 
 import Foundation
 import Factory
+import PostgREST
+
+enum DatabaseFilter: String, CaseIterable {
+    case all = "All"
+    case recent = "Most Recent"
+    case cheapest = "Cheapest"
+    case power = "Power(HP)"
+    case fastest = "Fastest"
+    case towing = "Towing"
+    case rapidCharging = "Rapid Charging"
+    case mostEfficient = "Most Efficient"
+    case longestRange = "Longest Range"
+    
+    var databaseValues: [[String: String]] {
+        switch self {
+        case .all:
+            return [["column": "car_name", "order": "asc"]]
+        case .recent:
+            return [["column": "first_delivery_expected", "order": "desc"],
+                    ["column": "car_name", "order": "asc"]]
+        case .cheapest:
+            return [["column": "car_price", "order": "asc"],
+                    ["column": "car_name", "order": "asc"]]
+        case .power:
+            return [["column": "total_power", "order": "desc"],
+                    ["column": "car_name", "order": "asc"]]
+        case .fastest:
+            return [["column": "performance_acceleration_0_62_mph", "order": "asc"],
+                    ["column": "car_name", "order": "asc"]]
+        case .towing:
+            return [["column": "dimensions_tow", "order": "desc"],
+                    ["column": "car_name", "order": "asc"]]
+        case .rapidCharging:
+            return [["column": "charging_rapid_charge_time", "order": "asc"],
+                    ["column": "car_name", "order": "asc"]]
+        case .mostEfficient:
+            return [["column": "efficiency_real_range_consumption", "order": "asc"],
+                    ["column": "car_name", "order": "asc"]]
+        case .longestRange:
+            return [["column": "electric_range", "order": "desc"],
+                    ["column": "car_name", "order": "asc"]]
+        }
+    }
+}
+
 
 @Observable
 final class EVDataViewModel {
@@ -26,6 +71,9 @@ final class EVDataViewModel {
     var searchText: String = ""
     private(set) var isSearching: Bool = false
     private var currentSearchText: String = ""
+    
+    // MARK: - Filter
+    var databaseFilter: DatabaseFilter = .all
     
     // MARK: - Pagination control
     private(set) var hasMoreListings: Bool = true
@@ -97,7 +145,6 @@ final class EVDataViewModel {
     @MainActor
     func loadMoreEVDatabase() async {
         guard hasMoreListings, viewState != .loading else { return }
-        currentPage += 1
         await loadEVs()
     }
     
@@ -122,6 +169,7 @@ final class EVDataViewModel {
         self.currentPage = 0
         self.hasMoreListings = true
         self.evDatabase = []
+        self.viewState = .loading
     }
     
     private func searchEVs(searchText: String, from: Int, to: Int) async throws -> [EVDatabase] {
@@ -143,21 +191,46 @@ final class EVDataViewModel {
     
     private func loadEVs() async {
         do {
-            let newEVs = try await evDatabaseService.loadPaginatedEVs(
-                from: currentPage * pageSize,
-                to: (currentPage * pageSize) + pageSize - 1
-            )
-           
+            let newEVs = try await searchDatabaseWithFilter()
+            
             if newEVs.isEmpty {
                 hasMoreListings = false
-                viewState = evDatabase.isEmpty ? .empty : .loaded
             } else {
                 evDatabase.append(contentsOf: newEVs)
-                viewState = .loaded
+                currentPage += 1
             }
+            
+            viewState = evDatabase.isEmpty ? .empty : .loaded
         } catch {
             print("Error loading EV database \(error)")
             viewState = .error(AppError.ErrorType.generalError.message)
+        }
+    }
+        
+    private func searchDatabaseWithFilter() async throws -> [EVDatabase] {
+        do {
+            let filterValues = self.databaseFilter.databaseValues
+            
+            var query = supabaseService.client
+                .from(table)
+                .select()
+            
+            // Apply order for multiple columns
+            for filter in filterValues {
+                let column = filter["column"] ?? "car_name"
+                let order = filter["order"] ?? "asc"
+                query = query.order(column, ascending: order == "asc") as! PostgrestFilterBuilder
+            }
+            
+            // Apply pagination
+            let result: [EVDatabase] = try await query
+                .range(from: currentPage * pageSize, to: (currentPage + 1) * pageSize - 1)
+                .execute()
+                .value
+            
+            return result
+        } catch {
+            throw error
         }
     }
 }

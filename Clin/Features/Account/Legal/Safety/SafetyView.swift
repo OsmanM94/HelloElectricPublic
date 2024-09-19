@@ -51,7 +51,7 @@ struct SafetyView: View {
                             HStack(alignment: .top, spacing: 15) {
                                 Text("\(index + 1)")
                                     .font(.headline)
-                                    .foregroundStyle(.green)
+                                    .foregroundStyle(.accent)
                                     .frame(width: 25, alignment: .leading)
                                 
                                 Text(section.1[index])

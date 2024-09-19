@@ -53,7 +53,7 @@ struct HubView: View {
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 30, height: 30)
                     .padding()
-                    .foregroundStyle(.green.gradient)
+                    .foregroundStyle(.accent.gradient)
                     .clipShape(Circle())
                     .padding()
             }
@@ -115,7 +115,7 @@ fileprivate struct HubItemView: View {
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 50, height: 50)
                 .padding()
-                .foregroundStyle(.green.gradient)
+                .foregroundStyle(.accent.gradient)
                 .clipShape(Circle())
             
             Text(title)

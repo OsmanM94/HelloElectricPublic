@@ -20,10 +20,13 @@ struct EVDatabase: Codable, Identifiable, Hashable {
         rangeHighwayMild,
         rangeCombinedMild: String?
     
-    let performanceAcceleration0_62_Mph,
-        performanceTopSpeed,
-        electricRange,
-        totalPower: String?
+    let performanceTopSpeed: String?
+    let performanceAcceleration0_62_Mph: Int?
+    
+    let totalPower: Int?
+    let totalHp: String?
+    
+    let electricRange: Int?
     
     let drive,
         batteryNominalCapacity,
@@ -52,13 +55,15 @@ struct EVDatabase: Codable, Identifiable, Hashable {
     let chargingRapidPort,
         chargingRapidPortLocation,
         chargingRapidChargeSpeed,
-        chargingRapidChargeTime,
         chargingRapidAutochargeSupported: String?
     
-    let efficiencyRealRangeConsumption,
-        efficiencyFuelEquivalent,
+    let chargingRapidChargeTime: Int?
+    
+    let efficiencyFuelEquivalent,
         dimensionsAndWeightLength,
         dimensionsAndWeightWidth: String?
+    
+    let efficiencyRealRangeConsumption: Int?
     
     let dimensionsAndWeightWidthMirrors,
         dimensionsAndWeightWheelbase,
@@ -107,6 +112,7 @@ struct EVDatabase: Codable, Identifiable, Hashable {
         case performanceTopSpeed = "performance_top_speed"
         case electricRange = "electric_range"
         case totalPower = "total_power"
+        case totalHp = "total_hp"
         case drive
         case batteryNominalCapacity = "battery_nominal_capacity"
         case batteryType = "battery_type"
@@ -173,10 +179,11 @@ extension EVDatabase {
         rangeCityMild: "350 km",
         rangeHighwayMild: "300 km",
         rangeCombinedMild: "325 km",
-        performanceAcceleration0_62_Mph: "7.5 sec",
         performanceTopSpeed: "180 km/h",
-        electricRange: "510 km",
-        totalPower: "150 kW",
+        performanceAcceleration0_62_Mph: 7,
+        totalPower: 185,
+        totalHp: "285",
+        electricRange: 510,
         drive: "Rear Wheel Drive",
         batteryNominalCapacity: "77 kWh",
         batteryType: "Lithium-ion",
@@ -199,12 +206,12 @@ extension EVDatabase {
         chargingRapidPort: "CCS",
         chargingRapidPortLocation: "Right rear",
         chargingRapidChargeSpeed: "550 km/h",
-        chargingRapidChargeTime: "17 mins",
         chargingRapidAutochargeSupported: "Yes",
-        efficiencyRealRangeConsumption: "18 kWh/100km",
-        efficiencyFuelEquivalent: "2.0 L/100km",
-        dimensionsAndWeightLength: "4.58 m",
-        dimensionsAndWeightWidth: "1.85 m",
+        chargingRapidChargeTime: 17,
+        efficiencyFuelEquivalent: "18 kWh/100km",
+        dimensionsAndWeightLength: "2.0 L/100km",
+        dimensionsAndWeightWidth: "4.58 m",
+        efficiencyRealRangeConsumption: 285,
         dimensionsAndWeightWidthMirrors: "2.11 m",
         dimensionsAndWeightWheelbase: "2.77 m",
         dimensionsAndWeightWeightUnladen: "2,124 kg",

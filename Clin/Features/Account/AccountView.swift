@@ -17,10 +17,10 @@ struct AccountView: View {
             VStack {
                 switch authViewModel.viewState {
                 case .unauthenticated:
-//                    AuthenticationView()
-                    accountContent
+                    AuthenticationView()
+                  
                 case .loading:
-                    CustomProgressView()
+                    CustomProgressView(message: "Loading account...")
                     
                 case .authenticated:
                     accountContent
@@ -44,6 +44,7 @@ struct AccountView: View {
             aboutUsSection
             whatsNextSection
             notificationsSection
+            faceIDSection
             hapticSection
             
             signOutSection
@@ -133,6 +134,15 @@ struct AccountView: View {
             }) {
                 Label("Notifications", systemImage: "bell")
             }
+        }
+    }
+    
+    private var faceIDSection: some View {
+        Section(footer: Text("Enable FaceID for secure and convenient authentication every time you open the app.")) {
+            Toggle(isOn: Bindable(accountViewModel).faceIDisEnabled) {
+                Label("FaceID", systemImage: "faceid")
+            }
+            .disabled(!accountViewModel.faceID.isBiometricsAvailable)
         }
     }
     

@@ -56,11 +56,11 @@ final class AuthViewModel {
             // Ensure the user is authenticated
             guard let user = try? await supabaseService.client.auth.session.user else { return }
             
-            // Delete the user's data from database
-            try await deleteUserData(userId: user.id)
+            // Delete the user's listing from database
+            try await deleteUserListing(userId: user.id)
             
-            // Delete the user's account from Supabase
-            try await supabaseService.client.auth.admin.deleteUser(id: user.id.uuidString)
+            // Delete the user's profile from database
+            try await deleteUserProfile(userId: user.id)
             
             // Sign out the user after successful deletion
              await signOut()
@@ -117,7 +117,7 @@ final class AuthViewModel {
                 } else {
                     self.displayName = UUID().uuidString
                 }
-                                
+                
             } catch {
                 viewState = .unauthenticated
             }
@@ -125,13 +125,41 @@ final class AuthViewModel {
     }
         
     // MARK: - Private methods
-    private func deleteUserData(userId: UUID) async throws {
+    private func deleteUserListing(userId: UUID) async throws {
         do {
             try await supabaseService.client
                 .from("car_listing")
                 .delete()
                 .eq("user_id", value: userId)
                 .execute()
+        } catch {
+            throw error
+        }
+    }
+    
+    private func deleteUserProfile(userId: UUID) async throws {
+        do {
+            let profile = Profile(
+                username: "Private Seller",
+                avatarURL: URL(
+                string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/mock_data/electric-car.png"
+                ),
+                updatedAt: nil,
+                userID: userId,
+                isDealer: false,
+                address: nil,
+                postcode: nil,
+                location: nil,
+                website: nil,
+                companyNumber: nil
+            )
+            
+            try await supabaseService.client
+                .from("profiles")
+                .update(profile)
+                .eq("user_id", value: userId)
+                .execute()
+        
         } catch {
             throw error
         }

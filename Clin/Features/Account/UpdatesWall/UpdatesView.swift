@@ -13,7 +13,8 @@ struct UpdatesView: View {
         Feature(name: "Chat messaging", description: "Communicate directly with sellers within the app.", eta: "Q2 2025"),
         Feature(name: "CarPlay Support", description: "Access key app features while driving.", eta: "Q3 2025"),
         Feature(name: "Website", description: "Browse and manage listings from your computer.", eta: "Q4 2025"),
-        Feature(name: "Advanced Search Filters", description: "Find your perfect EV with precision.", eta: "Q4 2025")
+        Feature(name: "Advanced Search Filters", description: "Find your perfect EV with precision.", eta: "Q4 2025"),
+        Feature(name: "Apple Intelligence", description: "We aim to bring Apple Intelligence into our app for a smarter user experience", eta: "Q4 2025")
     ]
     
     var body: some View {
@@ -118,12 +119,9 @@ fileprivate struct FeatureRow: View {
                 .foregroundStyle(.secondary)
             Text("Expected: \(feature.friendlyETA)")
                 .font(.caption)
-                .foregroundStyle(.green)
+                .foregroundStyle(.accent)
         }
         .padding()
-        .background(Color(.systemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 10))
-        .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
     }
 }
 

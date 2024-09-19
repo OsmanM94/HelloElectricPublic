@@ -27,7 +27,7 @@ struct SearchView: View {
                     listView
                     
                 case .loading:
-                    CustomProgressView()
+                    CustomProgressView(message: "Searching...")
                     
                 case .noResults:
                     searchBar

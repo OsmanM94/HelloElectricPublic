@@ -98,9 +98,11 @@ struct EVDetailsView: View {
         VStack(alignment: .leading, spacing: 10) {
             sectionHeader("Performance")
             
-            infoRow("Acceleration (0-62 mph)", evData.performanceAcceleration0_62_Mph)
+            infoRowNumeric("Acceleration (0-62 mph)", evData.performanceAcceleration0_62_Mph ?? 0, "sec")
             infoRow("Top Speed", evData.performanceTopSpeed)
-            infoRow("Total Power", evData.totalPower)
+           
+            infoRowNumeric("Total Power", evData.totalPower, "kW (\(evData.totalHp ?? "N/A"))")
+         
             infoRow("Torque", evData.performanceTorque)
             infoRow("Drive", evData.drive)
         }
@@ -109,8 +111,8 @@ struct EVDetailsView: View {
     private var rangeSection: some View {
         VStack(alignment: .leading, spacing: 10) {
             sectionHeader("Range")
-            
-            infoRow("Electric Range", evData.electricRange)
+        
+            infoRowNumeric("Electric Range", evData.electricRange, "mi")
             infoRow("City (Cold)", evData.rangeCityCold)
             infoRow("Highway (Cold)", evData.rangeHighwayCold)
             infoRow("Combined (Cold)", evData.rangeCombinedCold)
@@ -156,6 +158,7 @@ struct EVDetailsView: View {
                 infoRow("Rapid Port", evData.chargingRapidPort)
                 infoRow("Rapid Port Location", evData.chargingRapidPortLocation)
                 infoRow("Rapid Charge Speed", evData.chargingRapidChargeSpeed)
+                infoRowNumeric("Rapid Charge Time", evData.chargingRapidChargeTime, "min")
                 infoRow("Rapid Autocharge Supported", evData.chargingRapidAutochargeSupported)
             }
         }
@@ -191,8 +194,9 @@ struct EVDetailsView: View {
     private var efficiencySection: some View {
         VStack(alignment: .leading, spacing: 10) {
             sectionHeader("Efficiency")
+        
+            infoRowNumeric("Real Range Consumption", evData.efficiencyRealRangeConsumption, "Wh/mi")
             
-            infoRow("Real Range Consumption", evData.efficiencyRealRangeConsumption)
             infoRow("Fuel Equivalent", evData.efficiencyFuelEquivalent)
         }
     }
@@ -208,14 +212,14 @@ struct EVDetailsView: View {
             infoRow("Segment", evData.miscellaneousSegment)
             infoRow("Roof Rails", evData.miscellaneousRoofRails)
             infoRow("Heat Pump", evData.miscellaneousHeatPump)
-            infoRow("HP Standard Equipment", evData.miscellaneousHPStandardEquipment)
+            infoRow("Heat Pump Standard Equipment", evData.miscellaneousHPStandardEquipment)
             infoRow("First Delivery Expected", evData.firstDeliveryExpected)
         }
     }
     
     private func sectionHeader(_ title: String) -> some View {
         Text(title)
-            .foregroundStyle(.green.gradient)
+            .foregroundStyle(.accent.gradient)
             .font(.title3)
             .fontDesign(.rounded)
             .bold()
@@ -228,6 +232,16 @@ struct EVDetailsView: View {
                 .fontWeight(.medium)
             Spacer()
             Text(value ?? "N/A")
+                .foregroundStyle(.secondary)
+        }
+    }
+    
+    private func infoRowNumeric(_ title: String, _ value: Int?,_ type: String) -> some View {
+        HStack {
+            Text(title)
+                .fontWeight(.medium)
+            Spacer()
+            Text("\(value ?? 0) \(type)")
                 .foregroundStyle(.secondary)
         }
     }
@@ -273,7 +287,7 @@ fileprivate struct EVGlossaryView: View {
     var body: some View {
         VStack {
             if showSplashView {
-                CustomProgressView()
+                CustomProgressView(message: "Loading...")
             } else {
                 List(termExplanations, id: \.term) { termExplanation in
                     VStack(alignment: .leading) {

@@ -86,7 +86,7 @@ struct StationView: View {
             .frame(width: 50, height: 50)
             .background(Color(.secondarySystemBackground).opacity(0.8))
             .clipShape(Circle())
-            .foregroundStyle(.green)
+            .foregroundStyle(.accent)
         }
         .disabled(viewModel.isLoading)
     }
@@ -117,6 +117,7 @@ fileprivate struct StationDetailView: View {
             statusInfo
             typeInfo
         }
+        .fontDesign(.rounded)
         .padding()
         .padding(.top, 20)
         .frame(maxWidth: .infinity , alignment: .leading)
@@ -126,7 +127,7 @@ fileprivate struct StationDetailView: View {
                 Label("Open in Maps", systemImage: "map.fill")
                     .foregroundStyle(.white)
                     .padding(10)
-                    .background(.green.gradient.opacity(0.8))
+                    .background(.accent.gradient.opacity(0.8))
                     .clipShape(RoundedRectangle(cornerRadius: 10))
             }
         }
@@ -135,7 +136,7 @@ fileprivate struct StationDetailView: View {
     private var operatorTag: some View {
         Text(station.isPrivateOperator ? "Private Operator" : "Public Operator")
             .font(.subheadline)
-            .foregroundStyle(station.isPrivateOperator ? .red : .green)
+            .foregroundStyle(station.isPrivateOperator ? .red : .accent)
     }
     
     private var stationSpecs: some View {
@@ -143,7 +144,7 @@ fileprivate struct StationDetailView: View {
             if let stationSpecs = viewModel.stationSpecs(for: station) {
                 Label(stationSpecs, systemImage: "ev.charger.fill")
                     .font(.subheadline)
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
             }
         }
     }
@@ -153,7 +154,7 @@ fileprivate struct StationDetailView: View {
             if let statusTitle = viewModel.stationStatus(for: station) {
                 Label("Status: \(statusTitle)", systemImage: "bolt.fill")
                     .font(.subheadline)
-                    .foregroundStyle(.green)
+                    .foregroundStyle(.accent)
             }
         }
     }

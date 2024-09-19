@@ -27,7 +27,7 @@ final class ProfileViewModel {
     // MARK: - Observable properties
     var imageSelection: PhotosPickerItem?
     private(set) var avatarImage: SelectedImage?
-    private(set) var displayName: String = ""
+    private(set) var displayName: String = "Private Seller"
     private(set) var profile: Profile? = nil
     var viewState: ViewState = .loading
     var companiesHouseViewState: CompaniesHouse = .idle
@@ -60,7 +60,7 @@ final class ProfileViewModel {
     
     @MainActor
     func loadCompanyInfo() async {
-        guard !companyNumber.isEmpty else { return }
+//        guard !companyNumber.isEmpty else { return }
         viewState = .loading
         
         do {
@@ -107,6 +107,7 @@ final class ProfileViewModel {
         imageSelection = nil
         avatarImage = nil
         username = ""
+        isDealer = false // added temporary
        
         companiesHouseViewState = .idle
         viewState = .idle
@@ -151,6 +152,7 @@ final class ProfileViewModel {
                 viewState = .idle
             }
         } catch {
+            print("Error loading profile \(error)")
             viewState = .error(AppError.ErrorType.generalError.message)
         }
     }

@@ -92,4 +92,8 @@ extension Container {
     var searchLogic: Factory<SearchLogic> {
         Factory(self) { SearchLogic() }
     }
+    
+    var faceID: Factory<FaceID> {
+        Factory(self) { FaceID() }
+    }
  }

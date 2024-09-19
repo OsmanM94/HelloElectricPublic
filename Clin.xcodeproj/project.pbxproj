@@ -213,7 +213,9 @@
 			membershipExceptions = (
 				Cache/CacheManager.swift,
 				Constants/Constants.swift,
-				JSONDecoder/JSONDecoder.swift,
+				Decoder/JSONDecoder.swift,
+				FaceID/FaceID.swift,
+				FaceID/FaceIDView.swift,
 				LazyView/LazyView.swift,
 				NetworkMonitor/NetworkMonitor.swift,
 				NetworkMonitor/NetworkMonitorView.swift,
@@ -248,7 +250,6 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				HTTPDownloader.swift,
-				HTTPErrors.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
 		};
@@ -601,6 +602,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Clin/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = HelloElectric;
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "We need to unlock your data.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We need to know your location in order to search for nearby chargers.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -643,6 +645,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Clin/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = HelloElectric;
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "We need to unlock your data.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We need to know your location in order to search for nearby chargers.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;

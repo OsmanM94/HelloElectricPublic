@@ -10,6 +10,8 @@ import SwiftUI
 struct EditFormView: View {
     @State private var viewModel = EditFormViewModel()
     @Environment(\.dismiss) private var dismiss
+    
+    @State private var isPromotionFinished: Bool = false
     @State var listing: Listing
     
     var body: some View {
@@ -17,13 +19,10 @@ struct EditFormView: View {
             VStack(spacing: 0) {
                 switch viewModel.viewState {
                 case .idle:
-                    EditFormSubview(viewModel: viewModel, listing: listing)
-                        .toolbar { DismissView(action: {
-                            viewModel.resetState(); dismiss() }) }
-                        .task { await viewModel.loadBulkData() }
+                    mainContent
                     
                 case .loading:
-                    CustomProgressView()
+                    CustomProgressView(message: "Loading...")
                     
                 case .uploading:
                     CircularProgressBar(progress: viewModel.imageManager.uploadingProgress)
@@ -42,6 +41,23 @@ struct EditFormView: View {
             await viewModel.retrieveImages(listing: listing)
         }
     }
+    
+    private var mainContent: some View {
+        EditFormSubview(
+            viewModel: viewModel,
+            listing: listing,
+            isPromotionFinished: $isPromotionFinished)
+        .toolbar {
+            DismissView(action: {
+                viewModel .resetState()
+                dismiss()
+                },
+                isPromotionFinished: $isPromotionFinished)
+        }
+        .task {
+            await viewModel.loadBulkData()
+        }
+    }
 }
 
 #Preview {
@@ -50,20 +66,23 @@ struct EditFormView: View {
 
 fileprivate struct EditFormSubview: View {
     @Bindable var viewModel: EditFormViewModel
+    @Binding var isPromotionFinished: Bool
+    
     @State var listing: Listing
     @State private var originalListing: Listing
    
-    init(viewModel: EditFormViewModel, listing: Listing) {
+    init(viewModel: EditFormViewModel, listing: Listing, isPromotionFinished: Binding<Bool>) {
         self._viewModel = Bindable(viewModel)
         self._listing = State(initialValue: listing)
         self._originalListing = State(initialValue: listing)
+        self._isPromotionFinished = isPromotionFinished
     }
     
     var body: some View {
         ZStack {
             switch viewModel.subFormViewState {
             case .loading:
-                CustomProgressView()
+                CustomProgressView(message: "Loading...")
             case .loaded:
                 Form {
                     makeSection
@@ -108,7 +127,7 @@ fileprivate struct EditFormSubview: View {
     private var bodyTypeSection: some View {
         Section("Body Type") {
             Picker("Body", selection: $listing.bodyType) {
-                ForEach(viewModel.bodyTypeOptions, id: \.self) { body in
+                ForEach(viewModel.dataLoader.bodyTypeOptions, id: \.self) { body in
                     Text(body).tag(body)
                 }
             }
@@ -119,12 +138,12 @@ fileprivate struct EditFormSubview: View {
     private var yearConditionSection: some View {
         Section(header: Text("Year and condition")) {
             Picker("Year of manufacture", selection: $listing.yearOfManufacture) {
-                ForEach(viewModel.yearOptions, id: \.self) { year in
+                ForEach(viewModel.dataLoader.yearOptions, id: \.self) { year in
                     Text(year).tag(year)
                 }
             }
             Picker("Condition", selection: $listing.condition) {
-                ForEach(viewModel.conditionOptions, id: \.self) { condition in
+                ForEach(viewModel.dataLoader.conditionOptions, id: \.self) { condition in
                     Text(condition).tag(condition)
                 }
             }
@@ -137,12 +156,12 @@ fileprivate struct EditFormSubview: View {
             HStack(spacing: 15) {
                 Image(systemName: "gauge.with.needle")
                     .imageScale(.large)
-                    .foregroundStyle(.green)
+                    .foregroundStyle(.accent)
                 TextField("Current mileage", value: $listing.mileage, format: .number)
                     .keyboardType(.decimalPad)
             }
             Picker("Location", selection: $listing.location) {
-                ForEach(viewModel.availableLocations, id: \.self) { city in
+                ForEach(viewModel.dataLoader.availableLocations, id: \.self) { city in
                     Text(city).tag(city)
                 }
             }
@@ -153,12 +172,12 @@ fileprivate struct EditFormSubview: View {
     private var colourRangeSection: some View {
         Section("Colour and range") {
             Picker("Colour", selection: $listing.colour) {
-                ForEach(viewModel.colourOptions, id: \.self) { colour in
+                ForEach(viewModel.dataLoader.colourOptions, id: \.self) { colour in
                     Text(colour).tag(colour)
                 }
             }
             Picker("Driving range", selection: $listing.range) {
-                ForEach(viewModel.rangeOptions, id: \.self) { range in
+                ForEach(viewModel.dataLoader.rangeOptions, id: \.self) { range in
                     Text(range).tag(range)
                 }
             }
@@ -222,7 +241,7 @@ fileprivate struct EditFormSubview: View {
     
     private var homeChargingTime: some View {
         Picker("Home", selection: $listing.homeChargingTime) {
-            ForEach(viewModel.homeChargingTimeOptions, id: \.self) { time in
+            ForEach(viewModel.dataLoader.homeChargingTimeOptions, id: \.self) { time in
                 Text(time).tag(time)
             }
         }
@@ -231,7 +250,7 @@ fileprivate struct EditFormSubview: View {
     
     private var publicChargingTime: some View {
         Picker("Public", selection: $listing.publicChargingTime) {
-            ForEach(viewModel.publicChargingTimeOptions, id: \.self) { time in
+            ForEach(viewModel.dataLoader.publicChargingTimeOptions, id: \.self) { time in
                 Text(time).tag(time)
             }
         }
@@ -241,37 +260,37 @@ fileprivate struct EditFormSubview: View {
     private var additionalDataSection: some View {
         Section {
             Picker("Power BHP", selection: $listing.powerBhp) {
-                ForEach(viewModel.powerBhpOptions, id: \.self) { power in
+                ForEach(viewModel.dataLoader.powerBhpOptions, id: \.self) { power in
                     Text(power).tag(power)
                 }
             }
             
             Picker("Battery capacity", selection: $listing.batteryCapacity) {
-                ForEach(viewModel.batteryCapacityOptions, id: \.self) { battery in
+                ForEach(viewModel.dataLoader.batteryCapacityOptions, id: \.self) { battery in
                     Text(battery).tag(battery)
                 }
             }
             
             Picker("Regen braking", selection: $listing.regenBraking) {
-                ForEach(viewModel.regenBrakingOptions, id: \.self) { regen in
+                ForEach(viewModel.dataLoader.regenBrakingOptions, id: \.self) { regen in
                     Text(regen).tag(regen)
                 }
             }
             
             Picker("Warranty", selection: $listing.warranty) {
-                ForEach(viewModel.warrantyOptions, id: \.self) { warranty in
+                ForEach(viewModel.dataLoader.warrantyOptions, id: \.self) { warranty in
                     Text(warranty).tag(warranty)
                 }
             }
             
             Picker("Service history", selection: $listing.serviceHistory) {
-                ForEach(viewModel.serviceHistoryOptions, id: \.self) { service in
+                ForEach(viewModel.dataLoader.serviceHistoryOptions, id: \.self) { service in
                     Text(service).tag(service)
                 }
             }
             
             Picker("Owners", selection: $listing.numberOfOwners) {
-                ForEach(viewModel.numberOfOwnersOptions, id: \.self) { owners in
+                ForEach(viewModel.dataLoader.numberOfOwnersOptions, id: \.self) { owners in
                     Text(owners).tag(owners)
                 }
             }
@@ -279,9 +298,11 @@ fileprivate struct EditFormSubview: View {
         .pickerStyle(.navigationLink)
     }
     
+    // MARK: - Payment
     private var promoteListingSection: some View {
         StoreKitView(isPromoted: $listing.isPromoted) {
             listing.isPromoted = true
+            isPromotionFinished = true
         }
     }
     
@@ -317,7 +338,7 @@ fileprivate struct EditFormSubview: View {
                     viewModel.imageManager.resetChangeFlag()
                 }
             } label: {
-                Text("Apply")
+                Text("Apply changes")
                     .font(.headline)
                     .frame(maxWidth: .infinity)
             }
@@ -328,6 +349,9 @@ fileprivate struct EditFormSubview: View {
 
 fileprivate struct DismissView: View {
     let action: () -> Void
+
+    @Binding var isPromotionFinished: Bool
+    
     var body: some View {
         Color.clear
             .toolbar {
@@ -337,6 +361,7 @@ fileprivate struct DismissView: View {
                     } label: {
                         Text("Cancel")
                     }
+                    .disabled(isPromotionFinished)
                 }
             }
     }

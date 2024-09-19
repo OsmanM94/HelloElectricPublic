@@ -33,22 +33,6 @@ final class EditFormViewModel {
     @ObservationIgnored @Injected(\.editFormImageManager) var imageManager
     @ObservationIgnored @Injected(\.editFormDataLoader) var dataLoader
     
-    // MARK: - Data Arrays
-    var availableLocations: [String] = []
-    var bodyTypeOptions: [String] = []
-    var yearOptions: [String] = []
-    var conditionOptions: [String] = []
-    var rangeOptions: [String] = []
-    var colourOptions: [String] = []
-    var publicChargingTimeOptions: [String] = []
-    var homeChargingTimeOptions: [String] = []
-    var batteryCapacityOptions: [String] = []
-    var powerBhpOptions: [String] = []
-    var regenBrakingOptions: [String] = []
-    var warrantyOptions: [String] = []
-    var serviceHistoryOptions: [String] = []
-    var numberOfOwnersOptions: [String] = []
-    
     // MARK: - Main Actor methods
     @MainActor
     func loadBulkData() async {
@@ -98,13 +82,13 @@ final class EditFormViewModel {
     @MainActor
     func retrieveImages(listing: Listing) async {
         guard let id = listing.id else {
-            viewState = .error(AppError.ErrorType.generalError.message)
+            viewState = .error(AppError.ErrorType.noAuthUserFound.message)
             return
         }
         do {
             try await imageManager.retrieveImages(listing: listing, id: id)
         } catch {
-            viewState = .error(AppError.ErrorType.generalError.message)
+            viewState = .error(AppError.ErrorType.errorDownloadingImages.message)
         }
     }
     
