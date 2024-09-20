@@ -110,6 +110,5 @@ struct ListingRowView: View {
 
 #Preview {
     ListingRowView(listing: MockListingService.sampleData[0], showFavourite: true)
-        .previewLayout(.sizeThatFits)
         .environment(FavouriteViewModel())
 }

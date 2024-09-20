@@ -75,6 +75,9 @@ enum AppError: Error, LocalizedError {
         case biometricsNotAvailable
         case authenticationFailed
         
+        // Chart
+        case noAvailableData
+        
         var message: String {
             switch self {
             case .requestFailed(let description):
@@ -145,6 +148,8 @@ enum AppError: Error, LocalizedError {
                 return "Biometric authentication is not available on this device."
             case .authenticationFailed:
                 return "Authentication failed. Please try again."
+            case .noAvailableData:
+                return "Sorry, no available data."
             }
         }
     }

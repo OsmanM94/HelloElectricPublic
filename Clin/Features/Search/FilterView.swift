@@ -23,7 +23,9 @@ struct FilterView: View {
                         FilterSubView(viewModel: viewModel, onApply: onApply)
                         
                     case .error(let message):
-                        ErrorView(message: message, retryAction: {})
+                        ErrorView(message: message, retryAction: {
+                            await viewModel.loadBulkData()
+                        }, systemImage: "xmark.circle.fill")
                     }
                 }
                 .animation(.easeInOut(duration: 0.3), value: viewModel.filterViewState)

@@ -41,7 +41,7 @@ struct UserListingView: View {
     private var contentView: some View {
         switch viewModel.viewState {
         case .empty:
-            EmptyContentView(message: "Empty", systemImage: "tray.fill")
+            ErrorView(message: "Empty", retryAction: { await viewModel.loadUserListings() }, systemImage: "tray.fill")
             
         case .loading:
             CustomProgressView(message: "Loading...")
@@ -51,7 +51,7 @@ struct UserListingView: View {
             
         case .error(let message):
             ErrorView(message: message, retryAction: {
-                Task { loadListingsAction } })
+                Task { loadListingsAction } }, systemImage: "xmark.circle.fill")
         }
     }
     

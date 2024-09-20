@@ -26,9 +26,10 @@ struct CreateFormView: View {
                     mainContent
                     
                 case .error(let message):
-                    ErrorView(message: message) {
-                        authViewModel.resetState()
-                    }
+                    ErrorView(
+                        message: message,
+                        retryAction: { authViewModel.resetState() },
+                        systemImage: "xmark.circle.fill")
                 }
             }
             .animation(.easeInOut(duration: 0.3), value: authViewModel.viewState)
@@ -57,9 +58,10 @@ struct CreateFormView: View {
                 SuccessView(message: message, doneAction: { viewModel.resetFormDataAndState() })
                 
             case .error(let message):
-                ErrorView(message: message, retryAction: {
-                    viewModel.resetFormDataAndState()
-                })
+                ErrorView(
+                    message: message,
+                    retryAction: { viewModel.resetFormDataAndState() },
+                    systemImage: "xmark.circle.fill")
             }
         }
         .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
@@ -106,9 +108,9 @@ fileprivate struct DvlaCheckView: View {
                         Image(systemName: "info.circle")
                             .foregroundStyle(.blue)
                     }
-                    .popover(isPresented: $showInfoPopover, arrowEdge: .top) {
+                    .sheet(isPresented: $showInfoPopover) {
                         infoPopoverContent
-                            .presentationCompactAdaptation(.sheet)
+                            .presentationCornerRadius(30)
                             .presentationDetents([.medium])
                             .presentationDragIndicator(.visible)
                     }
@@ -211,7 +213,9 @@ fileprivate struct CreateFormSubview: View {
                     topBarTrailingToolbarContent
                 }
             case .error(let message):
-                ErrorView(message: message) { viewModel.resetFormDataAndState() }
+                ErrorView(message: message, retryAction: {
+                    viewModel.resetFormDataAndState()
+                }, systemImage: "xmark.circle.fill")
             }
         }
         .animation(.easeInOut(duration: 0.3), value: viewModel.subFormViewState)
@@ -243,7 +247,7 @@ fileprivate struct CreateFormSubview: View {
     private var makeModelFooter: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Selected make and model cannot be changed later.")
-            MissingDataSupport(buttonText: "Missing models?")
+            MissingDataSupport(buttonText: "Missing data?")
         }
     }
     
@@ -312,26 +316,29 @@ fileprivate struct CreateFormSubview: View {
             Image(systemName: "info.circle")
                 .foregroundStyle(.blue)
         }
-        .sheet(isPresented: $showLocationPopover) {
+        .popover(isPresented: $showLocationPopover, arrowEdge: .leading) {
             locationInfoPopover
-                .presentationDetents([.medium])
-                .presentationDragIndicator(.visible)
+                .presentationCompactAdaptation(.popover)
         }
+        
     }
     
     private var locationInfoPopover: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 5) {
             Text("Location information")
-                .font(.title3)
+                .font(.headline)
                 .bold()
                 .padding(.bottom)
             
             Text("The location selection is pre-selected for privacy reasons. We don't collect your personal location information.")
+                .font(.caption)
             
             Text("You can choose a nearby city to indicate your general area.")
+                .font(.caption)
         }
         .fontDesign(.rounded)
         .padding()
+        .frame(width: 300)
     }
 
     private var colourRangeSection: some View {
@@ -387,8 +394,8 @@ fileprivate struct CreateFormSubview: View {
     private var descriptionSection: some View {
         Section {
             TextEditor(text: $viewModel.formData.description)
-                .frame(height: 200)
-                .characterLimit($viewModel.formData.description, limit: 500)
+                .frame(height: 300)
+                .characterLimit($viewModel.formData.description, limit: 800)
         } header: {
             HStack{
                 Text("Description (keep it simple)")
@@ -398,14 +405,13 @@ fileprivate struct CreateFormSubview: View {
                     .font(.caption2)
                     .disabled(viewModel.formData.description.isEmpty)
             }
-            
         } footer: {
-            Text("\(viewModel.formData.description.count)/500")
+            Text("\(viewModel.formData.description.count)/800")
         }
     }
     
     private var featuresSection: some View {
-        Section("Features") {
+        Section {
             DisclosureGroup {
                 homeChargingTime
                 publicChargingTime
@@ -416,7 +422,7 @@ fileprivate struct CreateFormSubview: View {
             DisclosureGroup {
                 additionalDataSection
             } label: {
-                Label("Additional features", systemImage: "battery.100percent.bolt")
+                Label("Features", systemImage: "battery.100percent.bolt")
             }
         }
     }

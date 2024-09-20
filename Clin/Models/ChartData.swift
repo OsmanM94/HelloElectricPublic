@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Registrations: Identifiable, Codable {
+struct ChartData: Identifiable, Codable {
     var id: Int
     let fuelCategory: String
     let periodType: String

@@ -26,9 +26,10 @@ struct AccountView: View {
                     accountContent
                     
                 case .error(let message):
-                    ErrorView(message: message, retryAction: {
-                        authViewModel.resetState()
-                    })
+                    ErrorView(
+                        message: message,
+                        retryAction: { authViewModel.resetState() },
+                        systemImage: "xmark.circle.fill")
                 }
             }
             .animation(.easeInOut(duration: 0.3), value: authViewModel.viewState)

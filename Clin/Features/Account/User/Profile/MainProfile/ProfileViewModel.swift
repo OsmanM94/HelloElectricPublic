@@ -24,13 +24,22 @@ final class ProfileViewModel {
         case success
     }
     
+    enum ImageViewState: Equatable {
+        case idle
+        case loading
+        case success
+    }
+    
     // MARK: - Observable properties
     var imageSelection: PhotosPickerItem?
     private(set) var avatarImage: SelectedImage?
     private(set) var displayName: String = "Private Seller"
     private(set) var profile: Profile? = nil
+    
+    // ViewStates
     var viewState: ViewState = .loading
     var companiesHouseViewState: CompaniesHouse = .idle
+    var imageViewState: ImageViewState = .idle
     
     var username: String = ""
     var isDealer: Bool = false
@@ -60,8 +69,7 @@ final class ProfileViewModel {
     
     @MainActor
     func loadCompanyInfo() async {
-//        guard !companyNumber.isEmpty else { return }
-        viewState = .loading
+        self.viewState = .loading
         
         do {
             let companyInfo = try await companiesHouseService.loadCompanyDetails(companyNumber: getCompanyNumber)
@@ -89,6 +97,7 @@ final class ProfileViewModel {
         displayName = ""
         viewState = .idle
         companiesHouseViewState = .idle
+        imageViewState = .idle
         
         username = ""
         isDealer = false
@@ -109,6 +118,7 @@ final class ProfileViewModel {
         username = ""
         isDealer = false // added temporary
        
+        imageViewState = .idle
         companiesHouseViewState = .idle
         viewState = .idle
     }
@@ -134,7 +144,6 @@ final class ProfileViewModel {
         website = "https://"
     }
     
-   
     @MainActor
     func loadProfile() async {
         do {
@@ -149,11 +158,11 @@ final class ProfileViewModel {
             
             // Only set to idle if we haven't updated profile
             if !isProfileUpdated {
-                viewState = .idle
+                self.viewState = .idle
             }
         } catch {
             print("Error loading profile \(error)")
-            viewState = .error(AppError.ErrorType.generalError.message)
+            self.viewState = .error(AppError.ErrorType.generalError.message)
         }
     }
     
@@ -164,7 +173,7 @@ final class ProfileViewModel {
             return
         }
         
-        viewState = .loading
+        self.viewState = .loading
         
         do {
             let userID = try await profileService.getCurrentUserID()
@@ -179,7 +188,7 @@ final class ProfileViewModel {
                    let uploadedImageURL = URL(string: imageURLString) {
                     imageURL = uploadedImageURL
                 } else {
-                    viewState = .error(AppError.ErrorType.profileImageUploadFailed.message)
+                    self.viewState = .error(AppError.ErrorType.profileImageUploadFailed.message)
                 }
             }
             
@@ -213,17 +222,22 @@ final class ProfileViewModel {
     
     @MainActor
     func loadItem(item: PhotosPickerItem) async {
+        self.imageViewState = .loading
         let result = await imageManager.loadItem(item: item, analyze: true)
         
         switch result {
         case .success(let pickedImage):
             avatarImage = pickedImage
+            self.imageViewState = .success
+            
         case .sensitiveContent:
-            viewState = .error(AppError.ErrorType.sensitiveContent.message)
+            self.viewState = .error(AppError.ErrorType.sensitiveContent.message)
+            
         case .analysisError:
-            viewState = .sensitiveApiNotEnabled
+            self.viewState = .sensitiveApiNotEnabled
+            
         case .loadingError:
-            viewState = .error(AppError.ErrorType.generalError.message)
+            self.viewState = .error(AppError.ErrorType.generalError.message)
         }
     }
     
@@ -242,7 +256,7 @@ final class ProfileViewModel {
         
         if prohibitedWordsCheck.values.contains(true) {
             _ = prohibitedWordsCheck.filter { $0.value }.keys.joined(separator: ", ")
-            viewState = .error(AppError.ErrorType.inappropriateTextfieldInput.message)
+            self.viewState = .error(AppError.ErrorType.inappropriateTextfieldInput.message)
             return false
         }
         return true
@@ -263,7 +277,7 @@ final class ProfileViewModel {
         do {
             try await prohibitedWordsService.loadProhibitedWords()
         } catch {
-            print("Error loading prohibited words")
+            self.viewState = .error(AppError.ErrorType.generalError.message)
         }
     }
     
@@ -299,47 +313,3 @@ final class ProfileViewModel {
     }
 }
 
-
-
-
-//
-//@MainActor
-//func resetDealerInfo() {
-//    // Reset dealer-specific information
-//    getCompanyNumber = ""
-//    username = ""
-//    address = ""
-//    location = ""
-//    postcode = ""
-//    website = "https://"
-//    companyNumber = ""
-//    isDealer = false
-////        companiesHouseViewState = .idle
-//}
-//
-//@MainActor
-//func resetEverything() {
-//    getCompanyNumber = ""
-//    username = ""
-//    address = ""
-//    location = ""
-//    postcode = ""
-//    website = "https://"
-//    companyNumber = ""
-//    imageSelection = nil
-//    avatarImage = nil
-//    isDealer = false
-////        companiesHouseViewState = .idle
-//    viewState = .idle
-//}
-//
-//@MainActor
-//func resetStateToIdle() {
-//    imageSelection = nil
-//    avatarImage = nil
-//    username = ""
-////        resetDealerInfo()
-//   
-//    companiesHouseViewState = .idle
-//    viewState = .idle
-//}

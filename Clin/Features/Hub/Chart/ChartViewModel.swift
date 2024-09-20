@@ -14,6 +14,7 @@ final class ChartViewModel {
     enum ViewState: Equatable {
         case loading
         case loaded
+        case empty(String)
         case error(String)
     }
     
@@ -21,8 +22,8 @@ final class ChartViewModel {
     var viewState: ViewState = .loading
     
     // MARK: - Observable properties
-    var yearlyData: [Registrations] = []
-    var monthlyData: [Registrations] = []
+    var yearlyData: [ChartData] = []
+    var monthlyData: [ChartData] = []
     var selectedMonth: String = ""
     var selectedYear: String = ""
     
@@ -35,10 +36,12 @@ final class ChartViewModel {
     
     // MARK: - Main actor functions
     @MainActor
-    func loadChartData() async throws {
+    func loadChartData() async  {
+        viewState = .loading
+        
         let cacheKey = "\(cacheKeyPrefix)_year_\(selectedYear)_month_\(selectedMonth)"
             
-        let registrationsCache = CacheManager.shared.cache(for: [Registrations].self)
+        let registrationsCache = CacheManager.shared.cache(for: [ChartData].self)
         
         if let cachedData = registrationsCache.get(forKey: cacheKey) {
             processData(cachedData)
@@ -48,8 +51,7 @@ final class ChartViewModel {
         }
         
         do {
-            // Fetch data from the API
-            let loadedData: [Registrations] = try await supabase.client
+            let loadedData: [ChartData] = try await supabase.client
                 .from("fuel_registrations")
                 .select()
                 .execute()
@@ -57,7 +59,8 @@ final class ChartViewModel {
             
             registrationsCache.set(loadedData, forKey: cacheKey)
             processData(loadedData)
-            viewState = .loaded
+            
+            viewState = loadedData.isEmpty ? .empty(AppError.ErrorType.noAvailableData.message) : .loaded
             print("DEBUG: Got data from API.")
         } catch {
             viewState = .error(AppError.ErrorType.generalError.message)
@@ -65,16 +68,13 @@ final class ChartViewModel {
     }
     
     // MARK: - Helpers
-    private func processData(_ data: [Registrations]) {
-        // Split data into yearly and monthly based on the 'month_year' column
+    private func processData(_ data: [ChartData]) {
         let yearly = data.filter { $0.periodType == "year" }
         let monthly = data.filter { $0.periodType == "month" }
         
-        // Update properties with the loaded data
         yearlyData = yearly
         monthlyData = monthly
         
-        // Update selectedMonth and selectedYear
         selectedYear = yearly.first?.periodLabel ?? "No data found"
         selectedMonth = monthly.first?.periodLabel ?? "No data found"
     }

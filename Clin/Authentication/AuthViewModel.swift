@@ -76,10 +76,10 @@ final class AuthViewModel {
     @MainActor
     func setupAuthStateListener() async {
         await supabaseService.client.auth.onAuthStateChange { event, user in
-            Task {
-                self.user = user?.user
-                self.viewState = user?.user == nil ? .unauthenticated : .authenticated
-                self.displayName = user?.user.email ?? UUID().uuidString
+            Task { [weak self] in
+                self?.user = user?.user
+                self?.viewState = user?.user == nil ? .unauthenticated : .authenticated
+                self?.displayName = user?.user.email ?? UUID().uuidString
             }
         }
     }

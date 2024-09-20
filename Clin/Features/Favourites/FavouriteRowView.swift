@@ -130,6 +130,5 @@ struct FavouriteRowView: View {
 
 #Preview {
     FavouriteRowView(favourite: MockFavouriteService.sampleData[0], action: {})
-        .previewLayout(.sizeThatFits)
         .padding()
 }

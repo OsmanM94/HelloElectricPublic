@@ -23,7 +23,7 @@ struct NewsView: View {
             case .error(let message):
                 ErrorView(message: message, retryAction: {
                     viewModel.resetState()
-                })
+                }, systemImage: "xmark.circle.fill")
             }
         }
         .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)

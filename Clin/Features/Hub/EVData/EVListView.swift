@@ -31,7 +31,7 @@ struct EVListView: View {
                 case .error(let message):
                     ErrorView(message: message, retryAction: {
                         viewModel.resetStateToLoaded()
-                    })
+                    }, systemImage: "xmark.circle.fill")
                 }
             }
             .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)

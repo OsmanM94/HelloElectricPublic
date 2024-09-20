@@ -29,7 +29,7 @@ struct FaceIDView: View {
                 
             case .error(let message):
                 ErrorView(message: message, retryAction: {
-                    Task { await faceID.authenticate() } })
+                    Task { await faceID.authenticate() } }, systemImage: "xmark.circle.fill")
             }
         }
         .animation(.easeInOut(duration: 0.3), value: faceID.viewState)

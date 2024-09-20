@@ -4,7 +4,7 @@
 //
 //  Created by Osman on 28/08/2024.
 //
-
+//
 import SwiftUI
 import Charts
 
@@ -30,14 +30,23 @@ struct ChartView: View {
             case .loaded:
                 loadedView
                 
+            case .empty(let message):
+                ErrorView(
+                    message: message,
+                    retryAction: { await viewModel.loadChartData() },
+                    systemImage: "tray.fill")
+                
             case .error(let message):
-                ErrorView(message: message, retryAction: {})
+                ErrorView(
+                    message: message,
+                    retryAction: { await viewModel.loadChartData() },
+                    systemImage: "xmark.circle.fill")
             }
         }
         .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
         .task {
             if viewModel.monthlyData.isEmpty && viewModel.yearlyData.isEmpty {
-               try? await viewModel.loadChartData()
+               await viewModel.loadChartData()
             }
         }
     }
@@ -61,13 +70,14 @@ private extension ChartView {
                 }
             }
             .animation(.easeInOut(duration: 0.4), value: selectedChart)
+            
         }
     }
 }
 
 fileprivate struct YearlyChartView: View {
     var viewModel: ChartViewModel
-    let registrations: [Registrations]
+    let registrations: [ChartData]
     
     var body: some View {
         ScrollView {
@@ -141,7 +151,7 @@ fileprivate struct YearlyChartView: View {
 
 fileprivate struct MonthlyChartView: View {
     var viewModel: ChartViewModel
-    let registrations: [Registrations]
+    let registrations: [ChartData]
     
     var body: some View {
         ScrollView(.vertical) {

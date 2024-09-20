@@ -28,10 +28,15 @@ struct EditFormView: View {
                     CircularProgressBar(progress: viewModel.imageManager.uploadingProgress)
                     
                 case .success(let message):
-                    SuccessView(message: message, doneAction: { viewModel.resetState(); dismiss() })
+                    SuccessView(
+                        message: message,
+                        doneAction: { viewModel.resetState(); dismiss() })
                     
                 case .error(let message):
-                    ErrorView(message: message, retryAction: { viewModel.resetState() })
+                    ErrorView(
+                        message: message,
+                        retryAction: { viewModel.resetState() },
+                        systemImage: "xmark.circle.fill")
                 }
             }
             .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
@@ -103,7 +108,10 @@ fileprivate struct EditFormSubview: View {
                     topBarTrailingToolbarContent
                 }
             case .error(let message):
-                ErrorView(message: message) { viewModel.resetState() }
+                ErrorView(
+                    message: message,
+                    retryAction: { viewModel.resetState() },
+                    systemImage: "xmark.circle.fill")
             }
         }
         .animation(.easeInOut(duration: 0.3), value: viewModel.subFormViewState)

@@ -11,7 +11,7 @@ struct SearchView: View {
     @State private var viewModel = SearchViewModel()
     @State private var showingFilterView: Bool = false
     @FocusState private var isPresented: Bool
-    let systemImageName: String = "line.3.horizontal.decrease.circle"
+    let systemImageName: String = "slider.horizontal.3"
     
     var body: some View {
         NavigationStack {
@@ -37,7 +37,7 @@ struct SearchView: View {
                 case .error(let message):
                     ErrorView(message: message, retryAction: {
                         viewModel.clearSearch()
-                    })
+                    }, systemImage: "xmark.circle.fill")
                 }
             }
             .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)

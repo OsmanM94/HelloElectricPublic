@@ -20,19 +20,19 @@ struct ProfileView: View {
                     CustomProgressView(message: "Loading profile...")
                     
                 case .error(let message):
-                    ErrorView(message: message, retryAction: {
-                        viewModel.resetStateToIdle()
-                    })
+                    ErrorView(
+                        message: message,
+                        retryAction: { viewModel.resetStateToIdle() },
+                        systemImage: "xmark.circle.fill")
                     
                 case .sensitiveApiNotEnabled:
-                    SensitiveAnalysisErrorView(retryAction: {
-                        viewModel.resetStateToIdle()
-                    })
+                    SensitiveAnalysisErrorView(
+                        retryAction: { viewModel.resetStateToIdle() })
                     
                 case .success(let message):
-                    SuccessView(message: message, doneAction: {
-                        viewModel.resetStateToIdle()
-                    })
+                    SuccessView(
+                        message: message,
+                        doneAction: { viewModel.resetStateToIdle() })
                 }
             }
             .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
@@ -158,7 +158,6 @@ fileprivate struct ProfileSubview: View {
                 .submitLabel(.send)
                 .onSubmit {
                     Task {
-//                        guard !viewModel.getCompanyNumber.isEmpty else { return }
                         await viewModel.loadCompanyInfo()
                         isCompanyVerified = viewModel.companiesHouseViewState == .success
                     }
@@ -314,10 +313,17 @@ fileprivate struct ProfileSubview: View {
      private var profileHeader: some View {
          HStack {
              ZStack {
-                 if let avatarImage = viewModel.avatarImage {
-                     avatarImage.image.resizable()
-                 } else {
-                     CircularProfileView(size: .xLarge, profile: viewModel.profile)
+                 switch viewModel.imageViewState {
+                 case .idle, .success:
+                     if let avatarImage = viewModel.avatarImage {
+                         avatarImage.image.resizable()
+                     } else {
+                         CircularProfileView(size: .xLarge, profile: viewModel.profile)
+                     }
+                     
+                 case .loading:
+                     ProgressView()
+                     
                  }
              }
              .scaledToFill()

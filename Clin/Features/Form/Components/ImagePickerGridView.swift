@@ -30,7 +30,7 @@ struct ImagePickerGridView<ViewModel: ImagePickerProtocol>: View {
             case .sensitiveContent(let message):
                 ErrorView(message: message, retryAction: {
                     viewModel.resetImageStateToIdle()
-                })
+                }, systemImage: "xmark.circle.fill")
                 
             case .sensitiveApiNotEnabled:
                 SensitiveAnalysisErrorView(retryAction: {
@@ -40,7 +40,7 @@ struct ImagePickerGridView<ViewModel: ImagePickerProtocol>: View {
             case .error(let message):
                 ErrorView(message: message, retryAction: {
                     viewModel.resetImageStateToIdle()
-                })
+                }, systemImage: "xmark.circle.fill")
             }
         }
         .navigationBarTitleDisplayMode(.inline)

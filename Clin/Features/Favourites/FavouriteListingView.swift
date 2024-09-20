@@ -15,7 +15,10 @@ struct FavouriteListingView: View {
             VStack {
                 switch viewModel.viewState {
                 case .empty:
-                    EmptyContentView(message: "Empty", systemImage: "heart.slash.fill")
+                    ErrorView(
+                        message: "Empty",
+                        retryAction: { await viewModel.loadUserFavourites() },
+                        systemImage: "heart.slash.fill")
                     
                 case .loading:
                     CustomProgressView(message: "Loading...")
@@ -24,11 +27,10 @@ struct FavouriteListingView: View {
                     FavouriteListingSubview()
                     
                 case .error(let message):
-                    ErrorView(message: message, retryAction: {
-                        Task {
-                            await viewModel.loadUserFavourites()
-                        }
-                    })
+                    ErrorView(
+                        message: message,
+                        retryAction: { await viewModel.loadUserFavourites() },
+                        systemImage: "xmark.circle.fill")
                 }
             }
             .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
