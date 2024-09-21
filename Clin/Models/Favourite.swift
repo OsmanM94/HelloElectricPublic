@@ -35,6 +35,8 @@ struct Favourite: Codable, Identifiable, Hashable {
     var userID: UUID
     let listingID: Int
     var isPromoted: Bool
+    var latitude: Double?
+    var longitude: Double?
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -64,6 +66,8 @@ struct Favourite: Codable, Identifiable, Hashable {
         case userID = "user_id"
         case listingID = "listing_id"
         case isPromoted = "is_promoted"
+        case latitude = "latitude"
+        case longitude = "longitude"
     }
 }
 

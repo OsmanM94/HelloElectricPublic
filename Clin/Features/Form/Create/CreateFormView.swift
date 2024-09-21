@@ -187,11 +187,13 @@ fileprivate struct DvlaCheckView: View {
 fileprivate struct CreateFormSubview: View {
     @Bindable var viewModel: CreateFormViewModel
     @State private var showLocationPopover: Bool = false
+    
     var body: some View {
         ZStack {
             switch viewModel.subFormViewState {
             case .loading:
                 CustomProgressView(message: "Loading...")
+                
             case .loaded:
                 Form {
                     makeModelSection
@@ -199,6 +201,7 @@ fileprivate struct CreateFormSubview: View {
                     yearConditionSection
                     mileageSection
                     locationSection
+                    
                     colourRangeSection
                     priceSection
                     phoneSection
@@ -212,10 +215,16 @@ fileprivate struct CreateFormSubview: View {
                     keyboardToolbarContent
                     topBarTrailingToolbarContent
                 }
+                .onAppear {
+                    viewModel.locationManager.requestLocationPermission()
+                    viewModel.updateLocation()
+                }
+                
             case .error(let message):
-                ErrorView(message: message, retryAction: {
-                    viewModel.resetFormDataAndState()
-                }, systemImage: "xmark.circle.fill")
+                ErrorView(
+                    message: message,
+                    retryAction: { viewModel.resetFormDataAndState() },
+                    systemImage: "xmark.circle.fill")
             }
         }
         .animation(.easeInOut(duration: 0.3), value: viewModel.subFormViewState)
@@ -330,7 +339,7 @@ fileprivate struct CreateFormSubview: View {
                 .bold()
                 .padding(.bottom)
             
-            Text("The location selection is pre-selected for privacy reasons. We don't collect your personal location information.")
+            Text("The location selection is pre-selected for privacy reasons.")
                 .font(.caption)
             
             Text("You can choose a nearby city to indicate your general area.")
@@ -340,7 +349,7 @@ fileprivate struct CreateFormSubview: View {
         .padding()
         .frame(width: 300)
     }
-
+    
     private var colourRangeSection: some View {
         Section("Colour and range") {
             Picker("Colour", systemImage: "paintpalette.fill" ,selection: $viewModel.formData.colour) {
@@ -480,7 +489,7 @@ fileprivate struct CreateFormSubview: View {
             }
             .disabled(viewModel.formData.powerBhp == "Select")
             
-            Picker("Regen braking", selection: $viewModel.formData.regenBraking) {
+            Picker("Regenerative braking", selection: $viewModel.formData.regenBraking) {
                 ForEach(viewModel.dataLoader.regenBrakingOptions, id: \.self) { regen in
                     Text(regen).tag(regen)
                 }

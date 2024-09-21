@@ -105,8 +105,10 @@
 				Account/User/Profile/ListingProfile/ListingProfileViewModel.swift,
 				Account/User/Profile/MainProfile/ProfileView.swift,
 				Account/User/Profile/MainProfile/ProfileViewModel.swift,
-				Account/User/UserListings/UserListingView.swift,
-				Account/User/UserListings/UserListingViewModel.swift,
+				Account/User/UserListings/PrivateListings/UserListingView.swift,
+				Account/User/UserListings/PrivateListings/UserListingViewModel.swift,
+				Account/User/UserListings/PublicListings/UserListingsPublic.swift,
+				Account/User/UserListings/PublicListings/UserListingsPublicViewModel.swift,
 				Favourites/AddToFavouritesButton.swift,
 				Favourites/FavouriteListingView.swift,
 				Favourites/FavouriteRowView.swift,
@@ -174,6 +176,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				ImageManager.swift,
+				LocationManager.swift,
 				TimerManager.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
@@ -229,6 +232,7 @@
 				FaceID/FaceID.swift,
 				FaceID/FaceIDView.swift,
 				LazyView/LazyView.swift,
+				LocationMap/LocationMapView.swift,
 				NetworkMonitor/NetworkMonitor.swift,
 				NetworkMonitor/NetworkMonitorView.swift,
 				Payments/StoreKit2/PaymentDisclaimer.swift,
@@ -617,7 +621,7 @@
 				INFOPLIST_FILE = Clin/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = HelloElectric;
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "We need to unlock your data.";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We need to know your location in order to search for nearby chargers.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We need to know your location to proceed.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -662,7 +666,7 @@
 				INFOPLIST_FILE = Clin/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = HelloElectric;
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "We need to unlock your data.";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We need to know your location in order to search for nearby chargers.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We need to know your location to proceed.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;

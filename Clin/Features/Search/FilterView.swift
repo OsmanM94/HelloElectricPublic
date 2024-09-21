@@ -102,7 +102,7 @@ fileprivate struct MakeModelSection: View {
     }
     
     private var footerSection: some View {
-        MissingDataSupport(buttonText: "Missing models?")
+        MissingDataSupport(buttonText: "Missing data?")
     }
 }
 
@@ -236,13 +236,13 @@ fileprivate struct EVSpecificationsSection: View {
                     Text(battery).tag(battery)
                 }
             }
-            Picker("Regen braking", selection: $viewModel.filters.regenBraking) {
+            Picker("Regenerative braking", selection: $viewModel.filters.regenBraking) {
                 ForEach(viewModel.dataLoader.regenBrakingOptions, id: \.self) { regen in
                     Text(regen).tag(regen)
                 }
             }
         } label: {
-            Label("EV specifications", systemImage: "bolt.batteryblock.fill")
+            Label("Features", systemImage: "bolt.batteryblock.fill")
         }
         .pickerStyle(.navigationLink)
     }

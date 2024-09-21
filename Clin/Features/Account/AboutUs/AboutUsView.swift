@@ -16,6 +16,7 @@ struct AboutUsView: View {
                 sustainabilitySection
                 educationSection
                 personalTouchSection
+                technologySection
                 futureVisionSection
             }
             .fontDesign(.rounded)
@@ -75,6 +76,20 @@ struct AboutUsView: View {
             Text("HelloElectric was created by a single passionate individual who believes in the power of electric vehicles to change the world. Countless hours and resources have gone into building this platform, driven by the vision of a more sustainable future.")
             
             Text("Every feature, every line of code, and every user interaction has been carefully crafted to provide you with the best possible experience.")
+        }
+    }
+    
+    private var technologySection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Built with Cutting-Edge Technology")
+                .font(.headline)
+                .foregroundStyle(.blue.gradient)
+            
+            Text("HelloElectric has been crafted with the latest technologies, showcasing our commitment to innovation. Our app is built using SwiftUI, Apple's modern framework for building user interfaces across all Apple platforms.")
+            
+            Text("We've used SwiftUI's powerful features to create a responsive, and visually appealing experience. This allows us to rapidly iterate and improve our app, ensuring you always have access to the best features and performance.")
+            
+            Text("By embracing SwiftUI, we're able to maintain a codebase that's 99% native, resulting in an app that's not only fast and efficient but also provides a truly native iOS experience.")
         }
     }
     

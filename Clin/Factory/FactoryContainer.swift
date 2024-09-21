@@ -19,6 +19,10 @@ extension Container {
         Factory(self) { ImageManager() }
     }
     
+    var locationManager: Factory<LocationManager> {
+        Factory(self) { LocationManager() }
+    }
+    
     /// Services
     var httpDataDownloader: Factory<HTTPDataDownloaderProtocol> {
         Factory(self) { HTTPDataDownloader() }

@@ -10,6 +10,7 @@ struct Profile: Codable, Equatable {
     var id: Int?
     var username: String?
     var avatarURL: URL?
+    var createdAt: Date?
     var updatedAt: Date?
     var userID: UUID
     var isDealer: Bool?
@@ -23,6 +24,7 @@ struct Profile: Codable, Equatable {
         case id
         case username
         case avatarURL = "avatar_url"
+        case createdAt = "created_at"
         case updatedAt = "updated_at"
         case userID = "user_id"
         case isDealer = "is_dealer"

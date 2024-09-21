@@ -12,6 +12,7 @@ import Factory
 final class ListingProfileViewModel {
     // MARK: - Observable properties
     private(set) var displayName: String = "Private Seller"
+    private(set) var memberSince: Date = .distantPast
     private(set) var address: String = ""
     private(set) var postcode: String = ""
     private(set) var location: String = ""
@@ -41,6 +42,7 @@ final class ListingProfileViewModel {
             print("DEBUG: Loaded public profile from cache")
             self.profile = cachedProfile
             self.displayName = cachedProfile.username ?? ""
+            self.memberSince = profile?.createdAt ?? Date.now
             self.address = cachedProfile.address ?? ""
             self.postcode = cachedProfile.postcode ?? ""
             self.location = cachedProfile.location ?? ""
@@ -55,6 +57,7 @@ final class ListingProfileViewModel {
             let profile = try await profileService.loadProfile(for: sellerID)
             self.profile = profile
             self.displayName = profile.username ?? ""
+            self.memberSince = profile.createdAt ?? Date.now
             self.address = profile.address ?? ""
             self.postcode = profile.postcode ?? ""
             self.location = profile.location ?? ""

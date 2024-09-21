@@ -38,6 +38,15 @@ final class CreateFormViewModel {
     @ObservationIgnored @Injected(\.createFormDataModel) var formData
     @ObservationIgnored @Injected(\.createFormImageManager) var imageManager
     @ObservationIgnored @Injected(\.createFormDataLoader) var dataLoader
+    @ObservationIgnored @Injected(\.locationManager) var locationManager
+    
+    @MainActor
+    func updateLocation() {
+        if let location = locationManager.userLocation {
+            formData.latitude = location.latitude
+            formData.longitude = location.longitude
+        }
+    }
     
     // MARK: - Main Actor Methods
     @MainActor
@@ -73,6 +82,7 @@ final class CreateFormViewModel {
             resetFormDataAndState()
             viewState = .success(AppError.ErrorType.createSuccess.message)
         } catch {
+            print("Error creating listing \(error)")
             viewState = .error(AppError.ErrorType.generalError.message)
         }
     }
@@ -116,6 +126,9 @@ final class CreateFormViewModel {
     }
     
     private func buildListing(userID: UUID) -> Listing {
+        
+        let userLocation = locationManager.userLocation
+        
         return Listing(
             createdAt: Date(),
             imagesURL: imageManager.imagesURLs,
@@ -141,7 +154,9 @@ final class CreateFormViewModel {
             serviceHistory: formData.serviceHistory,
             numberOfOwners: formData.numberOfOwners,
             userID: userID,
-            isPromoted: formData.isPromoted
+            isPromoted: formData.isPromoted,
+            latitude: userLocation?.latitude,
+            longitude: userLocation?.longitude
         )
     }
 }
@@ -169,6 +184,8 @@ final class CreateFormDataModel {
     var serviceHistory: String = "Select"
     var numberOfOwners: String = "Select"
     var isPromoted: Bool = false
+    var latitude: Double?
+    var longitude: Double?
     
     func resetState() {
         make = "Select"
@@ -405,3 +422,4 @@ final class CreateFormDataLoader {
         colourOptions = ["Select"] + loadedData.flatMap { $0.colours }
     }
 }
+

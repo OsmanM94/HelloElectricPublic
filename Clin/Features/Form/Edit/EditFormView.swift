@@ -219,17 +219,17 @@ fileprivate struct EditFormSubview: View {
     private var descriptionSection: some View {
         Section {
             TextEditor(text: $listing.textDescription)
-                .frame(minHeight: 150)
-                .characterLimit($listing.textDescription, limit: 500)
+                .frame(height: 300)
+                .characterLimit($listing.textDescription, limit: 800)
         } header: {
             Text("Description (keep it simple)")
         } footer: {
-            Text("\(listing.textDescription.count)/500")
+            Text("\(listing.textDescription.count)/800")
         }
     }
     
     private var featuresSection: some View {
-        Section("Features") {
+        Section {
             DisclosureGroup {
                 homeChargingTime
                 publicChargingTime
@@ -240,7 +240,7 @@ fileprivate struct EditFormSubview: View {
             DisclosureGroup {
                 additionalDataSection
             } label: {
-                Label("Additional features", systemImage: "battery.100percent.bolt")
+                Label("Features", systemImage: "battery.100percent.bolt")
             }
         }
     }
@@ -279,7 +279,7 @@ fileprivate struct EditFormSubview: View {
                 }
             }
             
-            Picker("Regen braking", selection: $listing.regenBraking) {
+            Picker("Regenerative braking", selection: $listing.regenBraking) {
                 ForEach(viewModel.dataLoader.regenBrakingOptions, id: \.self) { regen in
                     Text(regen).tag(regen)
                 }

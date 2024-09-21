@@ -32,6 +32,10 @@ struct ListingProfileView: View {
                             .foregroundStyle(.accent)
                             .clipShape(RoundedRectangle(cornerRadius: 4))
                     }
+                    
+                    Text("Member since \(viewModel.memberSince.formatted(date: .long, time: .omitted))")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
                 }
             }
             

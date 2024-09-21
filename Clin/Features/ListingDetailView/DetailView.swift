@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import MapKit
 
 // MARK: - Protocols
 
@@ -33,6 +34,8 @@ protocol DetailItem {
     var location: String { get }
     var phoneNumber: String { get }
     var userID: UUID { get }
+    var latitude: Double? { get }
+    var longitude: Double? { get }
 }
 
 // MARK: - Extensions
@@ -88,12 +91,14 @@ struct DetailView<T: DetailItem>: View {
     @State private var showLocationPopover: Bool = false
     @State private var showSplash: Bool = true
     @State private var sellerProfileViewModel: ListingProfileViewModel
+    @State private var sellerPublicListings: UserListingsPublicViewModel
     
     // MARK: Initialization
     init(item: T, showFavourite: Bool = false) {
         self.item = item
         self.showFavourite = showFavourite
         _sellerProfileViewModel = State(wrappedValue: ListingProfileViewModel(sellerID: item.userID))
+        _sellerPublicListings = State(wrappedValue: UserListingsPublicViewModel(sellerID: item.userID))
     }
     
     // MARK: Body
@@ -315,23 +320,11 @@ struct DetailView<T: DetailItem>: View {
                     .font(.title2)
                     .fontWeight(.semibold)
                 
-                HStack {
-                    Text("Location: \(item.location)")
-                        .foregroundStyle(.secondary)
-                    
-                    Button(action: {
-                        showLocationPopover.toggle()
-                    }) {
-                        Image(systemName: "info.circle")
-                            .foregroundStyle(.blue)
-                    }
-                    .popover(isPresented: $showLocationPopover, arrowEdge: .bottom) {
-                        LocationDisclaimerView()
-                            .presentationCompactAdaptation(.popover)
-                    }
-                }
-                    
+                locationAndPopoverSection
+                
                 ListingProfileView(viewModel: sellerProfileViewModel)
+                
+                sellerOtherListingsSection
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
             .padding(.top, 10)
@@ -341,10 +334,50 @@ struct DetailView<T: DetailItem>: View {
             .overlay(alignment: .bottomTrailing) {
                 ReportButton(itemId: item.id ?? 0, itemType: "Listing", iconSize: 15)
             }
+            
+            locationMapSection
         }
         .padding()
         .background(Color.gray.opacity(0.1))
         .clipShape(RoundedRectangle(cornerRadius: 10))
+    }
+    
+    private var locationAndPopoverSection: some View {
+        HStack {
+            Text("Location: \(item.location)")
+                .foregroundStyle(.secondary)
+            
+            Button(action: {
+                showLocationPopover.toggle()
+            }) {
+                Image(systemName: "info.circle")
+                    .foregroundStyle(.blue)
+            }
+            .popover(isPresented: $showLocationPopover, arrowEdge: .bottom) {
+                LocationDisclaimerView()
+                    .presentationCompactAdaptation(.popover)
+            }
+        }
+    }
+    
+    private var sellerOtherListingsSection: some View {
+        NavigationLink {
+            LazyView(UserListingsPublic(viewModel: sellerPublicListings))
+        } label: {
+            Text("See seller other listings")
+        }
+    }
+    
+    private var locationMapSection: some View {
+        Section {
+            if let latitude = item.latitude,
+               let longitude = item.longitude {
+                LocationMapView(coordinate: CLLocationCoordinate2D(latitude: latitude, longitude: longitude))
+            } else {
+                Text("Map not available")
+                    .padding(.top)
+            }
+        }
     }
     
     private var disclaimerSection: some View {

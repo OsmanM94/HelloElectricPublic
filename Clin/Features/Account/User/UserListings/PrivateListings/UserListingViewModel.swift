@@ -50,7 +50,7 @@ final class UserListingViewModel {
             self.viewState = listings.isEmpty ? .empty : .success
             
         } catch {
-            viewState = .error(AppError.ErrorType.noAuthUserFound.message)
+            self.viewState = .error(AppError.ErrorType.generalError.message)
         }
     }
     
@@ -58,12 +58,12 @@ final class UserListingViewModel {
     func deleteUserListing(_ listing: Listing) async {
         do {
             guard let id = listing.id else {
-                viewState = .error(AppError.ErrorType.noAuthUserFound.message)
+                self.viewState = .error(AppError.ErrorType.noAuthUserFound.message)
                 return
             }
             try await listingService.deleteListing(at: id)
         } catch {
-            viewState = .error(AppError.ErrorType.generalError.message)
+            self.viewState = .error(AppError.ErrorType.generalError.message)
         }
     }
 }

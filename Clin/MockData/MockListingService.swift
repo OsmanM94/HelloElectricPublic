@@ -43,7 +43,9 @@ struct MockListingService: ListingServiceProtocol {
             serviceHistory: "Full",
             numberOfOwners: "1",
             userID: mockUserID,
-            isPromoted: true
+            isPromoted: true,
+            latitude: 22.9488,
+            longitude: -122.674
         ),
         Listing(
             id: 2,
@@ -70,7 +72,9 @@ struct MockListingService: ListingServiceProtocol {
             serviceHistory: "Full",
             numberOfOwners: "1",
             userID: mockUserID,
-            isPromoted: true
+            isPromoted: true,
+            latitude: 12.9488,
+            longitude: -122.674
         ),
         Listing(
             id: 3,
@@ -97,7 +101,9 @@ struct MockListingService: ListingServiceProtocol {
             serviceHistory: "Full",
             numberOfOwners: "1",
             userID: mockUserID,
-            isPromoted: false
+            isPromoted: false,
+            latitude: 12.9488,
+            longitude: -122.674
         ),
         Listing(
             id: 4,
@@ -124,7 +130,9 @@ struct MockListingService: ListingServiceProtocol {
             serviceHistory: "Full",
             numberOfOwners: "2",
             userID: mockUserID,
-            isPromoted: false
+            isPromoted: false,
+            latitude: 12.9488,
+            longitude: 122.674
         ),
         Listing(
             id: 5,
@@ -151,7 +159,9 @@ struct MockListingService: ListingServiceProtocol {
             serviceHistory: "Full",
             numberOfOwners: "1",
             userID: mockUserID,
-            isPromoted: false
+            isPromoted: false,
+            latitude: 12.9488,
+            longitude: 122.674
         )
     ]
     

@@ -35,6 +35,8 @@ struct Listing: Identifiable, Codable, Hashable {
     var userID: UUID
     var isPromoted: Bool
     var promotionActivated: Date?
+    var latitude: Double?    // Latitude for location
+    var longitude: Double?   // Longitude for location
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -64,6 +66,8 @@ struct Listing: Identifiable, Codable, Hashable {
         case userID = "user_id"
         case isPromoted = "is_promoted"
         case promotionActivated = "promotion_activated_at"
+        case latitude = "latitude"
+        case longitude = "longitude"
     }
 }
 
