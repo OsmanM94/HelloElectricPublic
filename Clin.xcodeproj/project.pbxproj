@@ -154,17 +154,16 @@
 		622369BA2C3D6B7100576FF4 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Misc/CharactersLimitModifier.swift,
-				Misc/DelayedAction.swift,
-				Misc/DeleteAlertModifier.swift,
-				Misc/HideKeyboard.swift,
-				Misc/ValidationIcon.swift,
+				UI/CharactersLimitModifier.swift,
 				UI/CircularProgressBar.swift,
 				UI/CustomProgressView.swift,
+				UI/DelayedAction.swift,
+				UI/HideKeyboard.swift,
 				UI/MissingDataSupport.swift,
 				UI/ReportButton.swift,
 				UI/SearchBarView.swift,
 				UI/Shimmer.swift,
+				UI/ValidationIcon.swift,
 				UI/ZoomImages.swift,
 				ViewState/ErrorView.swift,
 				ViewState/SensitiveAnalysisErrorView.swift,
@@ -175,6 +174,7 @@
 		62259D192C401890005197C9 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				AlertsManager.swift,
 				ImageManager.swift,
 				LocationManager.swift,
 				TimerManager.swift,

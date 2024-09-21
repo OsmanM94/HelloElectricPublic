@@ -89,7 +89,9 @@ struct DetailView<T: DetailItem>: View {
     
     @State private var showSheetImages: Bool = false
     @State private var showLocationPopover: Bool = false
+    @State private var isMapExpanded: Bool = false
     @State private var showSplash: Bool = true
+    
     @State private var sellerProfileViewModel: ListingProfileViewModel
     @State private var sellerPublicListings: UserListingsPublicViewModel
     
@@ -97,6 +99,7 @@ struct DetailView<T: DetailItem>: View {
     init(item: T, showFavourite: Bool = false) {
         self.item = item
         self.showFavourite = showFavourite
+        
         _sellerProfileViewModel = State(wrappedValue: ListingProfileViewModel(sellerID: item.userID))
         _sellerPublicListings = State(wrappedValue: UserListingsPublicViewModel(sellerID: item.userID))
     }
@@ -107,7 +110,6 @@ struct DetailView<T: DetailItem>: View {
             VStack {
                 imageCarousel
                 if showSplash {
-                    
                     splashView
                 } else {
                     mainContent
@@ -314,7 +316,7 @@ struct DetailView<T: DetailItem>: View {
     
     // MARK: Seller Section
     private var sellerSection: some View {
-        DisclosureGroup("Seller") {
+        DisclosureGroup("Seller", isExpanded: $isMapExpanded) {
             VStack(alignment: .leading, spacing: 15) {
                 Text("Details")
                     .font(.title2)
@@ -335,7 +337,12 @@ struct DetailView<T: DetailItem>: View {
                 ReportButton(itemId: item.id ?? 0, itemType: "Listing", iconSize: 15)
             }
             
-            locationMapSection
+            if isMapExpanded {
+                locationMapSection
+                    .transition(.opacity)
+            } else {
+                EmptyView()
+            }
         }
         .padding()
         .background(Color.gray.opacity(0.1))

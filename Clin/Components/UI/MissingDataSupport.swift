@@ -32,13 +32,11 @@ struct MissingDataSupport: View {
                 .font(font)
                 .foregroundStyle(textColor)
         }
-        .alert(isPresented: $showAlert) {
-            Alert(
-                title: Text("Sorry, cannot initiate call"),
-                message: Text("Your device is unable to make phone calls."),
-                dismissButton: .default(Text("OK"))
-            )
-        }
+        .simpleAlert(
+            isPresented: $showAlert,
+            title: "Sorry, cannot initiate call",
+            message: "Your device is unable to make phone calls."
+        )
         .onDisappear { showAlert = false }
     }
     

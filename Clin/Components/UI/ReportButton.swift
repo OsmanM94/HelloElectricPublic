@@ -21,12 +21,12 @@ struct ReportButton: View {
                 .foregroundStyle(.red)
                 .font(.system(size: iconSize))
         }
-        .alert("Report \(itemType)", isPresented: $showReportAlert) {
-            Button("Cancel", role: .cancel) { }
-            Button("Report", role: .destructive, action: reportItem)
-        } message: {
-            Text("Are you sure you want to report this \(itemType.lowercased())?")
-        }
+        .showStandardAlert(
+            isPresented: $showReportAlert,
+            message: "Are you sure you want to report this \(itemType.lowercased())?",
+            deleteButtonText: "Report",
+            deleteAction: { reportItem() }
+        )
     }
     
     private func reportItem() {

@@ -54,21 +54,30 @@ fileprivate struct FilterSubView: View {
             EVSpecificationsSection(viewModel: viewModel)
         }
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button("Apply") {
-                    Task {
-                        await viewModel.searchFilteredItems()
-                        onApply()
-                    }
-                }
-                .disabled(!viewModel.filters.isFilterApplied)
+            toolbarTrailing
+            toolbarLeading
+        }
+    }
+    
+    private var toolbarLeading: some ToolbarContent {
+        ToolbarItem(placement: .topBarLeading) {
+            Button("Reset") {
+                viewModel.resetFilters()
             }
-            ToolbarItem(placement: .topBarLeading) {
-                Button("Reset") {
-                    viewModel.resetFilters()
+            .disabled(!viewModel.filters.isFilterApplied)
+        }
+
+    }
+    
+    private var toolbarTrailing: some ToolbarContent {
+        ToolbarItem(placement: .topBarTrailing) {
+            Button("Apply") {
+                Task {
+                    await viewModel.searchFilteredItems()
+                    onApply()
                 }
-                .disabled(!viewModel.filters.isFilterApplied)
             }
+            .disabled(!viewModel.filters.isFilterApplied)
         }
     }
 }
@@ -102,7 +111,7 @@ fileprivate struct MakeModelSection: View {
     }
     
     private var footerSection: some View {
-        MissingDataSupport(buttonText: "Missing data?")
+        MissingDataSupport(buttonText: "Missing vehicles?")
     }
 }
 

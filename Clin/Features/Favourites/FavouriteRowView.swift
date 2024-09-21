@@ -83,7 +83,7 @@ struct FavouriteRowView: View {
         .overlay(alignment: .topTrailing) {
             deleteButton
         }
-        .deleteAlert(
+        .showDeleteAlert(
             isPresented: $showDeleteAlert,
             itemToDelete: .constant(favourite), message: "Are you sure?",
             deleteAction: { _ in await action() }

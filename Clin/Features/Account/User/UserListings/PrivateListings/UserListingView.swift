@@ -18,7 +18,7 @@ struct UserListingView: View {
             .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
             .navigationTitle("Active listings")
             .navigationBarTitleDisplayMode(.inline)
-            .deleteAlert(
+            .showDeleteAlert(
                 isPresented: $viewModel.showDeleteAlert,
                 itemToDelete: $viewModel.listingToDelete, // listingToDelete
                 message: "Are you sure you want to delete this listing?",

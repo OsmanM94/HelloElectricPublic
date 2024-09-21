@@ -56,18 +56,18 @@ struct SensitiveContentAnalysisModifier: ViewModifier {
     
     func body(content: Content) -> some View {
         content
-            .alert(isPresented: .constant(analysis.analysisState == .error(message: "Policy is disabled"))) {
-                Alert(
-                    title: Text("Enable Sensitive Content Analysis to upload photos."),
-                    message: Text("Settings > Privacy & Security > Sensitive Content Warning."),
-                    primaryButton: .default(Text("Go to Settings")) {
-                        if let url = URL(string: UIApplication.openSettingsURLString) {
-                            UIApplication.shared.open(url)
-                        }
-                    },
-                    secondaryButton: .cancel()
-                )
-            }
+            .showStandardAlert(
+                isPresented: .constant(analysis.analysisState == .error(message: "Policy is disabled")),
+                message: "Settings > Privacy & Security > Sensitive Content Warning.",
+                title: "Enable Sensitive Content Analysis to upload photos.",
+                cancelButtonText: "Cancel",
+                deleteButtonText: "Go to Settings",
+                deleteAction: {
+                    if let url = URL(string: UIApplication.openSettingsURLString) {
+                        UIApplication.shared.open(url)
+                    }
+                }
+            )
     }
 }
 

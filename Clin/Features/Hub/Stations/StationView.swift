@@ -32,8 +32,9 @@ struct StationView: View {
                 }
                 .sheet(item: $viewModel.selectedStation) { station in
                     StationDetailView(station: station, viewModel: viewModel)
-                        .presentationDetents([.height(220)])
+                        .presentationDetents([.height(250)])
                         .presentationDragIndicator(.visible)
+                        .presentationCornerRadius(20)
                 }
                 .onAppear {
                     CLLocationManager().requestWhenInUseAuthorization()

@@ -256,7 +256,7 @@ fileprivate struct CreateFormSubview: View {
     private var makeModelFooter: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Selected make and model cannot be changed later.")
-            MissingDataSupport(buttonText: "Missing data?")
+            MissingDataSupport(buttonText: "Missing vehicles?")
         }
     }
     

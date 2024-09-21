@@ -54,14 +54,11 @@ struct AccountView: View {
             appVersionSection
         }
         .navigationTitle("Account")
-        .alert("Delete Account", isPresented: $authViewModel.showDeleteAlert) {
-            Button("Cancel", role: .cancel) { }
-            Button("Delete", role: .destructive) {
-                Task { await authViewModel.deleteAccount() }
-            }
-        } message: {
-            Text("Are you sure you want to delete your account? This action cannot be undone.")
-        }
+        .showStandardAlert(
+            isPresented: $authViewModel.showDeleteAlert,
+            message: "Are you sure you want to delete your account? This action cannot be undone.",
+            deleteAction: { await authViewModel.deleteAccount() }
+        )
     }
     
     // MARK: Sections

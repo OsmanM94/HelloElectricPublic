@@ -79,7 +79,7 @@ struct ImagePickerCell<ViewModel: ImagePickerProtocol>: View {
             }
             .disabled(viewModel.isLoadingImages[index])
         }
-        .deleteAlert(
+        .showDeleteAlert(
             isPresented: $showDeleteAlert,
             itemToDelete: $itemToDelete,
             message: "Are you sure?"
