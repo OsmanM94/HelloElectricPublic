@@ -169,11 +169,12 @@ fileprivate struct ProfileSubview: View {
     private var verifiedCompanyInfo: some View {
         HStack {
             Image(systemName: "checkmark.circle.fill")
-                .foregroundStyle(.accent)
+                .foregroundStyle(.tabColour)
             VStack(alignment: .leading) {
                 Text(viewModel.displayName)
                     .font(.subheadline)
                 Text("Status: Verified")
+                    .foregroundStyle(.secondary)
                     .font(.caption)
             }
             Spacer()
@@ -346,7 +347,7 @@ fileprivate struct ProfileSubview: View {
             Image(systemName: "pencil.circle.fill")
                 .symbolRenderingMode(.multicolor)
                 .font(.system(size: 30))
-                .foregroundStyle(.accent)
+                .foregroundStyle(.tabColour)
         } onSelect: { newPhoto in
             if let newPhoto = newPhoto {
                 Task {

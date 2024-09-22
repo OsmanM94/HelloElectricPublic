@@ -69,7 +69,7 @@ final class ListingService: ListingServiceProtocol {
             )
     }
     
-    func searchListings(type: [String], column: String, from: Int, to: Int) async throws -> [Listing] {
+    func loadListingsByVehicleType(type: [String], column: String, from: Int, to: Int) async throws -> [Listing] {
         try await databaseService
             .loadPaginatedDataWithListFilter(
                 from: "car_listing",
@@ -81,22 +81,18 @@ final class ListingService: ListingServiceProtocol {
                 to: to
             )
     }
-    
-    func loadListingsWithFilter(orderBy: String, ascending: Bool, from: Int, to: Int) async throws -> [Listing] {
-        try await databaseService.loadPaginatedData(from: "car_listing", orderBy: orderBy, ascending: ascending, from: from, to: to)
+        
+    func loadFilteredListings(vehicleType: [String], orderBy: String, ascending: Bool, from: Int, to: Int) async throws -> [Listing] {
+        try await databaseService.loadPaginatedDataWithListFilter(
+            from: "car_listing",
+            filter: "body_type",
+            values: vehicleType,
+            orderBy: orderBy,
+            orderBy2: "created_at",
+            ascending: ascending,
+            from: from,
+            to: to
+        )
     }
 }
 
-
-//func searchListings(vehicleType: VehicleType, from: Int, to: Int) async throws -> [Listing] {
-//    try await databaseService
-//        .loadPaginatedDataWithListFilter(
-//            from: "car_listing",
-//            filter: "body_type", values: vehicleType.databaseValues,
-//            orderBy: "is_promoted",
-//            orderBy2: "created_at",
-//            ascending: false,
-//            from: from,
-//            to: to
-//        )
-//}

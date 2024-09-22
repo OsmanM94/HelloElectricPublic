@@ -87,7 +87,7 @@ struct SensitiveAnalysisErrorView: View {
     }
     
     private var buttonColor: Color {
-        colorScheme == .dark ? Color.accent.opacity(0.8) : Color.accent
+        colorScheme == .dark ? Color.tabColour.opacity(0.8) : Color.tabColour
     }
 
     

@@ -87,7 +87,6 @@ struct StationView: View {
             .frame(width: 50, height: 50)
             .background(Color(.secondarySystemBackground).opacity(0.8))
             .clipShape(Circle())
-            .foregroundStyle(.accent)
         }
         .disabled(viewModel.isLoading)
     }
@@ -128,7 +127,7 @@ fileprivate struct StationDetailView: View {
                 Label("Open in Maps", systemImage: "map.fill")
                     .foregroundStyle(.white)
                     .padding(10)
-                    .background(.accent.gradient.opacity(0.8))
+                    .background(.tabColour.gradient.opacity(0.8))
                     .clipShape(RoundedRectangle(cornerRadius: 10))
             }
         }
@@ -137,7 +136,7 @@ fileprivate struct StationDetailView: View {
     private var operatorTag: some View {
         Text(station.isPrivateOperator ? "Private Operator" : "Public Operator")
             .font(.subheadline)
-            .foregroundStyle(station.isPrivateOperator ? .red : .accent)
+            .foregroundStyle(station.isPrivateOperator ? .red : .tabColour)
     }
     
     private var stationSpecs: some View {
@@ -155,7 +154,6 @@ fileprivate struct StationDetailView: View {
             if let statusTitle = viewModel.stationStatus(for: station) {
                 Label("Status: \(statusTitle)", systemImage: "bolt.fill")
                     .font(.subheadline)
-                    .foregroundStyle(.accent)
             }
         }
     }

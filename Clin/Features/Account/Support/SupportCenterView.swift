@@ -32,7 +32,7 @@ struct SupportCenterView: View {
                             .fontWeight(.semibold)
                     }
                     .padding()
-                    .background(Color.accent.opacity(0.8))
+                    .background(Color.tabColour.opacity(0.8))
                     .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
                 
@@ -43,7 +43,7 @@ struct SupportCenterView: View {
                 Text("Or")
                 
                 Text("helloe@myyahoo.com")
-                    
+                    .tint(.tabColour)
             }
             .padding()
             .navigationTitle("Support")

@@ -50,7 +50,7 @@ struct EVRowView: View {
             
             Text(ev.availableSince ?? "N/A")
                 .font(.subheadline)
-                .foregroundStyle(.yellow)
+                .foregroundStyle(.secondary)
         }
     }
     
@@ -58,10 +58,10 @@ struct EVRowView: View {
         VStack(spacing: 4) {
             Text("Price")
                 .font(.caption)
-                .foregroundStyle(.accent)
+                .foregroundStyle(.tabColour)
             Text(ev.carPrice ?? 0, format: .currency(code: Locale.current.currency?.identifier ?? "GBP").precision(.fractionLength(0)))
                 .font(.caption)
-                .fontWeight(.bold)
+                .foregroundStyle(.secondary)
         }
     }
     
@@ -91,7 +91,7 @@ struct EVRowView: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(text)
                     .font(.caption2)
-                    .foregroundStyle(.accent)
+                    .foregroundStyle(.tabColour)
                 Text(value)
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -102,7 +102,7 @@ struct EVRowView: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(text)
                     .font(.caption2)
-                    .foregroundStyle(.accent)
+                    .foregroundStyle(.tabColour)
                 
                 Text("\(value) \(type)")
                     .font(.caption)

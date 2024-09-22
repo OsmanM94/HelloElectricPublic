@@ -32,6 +32,9 @@ struct NewsView: View {
                 await viewModel.loadNews()
             }
         }
+        .onShake {
+            shouldScrollToTop.toggle()
+        }
     }
     
     private var newsList: some View {
@@ -71,9 +74,12 @@ struct NewsView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button { shouldScrollToTop.toggle() }
-                    label: { Image(systemName: "arrow.up.circle") }
-                    .disabled(viewModel.articles.count <= 20)
+                    Button {
+                        shouldScrollToTop.toggle()
+                    } label: {
+                        Image(systemName: "iphone.radiowaves.left.and.right")
+                    }
+                    .disabled(viewModel.viewState == .idle)
                 }
             }
         }

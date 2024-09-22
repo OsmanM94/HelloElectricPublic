@@ -93,7 +93,7 @@ struct DetailView<T: DetailItem>: View {
     @State private var showSplash: Bool = true
     
     @State private var sellerProfileViewModel: ListingProfileViewModel
-    @State private var sellerPublicListings: UserListingsPublicViewModel
+    @State private var sellerPublicListings: PublicUserListingsViewModel
     
     // MARK: Initialization
     init(item: T, showFavourite: Bool = false) {
@@ -101,7 +101,7 @@ struct DetailView<T: DetailItem>: View {
         self.showFavourite = showFavourite
         
         _sellerProfileViewModel = State(wrappedValue: ListingProfileViewModel(sellerID: item.userID))
-        _sellerPublicListings = State(wrappedValue: UserListingsPublicViewModel(sellerID: item.userID))
+        _sellerPublicListings = State(wrappedValue: PublicUserListingsViewModel(sellerID: item.userID))
     }
     
     // MARK: Body
@@ -218,7 +218,7 @@ struct DetailView<T: DetailItem>: View {
             
             Text("Promoted")
                 .padding(10)
-                .foregroundStyle(.accent.gradient)
+                .foregroundStyle(.tabColour.gradient)
                 .background(Color(.systemGray6))
                 .clipShape(RoundedRectangle(cornerRadius: 5))
                 .opacity(item.isPromoted ? 1 : 0)
@@ -244,7 +244,6 @@ struct DetailView<T: DetailItem>: View {
         HStack(spacing: 15) {
             Image(systemName: "gauge.with.needle")
                 .font(.system(size: 24))
-                .foregroundStyle(.accent)
             
             VStack(alignment: .leading, spacing: 4) {
                 Text("Mileage")
@@ -369,7 +368,7 @@ struct DetailView<T: DetailItem>: View {
     
     private var sellerOtherListingsSection: some View {
         NavigationLink {
-            LazyView(UserListingsPublic(viewModel: sellerPublicListings))
+            LazyView(PublicUserListingsView(viewModel: sellerPublicListings))
         } label: {
             Text("See seller other listings")
         }

@@ -219,7 +219,7 @@ struct EVDetailsView: View {
     
     private func sectionHeader(_ title: String) -> some View {
         Text(title)
-            .foregroundStyle(.accent.gradient)
+            .foregroundStyle(.tabColour.gradient)
             .font(.title3)
             .fontDesign(.rounded)
             .bold()

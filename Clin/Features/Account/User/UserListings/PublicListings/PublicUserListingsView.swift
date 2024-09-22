@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-struct UserListingsPublic: View {
-    var viewModel: UserListingsPublicViewModel
+struct PublicUserListingsView: View {
+    var viewModel: PublicUserListingsViewModel
     
     var body: some View {
         VStack {
@@ -16,7 +16,7 @@ struct UserListingsPublic: View {
             case .empty:
                 ErrorView(
                     message: "No listings found",
-                    retryAction: { await viewModel.loadUserPublicListings() },
+                    retryAction: { await viewModel.loadListings() },
                     systemImage: "tray.fill")
                 
             case .loading:
@@ -28,7 +28,7 @@ struct UserListingsPublic: View {
             case .error(let message):
                 ErrorView(
                     message: message,
-                    retryAction: { await viewModel.loadUserPublicListings() },
+                    retryAction: { await viewModel.loadListings() },
                     systemImage: "xmark.circle.fill")
             }
         }
@@ -36,8 +36,8 @@ struct UserListingsPublic: View {
         .navigationTitle("Seller listings")
         .navigationBarTitleDisplayMode(.inline)
         .task {
-            if viewModel.userActiveListings.isEmpty {
-                await viewModel.loadUserPublicListings()
+            if viewModel.listings.isEmpty {
+                await viewModel.loadListings()
             }
         }
 
@@ -45,7 +45,7 @@ struct UserListingsPublic: View {
     
     private var mainContent: some View {
         List {
-            ForEach(viewModel.userActiveListings, id: \.id) { listing in
+            ForEach(viewModel.listings, id: \.id) { listing in
                 NavigationLink(destination: DetailView(item: listing, showFavourite: false)) {
                     ListingRowView(listing: listing, showFavourite: false)
                         .id(listing.id)
@@ -57,5 +57,5 @@ struct UserListingsPublic: View {
 }
 
 #Preview {
-    UserListingsPublic(viewModel: UserListingsPublicViewModel(sellerID: UUID()))
+    PublicUserListingsView(viewModel: PublicUserListingsViewModel(sellerID: UUID()))
 }

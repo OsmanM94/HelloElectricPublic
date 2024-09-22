@@ -31,7 +31,7 @@ struct AboutUsView: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 80, height: 80)
-                .foregroundStyle(.accent)
+                .foregroundStyle(.tabColour)
             
             Text("HelloElectric")
                 .font(.title)

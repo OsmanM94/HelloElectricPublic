@@ -70,7 +70,7 @@ struct FavouriteIcon: View {
 
     private var foregroundStyle: some ShapeStyle {
         if isPromoted {
-            return .accent
+            return .tabColour
         } else {
             return colorScheme == .dark ? .white : .black
         }

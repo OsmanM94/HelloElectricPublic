@@ -10,7 +10,7 @@ import Charts
 
 fileprivate func colorForFuelType(_ fuelType: String) -> Color {
     switch fuelType {
-    case "Electric": return .accent
+    case "Electric": return .tabColour
     case "Diesel": return .gray
     case "Petrol": return .blue
     default: return .black
@@ -90,7 +90,7 @@ fileprivate struct YearlyChartView: View {
                     .foregroundStyle(by: .value("Fuel Type", registration.fuelCategory))
                 }
                 .chartForegroundStyleScale([
-                    "Electric": .accent,
+                    "Electric": .tabColour,
                     "Diesel": .gray,
                     "Petrol": .blue
                 ])
@@ -165,7 +165,7 @@ fileprivate struct MonthlyChartView: View {
                     .foregroundStyle(by: .value("Fuel Type", registration.fuelCategory))
                 }
                 .chartForegroundStyleScale([
-                    "Electric": .accent,
+                    "Electric": .tabColour,
                     "Diesel": .gray,
                     "Petrol": .blue
                 ])

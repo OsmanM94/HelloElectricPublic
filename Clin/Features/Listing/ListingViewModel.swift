@@ -36,6 +36,7 @@ enum VehicleType: String, CaseIterable {
 enum QuickFilter: String, CaseIterable, Identifiable {
     case all
     case cheapest
+    case expensive
     case lowestMileage
     case longestRange
     case highestPower
@@ -46,6 +47,7 @@ enum QuickFilter: String, CaseIterable, Identifiable {
         switch self {
         case .all: return nil
         case .cheapest: return "price"
+        case .expensive: return "price"
         case .lowestMileage: return "mileage"
         case .longestRange: return "range"
         case .highestPower: return "power_bhp"
@@ -56,6 +58,7 @@ enum QuickFilter: String, CaseIterable, Identifiable {
         switch self {
         case .all: return "All"
         case .cheapest: return "Cheapest"
+        case .expensive: return "Most Expensive"
         case .lowestMileage: return "Lowest Mileage"
         case .longestRange: return "Longest Range"
         case .highestPower: return "Highest Power"
@@ -65,6 +68,8 @@ enum QuickFilter: String, CaseIterable, Identifiable {
     var ascending: Bool {
         switch self {
         case .highestPower: return false
+        case .longestRange: return false
+        case .expensive: return false
         default: return true
         }
     }
@@ -82,7 +87,6 @@ final class ListingViewModel {
     // MARK: - Observable properties
     private(set) var listings: [Listing] = []
     private(set) var viewState: ViewState = .loading
-    var isDoubleTap: Bool = false
     
     // MARK: - Filter
     var selectedVehicleType: VehicleType = .cars {
@@ -112,26 +116,30 @@ final class ListingViewModel {
     @ObservationIgnored @Injected(\.listingService) private var listingService
     
     init() {
-        print("DEBUG: Did init Listing viewmodel.")
+        print("DEBUG: Did init listing viewmodel.")
     }
     
     // MARK: - Main actor functions
+    
     @MainActor
     func loadListings() async {
         guard hasMoreListings else { return }
         
         do {
             let newListings: [Listing]
+            let vehicleTypeFilter = selectedVehicleType.databaseValues
+            
             if quickFilter != .all, let orderBy = quickFilter.databaseValue {
-                newListings = try await listingService.loadListingsWithFilter(
+                newListings = try await listingService.loadFilteredListings(
+                    vehicleType: vehicleTypeFilter,
                     orderBy: orderBy,
                     ascending: quickFilter.ascending,
                     from: currentPage * pageSize,
                     to: currentPage * pageSize + pageSize - 1
                 )
             } else {
-                newListings = try await listingService.searchListings(
-                    type: selectedVehicleType.databaseValues,
+                newListings = try await listingService.loadListingsByVehicleType(
+                    type: vehicleTypeFilter,
                     column: "body_type",
                     from: currentPage * pageSize,
                     to: currentPage * pageSize + pageSize - 1
@@ -142,10 +150,10 @@ final class ListingViewModel {
             viewState = newListings.isEmpty ? .empty : .loaded
         } catch {
             print("DEBUG: Error loading listings \(error)")
+            viewState = .empty
         }
     }
     
-    // Refresh listings
     @MainActor
     func refreshListings() async {
         resetPagination()

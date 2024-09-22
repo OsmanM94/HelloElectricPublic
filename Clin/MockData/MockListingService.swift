@@ -90,7 +90,7 @@ struct MockListingService: ListingServiceProtocol {
             price: 70000,
             phoneNumber: "07466861602",
             textDescription: "A sleek and powerful electric sedan with excellent performance.",
-            range: "300 miles",
+            range: "396 miles",
             colour: "Blue",
             publicChargingTime: "45 mins",
             homeChargingTime: "9 hours",
@@ -119,7 +119,7 @@ struct MockListingService: ListingServiceProtocol {
             price: 85000,
             phoneNumber: "07466861602",
             textDescription: "An electric grand tourer with stunning design and performance.",
-            range: "238 miles",
+            range: "396 miles",
             colour: "Black",
             publicChargingTime: "30 mins",
             homeChargingTime: "8 hours",
@@ -148,7 +148,7 @@ struct MockListingService: ListingServiceProtocol {
             price: 15000,
             phoneNumber: "07466861602",
             textDescription: "A reliable and affordable electric hatchback.",
-            range: "150 miles",
+            range: "396 miles",
             colour: "White",
             publicChargingTime: "1 hour",
             homeChargingTime: "7 hours",
@@ -208,12 +208,12 @@ struct MockListingService: ListingServiceProtocol {
         MockListingService.sampleData.removeAll { $0.id == id }
     }
     
-    func searchListings(type: [String], column: String, from: Int, to: Int) async throws -> [Listing] {
+    func loadListingsByVehicleType(type: [String], column: String, from: Int, to: Int) async throws -> [Listing] {
         try await Task.sleep(nanoseconds: 2 * 1_000_000_000)
         return MockListingService.sampleData
     }
     
-    func loadListingsWithFilter(orderBy: String, ascending: Bool, from: Int, to: Int) async throws -> [Listing] {
+    func loadFilteredListings(vehicleType: [String], orderBy: String, ascending: Bool, from: Int, to: Int) async throws -> [Listing] {
         return MockListingService.sampleData
     }
 }

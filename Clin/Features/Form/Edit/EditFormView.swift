@@ -122,7 +122,6 @@ fileprivate struct EditFormSubview: View {
     private var makeSection: some View {
         Section("Make") {
             Label(listing.make, systemImage: "lock.fill")
-                
         }
     }
     
@@ -164,7 +163,7 @@ fileprivate struct EditFormSubview: View {
             HStack(spacing: 15) {
                 Image(systemName: "gauge.with.needle")
                     .imageScale(.large)
-                    .foregroundStyle(.accent)
+                    
                 TextField("Current mileage", value: $listing.mileage, format: .number)
                     .keyboardType(.decimalPad)
             }
@@ -347,6 +346,7 @@ fileprivate struct EditFormSubview: View {
                 }
             } label: {
                 Text("Apply changes")
+                    .foregroundStyle(listing == originalListing && !viewModel.imageManager.hasUserInitiatedChanges ? Color(.systemGray4).opacity(0.8) : .tabColour)
                     .font(.headline)
                     .frame(maxWidth: .infinity)
             }

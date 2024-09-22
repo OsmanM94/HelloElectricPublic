@@ -24,9 +24,9 @@ struct StoreKitView: View {
                 if isPromoted {
                     HStack {
                         Image(systemName: "checkmark.circle.fill")
-                            .foregroundStyle(.accent.gradient)
                         Text("Promotion added.")
                     }
+                    .foregroundStyle(.tabColour)
                 } else {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("What you get:")
@@ -56,7 +56,6 @@ struct StoreKitView: View {
                         showPayment.toggle()
                     } label: {
                         Text("Promote")
-                            .foregroundColor(.primary)
                             .bold()
                     }
                     .buttonStyle(.bordered)
@@ -86,7 +85,7 @@ fileprivate struct BenefitRow: View {
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: 8) {
             Image(systemName: icon)
-                .foregroundStyle(.accent.gradient)
+                .foregroundStyle(.tabColour)
                 .frame(width: 20)
             Text(text)
         }
@@ -142,6 +141,7 @@ fileprivate struct StoreKitPayWall: View {
                         .font(.headline)
                         .frame(maxWidth: .infinity)
                 }
+                .foregroundStyle(termsAcknowledged ? .primary : .secondary)
                 .buttonStyle(.bordered)
                 .controlSize(.large)
                 .disabled(!termsAcknowledged)
@@ -157,7 +157,7 @@ fileprivate struct StoreKitPayWall: View {
     private var completedView: some View {
         VStack(spacing: 20) {
             Image(systemName: "checkmark.circle.fill")
-                .foregroundStyle(.accent)
+                .foregroundStyle(.tabColour)
                 .font(.system(size: 50))
             
             Text("Purchase successful!")
@@ -170,7 +170,7 @@ fileprivate struct StoreKitPayWall: View {
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(Color.accent.opacity(0.8))
+                    .background(Color.tabColour.opacity(0.8))
                     .clipShape(RoundedRectangle(cornerRadius: 10))
             }
             .padding(.horizontal)
@@ -205,9 +205,8 @@ fileprivate struct StoreKitPayWall: View {
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(Color.accent.opacity(0.8))
+                    .background(Color.tabColour.opacity(0.8))
                     .clipShape(RoundedRectangle(cornerRadius: 10))
-                   
             }
             .padding(.horizontal)
             .disabled(viewModel.viewState == .purchasing)
@@ -252,7 +251,7 @@ fileprivate struct StoreKitPayWall: View {
                 Text(product.displayPrice)
                     .font(.title3)
                     .fontWeight(.bold)
-                    .foregroundStyle(.accent.gradient)
+                    .foregroundStyle(.tabColour)
                 
                 Text(product.description)
                     .font(.caption)

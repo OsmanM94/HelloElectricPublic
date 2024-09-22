@@ -65,7 +65,7 @@ struct ListingRowView: View {
                 .clipShape(UnevenRoundedRectangle(topLeadingRadius: 0, bottomLeadingRadius: 10, bottomTrailingRadius: 0, topTrailingRadius: 5))
             Text("Promoted")
                 .font(.caption)
-                .foregroundStyle(.accent)
+                .foregroundStyle(.tabColour)
                 .fontDesign(.rounded)
                 .fontWeight(.semibold)
         }
@@ -76,7 +76,7 @@ struct ListingRowView: View {
         HStack(spacing: 2) {
             Circle()
                 .frame(width: 8, height: 8)
-                .foregroundStyle(.accent.gradient)
+                .foregroundStyle(.tabColour.gradient)
             Text("Active")
                 .font(.caption2)
         }

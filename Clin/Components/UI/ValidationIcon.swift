@@ -10,7 +10,7 @@ import SwiftUI
 @ViewBuilder
 func validationIcon(isValid: Bool) -> some View {
     Image(systemName: isValid ? "checkmark.circle.fill" : "exclamationmark.circle.fill")
-        .foregroundStyle(isValid ? .accent : .gray)
+        .foregroundStyle(isValid ? .tabColour : .gray)
         .contentTransition(.symbolEffect(.replace))
 }
 

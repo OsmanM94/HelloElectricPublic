@@ -139,6 +139,7 @@ fileprivate struct DvlaCheckView: View {
             TextField("", text: $registrationNumber, prompt: Text("Enter registration").foregroundStyle(.gray.opacity(0.7)))
                 .font(.system(size: 24, weight: .bold, design: .rounded))
                 .padding()
+                .tint(.black)
                 .background(Color.yellow.opacity(0.8))
                 .foregroundStyle(.black)
                 .multilineTextAlignment(.center)
@@ -376,7 +377,6 @@ fileprivate struct CreateFormSubview: View {
                 .foregroundStyle(viewModel.formData.range == "Select" ? .gray : .primary)
                 .opacity(viewModel.formData.range == "Select" ? 0.8 : 1)
                 .disabled(viewModel.formData.range == "Select")
-            
         }
     }
     
@@ -444,6 +444,7 @@ fileprivate struct CreateFormSubview: View {
                 }
             } label: {
                 Text("Create listing")
+                    .foregroundStyle(viewModel.isFormValid() ? .tabColour : .secondary)
                     .font(.headline)
                     .frame(maxWidth: .infinity)
             }

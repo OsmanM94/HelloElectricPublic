@@ -8,7 +8,7 @@ import Foundation
 import Factory
 
 @Observable
-final class UserListingViewModel {
+final class PrivateUserListingsViewModel {
     // MARK: - Enum
     enum ViewState: Equatable {
         case empty
@@ -24,7 +24,7 @@ final class UserListingViewModel {
     
     var showingEditView: Bool = false
     var showDeleteAlert: Bool = false
-    private(set) var userActiveListings: [Listing] = []
+    private(set) var listings: [Listing] = []
     private(set) var viewState: ViewState = .loading
     
     // MARK: - Dependencies
@@ -32,12 +32,12 @@ final class UserListingViewModel {
     @ObservationIgnored @Injected(\.supabaseService) private var supabaseService
     
     init() {
-        print("DEBUG: Did init user listings vm")
+        print("DEBUG: Did init user listings viewmodel")
     }
     
     // MARK: - Main actor functions
     @MainActor
-    func loadUserListings() async {
+    func loadListings() async {
         do {
             guard let currentUser = try? await supabaseService.client.auth.session.user else {
                 viewState = .error(AppError.ErrorType.noAuthUserFound.message)
@@ -46,7 +46,7 @@ final class UserListingViewModel {
             
             let listings = try await listingService.loadUserListings(userID: currentUser.id)
             
-            self.userActiveListings = listings
+            self.listings = listings
             self.viewState = listings.isEmpty ? .empty : .success
             
         } catch {
@@ -55,7 +55,7 @@ final class UserListingViewModel {
     }
     
     @MainActor
-    func deleteUserListing(_ listing: Listing) async {
+    func deleteListing(_ listing: Listing) async {
         do {
             guard let id = listing.id else {
                 self.viewState = .error(AppError.ErrorType.noAuthUserFound.message)

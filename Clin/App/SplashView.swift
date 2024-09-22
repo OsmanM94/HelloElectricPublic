@@ -20,6 +20,7 @@ struct SplashView: View {
                 .font(.system(size: 48, weight: .bold, design: .rounded))
         
             Text("The destination to go for EVs.")
+                .foregroundStyle(.tabColour)
                 .font(.system(size: 20, weight: .medium, design: .rounded))
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 20)

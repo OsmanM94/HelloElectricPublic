@@ -205,7 +205,7 @@ fileprivate struct PrivateProfileViewContainer: View {
 
 fileprivate struct UserListingsContainer: View {
     var body: some View {
-        UserListingView()
+        PrivateUserListingsView()
     }
 }
 

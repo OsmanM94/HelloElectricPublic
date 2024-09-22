@@ -119,7 +119,7 @@ fileprivate struct FeatureRow: View {
                 .foregroundStyle(.secondary)
             Text("Expected: \(feature.friendlyETA)")
                 .font(.caption)
-                .foregroundStyle(.accent)
+                .foregroundStyle(.tabColour)
         }
         .padding()
     }

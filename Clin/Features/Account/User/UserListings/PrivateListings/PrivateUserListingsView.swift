@@ -6,8 +6,8 @@
 //
 import SwiftUI
 
-struct UserListingView: View {
-    @State private var viewModel = UserListingViewModel()
+struct PrivateUserListingsView: View {
+    @State private var viewModel = PrivateUserListingsViewModel()
     @State private var isEditing: Bool = false
     
     var body: some View {
@@ -31,8 +31,8 @@ struct UserListingView: View {
             }
         }
         .task {
-            if viewModel.userActiveListings.isEmpty {
-                await viewModel.loadUserListings()
+            if viewModel.listings.isEmpty {
+                await viewModel.loadListings()
             }
         }
     }
@@ -41,7 +41,7 @@ struct UserListingView: View {
     private var contentView: some View {
         switch viewModel.viewState {
         case .empty:
-            ErrorView(message: "Empty", retryAction: { await viewModel.loadUserListings() }, systemImage: "tray.fill")
+            ErrorView(message: "Empty", retryAction: { await viewModel.loadListings() }, systemImage: "tray.fill")
             
         case .loading:
             CustomProgressView(message: "Loading...")
@@ -56,23 +56,23 @@ struct UserListingView: View {
     }
     
     private func deleteListingAction(_ listing: Listing) async {
-        await viewModel.deleteUserListing(listing)
-        await viewModel.loadUserListings()
+        await viewModel.deleteListing(listing)
+        await viewModel.loadListings()
     }
     
     private func loadListingsAction() async {
-        await viewModel.loadUserListings()
+        await viewModel.loadListings()
     }
     
     private var contentSubview: some View {
         List {
-            ForEach(viewModel.userActiveListings, id: \.id) { listing in
+            ForEach(viewModel.listings, id: \.id) { listing in
                 LazyView(listingRow(for: listing))
             }
             .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
         }
         .environment(\.editMode, .constant(isEditing ? .active : .inactive))
-        .refreshable { await viewModel.loadUserListings() }
+        .refreshable { await viewModel.loadListings() }
         .listStyle(.plain)
         .fullScreenCover(item: $viewModel.selectedListing, onDismiss: dismissEditView) { listing in
             EditFormView(listing: listing)
@@ -125,12 +125,12 @@ struct UserListingView: View {
     
     private func dismissEditView() {
         Task {
-            await viewModel.loadUserListings()
+            await viewModel.loadListings()
         }
     }
 }
 
 #Preview("MockData") {
-    UserListingView()
+    PrivateUserListingsView()
         .environment(FavouriteViewModel())
 }

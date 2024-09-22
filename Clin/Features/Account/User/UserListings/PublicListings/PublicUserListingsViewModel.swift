@@ -10,7 +10,7 @@ import Factory
 
 
 @Observable
-final class UserListingsPublicViewModel {
+final class PublicUserListingsViewModel {
     enum ViewState: Equatable {
         case empty
         case loading
@@ -18,7 +18,7 @@ final class UserListingsPublicViewModel {
         case error(String)
     }
     
-    private(set) var userActiveListings: [Listing] = []
+    private(set) var listings: [Listing] = []
     private(set) var viewState: ViewState = .loading
     
     var sellerID: UUID?
@@ -30,11 +30,11 @@ final class UserListingsPublicViewModel {
     @ObservationIgnored @Injected(\.listingService) private var listingService
     
     @MainActor
-    func loadUserPublicListings() async {
+    func loadListings() async {
         do {
             let listings = try await listingService.loadUserListings(userID: self.sellerID ?? UUID())
             
-            self.userActiveListings = listings
+            self.listings = listings
             self.viewState = listings.isEmpty ? .empty : .success
             
         } catch {

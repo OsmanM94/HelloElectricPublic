@@ -48,7 +48,7 @@ struct LegalView: View {
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 30, height: 30)
                     .padding()
-                    .foregroundStyle(.accent)
+                    .foregroundStyle(.tabColour)
                     .clipShape(Circle())
                     .padding()
             }
@@ -74,8 +74,8 @@ fileprivate struct LegalItemView: View {
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 50, height: 50)
                 .padding()
-                .foregroundStyle(.accent)
-                .background(Color.accent.opacity(0.1))
+                .foregroundStyle(.tabColour)
+                .background(Color.tabColour.opacity(0.1))
                 .clipShape(Circle())
             
             Text(title)

@@ -40,11 +40,11 @@ struct SuccessView: View {
     }
     
     private var iconColor: Color {
-        colorScheme == .dark ? Color.accent.opacity(0.8) : Color.accent
+        colorScheme == .dark ? Color.tabColour.opacity(0.8) : Color.tabColour
     }
     
     private var buttonColor: Color {
-        colorScheme == .dark ? Color.accent.opacity(0.8) : Color.accent
+        colorScheme == .dark ? Color.tabColour.opacity(0.8) : Color.tabColour
     }
 }
 

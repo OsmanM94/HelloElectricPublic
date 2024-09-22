@@ -175,10 +175,13 @@ fileprivate struct PriceMileageSection: View {
             Slider(value: $viewModel.filters.maxPrice, in: 0...100_000, step: 1000) {
                 Text("Price")
             }
+            .tint(.tabColour)
+            
             Text("Max Mileage: \(viewModel.filters.maxMileage, specifier: "%.0f") miles")
             Slider(value: $viewModel.filters.maxMileage, in: 0...300_000, step: 1000) {
                 Text("Max Mileage")
             }
+            .tint(.tabColour)
         }
     }
 }

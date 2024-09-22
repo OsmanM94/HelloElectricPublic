@@ -20,18 +20,8 @@ struct ListingView: View {
             .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
             .navigationTitle("Listings")
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    quickFilterPicker
-                }
-                
-                ToolbarItem(placement: .topBarLeading) {
-                    Button {
-                        shouldScrollToTop.toggle()
-                    } label: {
-                        Image(systemName: "iphone.radiowaves.left.and.right")
-                    }
-                    .disabled(viewModel.viewState == .loading)
-                }
+                quickFilterPicker
+                scrollToTopButton
             }
         }
         .task {
@@ -55,25 +45,38 @@ struct ListingView: View {
         .disabled(viewModel.viewState == .loading)
     }
     
-    private var quickFilterPicker: some View {
-        Menu {
-            Picker("Quick Filter", selection: $viewModel.quickFilter) {
-                ForEach(QuickFilter.allCases) { filter in
-                    Label(filter.displayName, systemImage: "arrow.up.arrow.down")
-                        .tag(filter)
+    private var quickFilterPicker: some ToolbarContent {
+        ToolbarItem(placement: .topBarTrailing) {
+            Menu {
+                Picker("Quick Filter", selection: $viewModel.quickFilter) {
+                    ForEach(QuickFilter.allCases, id: \.id) { filter in
+                        Label(filter.displayName, systemImage: "arrow.up.arrow.down")
+                            .tag(filter)
+                    }
                 }
+            } label: {
+                HStack {
+                    Image(systemName: "line.3.horizontal.decrease.circle")
+                    Text("Filter")
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(Color(.systemGray6).opacity(0.8))
+                .clipShape(Capsule())
             }
-        } label: {
-            HStack {
-                Image(systemName: "line.3.horizontal.decrease.circle")
-                Text("Filter")
-            }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .background(Color(.systemGray6).opacity(0.8))
-            .clipShape(Capsule())
+            .disabled(viewModel.viewState == .loading)
         }
-        .disabled(viewModel.viewState == .loading)
+    }
+    
+    private var scrollToTopButton: some ToolbarContent {
+        ToolbarItem(placement: .topBarLeading) {
+            Button {
+                shouldScrollToTop.toggle()
+            } label: {
+                Image(systemName: "iphone.radiowaves.left.and.right")
+            }
+            .disabled(viewModel.viewState == .loading)
+        }
     }
     
     @ViewBuilder

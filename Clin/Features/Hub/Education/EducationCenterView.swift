@@ -48,7 +48,7 @@ fileprivate struct EducationItemView: View {
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 50, height: 50)
                 .padding()
-                .foregroundStyle(.accent.gradient)
+                .foregroundStyle(.tabColour.gradient)
                 .clipShape(Circle())
             
             Text(title)
