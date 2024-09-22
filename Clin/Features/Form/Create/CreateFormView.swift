@@ -127,7 +127,7 @@ fileprivate struct DvlaCheckView: View {
     private var registrationPlate: some View {
         HStack(spacing: 0) {
             Rectangle()
-                .foregroundStyle(.accent)
+                .foregroundStyle(.tabColour)
                 .frame(width: 40)
                 .overlay {
                     Text("UK")

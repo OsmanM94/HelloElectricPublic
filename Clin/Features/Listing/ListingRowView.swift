@@ -7,9 +7,10 @@ struct ListingRowView: View {
     let showFavourite: Bool
     
     var body: some View {
-        HStack(spacing: 0) {
+        HStack {
             listingImage
             listingDetails
+            Spacer()
         }
         .onAppear {
             timerManager.startListingTimer(interval: 60)
@@ -103,7 +104,8 @@ struct ListingRowView: View {
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }
-        .fontDesign(.rounded).bold()
+        .fontDesign(.rounded)
+        .bold()
         .padding(.leading, 5)
     }
 }

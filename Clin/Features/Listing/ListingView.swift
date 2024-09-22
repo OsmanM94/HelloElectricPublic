@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ListingView: View {
     @State private var viewModel = ListingViewModel()
+    @State private var shouldScrollToTop: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -18,37 +19,73 @@ struct ListingView: View {
             }
             .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
             .navigationTitle("Listings")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    quickFilterPicker
+                }
+                
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        shouldScrollToTop.toggle()
+                    } label: {
+                        Image(systemName: "iphone.radiowaves.left.and.right")
+                    }
+                    .disabled(viewModel.viewState == .loading)
+                }
+            }
         }
         .task {
             if viewModel.listings.isEmpty {
                 await viewModel.loadListings()
             }
         }
+        .onShake {
+            shouldScrollToTop.toggle()
+        }
     }
     
     private var vehicleTypePicker: some View {
         Picker("Vehicle Type", selection: $viewModel.selectedVehicleType) {
-               ForEach(VehicleType.allCases, id: \.self) { type in
-                   Text(type.rawValue).tag(type)
-               }
-           }
-           .pickerStyle(.segmented)
-           .padding()
-           .onChange(of: viewModel.selectedVehicleType) { _, newValue in
-               Task {
-                   await viewModel.loadListings(isRefresh: true)
-               }
-           }
-       }
+            ForEach(VehicleType.allCases, id: \.self) { type in
+                Text(type.rawValue).tag(type)
+            }
+        }
+        .pickerStyle(.segmented)
+        .padding()
+        .disabled(viewModel.viewState == .loading)
+    }
+    
+    private var quickFilterPicker: some View {
+        Menu {
+            Picker("Quick Filter", selection: $viewModel.quickFilter) {
+                ForEach(QuickFilter.allCases) { filter in
+                    Label(filter.displayName, systemImage: "arrow.up.arrow.down")
+                        .tag(filter)
+                }
+            }
+        } label: {
+            HStack {
+                Image(systemName: "line.3.horizontal.decrease.circle")
+                Text("Filter")
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(Color(.systemGray6).opacity(0.8))
+            .clipShape(Capsule())
+        }
+        .disabled(viewModel.viewState == .loading)
+    }
     
     @ViewBuilder
     private var content: some View {
         switch viewModel.viewState {
         case .loading:
-            ListingsPlaceholder(retryAction: loadListings)
+            Spacer()
+            CustomProgressView(message: "Loading...")
+            Spacer()
             
         case .loaded:
-            ListingSubview(viewModel: viewModel)
+            ListingSubview(viewModel: viewModel, shouldScrollToTop: $shouldScrollToTop)
             
         case .empty:
             Spacer()
@@ -69,16 +106,11 @@ struct ListingView: View {
                 .foregroundStyle(.gray)
         }
     }
-
-    private func loadListings() async {
-        await viewModel.loadListings()
-    }
 }
 
 fileprivate struct ListingSubview: View {
     @Bindable var viewModel: ListingViewModel
-    @State private var shouldScrollToTop: Bool = false
-    @State private var selectedVehicleType: VehicleType = .cars
+    @Binding var shouldScrollToTop: Bool
     
     var body: some View {
         ScrollViewReader { proxy in
@@ -90,10 +122,16 @@ fileprivate struct ListingSubview: View {
             }
             .listStyle(.plain)
             .refreshable {
-                await viewModel.refreshListings(vehicleType: selectedVehicleType)
+                await viewModel.refreshListings()
             }
-            .onChange(of: shouldScrollToTop, scrollToTopHandler(proxy: proxy))
-            .toolbar { scrollToTopButton }
+            .onChange(of: shouldScrollToTop) { _, newValue in
+                if newValue {
+                    withAnimation {
+                        proxy.scrollTo(viewModel.listings.first?.id, anchor: .top)
+                    }
+                    shouldScrollToTop = false
+                }
+            }
         }
     }
     
@@ -103,7 +141,6 @@ fileprivate struct ListingSubview: View {
                 listingRow(for: item)
             }
             .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
-            
             if viewModel.hasMoreListings {
                 loadingIndicator
             }
@@ -128,28 +165,6 @@ fileprivate struct ListingSubview: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .id(UUID())
             .listRowSeparator(.hidden, edges: .all)
-    }
-    
-    private func scrollToTopHandler(proxy: ScrollViewProxy) -> (Bool, Bool) -> Void {
-        return { _, newValue in
-            if newValue {
-                withAnimation {
-                    proxy.scrollTo(viewModel.listings.first?.id, anchor: .top)
-                }
-                shouldScrollToTop = false
-            }
-        }
-    }
-    
-    private var scrollToTopButton: some ToolbarContent {
-        ToolbarItem(placement: .topBarTrailing) {
-            Button {
-                shouldScrollToTop.toggle()
-            } label: {
-                Image(systemName: "arrow.up.circle")
-            }
-            .disabled(viewModel.listings.count <= 20)
-        }
     }
 }
 

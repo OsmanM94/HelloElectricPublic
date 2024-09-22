@@ -58,17 +58,34 @@ struct EVListView: View {
         .focused($isPresented)
     }
     
-    private var vehicleTypePicker: some View {
-        Picker("Vehicle Type", selection: $viewModel.databaseFilter) {
-               ForEach(DatabaseFilter.allCases, id: \.self) { type in
-                   Text(type.rawValue).tag(type)
-               }
-           }
-           .pickerStyle(.menu)
-           .onChange(of: viewModel.databaseFilter) { _, newValue in
-               Task { await viewModel.loadEVDatabase() }
-           }
-       }
+    private var menuSection: some View {
+        Menu {
+            Picker("Filters", selection: $viewModel.databaseFilter) {
+                ForEach(DatabaseFilter.allCases, id: \.self) { type in
+                    Text(type.rawValue).tag(type)
+                }
+            }
+            .pickerStyle(.menu)
+            
+            Button(action: { showInfoSheet.toggle() }) {
+                Text("About database")
+            }
+            
+        } label: {
+            HStack {
+                Image(systemName: "line.3.horizontal.decrease.circle")
+                Text("Menu")
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(Color(.systemGray6).opacity(0.8))
+            .clipShape(Capsule())
+        }
+        .onChange(of: viewModel.databaseFilter) { _, newValue in
+            Task { await viewModel.loadEVDatabase() }
+        }
+        .disabled(viewModel.viewState == .loading)
+    }
     
     private var listContent: some View {
         List {
@@ -90,12 +107,7 @@ struct EVListView: View {
     
     private var topBarTrailingToolbarContent: some ToolbarContent {
         ToolbarItemGroup(placement: .topBarTrailing) {
-            vehicleTypePicker
-            
-            Button(action: { showInfoSheet.toggle() }) {
-                Image(systemName: "info.circle")
-                    .foregroundStyle(.blue)
-            }
+            menuSection
         }
     }
     

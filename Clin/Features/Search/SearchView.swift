@@ -80,12 +80,11 @@ private extension SearchView {
             }
         }
         .fontDesign(.rounded)
-        .bold()
+        .fontWeight(.semibold)
         .foregroundStyle(.secondary)
         .padding()
     }
    
-    
     // MARK: - List View
     
      private var listView: some View {
@@ -131,15 +130,20 @@ private extension SearchView {
             Button(action: { showingFilterView = true }) {
                 ZStack(alignment: .topTrailing) {
                     Image(systemName: systemImageName)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(Color(.systemGray6).opacity(0.8))
+                        .clipShape(Capsule())
                     
                     if viewModel.filters.isFilterApplied {
                         Circle()
-                            .foregroundStyle(.orange.gradient)
-                            .frame(width: 11, height: 11)
+                            .foregroundStyle(.blue.gradient)
+                            .frame(width: 15, height: 15)
                             .offset(x: 1, y: -1)
                     }
                 }
             }
+            .disabled(viewModel.viewState == .loading)
         }
     }
     

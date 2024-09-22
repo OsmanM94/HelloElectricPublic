@@ -32,7 +32,9 @@ protocol ListingServiceProtocol {
     func loadModels() async throws -> [EVModels]
     func loadLocations() async throws -> [Cities]
     func loadEVfeatures() async throws -> [EVFeatures]
-    func searchListings(vehicleType: VehicleType, from: Int, to: Int) async throws -> [Listing]
+//    func searchListings(vehicleType: VehicleType, from: Int, to: Int) async throws -> [Listing]
+    func searchListings(type: [String], column: String, from: Int, to: Int) async throws -> [Listing]
+    func loadListingsWithFilter(orderBy: String, ascending: Bool, from: Int, to: Int) async throws -> [Listing]
 }
 
 protocol EVDatabaseServiceProtocol {

@@ -208,8 +208,12 @@ struct MockListingService: ListingServiceProtocol {
         MockListingService.sampleData.removeAll { $0.id == id }
     }
     
-    func searchListings(vehicleType: VehicleType, from: Int, to: Int) async throws -> [Listing] {
+    func searchListings(type: [String], column: String, from: Int, to: Int) async throws -> [Listing] {
         try await Task.sleep(nanoseconds: 2 * 1_000_000_000)
+        return MockListingService.sampleData
+    }
+    
+    func loadListingsWithFilter(orderBy: String, ascending: Bool, from: Int, to: Int) async throws -> [Listing] {
         return MockListingService.sampleData
     }
 }
