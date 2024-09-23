@@ -16,7 +16,10 @@ enum DatabaseFilter: String, CaseIterable {
     case power = "Power(HP)"
     case fastest = "Fastest"
     case towing = "Towing"
-    case rapidCharging = "Rapid Charging"
+    case homeChargingTime = "Home Charging Time"
+    case homeChargingSpeed = "Home Charging Speed"
+    case rapidChargingTime = "Rapid Charging Time"
+    case rapidChargingSpeed = "Rapid Charging Speed"
     case mostEfficient = "Most Efficient"
     case longestRange = "Longest Range"
     
@@ -39,8 +42,17 @@ enum DatabaseFilter: String, CaseIterable {
         case .towing:
             return [["column": "dimensions_tow", "order": "desc"],
                     ["column": "car_name", "order": "asc"]]
-        case .rapidCharging:
+        case .homeChargingTime:
+            return [["column": "charging_home_charge_time", "order": "asc"],
+                    ["column": "car_name", "order": "asc"]]
+        case .homeChargingSpeed:
+            return [["column": "charging_home_charge_speed", "order": "desc"],
+                    ["column": "car_name", "order": "asc"]]
+        case .rapidChargingTime:
             return [["column": "charging_rapid_charge_time", "order": "asc"],
+                    ["column": "car_name", "order": "asc"]]
+        case .rapidChargingSpeed:
+            return [["column": "charging_rapid_charge_speed", "order": "desc"],
                     ["column": "car_name", "order": "asc"]]
         case .mostEfficient:
             return [["column": "efficiency_real_range_consumption", "order": "asc"],

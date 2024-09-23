@@ -48,15 +48,16 @@ struct EVDatabase: Codable, Identifiable, Hashable {
         chargingHomePortLocation,
         chargingHomeChargePower: String?
     
-    let chargingHomeChargeTime,
-        chargingHomeChargeSpeed,
-        chargingHomeAutochargeSupported: String?
+    let chargingHomeAutochargeSupported: String?
+    
+    let chargingHomeChargeTime: Double?
+    let chargingHomeChargeSpeed: Int?
     
     let chargingRapidPort,
         chargingRapidPortLocation,
-        chargingRapidChargeSpeed,
         chargingRapidAutochargeSupported: String?
     
+    let chargingRapidChargeSpeed: Int?
     let chargingRapidChargeTime: Int?
     
     let efficiencyFuelEquivalent,
@@ -200,13 +201,13 @@ extension EVDatabase {
         chargingHomePort: "Type 2",
         chargingHomePortLocation: "Right rear",
         chargingHomeChargePower: "11 kW AC",
-        chargingHomeChargeTime: "7h 30min",
-        chargingHomeChargeSpeed: "50 km/h",
-        chargingHomeAutochargeSupported: "Yes",
+        chargingHomeAutochargeSupported: "7h 30min",
+        chargingHomeChargeTime: 8.75,
+        chargingHomeChargeSpeed: 35,
         chargingRapidPort: "CCS",
         chargingRapidPortLocation: "Right rear",
-        chargingRapidChargeSpeed: "550 km/h",
         chargingRapidAutochargeSupported: "Yes",
+        chargingRapidChargeSpeed: 550,
         chargingRapidChargeTime: 17,
         efficiencyFuelEquivalent: "18 kWh/100km",
         dimensionsAndWeightLength: "2.0 L/100km",

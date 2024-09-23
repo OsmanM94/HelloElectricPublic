@@ -58,7 +58,7 @@ struct EVRowView: View {
         VStack(spacing: 4) {
             Text("Price")
                 .font(.caption)
-                .foregroundStyle(.tabColour)
+                .fontWeight(.semibold)
             Text(ev.carPrice ?? 0, format: .currency(code: Locale.current.currency?.identifier ?? "GBP").precision(.fractionLength(0)))
                 .font(.caption)
                 .foregroundStyle(.secondary)
@@ -79,7 +79,7 @@ struct EVRowView: View {
     
     private var secondSpecsView: some View {
         HStack {
-            specItem(text: "Rapid Charge", value: ev.chargingRapidChargeSpeed ?? "N/A")
+            specItemNumeric(text: "Rapid Charge", value: ev.chargingRapidChargeSpeed ?? 0, type: "mph")
             Spacer()
             specItemNumeric(text: "Efficiency", value: ev.efficiencyRealRangeConsumption ?? 0, type: "Wh/mi")
             Spacer()
@@ -91,7 +91,7 @@ struct EVRowView: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(text)
                     .font(.caption2)
-                    .foregroundStyle(.tabColour)
+                    .fontWeight(.semibold)
                 Text(value)
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -102,8 +102,7 @@ struct EVRowView: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(text)
                     .font(.caption2)
-                    .foregroundStyle(.tabColour)
-                
+                    .fontWeight(.semibold)
                 Text("\(value) \(type)")
                     .font(.caption)
                     .foregroundStyle(.secondary)

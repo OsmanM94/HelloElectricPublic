@@ -8,13 +8,12 @@
 import Foundation
 import Factory
 
-
 final class ProfileService: ProfileServiceProtocol {
     @Injected(\.databaseService) private var databaseService
     @Injected(\.supabaseService) private var supabaseService
     
     func loadProfile(for userID: UUID) async throws -> Profile {
-        let profile: Profile = try await databaseService.loadSingleWithField(
+        let profile: Profile = try await databaseService.loadSingleItem(
             from: "profiles",
             field: "user_id",
             uuid: userID

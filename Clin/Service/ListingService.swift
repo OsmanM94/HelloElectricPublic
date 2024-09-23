@@ -21,7 +21,7 @@ final class ListingService: ListingServiceProtocol {
     
     func loadUserListings(userID: UUID) async throws -> [Listing] {
         try await databaseService
-            .loadMultipleWithField(
+            .loadMultipleItems(
                 from: "car_listing",
                 orderBy: "created_at",
                 ascending: false,

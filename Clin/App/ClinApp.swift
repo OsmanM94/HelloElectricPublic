@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import TipKit
 
 @main
 struct ClinApp: App {
@@ -25,6 +26,12 @@ struct ClinApp: App {
                         .environment(authViewModel)
                         .environment(favouriteViewModel)
                         .environment(accountViewModel)
+                        .task {
+                            try? Tips.configure([
+                                .displayFrequency(.immediate),
+                                .datastoreLocation(.applicationDefault)
+                            ])
+                        }
                 }
             }
             .onAppear {

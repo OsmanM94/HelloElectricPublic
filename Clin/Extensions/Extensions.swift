@@ -152,3 +152,12 @@ extension View {
         }
     }
 }
+
+// Convert a Double representing a decimal number (e.g., 8.75) into a human-readable "8h 45m"
+extension Double {
+    func formattedChargeTime() -> String {
+        let hours = Int(self)
+        let minutes = Int((self - Double(hours)) * 60)
+        return "\(hours)h \(minutes)m"
+    }
+}

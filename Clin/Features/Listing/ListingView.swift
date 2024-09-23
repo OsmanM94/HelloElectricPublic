@@ -6,10 +6,12 @@
 //
 
 import SwiftUI
+import TipKit
 
 struct ListingView: View {
     @State private var viewModel = ListingViewModel()
     @State private var shouldScrollToTop: Bool = false
+    @State private var showScrollToTopTip: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -76,7 +78,9 @@ struct ListingView: View {
                 Image(systemName: "iphone.radiowaves.left.and.right")
             }
             .disabled(viewModel.viewState == .loading)
-            .opacity(viewModel.listings.count <= 20 ? 0 : 1)
+            .popoverTip(ScrollToTopTip(), arrowEdge: .bottom)
+            .onAppear { showScrollToTopTip = true }
+            .onDisappear { showScrollToTopTip = false }
         }
     }
     

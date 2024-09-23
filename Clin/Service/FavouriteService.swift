@@ -13,7 +13,7 @@ final class FavouriteService: FavouriteServiceProtocol {
     
     func loadUserFavourites(userID: UUID) async throws -> [Favourite] {
         try await databaseService
-            .loadMultipleWithField(
+            .loadMultipleItems(
                 from: "favourite_listing",
                 orderBy: "created_at",
                 ascending: false,

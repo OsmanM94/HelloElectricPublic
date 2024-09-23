@@ -243,7 +243,7 @@
 				SDWebImage/ImageLoader.swift,
 				SensitiveContentAnalysis/SensitiveContentAnalysis.swift,
 				ShakeGesture/ShakeGesture.swift,
-				TipKit/SellerLocationTip.swift,
+				TipKit/ScrollToTopTip.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
 		};

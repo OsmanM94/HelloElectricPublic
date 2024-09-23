@@ -88,7 +88,7 @@ final class DatabaseService: DatabaseServiceProtocol {
         }
     }
     
-    func loadMultipleWithField<T: Decodable>(from table: String, orderBy: String, ascending: Bool = true, field: String, uuid: UUID) async throws -> [T] {
+    func loadMultipleItems<T: Decodable>(from table: String, orderBy: String, ascending: Bool = true, field: String, uuid: UUID) async throws -> [T] {
         do {
             let result: [T] = try await supabaseService.client
                 .from(table)
@@ -103,7 +103,7 @@ final class DatabaseService: DatabaseServiceProtocol {
         }
     }
     
-    func loadSingleWithField<T: Decodable>(from table: String, field: String, uuid: UUID) async throws -> T {
+    func loadSingleItem<T: Decodable>(from table: String, field: String, uuid: UUID) async throws -> T {
         do {
             let result: T = try await supabaseService.client
                 .from(table)

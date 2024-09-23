@@ -149,16 +149,20 @@ struct EVDetailsView: View {
                 infoRow("Home Port", evData.chargingHomePort)
                 infoRow("Home Port Location", evData.chargingHomePortLocation)
                 infoRow("Home Charge Power", evData.chargingHomeChargePower)
-                infoRow("Home Charge Time", evData.chargingHomeChargeTime)
-                infoRow("Home Charge Speed", evData.chargingHomeChargeSpeed)
+                infoRowNumeric("Home Charge Speed", evData.chargingHomeChargeSpeed ?? 0, "mph")
+                infoRow("Home Charge Time", "\(evData.chargingHomeChargeTime?.formattedChargeTime() ?? "N/A")")
                 infoRow("Home Autocharge Supported", evData.chargingHomeAutochargeSupported)
             }
             
             Group {
                 infoRow("Rapid Port", evData.chargingRapidPort)
                 infoRow("Rapid Port Location", evData.chargingRapidPortLocation)
-                infoRow("Rapid Charge Speed", evData.chargingRapidChargeSpeed)
+                
+                infoRowNumeric("Rapid Charge Speed",
+                    evData.chargingRapidChargeSpeed ?? 0,"mph")
+              
                 infoRowNumeric("Rapid Charge Time", evData.chargingRapidChargeTime, "min")
+                
                 infoRow("Rapid Autocharge Supported", evData.chargingRapidAutochargeSupported)
             }
         }
