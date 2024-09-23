@@ -18,7 +18,7 @@ struct ListingRowView: View {
     }
     
     private var listingImage: some View {
-        VStack(spacing: 0) {
+        VStack {
             if let firstImageURL = listing.thumbnailsURL.first {
                 ImageLoader(url: firstImageURL, contentMode: .fill, targetSize: CGSize(width: 120, height: 120))
                     .frame(width: 120, height: 120)
@@ -61,8 +61,8 @@ struct ListingRowView: View {
             Rectangle()
                 .frame(width: 80, height: 22)
                 .foregroundStyle(Color(.systemGray6))
-                
                 .clipShape(UnevenRoundedRectangle(topLeadingRadius: 0, bottomLeadingRadius: 10, bottomTrailingRadius: 0, topTrailingRadius: 5))
+                .opacity(0.8)
             Text("Promoted")
                 .font(.caption)
                 .foregroundStyle(.tabColour)
@@ -93,19 +93,24 @@ struct ListingRowView: View {
             Text("\(listing.make) \(listing.model) \(listing.yearOfManufacture)")
                 .font(.headline)
                 .lineLimit(2, reservesSpace: false)
+            
             Text("\(listing.condition)")
                 .foregroundStyle(.secondary)
                 .font(.subheadline)
-            Text("\(listing.mileage, format: .number) miles")
-                .font(.subheadline)
+            
             Text(listing.price, format: .currency(code: Locale.current.currency?.identifier ?? "GBP").precision(.fractionLength(0)))
                 .font(.subheadline)
+                .bold()
+            
+            Text(listing.location)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+            
             Text("added \(listing.createdAt.timeElapsedString())")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }
         .fontDesign(.rounded)
-        .bold()
         .padding(.leading, 5)
     }
 }

@@ -13,7 +13,7 @@ struct ListingView: View {
     
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
+            VStack {
                 vehicleTypePicker
                 content
             }
@@ -76,6 +76,7 @@ struct ListingView: View {
                 Image(systemName: "iphone.radiowaves.left.and.right")
             }
             .disabled(viewModel.viewState == .loading)
+            .opacity(viewModel.listings.count <= 20 ? 0 : 1)
         }
     }
     
@@ -124,9 +125,7 @@ fileprivate struct ListingSubview: View {
                 DetailView(item: listing, showFavourite: true)
             }
             .listStyle(.plain)
-            .refreshable {
-                await viewModel.refreshListings()
-            }
+            .refreshable { await viewModel.refreshListings(resetState: false) }
             .onChange(of: shouldScrollToTop) { _, newValue in
                 if newValue {
                     withAnimation {

@@ -93,7 +93,7 @@ final class ListingViewModel {
         didSet {
             if oldValue != selectedVehicleType {
                 quickFilter = .all // Reset quickFilter when vehicle type changes
-                Task { await refreshListings() }
+                Task { await refreshListings(resetState: true) }
             }
         }
     }
@@ -101,7 +101,7 @@ final class ListingViewModel {
     var quickFilter: QuickFilter = .all {
         didSet {
             if oldValue != quickFilter {
-                Task { await refreshListings() }
+                Task { await refreshListings(resetState: true) }
             }
         }
     }
@@ -155,9 +155,11 @@ final class ListingViewModel {
     }
     
     @MainActor
-    func refreshListings() async {
+    func refreshListings(resetState: Bool) async {
         resetPagination()
-        viewState = .loading
+        if resetState {
+            viewState = .loading
+        }
         await loadListings()
     }
     

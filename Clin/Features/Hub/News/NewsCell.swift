@@ -15,7 +15,7 @@ struct NewsCell: View {
             VStack(alignment: .leading, spacing: 15) {
                 Text("News")
                     .font(.headline)
-                    .foregroundStyle(.red.gradient)
+                    .foregroundStyle(.tabColour.gradient)
                 Text(article.title)
                     .lineLimit(3, reservesSpace: true)
                     .font(.headline)

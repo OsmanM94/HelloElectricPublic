@@ -46,6 +46,7 @@ struct FavouriteButtonBackground<Content: View>: View {
         Circle()
             .frame(width: width, height: height)
             .foregroundStyle(Color(.systemGray6))
+            .opacity(0.8)
             .overlay {
                 content()
             }
