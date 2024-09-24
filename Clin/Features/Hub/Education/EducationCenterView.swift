@@ -8,56 +8,49 @@
 import SwiftUI
 
 struct EducationCenterView: View {
-    
     let columns = [GridItem(.flexible()), GridItem(.flexible())]
     
     var body: some View {
         NavigationStack {
-            LazyVGrid(columns: columns, spacing: 20) {
-                NavigationLink(destination: LazyView(BasicsView())) {
-                    EducationItemView(title: "EV Basics", imageName: "bolt.car.fill")
+            ScrollView {
+                LazyVGrid(columns: columns, spacing: 20) {
+                    EducationItem(title: "EV Basics", imageName: "bolt.car.fill", destination: LazyView(BasicsView()))
+                    EducationItem(title: "EV Benefits", imageName: "leaf.fill", destination: LazyView(BenefitsView()))
+                    EducationItem(title: "EV Ownership", imageName: "key.fill", destination: LazyView(OwnershipView()))
+                    EducationItem(title: "Charging Essentials", imageName: "ev.charger.fill", destination: LazyView(ChargingEssentialsView()))
                 }
-                NavigationLink(destination: LazyView(BenefitsView())) {
-                    EducationItemView(title: "EV Benefits", imageName: "leaf.fill")
-                }
-                
-                NavigationLink(destination: LazyView(OwnershipView())) {
-                    EducationItemView(title: "EV Ownership", imageName: "key.fill")
-                }
-                
-                NavigationLink(destination: LazyView(ChargingEssentialsView())) {
-                    EducationItemView(title: "Charging Essentials", imageName: "ev.charger.fill")
-                }
+                .padding()
             }
-            .padding()
-            
-            Spacer()
+            .navigationTitle("Education Center")
         }
     }
 }
 
-fileprivate struct EducationItemView: View {
+struct EducationItem<Destination: View>: View {
     let title: String
     let imageName: String
-    @Environment(\.colorScheme) var colorScheme
+    let destination: Destination
     
     var body: some View {
-        VStack {
-            Image(systemName: imageName)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 50, height: 50)
-                .padding()
-                .foregroundStyle(.tabColour.gradient)
-                .clipShape(Circle())
-            
-            Text(title)
-                .font(.headline)
-                .foregroundStyle(colorScheme == .dark ? .white : .black)
+        NavigationLink(destination: destination) {
+            LazyVStack {
+                Image(systemName: imageName)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 40, height: 40)
+                    .foregroundStyle(.tabColour.gradient)
+                    .padding(.bottom, 5)
+                
+                Text(title)
+                    .font(.headline)
+                    .foregroundStyle(.primary)
+                    .multilineTextAlignment(.center)
+            }
+            .frame(maxWidth: .infinity, minHeight: 120)
+            .padding()
+            .background(Color.lightGrayBackground)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
         }
-        .frame(maxWidth: .infinity, minHeight: 150)
-        .background(Color(.systemGray6))
-        .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 }
 

@@ -20,9 +20,9 @@ struct ListingRowView: View {
     private var listingImage: some View {
         VStack {
             if let firstImageURL = listing.thumbnailsURL.first {
-                ImageLoader(url: firstImageURL, contentMode: .fill, targetSize: CGSize(width: 120, height: 120))
-                    .frame(width: 120, height: 120)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                ImageLoader(url: firstImageURL, contentMode: .fill, targetSize: CGSize(width: 130, height: 130))
+                    .frame(width: 130, height: 130)
+                    .clipShape(RoundedRectangle(cornerRadius: 15))
             } else {
                 placeholderImage
             }
@@ -38,7 +38,7 @@ struct ListingRowView: View {
     private var placeholderImage: some View {
         Rectangle()
             .foregroundStyle(.gray.opacity(0.5))
-            .frame(width: 120, height: 120)
+            .frame(width: 130, height: 130)
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .overlay {
                 ProgressView()
@@ -65,7 +65,6 @@ struct ListingRowView: View {
                 .opacity(0.8)
             Text("Promoted")
                 .font(.caption)
-                .foregroundStyle(.tabColour)
                 .fontDesign(.rounded)
                 .fontWeight(.semibold)
         }
@@ -84,12 +83,12 @@ struct ListingRowView: View {
         .padding(.bottom, 5)
         .padding(.top, 5)
         .padding(.leading, 6)
-        .background(Color(.systemBackground).opacity(0.8), in: RoundedRectangle(cornerRadius: 5))
+        .background(Color(.systemGray6).opacity(0.8), in: RoundedRectangle(cornerRadius: 5))
         .padding(.all, 4)
     }
     
     private var listingDetails: some View {
-        VStack(alignment: .leading, spacing: 3) {
+        VStack(alignment: .leading, spacing: 2) {
             Text("\(listing.make) \(listing.model) \(listing.yearOfManufacture)")
                 .font(.headline)
                 .lineLimit(2, reservesSpace: false)

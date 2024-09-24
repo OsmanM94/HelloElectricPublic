@@ -51,26 +51,6 @@ public extension UIImage {
     }
 }
 
-/// Shimmer modifier
-public extension View {
-    @ViewBuilder
-    func shimmer(when isLoading: Binding<Bool>) -> some View {
-        if isLoading.wrappedValue {
-            self.modifier(Shimmer())
-                .redacted(reason: isLoading.wrappedValue ? .placeholder : [])
-        } else {
-            self
-        }
-    }
-}
-
-/// This modifier shows an alert when the Sensitive Content Analysis is turned off.
-public extension View {
-    func sensitiveContentAnalysisCheck() -> some View {
-        self.modifier(SensitiveContentAnalysisModifier())
-    }
-}
-
 /// Date formatter
 public extension String {
     // Converts the ISO 8601 date string to a Date object
@@ -139,8 +119,33 @@ extension String {
     }
 }
 
-// This adds a network monitor view, you can call it using  .withNetworkStatusBanner(networkMonitor)
+// Convert a Double representing a decimal number (e.g., 8.75) into a human-readable "8h 45m"
+extension Double {
+    func formattedChargeTime() -> String {
+        let hours = Int(self)
+        let minutes = Int((self - Double(hours)) * 60)
+        return "\(hours)h \(minutes)m"
+    }
+}
+
 extension View {
+    // Applies .tabColour as a background colour for any view
+    func withBackgroundStyle() -> some View {
+        self.modifier(BackgroundStyleModifier())
+    }
+    
+    // Extension that applies either a specific frame size or uses containerRelativeFrame if no size is provided.
+    func frameAdjustment(size: CGSize?, alignment: Alignment) -> some View {
+        Group {
+            if let size = size {
+                self.frame(width: size.width, height: size.height, alignment: alignment)
+            } else {
+                self.containerRelativeFrame([.horizontal, .vertical])
+            }
+        }
+    }
+    
+    // This adds a network monitor view, you can call it using  .withNetworkStatusBanner(networkMonitor)
     func withNetworkStatusBanner(_ networkMonitor: NetworkMonitor) -> some View {
         self.overlay(alignment: .top) {
             if !networkMonitor.isConnected {
@@ -151,13 +156,27 @@ extension View {
             }
         }
     }
-}
-
-// Convert a Double representing a decimal number (e.g., 8.75) into a human-readable "8h 45m"
-extension Double {
-    func formattedChargeTime() -> String {
-        let hours = Int(self)
-        let minutes = Int((self - Double(hours)) * 60)
-        return "\(hours)h \(minutes)m"
+    
+    /// This modifier shows an alert when the Sensitive Content Analysis is turned off.
+    func sensitiveContentAnalysisCheck() -> some View {
+        self.modifier(SensitiveContentAnalysisModifier())
+    }
+    
+    // Shimmer modifier
+    @ViewBuilder
+    func shimmer(when isLoading: Binding<Bool>) -> some View {
+        if isLoading.wrappedValue {
+            self.modifier(Shimmer())
+                .redacted(reason: isLoading.wrappedValue ? .placeholder : [])
+        } else {
+            self
+        }
     }
 }
+
+extension Color {
+    static var lightGrayBackground: Color {
+        Color(.gray).opacity(0.1)
+    }
+}
+

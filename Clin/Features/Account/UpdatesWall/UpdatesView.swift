@@ -78,6 +78,7 @@ struct UpdatesView: View {
                 SupportCenterView()
             } label: {
                 Text("Get in touch")
+                    .foregroundStyle(.tabColour)
             }
         }
     }

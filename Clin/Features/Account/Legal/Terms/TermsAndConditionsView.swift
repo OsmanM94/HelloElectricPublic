@@ -84,6 +84,7 @@ struct TermsAndConditionsView: View {
                 }
                 .padding(.vertical)
             }
+            .tint(.tabColour)
         }
     }
     

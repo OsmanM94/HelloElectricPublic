@@ -219,7 +219,7 @@ struct DetailView<T: DetailItem>: View {
             Text("Promoted")
                 .padding(10)
                 .foregroundStyle(.tabColour.gradient)
-                .background(Color(.systemGray6))
+                .background(Color.lightGrayBackground)
                 .clipShape(RoundedRectangle(cornerRadius: 5))
                 .opacity(item.isPromoted ? 1 : 0)
         }
@@ -244,7 +244,6 @@ struct DetailView<T: DetailItem>: View {
         HStack(spacing: 15) {
             Image(systemName: "gauge.with.needle")
                 .font(.system(size: 24))
-                .foregroundStyle(item.isPromoted ? .tabColour : .primary)
             
             VStack(alignment: .leading, spacing: 4) {
                 Text("Mileage")
@@ -282,7 +281,7 @@ struct DetailView<T: DetailItem>: View {
         }
         .frame(maxWidth: .infinity)
         .padding()
-        .background(Color.gray.opacity(0.1))
+        .background(Color.lightGrayBackground)
         .clipShape(RoundedRectangle(cornerRadius: 10))
     }
     
@@ -297,9 +296,8 @@ struct DetailView<T: DetailItem>: View {
             .fontWeight(.regular)
             .padding(.top, 10)
         }
-        .tint(item.isPromoted ? .tabColour : .primary)
         .padding()
-        .background(Color.gray.opacity(0.1))
+        .background(Color.lightGrayBackground)
         .clipShape(RoundedRectangle(cornerRadius: 10))
     }
     
@@ -310,9 +308,8 @@ struct DetailView<T: DetailItem>: View {
                 .fontWeight(.regular)
                 .padding(.top, 10)
         }
-        .tint(item.isPromoted ? .tabColour : .primary)
         .padding()
-        .background(Color.gray.opacity(0.1))
+        .background(Color.lightGrayBackground)
         .clipShape(RoundedRectangle(cornerRadius: 10))
     }
     
@@ -331,7 +328,7 @@ struct DetailView<T: DetailItem>: View {
                 sellerOtherListingsSection
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-            .padding(.top, 10)
+            .padding(.top)
             .overlay(alignment: .topTrailing) {
                 ContactButtons(item: item)
             }
@@ -346,9 +343,8 @@ struct DetailView<T: DetailItem>: View {
                 EmptyView()
             }
         }
-        .tint(item.isPromoted ? .tabColour : .primary)
         .padding()
-        .background(Color.gray.opacity(0.1))
+        .background(Color.lightGrayBackground)
         .clipShape(RoundedRectangle(cornerRadius: 10))
     }
     
@@ -394,9 +390,8 @@ struct DetailView<T: DetailItem>: View {
         DisclosureGroup("Disclaimer") {
             ListingDisclaimerView()
         }
-        .tint(item.isPromoted ? .tabColour : .primary)
         .padding()
-        .background(Color.gray.opacity(0.1))
+        .background(Color.lightGrayBackground)
         .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 }

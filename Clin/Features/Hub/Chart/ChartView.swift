@@ -81,7 +81,7 @@ fileprivate struct YearlyChartView: View {
     
     var body: some View {
         ScrollView {
-            VStack {
+            VStack(alignment: .leading) {
                 Chart(registrations) { registration in
                     BarMark(
                         x: .value("Fuel Type", registration.fuelCategory),
@@ -96,7 +96,8 @@ fileprivate struct YearlyChartView: View {
                 ])
                 .frame(height: 300)
                 .padding()
-                .background(Color(.systemGray6), in: .rect(cornerRadius: 10))
+                .background(Color.lightGrayBackground)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
                 .padding()
                 
                 legendSection
@@ -127,14 +128,14 @@ fileprivate struct YearlyChartView: View {
     }
     
     private var sourceSection: some View {
-        GroupBox {
-            VStack(alignment: .leading, spacing: 10) {
-                Text("Source: SMMT")
-                    .font(.headline)
-                Text(viewModel.selectedYear)
-            }
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Source: SMMT")
+                .font(.headline)
+            Text(viewModel.selectedYear)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding()
+        .background(Color.lightGrayBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 10))
         .padding(.leading)
     }
     
@@ -154,7 +155,7 @@ fileprivate struct MonthlyChartView: View {
     let registrations: [ChartData]
     
     var body: some View {
-        ScrollView(.vertical) {
+        ScrollView {
             VStack(alignment: .leading) {
                 Chart(registrations) { registration in
                     SectorMark(
@@ -171,7 +172,8 @@ fileprivate struct MonthlyChartView: View {
                 ])
                 .frame(height: 300)
                 .padding()
-                .background(Color(.systemGray6), in: .rect(cornerRadius: 10))
+                .background(Color.lightGrayBackground)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
                 .padding()
                 
                 legendSection
@@ -202,14 +204,14 @@ fileprivate struct MonthlyChartView: View {
     }
     
     private var sourceSection: some View {
-        GroupBox {
-            VStack(alignment: .leading, spacing: 10) {
-                Text("Source: SMMT")
-                    .font(.headline)
-                Text(viewModel.selectedMonth)
-            }
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Source: SMMT")
+                .font(.headline)
+            Text(viewModel.selectedMonth)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding()
+        .background(Color.lightGrayBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 10))
         .padding(.leading)
     }
     

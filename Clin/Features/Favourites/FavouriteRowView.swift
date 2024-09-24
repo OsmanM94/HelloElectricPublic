@@ -49,8 +49,8 @@ struct FavouriteRowView: View {
                     
                     VStack(alignment: .trailing, spacing: 4) {
                         Text(favourite.bodyType)
-                        Text("\(favourite.powerBhp) BHP")
-                        Text(favourite.range)
+                        Text("\(favourite.powerBhp)")
+                        Text("\(favourite.range) (range)")
                     }
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -78,7 +78,7 @@ struct FavouriteRowView: View {
         .fontDesign(.rounded).bold()
         .frame(maxWidth: .infinity, maxHeight: 250)
         .padding()
-        .background(Color(.systemGray6))
+        .background(Color.lightGrayBackground)
         .clipShape(RoundedRectangle(cornerRadius: 10))
         .overlay(alignment: .topTrailing) {
             deleteButton

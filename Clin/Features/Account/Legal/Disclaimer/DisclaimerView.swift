@@ -29,6 +29,11 @@ struct DisclaimerView: View {
             "We are not responsible for any vehicle defects, malfunctions, or performance issues that may arise after a purchase.",
             "Users should thoroughly inspect and test drive any vehicle before purchase. We recommend having a qualified mechanic inspect the vehicle if possible."
         ]),
+//        ("Data Management", [
+//            "Listings are automatically deleted after 6 months from the date they were created to keep the database clean.",
+//            "Users should be aware that their listing data will not be retained indefinitely and should save any important information separately if needed.",
+//            "We reserve the right to delete or modify user data as necessary for the maintenance and improvement of our services."
+//        ]),
         ("Limitation of Liability", [
             "To the fullest extent permitted by law, we disclaim all warranties, express or implied, regarding the App and any transactions conducted through it.",
             "We shall not be liable for any direct, indirect, incidental, special, or consequential damages resulting from the use of our App or any transaction facilitated through it.",

@@ -35,7 +35,7 @@ struct StoreKitView: View {
                         
                         VStack(alignment: .leading, spacing: 4) {
                             BenefitRow(icon: "arrow.up.circle.fill", text: "Listing appears at the top (nationwide)")
-                            BenefitRow(icon: "heart.fill", text: "Special favourite button")
+                            BenefitRow(icon: "tag.fill", text: "Listing badge")
                             BenefitRow(icon: "square.grid.3x3.fill", text: "Exclusive layout")
                         }
                         

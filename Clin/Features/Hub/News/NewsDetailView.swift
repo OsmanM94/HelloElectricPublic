@@ -60,8 +60,13 @@ struct NewsDetailView: View {
                 }
                 .padding()
                 
-                NewsDisclaimer()
-                    .padding(.bottom)
+                DisclosureGroup("Disclaimer") {
+                    NewsDisclaimer()
+                }
+                .padding()
+                .background(Color.lightGrayBackground)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .padding()
             }
         }
         .scrollBounceBehavior(.basedOnSize)

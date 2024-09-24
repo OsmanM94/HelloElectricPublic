@@ -31,7 +31,7 @@ struct NewsCell: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
-        .background(Color(.systemGray6))
+        .background(Color.lightGrayBackground)
         .clipShape(RoundedRectangle(cornerRadius: 12))
             
     }

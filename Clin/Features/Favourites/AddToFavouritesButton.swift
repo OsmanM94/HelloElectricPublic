@@ -63,18 +63,9 @@ struct FavouriteIcon: View {
     var body: some View {
         Image(systemName: isFavourite ? "heart.fill" : "heart")
             .font(.system(size: iconSize))
-            .foregroundStyle(foregroundStyle)
             .fontWeight(.bold)
             .symbolEffect(.bounce, value: isFavourite)
             .sensoryFeedback(.impact(flexibility: .soft), trigger: isFavourite)
-    }
-
-    private var foregroundStyle: some ShapeStyle {
-        if isPromoted {
-            return .tabColour
-        } else {
-            return colorScheme == .dark ? .white : .black
-        }
     }
 }
 

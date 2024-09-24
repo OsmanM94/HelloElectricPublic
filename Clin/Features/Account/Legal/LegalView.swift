@@ -32,26 +32,32 @@ struct LegalView: View {
             .navigationTitle("Legal")
             .navigationBarTitleDisplayMode(.inline)
             
-            GroupBox("Got questions?") {
-                VStack(alignment: .leading) {
-                    NavigationLink("Call support") {
-                        SupportCenterView()
-                    }
-                    .padding(.top, 8)
+            VStack(alignment: .leading) {
+                HStack {
+                    Text("Got questions?")
+                        .font(.headline)
+                        .fontDesign(.rounded)
+                   
+                    Spacer()
+                    
+                    Image(systemName: "questionmark.circle.fill")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 30, height: 30)
+                        .foregroundStyle(.tabColour)
+                        .clipShape(Circle())
                 }
-                .padding()
+            
+                NavigationLink("Call support") {
+                    SupportCenterView()
+                }
+                .padding(.top)
+                .foregroundStyle(.tabColour)
             }
             .padding()
-            .overlay(alignment: .topTrailing) {
-                Image(systemName: "questionmark.circle.fill")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 30, height: 30)
-                    .padding()
-                    .foregroundStyle(.tabColour)
-                    .clipShape(Circle())
-                    .padding()
-            }
+            .background(Color.lightGrayBackground)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .padding()
             
             Spacer()
         }
@@ -84,7 +90,7 @@ fileprivate struct LegalItemView: View {
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity, minHeight: 150)
-        .background(Color(.systemGray6))
+        .background(Color.lightGrayBackground)
         .clipShape(RoundedRectangle(cornerRadius: 10))
     }
     
@@ -95,7 +101,7 @@ fileprivate struct LegalItemView: View {
             return .black
         }
     }
-
+    
 }
 
 

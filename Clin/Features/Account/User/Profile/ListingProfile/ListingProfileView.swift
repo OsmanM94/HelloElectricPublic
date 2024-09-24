@@ -18,7 +18,7 @@ struct ListingProfileView: View {
                 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(viewModel.displayName)
-                        .font(.title3)
+                        .font(.headline)
                         .fontWeight(.semibold)
                         .fontDesign(.rounded)
                     

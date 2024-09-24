@@ -59,7 +59,7 @@ struct ListingView: View {
             } label: {
                 HStack {
                     Image(systemName: "line.3.horizontal.decrease.circle")
-                    Text("Filter")
+                    Text("Sort")
                 }
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)

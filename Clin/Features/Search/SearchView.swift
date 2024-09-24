@@ -80,7 +80,6 @@ private extension SearchView {
             }
         }
         .fontDesign(.rounded)
-        .fontWeight(.semibold)
         .foregroundStyle(.secondary)
         .padding()
     }

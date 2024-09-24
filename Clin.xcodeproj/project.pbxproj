@@ -46,7 +46,8 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				ClinApp.swift,
-				SplashView.swift,
+				introvideo.mov,
+				IntroView.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
 		};
@@ -154,6 +155,7 @@
 		622369BA2C3D6B7100576FF4 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				UI/BackgroundStyleModifier.swift,
 				UI/CharactersLimitModifier.swift,
 				UI/CircularProgressBar.swift,
 				UI/CustomProgressView.swift,
@@ -244,6 +246,8 @@
 				SensitiveContentAnalysis/SensitiveContentAnalysis.swift,
 				ShakeGesture/ShakeGesture.swift,
 				TipKit/ScrollToTopTip.swift,
+				VideoPlayer/VideoPlayerView.swift,
+				VideoPlayer/VideoPlayerViewModel.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
 		};

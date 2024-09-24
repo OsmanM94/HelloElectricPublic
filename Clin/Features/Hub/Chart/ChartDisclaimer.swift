@@ -9,15 +9,13 @@ import SwiftUI
 
 struct ChartDisclaimer: View {
     var body: some View {
-        
         DisclosureGroup("Disclaimer") {
             disclaimerContent
         }
         .padding()
-        .background(Color.gray.opacity(0.1))
+        .background(Color.lightGrayBackground)
         .clipShape(RoundedRectangle(cornerRadius: 10))
         .padding()
-        
     }
     
     private var disclaimerContent: some View {
@@ -34,7 +32,6 @@ struct ChartDisclaimer: View {
             RoundedRectangle(cornerRadius: 8)
                 .stroke(Color.yellow.opacity(0.5), lineWidth: 1)
         )
-        
     }
 }
 

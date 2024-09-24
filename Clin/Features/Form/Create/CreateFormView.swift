@@ -18,7 +18,7 @@ struct CreateFormView: View {
                 switch authViewModel.viewState {
                 case .unauthenticated:
                     AuthenticationView()
-                    
+                 
                 case .loading:
                     CustomProgressView(message: "Authenticating...")
                  
@@ -129,19 +129,11 @@ fileprivate struct DvlaCheckView: View {
             Rectangle()
                 .foregroundStyle(.tabColour)
                 .frame(width: 40)
-                .overlay {
-                    Text("UK")
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundStyle(.white)
-                        .rotationEffect(.degrees(0))
-                }
             
-            TextField("", text: $registrationNumber, prompt: Text("Enter registration").foregroundStyle(.gray.opacity(0.7)))
-                .font(.system(size: 24, weight: .bold, design: .rounded))
+            TextField("", text: $registrationNumber, prompt: Text("Enter registration").foregroundStyle(.gray))
+                .font(.system(size: 25, weight: .semibold, design: .rounded))
                 .padding()
-                .tint(.black)
-                .background(Color.yellow.opacity(0.8))
-                .foregroundStyle(.black)
+                .background(Color.lightGrayBackground)
                 .multilineTextAlignment(.center)
                 .textInputAutocapitalization(.characters)
                 .autocorrectionDisabled()
@@ -158,11 +150,6 @@ fileprivate struct DvlaCheckView: View {
         }
         .frame(height: 60)
         .clipShape(RoundedRectangle(cornerRadius: 10))
-        .overlay(
-            RoundedRectangle(cornerRadius: 10)
-                .stroke(Color.black, lineWidth: 3)
-        )
-        .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
     }
     
     private var infoPopoverContent: some View {

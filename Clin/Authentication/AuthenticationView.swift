@@ -15,39 +15,55 @@ struct AuthenticationView: View {
     
     var body: some View {
         NavigationStack {
-            ScrollView(.vertical, showsIndicators: false) {
+            ScrollView {
                 VStack(spacing: 40) {
-                    Image(decorative: "electric-car")
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 100, height: 100)
-                    
-                    WelcomeText()
-                    
-                    SignInWithAppleButton(.continue) { request in
-                        request.requestedScopes = [.email]
-                    } onCompletion: { result in
-                        viewModel.handleAppleSignInCompletion(result: result)
-                    }
-                    .id(signInAppleButtonId)
-                    .signInWithAppleButtonStyle(colorScheme == .light ? .black : .white)
-                    .onChange(of: colorScheme) { _, _ in
-                        signInAppleButtonId = UUID().uuidString
-                    }
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 55)
-                    .padding(.horizontal)
+                    imageHeader
+                    welcomeText
+                    signInAppleButton
                 }
                 .padding(.top, 50)
+                
+                termsAndConditionsLink
                 
             }
             .navigationTitle("Welcome")
         }
     }
-}
-
-fileprivate struct WelcomeText: View {
-    var body: some View {
+    
+    private var imageHeader: some View {
+        Image(decorative: "electric-car")
+            .resizable()
+            .scaledToFill()
+            .frame(width: 100, height: 100)
+    }
+    
+    private var signInAppleButton: some View {
+        SignInWithAppleButton(.continue) { request in
+            request.requestedScopes = [.email]
+        } onCompletion: { result in
+            viewModel.handleAppleSignInCompletion(result: result)
+        }
+        .id(signInAppleButtonId)
+        .signInWithAppleButtonStyle(colorScheme == .light ? .black : .white)
+        .onChange(of: colorScheme) { _, _ in
+            signInAppleButtonId = UUID().uuidString
+        }
+        .frame(maxWidth: .infinity)
+        .frame(height: 55)
+        .padding(.horizontal)
+    }
+    
+    private var termsAndConditionsLink: some View {
+        NavigationLink {
+            TermsAndConditionsView()
+        } label: {
+            Text("Terms and Conditions")
+                .font(.subheadline)
+        }
+        .padding(.top)
+    }
+    
+    private var welcomeText: some View {
         VStack(alignment: .leading, spacing: 20) {
             Text("Why continue with Apple?")
                 .font(.title2.bold())

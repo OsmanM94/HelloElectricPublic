@@ -22,6 +22,7 @@ final class FaceID {
     private var context: LAContext?
     var viewState: ViewState = .idle
     
+    @MainActor
     var isBiometricsAvailable: Bool {
         LAContext().canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: nil)
     }

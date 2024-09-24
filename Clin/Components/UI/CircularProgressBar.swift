@@ -12,7 +12,7 @@ struct CircularProgressBar: View {
     var lineWidth: CGFloat = 30
     var size: CGFloat = 250
     @Environment(\.colorScheme) private var colorScheme
-
+    
     var body: some View {
         ZStack {
             Circle()
@@ -30,7 +30,6 @@ struct CircularProgressBar: View {
             VStack(spacing: 5) {
                 Text(String(format: "%.0f%%", min(progress, 1.0) * 100.0))
                     .font(.system(size: size * 0.2, weight: .bold, design: .rounded))
-                    .foregroundStyle(textGradient)
                 
                 Text("Complete")
                     .font(.system(size: size * 0.08, weight: .medium, design: .rounded))
@@ -52,7 +51,7 @@ struct CircularProgressBar: View {
     }
     
     private var foregroundGradient: LinearGradient {
-        LinearGradient(gradient: Gradient(colors: [.tabColour, .blue]), startPoint: .topLeading, endPoint: .bottomTrailing)
+        LinearGradient(gradient: Gradient(colors: [.tabColour, .white]), startPoint: .topLeading, endPoint: .bottomTrailing)
     }
     
     private var textGradient: LinearGradient {
@@ -66,7 +65,7 @@ struct CircularProgressBar: View {
 
 struct CircularProgressBarPreview: View {
     @State private var progress: Double = 0.0
-
+    
     var body: some View {
         CircularProgressBar(progress: progress)
             .onAppear {

@@ -27,24 +27,27 @@ struct HubView: View {
                 NavigationLink(destination: LazyView(EducationCenterContainer())) {
                     HubItemView(title: "Education", imageName: "book.fill")
                 }
+                
             }
             .padding()
             .navigationTitle("Hub")
             
-            GroupBox("EV Database") {
-                VStack(alignment: .leading) {
-                    Text("Browse electric vehicles, sourced directly from manufacturers, offering detailed information on models, specifications, and more.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .padding(.top, 4)
-                    
-                    NavigationLink("Browse Database") {
-                        LazyView(EVDatabaseContainer())
-                    }
-                    .padding(.top, 8)
-                    
+            VStack(alignment: .leading) {
+                Text("EV Database")
+                    .font(.title2)
+                    .fontWeight(.semibold)
+                    .fontDesign(.rounded)
+                
+                Text("Browse electric vehicles, sourced directly from manufacturers, offering detailed information on models, specifications, and more.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .padding(.top, 4)
+                
+                NavigationLink("Browse Database") {
+                    LazyView(EVDatabaseContainer())
                 }
-                .padding()
+                .padding(.top)
+                .foregroundStyle(.tabColour)
             }
             .padding()
             .overlay(alignment: .topTrailing) {
@@ -52,11 +55,12 @@ struct HubView: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 30, height: 30)
-                    .padding()
                     .foregroundStyle(.tabColour.gradient)
                     .clipShape(Circle())
                     .padding()
             }
+            .background(Color.lightGrayBackground)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
             
             Spacer()
         }
@@ -123,7 +127,7 @@ fileprivate struct HubItemView: View {
                 .foregroundStyle(colorScheme == .dark ? .white : .black)
         }
         .frame(maxWidth: .infinity, minHeight: 150)
-        .background(Color(.systemGray6))
+        .background(Color.lightGrayBackground)
         .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 }
