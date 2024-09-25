@@ -28,7 +28,9 @@ struct ImagePickerGridView<ViewModel: ImagePickerProtocol>: View {
             case .idle:
                 gridView
             case .sensitiveContent(let message):
-                ErrorView(message: message, retryAction: {
+                ErrorView(message: message,
+                          refreshMessage: "Try again",
+                          retryAction: {
                     viewModel.resetImageStateToIdle()
                 }, systemImage: "xmark.circle.fill")
                 
@@ -38,7 +40,9 @@ struct ImagePickerGridView<ViewModel: ImagePickerProtocol>: View {
                 })
                 
             case .error(let message):
-                ErrorView(message: message, retryAction: {
+                ErrorView(message: message,
+                          refreshMessage: "Try again",
+                          retryAction: {
                     viewModel.resetImageStateToIdle()
                 }, systemImage: "xmark.circle.fill")
             }
@@ -50,7 +54,7 @@ struct ImagePickerGridView<ViewModel: ImagePickerProtocol>: View {
 
 extension ImagePickerGridView {
     var gridView: some View {
-        ScrollView(.vertical) {
+        ScrollView {
             LazyVGrid(columns: columns, spacing: 10) {
                 ForEach(0..<10, id: \.self) { index in
                     ImagePickerCell(viewModel: viewModel, index: index, number: index + 1)

@@ -150,10 +150,9 @@ final class ListingViewModel {
             viewState = newListings.isEmpty ? .empty : .loaded
         } catch {
             print("DEBUG: Error loading listings \(error)")
-            viewState = .empty
         }
     }
-    
+        
     @MainActor
     func refreshListings(resetState: Bool) async {
         resetPagination()

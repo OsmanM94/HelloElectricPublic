@@ -19,10 +19,17 @@ final class EditFormViewModel {
         case loading, loaded, error(String)
     }
     
+    enum retrieveImagesViewState {
+        case loading
+        case loaded
+    }
+    
     // MARK: - Observable properties
     // View States
     private(set) var viewState: ViewState = .idle
     private(set) var subFormViewState: SubFormViewState = .loading
+    private(set) var retrieveImagesViewState: retrieveImagesViewState = .loading
+    
     var isPromoted: Bool = false
     
     // MARK: - Dependencies
@@ -44,6 +51,41 @@ final class EditFormViewModel {
         }
     }
     
+//    @MainActor
+//    func updateUserListing(_ listing: Listing) async {
+//        viewState = .uploading
+//        do {
+//            guard let user = try? await supabaseService.client.auth.session.user else {
+//                viewState = .error(AppError.ErrorType.noAuthUserFound.message)
+//                return
+//            }
+//            
+//            let fieldToCheck = listing.textDescription
+//            guard !dataLoader.prohibitedWordsService.containsProhibitedWord(fieldToCheck) else {
+//                viewState = .error(AppError.ErrorType.inappropriateField.message)
+//                return
+//            }
+//            
+//            try await imageManager.uploadSelectedImages(for: user.id)
+//            
+//            var listingToUpdate = Listing(id: listing.id, createdAt: listing.createdAt, imagesURL: imageManager.imagesURLs, thumbnailsURL: imageManager.thumbnailsURLs, make: listing.make, model: listing.model, bodyType: listing.bodyType, condition: listing.condition, mileage: listing.mileage, location: listing.location, yearOfManufacture: listing.yearOfManufacture, price: listing.price, phoneNumber: listing.phoneNumber, textDescription: listing.textDescription, range: listing.range, colour: listing.colour, publicChargingTime: listing.publicChargingTime, homeChargingTime: listing.homeChargingTime, batteryCapacity: listing.batteryCapacity, powerBhp: listing.powerBhp, regenBraking: listing.regenBraking, warranty: listing.warranty, serviceHistory: listing.serviceHistory, numberOfOwners: listing.numberOfOwners, userID: listing.userID, isPromoted: listing.isPromoted, latitude: listing.latitude, longitude: listing.longitude)
+//            
+//            // Only update images if new ones were uploaded
+//            if !imageManager.imagesURLs.isEmpty {
+//                listingToUpdate.imagesURL = imageManager.imagesURLs
+//            }
+//            if !imageManager.thumbnailsURLs.isEmpty {
+//                listingToUpdate.thumbnailsURL = imageManager.thumbnailsURLs
+//            }
+//
+//            try await listingService.updateListing(listingToUpdate)
+//            
+//            viewState = .success(AppError.ErrorType.updateSuccess.message)
+//        } catch {
+//            viewState = .error(AppError.ErrorType.generalError.message)
+//        }
+//    }
+    
     @MainActor
     func updateUserListing(_ listing: Listing) async {
         viewState = .uploading
@@ -61,9 +103,9 @@ final class EditFormViewModel {
             
             try await imageManager.uploadSelectedImages(for: user.id)
             
-            var listingToUpdate = Listing(id: listing.id, createdAt: Date(), imagesURL: imageManager.imagesURLs, thumbnailsURL: imageManager.thumbnailsURLs, make: listing.make, model: listing.model, bodyType: listing.bodyType, condition: listing.condition, mileage: listing.mileage, location: listing.location, yearOfManufacture: listing.yearOfManufacture, price: listing.price, phoneNumber: listing.phoneNumber, textDescription: listing.textDescription, range: listing.range, colour: listing.colour, publicChargingTime: listing.publicChargingTime, homeChargingTime: listing.homeChargingTime, batteryCapacity: listing.batteryCapacity, powerBhp: listing.powerBhp, regenBraking: listing.regenBraking, warranty: listing.warranty, serviceHistory: listing.serviceHistory, numberOfOwners: listing.numberOfOwners, userID: listing.userID, isPromoted: listing.isPromoted, latitude: listing.latitude, longitude: listing.longitude)
+            var listingToUpdate = listing
             
-            // Only update images if new ones were uploaded
+            // Replace existing image URLs with new ones if uploaded
             if !imageManager.imagesURLs.isEmpty {
                 listingToUpdate.imagesURL = imageManager.imagesURLs
             }
@@ -85,8 +127,11 @@ final class EditFormViewModel {
             viewState = .error(AppError.ErrorType.noAuthUserFound.message)
             return
         }
+        self.retrieveImagesViewState = .loading
         do {
             try await imageManager.retrieveImages(listing: listing, id: id)
+            
+            self.retrieveImagesViewState = .loaded
         } catch {
             viewState = .error(AppError.ErrorType.errorDownloadingImages.message)
         }
@@ -214,7 +259,7 @@ final class EditFormImageManager: ImagePickerProtocol {
         }
         
         if let firstImageItem = nonNilImageItems.first {
-            let thumbnailURLString = try await imageManager.uploadImage(firstImageItem.data, from: bucketName, to: folderPath, targetWidth: 120, targetHeight: 120, compressionQuality: 0.6)
+            let thumbnailURLString = try await imageManager.uploadImage(firstImageItem.data, from: bucketName, to: folderPath, targetWidth: 130, targetHeight: 130, compressionQuality: 0.6)
             if let thumbUrlString = thumbnailURLString, let url = URL(string: thumbUrlString) {
                 self.thumbnailsURLs.append(url)
             }

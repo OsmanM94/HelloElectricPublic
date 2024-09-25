@@ -16,6 +16,7 @@ struct PublicUserListingsView: View {
             case .empty:
                 ErrorView(
                     message: "No listings found",
+                    refreshMessage: "Refresh",
                     retryAction: { await viewModel.loadListings() },
                     systemImage: "tray.fill")
                 
@@ -28,6 +29,7 @@ struct PublicUserListingsView: View {
             case .error(let message):
                 ErrorView(
                     message: message,
+                    refreshMessage: "Try again",
                     retryAction: { await viewModel.loadListings() },
                     systemImage: "xmark.circle.fill")
             }

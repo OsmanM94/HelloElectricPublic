@@ -10,7 +10,7 @@ import TipKit
 
 struct ScrollToTopTip: Tip {
     var title: Text {
-        Text("Shake to Scroll to Top")
+        Text("Shake to scroll to top")
     }
     
     var message: Text? {
@@ -19,5 +19,19 @@ struct ScrollToTopTip: Tip {
     
     var image: Image? {
         Image(systemName: "iphone.gen3.radiowaves.left.and.right")
+    }
+}
+
+struct RefreshListingTip: Tip {
+    var title: Text {
+        Text("Refresh your listing")
+    }
+    
+    var message: Text? {
+        Text("Tap to refresh this listing and move it to the top of the list..")
+    }
+    
+    var image: Image? {
+        Image(systemName: "arrow.clockwise")
     }
 }

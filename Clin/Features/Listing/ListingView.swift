@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import TipKit
 
 struct ListingView: View {
     @State private var viewModel = ListingViewModel()
@@ -63,7 +62,7 @@ struct ListingView: View {
                 }
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
-                .background(Color(.systemGray6).opacity(0.8))
+                .background(Color(.systemGray6))
                 .clipShape(Capsule())
             }
             .disabled(viewModel.viewState == .loading)
@@ -129,7 +128,7 @@ fileprivate struct ListingSubview: View {
                 DetailView(item: listing, showFavourite: true)
             }
             .listStyle(.plain)
-            .refreshable { await viewModel.refreshListings(resetState: false) }
+            .refreshable { }
             .onChange(of: shouldScrollToTop) { _, newValue in
                 if newValue {
                     withAnimation {

@@ -59,11 +59,14 @@ final class AuthViewModel {
             // Delete the user's listing from database
             try await deleteUserListing(userId: user.id)
             
-            // Delete the user's profile from database
+            // Delete user images from storage
+            try await deleteUserImages(userId: user.id)
+            
+            // Delete the user's profile from storage
             try await deleteUserProfile(userId: user.id)
             
             // Sign out the user after successful deletion
-             await signOut()
+            await signOut()
             
             print("DEBUG: User account successfully deleted")
             viewState = .unauthenticated
@@ -88,7 +91,7 @@ final class AuthViewModel {
     func resetState() {
         viewState = .unauthenticated
     }
-   
+    
     // MARK: - Methods
     func handleAppleSignInCompletion(result: Result<ASAuthorization, Error>) {
         viewState = .loading
@@ -123,7 +126,7 @@ final class AuthViewModel {
             }
         }
     }
-        
+    
     // MARK: - Private methods
     private func deleteUserListing(userId: UUID) async throws {
         do {
@@ -142,7 +145,7 @@ final class AuthViewModel {
             let profile = Profile(
                 username: "Private Seller",
                 avatarURL: URL(
-                string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/mock_data/electric-car.png"
+                    string: "https://jtgcsdqhpqlsrzjzutff.supabase.co/storage/v1/object/public/mock_data/electric-car.png"
                 ),
                 updatedAt: nil,
                 userID: userId,
@@ -159,7 +162,27 @@ final class AuthViewModel {
                 .update(profile)
                 .eq("user_id", value: userId)
                 .execute()
+            
+        } catch {
+            throw error
+        }
+    }
         
+    private func deleteUserImages(userId: UUID) async throws {
+        let bucket = "car_images"
+        let folderPath = "\(userId)"
+        do {
+            let files = try await supabaseService.client.storage
+                .from(bucket)
+                .list(path: folderPath)
+            
+            if !files.isEmpty {
+                let filePaths = files.map { "\(folderPath)/\(($0.name).removingPercentEncoding ?? $0.name)" }
+                
+                _ = try await supabaseService.client.storage
+                    .from(bucket)
+                    .remove(paths: filePaths)
+            }
         } catch {
             throw error
         }

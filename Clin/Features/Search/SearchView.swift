@@ -35,7 +35,9 @@ struct SearchView: View {
                     listView
                     
                 case .error(let message):
-                    ErrorView(message: message, retryAction: {
+                    ErrorView(message: message,
+                              refreshMessage: "Try again",
+                              retryAction: {
                         viewModel.clearSearch()
                     }, systemImage: "xmark.circle.fill")
                 }
@@ -131,7 +133,7 @@ private extension SearchView {
                     Image(systemName: systemImageName)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 8)
-                        .background(Color(.systemGray6).opacity(0.8))
+                        .background(Color(.systemGray6))
                         .clipShape(Capsule())
                     
                     if viewModel.filters.isFilterApplied {

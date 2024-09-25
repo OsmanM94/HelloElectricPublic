@@ -13,6 +13,7 @@ final class PrivateUserListingsViewModel {
     enum ViewState: Equatable {
         case empty
         case loading
+        case refreshSuccess(String)
         case success
         case error(String)
     }
@@ -24,6 +25,7 @@ final class PrivateUserListingsViewModel {
     
     var showingEditView: Bool = false
     var showDeleteAlert: Bool = false
+    var showRefreshAlert: Bool = false
     private(set) var listings: [Listing] = []
     private(set) var viewState: ViewState = .loading
     
@@ -49,6 +51,23 @@ final class PrivateUserListingsViewModel {
             self.listings = listings
             self.viewState = listings.isEmpty ? .empty : .success
             
+        } catch {
+            self.viewState = .error(AppError.ErrorType.generalError.message)
+        }
+    }
+    
+    @MainActor
+    func refreshListing(_ listing: Listing) async {
+        self.viewState = .loading
+        do {
+            guard let id = listing.id else {
+                self.viewState = .error(AppError.ErrorType.generalError.message)
+                return
+            }
+            
+            try await listingService.refreshListings(id: id)
+                        
+            self.viewState = .refreshSuccess("Listing refreshed successfully!")
         } catch {
             self.viewState = .error(AppError.ErrorType.generalError.message)
         }

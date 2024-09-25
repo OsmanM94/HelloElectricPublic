@@ -21,7 +21,9 @@ struct NewsView: View {
                 newsList
                 
             case .error(let message):
-                ErrorView(message: message, retryAction: {
+                ErrorView(message: message,
+                          refreshMessage: "Try again",
+                          retryAction: {
                     viewModel.resetState()
                 }, systemImage: "xmark.circle.fill")
             }

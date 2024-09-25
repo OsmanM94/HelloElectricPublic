@@ -39,7 +39,7 @@ extension View {
         isPresented: Binding<Bool>,
         itemToDelete: Binding<Item?>,
         message: String,
-        title: String = "Delete Confirmation",
+        title: String ,
         cancelButtonText: String = "Cancel",
         deleteButtonText: String = "Delete",
         deleteAction: @escaping (Item) async -> Void
@@ -58,16 +58,18 @@ extension View {
     func showStandardAlert(
         isPresented: Binding<Bool>,
         message: String,
-        title: String = "Delete Confirmation",
+        title: String,
         cancelButtonText: String = "Cancel",
         deleteButtonText: String = "Delete",
         deleteAction: @escaping () async -> Void
     ) -> some View {
         self.alert(title, isPresented: isPresented) {
             Button(cancelButtonText, role: .cancel) { }
-            Button(deleteButtonText, role: .destructive) {
+//            Button(deleteButtonText, role: .destructive) {
+//            }
+            Button(deleteButtonText) {
                 Task {
-                    await deleteAction()
+                     await deleteAction()
                 }
             }
         } message: {

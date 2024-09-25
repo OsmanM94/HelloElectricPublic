@@ -20,7 +20,7 @@ struct AccountView: View {
                     AuthenticationView()
                   
                 case .loading:
-                    CustomProgressView(message: "Loading account...")
+                    CustomProgressView(message: "Loading...")
                     
                 case .authenticated:
                     accountContent
@@ -28,6 +28,7 @@ struct AccountView: View {
                 case .error(let message):
                     ErrorView(
                         message: message,
+                        refreshMessage: "Try again",
                         retryAction: { authViewModel.resetState() },
                         systemImage: "xmark.circle.fill")
                 }
@@ -57,6 +58,7 @@ struct AccountView: View {
         .showStandardAlert(
             isPresented: $authViewModel.showDeleteAlert,
             message: "Are you sure you want to delete your account? This action cannot be undone.",
+            title: "Delete Confirmation",
             deleteAction: { await authViewModel.deleteAccount() }
         )
     }

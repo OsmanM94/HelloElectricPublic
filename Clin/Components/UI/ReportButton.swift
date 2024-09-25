@@ -24,6 +24,7 @@ struct ReportButton: View {
         .showStandardAlert(
             isPresented: $showReportAlert,
             message: "Are you sure you want to report this \(itemType.lowercased())?",
+            title: "Report Confirmation",
             deleteButtonText: "Report",
             deleteAction: { reportItem() }
         )

@@ -29,7 +29,9 @@ struct EVListView: View {
                     emptyStateView
                     
                 case .error(let message):
-                    ErrorView(message: message, retryAction: {
+                    ErrorView(message: message,
+                              refreshMessage: "Try again",
+                              retryAction: {
                         viewModel.resetStateToLoaded()
                     }, systemImage: "xmark.circle.fill")
                 }

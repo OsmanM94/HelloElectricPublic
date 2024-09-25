@@ -16,7 +16,7 @@ struct EditFormView: View {
     
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
+            VStack {
                 switch viewModel.viewState {
                 case .idle:
                     mainContent
@@ -35,6 +35,7 @@ struct EditFormView: View {
                 case .error(let message):
                     ErrorView(
                         message: message,
+                        refreshMessage: "Try again",
                         retryAction: { viewModel.resetState() },
                         systemImage: "xmark.circle.fill")
                 }
@@ -110,6 +111,7 @@ fileprivate struct EditFormSubview: View {
             case .error(let message):
                 ErrorView(
                     message: message,
+                    refreshMessage: "Try again",
                     retryAction: { viewModel.resetState() },
                     systemImage: "xmark.circle.fill")
             }
@@ -327,10 +329,17 @@ fileprivate struct EditFormSubview: View {
     
     private var topBarTrailingToolbarContent: some ToolbarContent {
         ToolbarItem(placement: .topBarTrailing) {
-            NavigationLink {
-                ImagePickerGridView(viewModel: viewModel.imageManager)
-            } label: {
-                ImageCounterView(count: viewModel.imageManager.totalImageCount)
+            switch viewModel.retrieveImagesViewState {
+            case .loading:
+                ProgressView("Downloading...")
+                    .scaleEffect(0.8)
+                
+            case .loaded:
+                NavigationLink {
+                    ImagePickerGridView(viewModel: viewModel.imageManager)
+                } label: {
+                    ImageCounterView(count: viewModel.imageManager.totalImageCount)
+                }
             }
         }
     }
@@ -350,7 +359,7 @@ fileprivate struct EditFormSubview: View {
                     .font(.headline)
                     .frame(maxWidth: .infinity)
             }
-            .disabled(listing == originalListing && !viewModel.imageManager.hasUserInitiatedChanges)
+            .disabled(listing == originalListing && !viewModel.imageManager.hasUserInitiatedChanges && viewModel.viewState == .uploading)
         }
     }
 }

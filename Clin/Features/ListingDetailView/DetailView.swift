@@ -133,23 +133,26 @@ struct DetailView<T: DetailItem>: View {
     }
     
     private var mainContent: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            VStack(alignment: .leading, spacing: 2) {
-                itemHeader
-                itemPriceAndPromotedBadge
-                Divider()
-                overviewSection
-                featuresGrid
-                moreFeatures
-                descriptionSection
-                sellerSection
-                disclaimerSection
+        VStack(alignment: .leading, spacing: 2) {
+            itemHeader
+            itemPriceAndPromotedBadge
+            Divider()
+            overviewSection
+            featuresGrid
+            moreFeatures
+            descriptionSection
+            sellerSection
+            disclaimerSection
+        }
+        .fontDesign(.rounded)
+        .fontWeight(.semibold)
+        .padding()
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Text("Listing ID: \(item.id ?? 0)")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
-            .fontDesign(.rounded)
-            .fontWeight(.semibold)
-            .padding()
-            
-            Spacer()
         }
     }
     
@@ -500,7 +503,9 @@ fileprivate struct ContactButtons<T: DetailItem>: View {
 
 // MARK: - Preview
 #Preview {
-    DetailView(item: MockListingService.sampleData[0], showFavourite: true)
-        .environment(FavouriteViewModel())
+    NavigationStack {
+        DetailView(item: MockListingService.sampleData[0], showFavourite: true)
+            .environment(FavouriteViewModel())
+    }
 }
 

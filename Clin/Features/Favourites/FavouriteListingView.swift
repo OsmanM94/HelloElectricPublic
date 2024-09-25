@@ -17,6 +17,7 @@ struct FavouriteListingView: View {
                 case .empty:
                     ErrorView(
                         message: "Empty",
+                        refreshMessage: "Refresh",
                         retryAction: { await viewModel.loadUserFavourites() },
                         systemImage: "heart.slash.fill")
                     
@@ -29,6 +30,7 @@ struct FavouriteListingView: View {
                 case .error(let message):
                     ErrorView(
                         message: message,
+                        refreshMessage: "Try again",
                         retryAction: { await viewModel.loadUserFavourites() },
                         systemImage: "xmark.circle.fill")
                 }

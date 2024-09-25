@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ImageCounterView: View {
     let count: Int
+    let isLoading: Bool = false
     
     var body: some View {
         Image(systemName: count <= 0 ? "photo.badge.plus": "photo")

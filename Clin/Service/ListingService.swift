@@ -19,6 +19,13 @@ final class ListingService: ListingServiceProtocol {
             )
     }
     
+    func refreshListings(id: Int) async throws {
+        let now = Date()
+        
+        // Update the listing
+        try await databaseService.update(["created_at": now], in: "car_listing", id: id)
+    }
+    
     func loadUserListings(userID: UUID) async throws -> [Listing] {
         try await databaseService
             .loadMultipleItems(

@@ -33,12 +33,14 @@ struct ChartView: View {
             case .empty(let message):
                 ErrorView(
                     message: message,
+                    refreshMessage: "Try again",
                     retryAction: { await viewModel.loadChartData() },
                     systemImage: "tray.fill")
                 
             case .error(let message):
                 ErrorView(
                     message: message,
+                    refreshMessage: "Try again",
                     retryAction: { await viewModel.loadChartData() },
                     systemImage: "xmark.circle.fill")
             }

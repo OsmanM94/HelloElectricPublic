@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ErrorView: View {
     let message: String
+    let refreshMessage: String
     let retryAction: () async -> Void
     let systemImage: String
     var body: some View {
@@ -16,12 +17,12 @@ struct ErrorView: View {
             ContentUnavailableView {
                 Label(message, systemImage: systemImage)
             } description: {
-                Text("Please try again.")
+                Text("")
             } actions: {
                 Button {
                     Task { await retryAction() }
                 } label: {
-                    Text("Try Again")
+                    Text(refreshMessage)
                         .font(.headline)
                         .clipShape(RoundedRectangle(cornerRadius: 25))
                 }
@@ -33,11 +34,11 @@ struct ErrorView: View {
 }
 
 #Preview("Light Mode") {
-    ErrorView(message: "Unable to load EV listings at this time.", retryAction: {}, systemImage: "xmark.circle.fill")
+    ErrorView(message: "Unable to load EV listings at this time.", refreshMessage: "Try again", retryAction: {}, systemImage: "xmark.circle.fill")
         .preferredColorScheme(.light)
 }
 
 #Preview("Dark Mode") {
-    ErrorView(message: "Unable to load EV listings at this time.", retryAction: {}, systemImage: "xmark.circle.fill")
+    ErrorView(message: "Unable to load EV listings at this time.", refreshMessage: "Try again", retryAction: {}, systemImage: "xmark.circle.fill")
         .preferredColorScheme(.dark)
 }

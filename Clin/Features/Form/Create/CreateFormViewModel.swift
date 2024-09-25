@@ -299,7 +299,7 @@ final class CreateFormImageManager: ImagePickerProtocol {
         }
         
         if let firstImageItem = nonNilImageItems.first {
-            let thumbnailURLString = try await imageManager.uploadImage(firstImageItem.data, from: bucketName, to: folderPath, targetWidth: 120, targetHeight: 120, compressionQuality: 0.6)
+            let thumbnailURLString = try await imageManager.uploadImage(firstImageItem.data, from: bucketName, to: folderPath, targetWidth: 130, targetHeight: 130, compressionQuality: 0.6)
             if let thumbUrlString = thumbnailURLString, let url = URL(string: thumbUrlString) {
                 self.thumbnailsURLs.append(url)
             }

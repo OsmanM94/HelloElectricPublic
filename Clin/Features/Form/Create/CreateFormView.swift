@@ -28,6 +28,7 @@ struct CreateFormView: View {
                 case .error(let message):
                     ErrorView(
                         message: message,
+                        refreshMessage: "Try again",
                         retryAction: { authViewModel.resetState() },
                         systemImage: "xmark.circle.fill")
                 }
@@ -60,6 +61,7 @@ struct CreateFormView: View {
             case .error(let message):
                 ErrorView(
                     message: message,
+                    refreshMessage: "Try again",
                     retryAction: { viewModel.resetFormDataAndState() },
                     systemImage: "xmark.circle.fill")
             }
@@ -211,6 +213,7 @@ fileprivate struct CreateFormSubview: View {
             case .error(let message):
                 ErrorView(
                     message: message,
+                    refreshMessage: "Try again",
                     retryAction: { viewModel.resetFormDataAndState() },
                     systemImage: "xmark.circle.fill")
             }

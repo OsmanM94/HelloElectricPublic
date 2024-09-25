@@ -88,14 +88,27 @@ struct ListingRowView: View {
     }
     
     private var listingDetails: some View {
-        VStack(alignment: .leading, spacing: 2) {
+        VStack(alignment: .leading, spacing: 3) {
             Text("\(listing.make) \(listing.model) \(listing.yearOfManufacture)")
                 .font(.headline)
                 .lineLimit(2, reservesSpace: false)
             
-            Text("\(listing.condition)")
-                .foregroundStyle(.secondary)
-                .font(.subheadline)
+            if listing.isPromoted {
+                Text("Featured")
+                    .font(.caption2)
+                    .foregroundStyle(.orange)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 3)
+                            .stroke(Color.orange, lineWidth: 1
+                                   )
+                    )
+            } else {
+                Text("\(listing.condition)")
+                    .foregroundStyle(.secondary)
+                    .font(.subheadline)
+            }
             
             Text(listing.price, format: .currency(code: Locale.current.currency?.identifier ?? "GBP").precision(.fractionLength(0)))
                 .font(.subheadline)

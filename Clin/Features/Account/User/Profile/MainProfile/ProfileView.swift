@@ -22,6 +22,7 @@ struct ProfileView: View {
                 case .error(let message):
                     ErrorView(
                         message: message,
+                        refreshMessage: "Try again",
                         retryAction: { viewModel.resetStateToIdle() },
                         systemImage: "xmark.circle.fill")
                     

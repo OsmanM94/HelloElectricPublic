@@ -245,7 +245,7 @@
 				SDWebImage/ImageLoader.swift,
 				SensitiveContentAnalysis/SensitiveContentAnalysis.swift,
 				ShakeGesture/ShakeGesture.swift,
-				TipKit/ScrollToTopTip.swift,
+				TipKit/TipContainer.swift,
 				VideoPlayer/VideoPlayerView.swift,
 				VideoPlayer/VideoPlayerViewModel.swift,
 			);

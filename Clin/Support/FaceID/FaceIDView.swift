@@ -28,7 +28,9 @@ struct FaceIDView: View {
                 }
                 
             case .error(let message):
-                ErrorView(message: message, retryAction: {
+                ErrorView(message: message,
+                          refreshMessage: "Try again",
+                          retryAction: {
                     Task { await faceID.authenticate() } }, systemImage: "xmark.circle.fill")
             }
         }
