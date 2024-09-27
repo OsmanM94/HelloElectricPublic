@@ -191,13 +191,13 @@ fileprivate struct CreateFormSubview: View {
                     yearConditionSection
                     mileageSection
                     locationSection
-                    
                     colourRangeSection
                     priceSection
                     phoneSection
                     descriptionSection
                     featuresSection
                     paymentSection
+                    
                     createButtonSection
                 }
                 .toolbar {
@@ -434,7 +434,7 @@ fileprivate struct CreateFormSubview: View {
                 }
             } label: {
                 Text("Create listing")
-                    .foregroundStyle(viewModel.isFormValid() ? .tabColour : .secondary)
+                    .foregroundStyle(viewModel.isFormValid() ? .tabColour : .gray.opacity(0.3))
                     .font(.headline)
                     .frame(maxWidth: .infinity)
             }
@@ -538,7 +538,7 @@ fileprivate struct CreateFormSubview: View {
             NavigationLink {
                 ImagePickerGridView(viewModel: viewModel.imageManager)
             } label: {
-                ImageCounterView(count: viewModel.imageManager.totalImageCount)
+                ImageCounterView(count: viewModel.imageManager.totalImageCount, isLoading: .constant(false))
             }
         }
     }

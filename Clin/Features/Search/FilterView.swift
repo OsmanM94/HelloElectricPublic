@@ -9,7 +9,6 @@ import SwiftUI
 
 struct FilterView: View {
     @Bindable var viewModel: SearchViewModel
-    let onApply: () -> Void
     
     var body: some View {
         NavigationStack {
@@ -20,7 +19,7 @@ struct FilterView: View {
                         CustomProgressView(message: "Loading...")
                         
                     case .loaded:
-                        FilterSubView(viewModel: viewModel, onApply: onApply)
+                        FilterSubView(viewModel: viewModel)
                         
                     case .error(let message):
                         ErrorView(message: message,
@@ -35,20 +34,18 @@ struct FilterView: View {
                 .navigationBarTitleDisplayMode(.inline)
             }
         }
-        .task {
-            await viewModel.loadBulkData()
-        }
+        .task { await viewModel.loadBulkData() }
     }
 }
 
 fileprivate struct FilterSubView: View {
     @Bindable var viewModel: SearchViewModel
-    let onApply: () -> Void
-    
+    @Environment(\.dismiss) private var dismiss
+        
     var body: some View {
         Form {
             MakeModelSection(viewModel: viewModel)
-            bodyTypeSection(viewModel: viewModel)
+            BodyTypeSection(viewModel: viewModel)
             YearConditionSection(viewModel: viewModel)
             LocationSection(viewModel: viewModel)
             PriceMileageSection(viewModel: viewModel)
@@ -59,27 +56,39 @@ fileprivate struct FilterSubView: View {
             toolbarTrailing
             toolbarLeading
         }
+        .onChange(of: viewModel.isFilterAppliedSuccessfully) { _, newValue in
+            if newValue {
+                dismiss()
+            }
+        }
     }
     
     private var toolbarLeading: some ToolbarContent {
         ToolbarItem(placement: .topBarLeading) {
-            Button("Reset") {
+            Button {
                 viewModel.resetFilters()
+            } label: {
+                Text("Reset")
+                    .foregroundStyle(!viewModel.filters.isFilterApplied ? .gray.opacity(0.5) : .red)
             }
             .disabled(!viewModel.filters.isFilterApplied)
         }
-
     }
     
     private var toolbarTrailing: some ToolbarContent {
         ToolbarItem(placement: .topBarTrailing) {
-            Button("Apply") {
-                Task {
-                    await viewModel.searchFilteredItems()
-                    onApply()
+            Button {
+                Task { await viewModel.searchFilteredItems() }
+            } label: {
+                Group {
+                    if viewModel.isLoadingAppliedFilters {
+                        ProgressView()
+                    } else {
+                        Text("Apply")
+                    }
                 }
             }
-            .disabled(!viewModel.filters.isFilterApplied)
+            .disabled(!viewModel.filters.isFilterApplied || viewModel.isLoadingAppliedFilters)
         }
     }
 }
@@ -97,6 +106,7 @@ fileprivate struct MakeModelSection: View {
             .onChange(of: viewModel.filters.make) {
                 viewModel.updateAvailableModels()
             }
+            
             Picker("Model", selection: $viewModel.filters.model) {
                 ForEach(viewModel.dataLoader.modelOptions, id: \.self) { model in
                     Text(model).tag(model)
@@ -117,7 +127,7 @@ fileprivate struct MakeModelSection: View {
     }
 }
 
-fileprivate struct bodyTypeSection: View {
+fileprivate struct BodyTypeSection: View {
     @Bindable var viewModel: SearchViewModel
     
     var body: some View {
@@ -263,6 +273,5 @@ fileprivate struct EVSpecificationsSection: View {
 }
 
 #Preview {
-    let _ = PreviewsProvider.shared.container.searchService.register { MockSearchService() }
-    FilterView(viewModel: SearchViewModel(), onApply: {})
+    FilterView(viewModel: SearchViewModel())
 }

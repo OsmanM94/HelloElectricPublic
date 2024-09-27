@@ -23,14 +23,14 @@ final class ListingService: ListingServiceProtocol {
         let now = Date()
         
         // Update the listing
-        try await databaseService.update(["created_at": now], in: "car_listing", id: id)
+        try await databaseService.update(["refreshed_at": now], in: "car_listing", id: id)
     }
     
     func loadUserListings(userID: UUID) async throws -> [Listing] {
         try await databaseService
             .loadMultipleItems(
                 from: "car_listing",
-                orderBy: "created_at",
+                orderBy: "refreshed_at",
                 ascending: false,
                 field: "user_id",
                 uuid: userID
@@ -61,10 +61,7 @@ final class ListingService: ListingServiceProtocol {
     }
     
     func updateListing(_ listing: Listing) async throws {
-        guard let id = listing.id else {
-            print("DEBUG: Listing ID is missing.")
-            return
-        }
+        guard let id = listing.id else { return }
         try await databaseService.update(listing, in: "car_listing", id: id)
     }
     
@@ -82,7 +79,7 @@ final class ListingService: ListingServiceProtocol {
                 from: "car_listing",
                 filter: column, values: type,
                 orderBy: "is_promoted",
-                orderBy2: "created_at",
+                orderBy2: "refreshed_at",
                 ascending: false,
                 from: from,
                 to: to
@@ -95,7 +92,7 @@ final class ListingService: ListingServiceProtocol {
             filter: "body_type",
             values: vehicleType,
             orderBy: orderBy,
-            orderBy2: "created_at",
+            orderBy2: "refreshed_at",
             ascending: ascending,
             from: from,
             to: to

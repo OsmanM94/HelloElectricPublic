@@ -85,7 +85,7 @@ final class ListingViewModel {
     }
     
     // MARK: - Observable properties
-    private(set) var listings: [Listing] = []
+    var listings: [Listing] = []
     private(set) var viewState: ViewState = .loading
     
     // MARK: - Filter
@@ -169,18 +169,26 @@ final class ListingViewModel {
     }
     
     private func updateListings(with newListings: [Listing], isRefresh: Bool) {
+        // Check if there are more listings to load
         if newListings.count < pageSize {
             self.hasMoreListings = false
         }
         
+        // Combine listings while maintaining uniqueness using a dictionary
         if isRefresh {
             self.listings = newListings
         } else {
-            self.listings.append(contentsOf: newListings)
+            var uniqueListings = Dictionary(uniqueKeysWithValues: self.listings.map { ($0.id, $0) })
+            for listing in newListings {
+                uniqueListings[listing.id] = listing
+            }
+            self.listings = Array(uniqueListings.values).sorted { $0.id ?? 0 < $1.id ?? 0 }
         }
         
+        // Increment page count
         self.currentPage += 1
         
+        // Debug log
         print("DEBUG: \(isRefresh ? "Refreshed" : "Loaded") \(newListings.count) listings...")
     }
 }

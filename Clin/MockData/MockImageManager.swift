@@ -26,6 +26,4 @@ struct MockImageManager: ImageManagerProtocol {
     func loadItem(item: PhotosPickerItem, analyze: Bool) async -> ImageLoadResult {
         return ImageLoadResult.sensitiveContent
     }
-    
-    // Implement the required methods with mock behavior
 }

@@ -374,6 +374,7 @@ struct DetailView<T: DetailItem>: View {
             LazyView(PublicUserListingsView(viewModel: sellerPublicListings))
         } label: {
             Text("See seller other listings")
+                .foregroundStyle(.blue)
         }
     }
     

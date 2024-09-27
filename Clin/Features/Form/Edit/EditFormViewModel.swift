@@ -19,17 +19,12 @@ final class EditFormViewModel {
         case loading, loaded, error(String)
     }
     
-    enum retrieveImagesViewState {
-        case loading
-        case loaded
-    }
-    
     // MARK: - Observable properties
     // View States
     private(set) var viewState: ViewState = .idle
     private(set) var subFormViewState: SubFormViewState = .loading
-    private(set) var retrieveImagesViewState: retrieveImagesViewState = .loading
     
+    var isRetrievingImage: Bool = false
     var isPromoted: Bool = false
     
     // MARK: - Dependencies
@@ -40,64 +35,29 @@ final class EditFormViewModel {
     @ObservationIgnored @Injected(\.editFormImageManager) var imageManager
     @ObservationIgnored @Injected(\.editFormDataLoader) var dataLoader
     
-    // MARK: - Main Actor methods
+    // MARK: - Main Actor functions
     @MainActor
     func loadBulkData() async {
         do {
             try await dataLoader.loadBulkData()
             self.subFormViewState = .loaded
         } catch {
-            self.subFormViewState = .error(AppError.ErrorType.generalError.message)
+            self.subFormViewState = .error(MessageCenter.MessageType.generalError.message)
         }
     }
-    
-//    @MainActor
-//    func updateUserListing(_ listing: Listing) async {
-//        viewState = .uploading
-//        do {
-//            guard let user = try? await supabaseService.client.auth.session.user else {
-//                viewState = .error(AppError.ErrorType.noAuthUserFound.message)
-//                return
-//            }
-//            
-//            let fieldToCheck = listing.textDescription
-//            guard !dataLoader.prohibitedWordsService.containsProhibitedWord(fieldToCheck) else {
-//                viewState = .error(AppError.ErrorType.inappropriateField.message)
-//                return
-//            }
-//            
-//            try await imageManager.uploadSelectedImages(for: user.id)
-//            
-//            var listingToUpdate = Listing(id: listing.id, createdAt: listing.createdAt, imagesURL: imageManager.imagesURLs, thumbnailsURL: imageManager.thumbnailsURLs, make: listing.make, model: listing.model, bodyType: listing.bodyType, condition: listing.condition, mileage: listing.mileage, location: listing.location, yearOfManufacture: listing.yearOfManufacture, price: listing.price, phoneNumber: listing.phoneNumber, textDescription: listing.textDescription, range: listing.range, colour: listing.colour, publicChargingTime: listing.publicChargingTime, homeChargingTime: listing.homeChargingTime, batteryCapacity: listing.batteryCapacity, powerBhp: listing.powerBhp, regenBraking: listing.regenBraking, warranty: listing.warranty, serviceHistory: listing.serviceHistory, numberOfOwners: listing.numberOfOwners, userID: listing.userID, isPromoted: listing.isPromoted, latitude: listing.latitude, longitude: listing.longitude)
-//            
-//            // Only update images if new ones were uploaded
-//            if !imageManager.imagesURLs.isEmpty {
-//                listingToUpdate.imagesURL = imageManager.imagesURLs
-//            }
-//            if !imageManager.thumbnailsURLs.isEmpty {
-//                listingToUpdate.thumbnailsURL = imageManager.thumbnailsURLs
-//            }
-//
-//            try await listingService.updateListing(listingToUpdate)
-//            
-//            viewState = .success(AppError.ErrorType.updateSuccess.message)
-//        } catch {
-//            viewState = .error(AppError.ErrorType.generalError.message)
-//        }
-//    }
-    
+        
     @MainActor
     func updateUserListing(_ listing: Listing) async {
         viewState = .uploading
         do {
             guard let user = try? await supabaseService.client.auth.session.user else {
-                viewState = .error(AppError.ErrorType.noAuthUserFound.message)
+                viewState = .error(MessageCenter.MessageType.noAuthUserFound.message)
                 return
             }
             
             let fieldToCheck = listing.textDescription
             guard !dataLoader.prohibitedWordsService.containsProhibitedWord(fieldToCheck) else {
-                viewState = .error(AppError.ErrorType.inappropriateField.message)
+                viewState = .error(MessageCenter.MessageType.inappropriateField.message)
                 return
             }
             
@@ -115,29 +75,30 @@ final class EditFormViewModel {
 
             try await listingService.updateListing(listingToUpdate)
             
-            viewState = .success(AppError.ErrorType.updateSuccess.message)
+            viewState = .success(MessageCenter.MessageType.updateSuccess.message)
         } catch {
-            viewState = .error(AppError.ErrorType.generalError.message)
+            print("Error updating user listing \(error)")
+            viewState = .error(MessageCenter.MessageType.generalError.message)
         }
     }
     
     @MainActor
     func retrieveImages(listing: Listing) async {
         guard let id = listing.id else {
-            viewState = .error(AppError.ErrorType.noAuthUserFound.message)
+            viewState = .error(MessageCenter.MessageType.noAuthUserFound.message)
             return
         }
-        self.retrieveImagesViewState = .loading
+        self.isRetrievingImage = true
         do {
             try await imageManager.retrieveImages(listing: listing, id: id)
             
-            self.retrieveImagesViewState = .loaded
+            self.isRetrievingImage = false
         } catch {
-            viewState = .error(AppError.ErrorType.errorDownloadingImages.message)
+            viewState = .error(MessageCenter.MessageType.errorDownloadingImages.message)
         }
     }
     
-    // MARK: - Methods
+    @MainActor
     func resetState() {
         subFormViewState = .loading
         viewState = .idle
@@ -155,15 +116,18 @@ final class EditFormImageManager: ImagePickerProtocol {
     private(set) var thumbnailsURLs: [URL] = []
     private(set) var uploadingProgress: Double = 0.0
     
+    // New property to track changed images
+    private var changedImageIndices: Set<Int> = []
+    
     // MARK: - Image view state
     var imageViewState: ImageViewState = .idle
     
     // MARK: - Dependencies
     @ObservationIgnored @Injected(\.imageManager) var imageManager
-    @ObservationIgnored @Injected(\.httpDataDownloader) var httpDataDownloader
+    @ObservationIgnored @Injected(\.httpClient) var httpClient
     @ObservationIgnored @Injected(\.listingService) var listingService
     
-    // MARK: - Main Actor methods
+    // MARK: - Main Actor functions
     @MainActor
     func loadItem(item: PhotosPickerItem, at index: Int) async {
         isLoadingImages[index] = true
@@ -176,29 +140,32 @@ final class EditFormImageManager: ImagePickerProtocol {
             let newSelectedImage = SelectedImage(data: selectedImage.data, id: UUID().uuidString, photosPickerItem: item)
             selectedImages[index] = newSelectedImage
             hasUserInitiatedChanges = true
+            changedImageIndices.insert(index)  // Mark this index as changed
             
         case .sensitiveContent:
-            imageViewState = .error(AppError.ErrorType.sensitiveContent.message)
+            imageViewState = .error(MessageCenter.MessageType.sensitiveContent.message)
             
         case .analysisError:
             imageViewState = .sensitiveApiNotEnabled
             
         case .loadingError:
-            imageViewState = .error(AppError.ErrorType.generalError.message)
+            imageViewState = .error(MessageCenter.MessageType.generalError.message)
         }
     }
     
-    // MARK: - Methods
+    // MARK: - Functions
     func deleteImage(id: String) {
         if let index = selectedImages.firstIndex(where: { $0?.id == id }) {
             selectedImages[index] = nil
             imageSelections[index] = nil
             hasUserInitiatedChanges = true
+            changedImageIndices.insert(index)  // Mark this index as changed
         }
     }
     
     func resetChangeFlag() {
         hasUserInitiatedChanges = false
+        changedImageIndices.removeAll()  // Reset changed indices
     }
     
     func retrieveImages(listing: Listing, id: Int) async throws {
@@ -239,34 +206,48 @@ final class EditFormImageManager: ImagePickerProtocol {
     }
     
     func uploadSelectedImages(for userId: UUID) async throws {
-        imagesURLs.removeAll()
-        thumbnailsURLs.removeAll()
-        uploadingProgress = 0.0
-        
-        let nonNilImageItems = selectedImages.compactMap { $0 }
-        
-        guard !nonNilImageItems.isEmpty else { return }
-        
         let folderPath = "\(userId)"
         let bucketName = "car_images"
         
-        for image in nonNilImageItems {
-            let imageURLString = try await imageManager.uploadImage(image.data, from: bucketName, to: folderPath, targetWidth: 500, targetHeight: 500, compressionQuality: 0.8)
-            if let urlString = imageURLString, let url = URL(string: urlString) {
-                self.imagesURLs.append(url)
+        var newImagesURLs: [URL] = []
+        var newThumbnailsURLs: [URL] = []
+        
+        for (index, image) in selectedImages.enumerated() {
+            if let image = image, changedImageIndices.contains(index) {
+                let imageURLString = try await imageManager.uploadImage(image.data, from: bucketName, to: folderPath, targetWidth: 500, targetHeight: 500, compressionQuality: 0.8)
+                if let urlString = imageURLString, let url = URL(string: urlString) {
+                    newImagesURLs.append(url)
+                }
+                
+                // Only update thumbnail if it's the first image or the first image changed
+                if index == 0 || (changedImageIndices.contains(0) && newThumbnailsURLs.isEmpty) {
+                    let thumbnailURLString = try await imageManager.uploadImage(image.data, from: bucketName, to: folderPath, targetWidth: 130, targetHeight: 130, compressionQuality: 0.6)
+                    if let thumbUrlString = thumbnailURLString, let url = URL(string: thumbUrlString) {
+                        newThumbnailsURLs.append(url)
+                    }
+                }
+                
+                self.uploadingProgress += 1.0 / Double(changedImageIndices.count)
+            } else if image != nil {
+                // no changes detected, keep existing urls
+                if index < imagesURLs.count {
+                    newImagesURLs.append(imagesURLs[index])
+                }
+                if index == 0 && !thumbnailsURLs.isEmpty {
+                    newThumbnailsURLs = thumbnailsURLs
+                }
             }
-            self.uploadingProgress += 1.5 / Double(nonNilImageItems.count)
         }
         
-        if let firstImageItem = nonNilImageItems.first {
-            let thumbnailURLString = try await imageManager.uploadImage(firstImageItem.data, from: bucketName, to: folderPath, targetWidth: 130, targetHeight: 130, compressionQuality: 0.6)
-            if let thumbUrlString = thumbnailURLString, let url = URL(string: thumbUrlString) {
-                self.thumbnailsURLs.append(url)
-            }
-        }
+        // Update the URLs with the new ones
+        self.imagesURLs = newImagesURLs
+        self.thumbnailsURLs = newThumbnailsURLs
+        
+        // Reset changed indices after upload
+        changedImageIndices.removeAll()
     }
     
-    // MARK: - Private methods
+    // MARK: - Private functions
     private func loadImagesFromURLs(_ urls: [URL]) async {
         let limitedURLs = urls.prefix(10)
         
@@ -277,7 +258,7 @@ final class EditFormImageManager: ImagePickerProtocol {
             defer { isLoadingImages[urlIndex] = false }
             
             do {
-                let data = try await httpDataDownloader.fetchURL(from: url)
+                let data = try await httpClient.loadURL(from: url)
                 guard let selectedImage = SelectedImage(data: data, id: url.absoluteString, photosPickerItem: nil) else { return }
                 
                 selectedImages[urlIndex] = selectedImage
@@ -309,14 +290,14 @@ final class EditFormDataLoader {
     @ObservationIgnored @Injected(\.listingService) var listingService
     @ObservationIgnored @Injected(\.prohibitedWordsService) var prohibitedWordsService
     
-    // MARK: - Methods
+    // MARK: - Functions
     func loadBulkData() async throws {
         try await loadProhibitedWords()
         try await loadFeatures()
         try await loadLocations()
     }
     
-    // MARK: - Private methods
+    // MARK: - Private functions
     private func loadProhibitedWords() async throws {
         do {
             try await prohibitedWordsService.loadProhibitedWords()
@@ -351,3 +332,4 @@ final class EditFormDataLoader {
         colourOptions = ["Select"] + loadedData.flatMap { $0.colours }
     }
 }
+

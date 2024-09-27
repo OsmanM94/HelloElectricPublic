@@ -44,7 +44,7 @@ final class AuthViewModel {
             try await supabaseService.client.auth.signOut()
             viewState = .unauthenticated
         } catch {
-            viewState = .error(AppError.ErrorType.errorSigningOut.message)
+            viewState = .error(MessageCenter.MessageType.errorSigningOut.message)
         }
     }
     
@@ -72,7 +72,7 @@ final class AuthViewModel {
             viewState = .unauthenticated
         } catch {
             print("DEBUG: Error deleting user account: \(error)")
-            viewState = .error(AppError.ErrorType.errorDeletingAccount.message)
+            viewState = .error(MessageCenter.MessageType.errorDeletingAccount.message)
         }
     }
     
@@ -92,7 +92,7 @@ final class AuthViewModel {
         viewState = .unauthenticated
     }
     
-    // MARK: - Methods
+    // MARK: - Functions
     func handleAppleSignInCompletion(result: Result<ASAuthorization, Error>) {
         viewState = .loading
         Task {
@@ -127,7 +127,7 @@ final class AuthViewModel {
         }
     }
     
-    // MARK: - Private methods
+    // MARK: - Private functions
     private func deleteUserListing(userId: UUID) async throws {
         do {
             try await supabaseService.client

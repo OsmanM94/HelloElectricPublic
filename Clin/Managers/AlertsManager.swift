@@ -65,9 +65,7 @@ extension View {
     ) -> some View {
         self.alert(title, isPresented: isPresented) {
             Button(cancelButtonText, role: .cancel) { }
-//            Button(deleteButtonText, role: .destructive) {
-//            }
-            Button(deleteButtonText) {
+            Button(deleteButtonText, role: .destructive) {
                 Task {
                      await deleteAction()
                 }

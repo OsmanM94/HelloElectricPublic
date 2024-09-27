@@ -26,16 +26,11 @@ struct UpdatesView: View {
             }
             .padding()
         }
-        .navigationTitle("Future Updates")
+        .navigationTitle("Approved features")
     }
     
     private var upcomingFeaturesSection: some View {
         VStack(alignment: .leading, spacing: 15) {
-            Text("Exciting Features on the Horizon")
-                .font(.title2)
-                .fontWeight(.bold)
-                .fontDesign(.rounded)
-            
             Text("We're constantly working to improve your experience. Here's what's coming next:")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)

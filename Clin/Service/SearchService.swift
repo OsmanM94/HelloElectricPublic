@@ -33,7 +33,7 @@ final class SearchService: SearchServiceProtocol {
                 filter: or,
                 from: from,
                 to: to,
-                orderBy: "created_at",
+                orderBy: "refreshed_at",
                 ascending: false
             )
     }
@@ -45,7 +45,7 @@ final class SearchService: SearchServiceProtocol {
                 filters: filters,
                 from: from,
                 to: to,
-                orderBy: "created_at",
+                orderBy: "refreshed_at",
                 ascending: false
             )
     }

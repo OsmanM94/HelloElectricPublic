@@ -61,6 +61,7 @@
 				EVFeatures.swift,
 				EVModels.swift,
 				Favourite.swift,
+				FeatureRequest.swift,
 				Listing.swift,
 				News.swift,
 				Notification.swift,
@@ -88,32 +89,19 @@
 		6217F3482C297DF500EF8B2D /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Account/AboutUs/AboutUsView.swift,
+				AboutUs/AboutUsView.swift,
 				Account/AccountView.swift,
 				Account/AccountViewModel.swift,
-				Account/Legal/Disclaimer/DisclaimerView.swift,
-				Account/Legal/LegalView.swift,
-				Account/Legal/Privacy/PrivacyPolicyView.swift,
-				Account/Legal/Safety/SafetyView.swift,
-				Account/Legal/Terms/DealerTermsAndConditionsView.swift,
-				Account/Legal/Terms/TermsAndConditionsView.swift,
-				Account/Notifications/NotificationsView.swift,
-				Account/Notifications/NotificationsViewModel.swift,
-				Account/Support/SupportCenterView.swift,
-				Account/UpdatesWall/UpdatesView.swift,
-				Account/User/Profile/Components/CircularProfileView.swift,
-				Account/User/Profile/ListingProfile/ListingProfileView.swift,
-				Account/User/Profile/ListingProfile/ListingProfileViewModel.swift,
-				Account/User/Profile/MainProfile/ProfileView.swift,
-				Account/User/Profile/MainProfile/ProfileViewModel.swift,
-				Account/User/UserListings/PrivateListings/PrivateUserListingsView.swift,
-				Account/User/UserListings/PrivateListings/PrivateUserListingsViewModel.swift,
-				Account/User/UserListings/PublicListings/PublicUserListingsView.swift,
-				Account/User/UserListings/PublicListings/PublicUserListingsViewModel.swift,
 				Favourites/AddToFavouritesButton.swift,
 				Favourites/FavouriteListingView.swift,
 				Favourites/FavouriteRowView.swift,
 				Favourites/FavouriteViewModel.swift,
+				FeatureRequest/FeatureRequestDetailView.swift,
+				FeatureRequest/FeatureRequestListView.swift,
+				FeatureRequest/FeatureRequestRow.swift,
+				FeatureRequest/FeatureRequestViewModel.swift,
+				FeatureRequest/NewFeatureRequestView.swift,
+				FeatureRequest/UserFeatureRequestsView.swift,
 				Form/Components/ImageCounterView.swift,
 				Form/Components/ImagePickerCell.swift,
 				Form/Components/ImagePickerGridView.swift,
@@ -138,6 +126,12 @@
 				Hub/News/NewsViewModel.swift,
 				Hub/Stations/StationView.swift,
 				Hub/Stations/StationViewModel.swift,
+				Legal/Disclaimer/DisclaimerView.swift,
+				Legal/LegalView.swift,
+				Legal/Privacy/PrivacyPolicyView.swift,
+				Legal/Safety/SafetyView.swift,
+				Legal/Terms/DealerTermsAndConditionsView.swift,
+				Legal/Terms/TermsAndConditionsView.swift,
 				Listing/ListingRowView.swift,
 				Listing/ListingsPlaceholder.swift,
 				Listing/ListingView.swift,
@@ -146,9 +140,23 @@
 				ListingDetailView/DetailView.swift,
 				ListingDetailView/ListingDisclaimerView.swift,
 				ListingDetailView/LocationDisclaimerView.swift,
+				Notifications/NotificationsView.swift,
+				Notifications/NotificationsViewModel.swift,
 				Search/FilterView.swift,
+				Search/FilterViewModel.swift,
 				Search/SearchView.swift,
 				Search/SearchViewModel.swift,
+				SupportCenter/SupportCenterView.swift,
+				UpdatesWall/UpdatesView.swift,
+				User/Profile/Components/CircularProfileView.swift,
+				User/Profile/ListingProfile/ListingProfileView.swift,
+				User/Profile/ListingProfile/ListingProfileViewModel.swift,
+				User/Profile/MainProfile/ProfileView.swift,
+				User/Profile/MainProfile/ProfileViewModel.swift,
+				User/UserListings/PrivateListings/PrivateUserListingsView.swift,
+				User/UserListings/PrivateListings/PrivateUserListingsViewModel.swift,
+				User/UserListings/PublicListings/PublicUserListingsView.swift,
+				User/UserListings/PublicListings/PublicUserListingsViewModel.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
 		};
@@ -209,7 +217,7 @@
 			membershipExceptions = (
 				MockDvlaService.swift,
 				MockFavouriteService.swift,
-				MockHTTPDataDownloader.swift,
+				MockHttpClient.swift,
 				MockImageManager.swift,
 				MockListingService.swift,
 				MockProfileService.swift,
@@ -268,7 +276,7 @@
 		62BE2DBD2C6F7C0C006C0584 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				HTTPDownloader.swift,
+				HTTPClient.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
 		};
@@ -291,7 +299,7 @@
 		62D105E72C8FA07B006C3A52 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Errors.swift,
+				MessagesCenter.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
 		};
@@ -315,7 +323,7 @@
 		62BE2DBA2C6F7BD7006C0584 /* Network */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (62BE2DBD2C6F7C0C006C0584 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Network; sourceTree = "<group>"; };
 		62BE332D2C724F02006C0584 /* Factory */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (62BE33312C724F1B006C0584 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Factory; sourceTree = "<group>"; };
 		62C4493C2C26E236009650A3 /* Authentication */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (62C4493D2C26E23C009650A3 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Authentication; sourceTree = "<group>"; };
-		62D105E42C8FA052006C3A52 /* Errors */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (62D105E72C8FA07B006C3A52 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Errors; sourceTree = "<group>"; };
+		62D105E42C8FA052006C3A52 /* Messages */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (62D105E72C8FA07B006C3A52 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Messages; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -369,7 +377,7 @@
 				626973352C8B528B00690EF9 /* Info.plist */,
 				6217F30E2C2851D500EF8B2D /* App */,
 				626972132C89F9ED00690EF9 /* Logger */,
-				62D105E42C8FA052006C3A52 /* Errors */,
+				62D105E42C8FA052006C3A52 /* Messages */,
 				623B88892C5D15F100A5BD60 /* Supabase */,
 				62BE332D2C724F02006C0584 /* Factory */,
 				62BE2DBA2C6F7BD7006C0584 /* Network */,

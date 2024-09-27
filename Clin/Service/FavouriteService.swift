@@ -15,7 +15,7 @@ final class FavouriteService: FavouriteServiceProtocol {
         try await databaseService
             .loadMultipleItems(
                 from: "favourite_listing",
-                orderBy: "created_at",
+                orderBy: "refreshed_at",
                 ascending: false,
                 field: "user_id",
                 uuid: userID

@@ -24,8 +24,8 @@ extension Container {
     }
     
     /// Services
-    var httpDataDownloader: Factory<HTTPDataDownloaderProtocol> {
-        Factory(self) { HTTPDataDownloader() }
+    var httpClient: Factory<httpClientProtocol> {
+        Factory(self) { HTTPClient() }
     }
     
     var prohibitedWordsService: Factory<ProhibitedWordsServiceProtocol> {

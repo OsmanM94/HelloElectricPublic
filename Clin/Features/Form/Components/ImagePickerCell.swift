@@ -4,7 +4,6 @@
 //
 import SwiftUI
 
-
 struct ImagePickerCell<ViewModel: ImagePickerProtocol>: View {
     @State var viewModel: ViewModel
     @State private var showDeleteAlert: Bool = false
@@ -73,8 +72,6 @@ struct ImagePickerCell<ViewModel: ImagePickerProtocol>: View {
                             }
                         }
                     }
-                    
-
                 }
             }
             .disabled(viewModel.isLoadingImages[index])

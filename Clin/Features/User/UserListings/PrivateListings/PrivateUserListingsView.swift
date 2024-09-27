@@ -24,6 +24,12 @@ struct PrivateUserListingsView: View {
                 message: "Are you sure you want to delete this listing?", title: "Delete confirmation",
                 deleteAction: deleteListingAction
             )
+            .simpleAlert(
+                isPresented: $viewModel.showRefreshRestrictionAlert,
+                title: "Refresh Restriction",
+                message: viewModel.refreshRestrictionMessage,
+                dismissButtonText: "OK"
+            )
             .toolbar {
                 Button(isEditing ? "Done" : "Edit") {
                     isEditing.toggle()
@@ -42,22 +48,27 @@ struct PrivateUserListingsView: View {
     private var contentView: some View {
         switch viewModel.viewState {
         case .empty:
-            ErrorView(message: "Empty", refreshMessage: "Refresh", retryAction: { await viewModel.loadListings() }, systemImage: "tray.fill")
+            ErrorView(
+                message: "Empty",
+                refreshMessage: "Refresh",
+                retryAction: { await viewModel.loadListings() },
+                systemImage: "tray.fill")
             
         case .loading:
             CustomProgressView(message: "Loading...")
             
         case .refreshSuccess(let message):
-            SuccessView(message: message) {
-                Task { await viewModel.loadListings() }
-            }
+         SuccessView(message: message) { Task { await viewModel.loadListings() } }
             
         case .success:
             contentSubview
             
         case .error(let message):
-            ErrorView(message: message, refreshMessage: "Try again", retryAction: {
-                Task { await viewModel.loadListings() } }, systemImage: "xmark.circle.fill")
+            ErrorView(
+                message: message,
+                refreshMessage: "Try again",
+                retryAction: { Task { await viewModel.loadListings() } },
+                systemImage: "xmark.circle.fill")
         }
     }
     
@@ -91,7 +102,7 @@ struct PrivateUserListingsView: View {
                     editButton(for: listing)
                         .foregroundStyle(.yellow)
                     refreshButton(for: listing)
-                        .foregroundStyle(.blue)
+                        .foregroundStyle(!viewModel.canRefreshListing(listing) ? .gray : .blue)
                 }
                 .buttonStyle(.plain)
             }
@@ -129,9 +140,15 @@ struct PrivateUserListingsView: View {
                 await viewModel.refreshListing(listing)
             }
         }) {
-            Label("Refresh", systemImage: "arrow.clockwise")
+            if !viewModel.canRefreshListing(listing) {
+                Text("Refresh not available")
+                    .font(.caption2)
+                    .multilineTextAlignment(.center)
+            } else {
+                Label("Refresh", systemImage: "arrow.clockwise")
+            }
         }
-        .tint(.blue)
+        .tint(!viewModel.canRefreshListing(listing) ? .gray : .blue)
         .popoverTip(RefreshListingTip(), arrowEdge: .bottom)
     }
     

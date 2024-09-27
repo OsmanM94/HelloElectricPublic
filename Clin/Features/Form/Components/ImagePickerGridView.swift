@@ -27,6 +27,7 @@ struct ImagePickerGridView<ViewModel: ImagePickerProtocol>: View {
             switch viewModel.imageViewState {
             case .idle:
                 gridView
+                
             case .sensitiveContent(let message):
                 ErrorView(message: message,
                           refreshMessage: "Try again",

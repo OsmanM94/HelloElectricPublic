@@ -28,7 +28,7 @@ enum DatabaseFilter: String, CaseIterable {
         case .all:
             return [["column": "car_name", "order": "asc"]]
         case .recent:
-            return [["column": "first_delivery_expected", "order": "desc"],
+            return [["column": "created_at", "order": "desc"],
                     ["column": "car_name", "order": "asc"]]
         case .cheapest:
             return [["column": "car_price", "order": "asc"],
@@ -132,7 +132,7 @@ final class EVDataViewModel {
             viewState = evDatabase.isEmpty ? .empty : .loaded
         } catch {
             print("Error searching EV database: \(error)")
-            viewState = .error(AppError.ErrorType.generalError.message)
+            viewState = .error(MessageCenter.MessageType.generalError.message)
         }
         
         isSearching = false
@@ -176,7 +176,7 @@ final class EVDataViewModel {
         }
     }
     
-    // MARK: - Private methods
+    // MARK: - Private functions
     private func resetPagination() {
         self.currentPage = 0
         self.hasMoreListings = true
@@ -215,7 +215,7 @@ final class EVDataViewModel {
             viewState = evDatabase.isEmpty ? .empty : .loaded
         } catch {
             print("Error loading EV database \(error)")
-            viewState = .error(AppError.ErrorType.generalError.message)
+            viewState = .error(MessageCenter.MessageType.generalError.message)
         }
     }
         

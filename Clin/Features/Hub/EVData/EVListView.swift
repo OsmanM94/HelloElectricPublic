@@ -22,7 +22,9 @@ struct EVListView: View {
                     
                 case .loaded:
                     searchBar
+                    updatedSection
                     listContent
+                    
                     
                 case .empty:
                     searchBar
@@ -89,6 +91,13 @@ struct EVListView: View {
         .disabled(viewModel.viewState == .loading)
     }
     
+    private var updatedSection: some View {
+        Text("Updated: \(Date.now.formatted(date: .numeric, time: .omitted))")
+            .foregroundStyle(.secondary)
+            .frame(maxWidth: .infinity, alignment: .trailing)
+            .padding(.horizontal)
+    }
+    
     private var listContent: some View {
         List {
             ForEach(viewModel.evDatabase, id: \.id) { ev in
@@ -120,7 +129,7 @@ struct EVListView: View {
             }
             .disabled(viewModel.searchText.isEmpty)
             
-            Spacer(minLength: 0)
+            Spacer()
             
             Button { isPresented = false } label: { Text("Done") }
         }
@@ -153,7 +162,7 @@ fileprivate struct InfoSheetView: View {
     @State private var showSplashView: Bool = true
     
     var body: some View {
-        ScrollView(.vertical) {
+        ScrollView {
             VStack(spacing: 20) {
                 headerView
             

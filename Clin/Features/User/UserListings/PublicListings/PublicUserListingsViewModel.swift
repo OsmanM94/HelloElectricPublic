@@ -38,7 +38,7 @@ final class PublicUserListingsViewModel {
             self.viewState = listings.isEmpty ? .empty : .success
             
         } catch {
-            self.viewState = .error(AppError.ErrorType.generalError.message)
+            self.viewState = .error(MessageCenter.MessageType.generalError.message)
         }
     }
 }

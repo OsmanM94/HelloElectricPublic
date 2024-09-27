@@ -30,6 +30,9 @@ final class SearchViewModel {
     var viewState: ViewState = .idle
     var filterViewState: FilterViewState = .loading
     
+    var isLoadingAppliedFilters: Bool = false
+    var isFilterAppliedSuccessfully: Bool = false
+    
     // Search properties
     var searchText: String = ""
     private(set) var searchedItems: [Listing] = []
@@ -68,7 +71,7 @@ final class SearchViewModel {
             updateAvailableModels()
             self.filterViewState = .loaded
         } catch {
-            self.filterViewState = .error(AppError.ErrorType.generalError.message)
+            self.filterViewState = .error(MessageCenter.MessageType.generalError.message)
         }
     }
 
@@ -97,13 +100,17 @@ final class SearchViewModel {
                         to: (self.currentPage + 1) * self.pageSize - 1)
             }
         } catch {
-            self.viewState = .error(AppError.ErrorType.generalError.message)
+            self.viewState = .error(MessageCenter.MessageType.generalError.message)
         }
     }
     
     // Search with filters
     @MainActor
     func searchFilteredItems(isLoadingMore: Bool = false) async {
+        isLoadingAppliedFilters = true
+        isFilterAppliedSuccessfully = false
+        defer { isLoadingAppliedFilters = false }
+        
         do {
             try await performSearch(isLoadingMore: isLoadingMore) { [weak self] in
                 guard let self = self else { return [] }
@@ -113,8 +120,9 @@ final class SearchViewModel {
                     to: (self.currentPage + 1) * self.pageSize - 1
                 )
             }
+            isFilterAppliedSuccessfully = true
         } catch {
-            self.viewState = .error(AppError.ErrorType.generalError.message)
+            self.viewState = .error(MessageCenter.MessageType.generalError.message)
         }
     }
     
@@ -133,7 +141,7 @@ final class SearchViewModel {
         filters.reset()
     }
     
-    // MARK: - Methods
+    // MARK: - Functions
     func handleSuggestionTap(_ suggestion: String) {
         guard !suggestionTapped else { return }
         suggestionTapped = true
@@ -152,7 +160,7 @@ final class SearchViewModel {
         self.filters.updateModel(newModel)
     }
     
-    // MARK: - Private methods
+    // MARK: - Private functions
     private func performSearch(isLoadingMore: Bool, searchFunction: @escaping () async throws -> [Listing]) async throws{
         if !isLoadingMore {
             self.searchedItems.removeAll()
@@ -177,7 +185,7 @@ final class SearchViewModel {
 
             self.viewState = searchedItems.isEmpty ? .noResults : .loaded
         } catch {
-            viewState = .error(AppError.ErrorType.generalError.message)
+            viewState = .error(MessageCenter.MessageType.generalError.message)
         }
         self.isSearching = false
     }
@@ -207,7 +215,7 @@ final class SearchDataLoader {
     // MARK: - Dependencies
     @ObservationIgnored @Injected(\.searchService) private var searchService
     
-    // MARK: - Methods
+    // MARK: - Functions
     func loadBulkData() async throws {
         do {
             try await loadModels()
@@ -230,7 +238,7 @@ final class SearchDataLoader {
         return modelOptions.contains(currentModel) ? currentModel : "Any"
     }
     
-    // MARK: - Private Methods
+    // MARK: - Private Functions
     private func loadLocations() async throws {
         let loadedData = try await searchService.loadCities()
         availableLocations = ["Any"] + loadedData.compactMap { $0.city }
@@ -264,86 +272,11 @@ final class SearchDataLoader {
     }
 }
 
-@Observable
-final class SearchFilters {
-    var make: String = "Any" { didSet { updateFilterState() } }
-    var model: String = "Any" { didSet { updateFilterState() } }
-    var location: String = "Any" { didSet { updateFilterState() } }
-    var body: String = "Any" { didSet { updateFilterState() } }
-    var selectedYear: String = "Any" { didSet { updateFilterState() } }
-    var maxPrice: Double = 100_000 { didSet { updateFilterState() } }
-    var condition: String = "Any" { didSet { updateFilterState() } }
-    var maxMileage: Double = 100_000 { didSet { updateFilterState() } }
-    var range: String = "Any" { didSet { updateFilterState() } }
-    var colour: String = "Any" { didSet { updateFilterState() } }
-    var maxPublicChargingTime: String = "Any" { didSet { updateFilterState() } }
-    var maxHomeChargingTime: String = "Any" { didSet { updateFilterState() } }
-    var batteryCapacity: String = "Any" { didSet { updateFilterState() } }
-    var powerBhp: String = "Any" { didSet { updateFilterState() } }
-    var regenBraking: String = "Any" { didSet { updateFilterState() } }
-    var warranty: String = "Any" { didSet { updateFilterState() } }
-    var serviceHistory: String = "Any" { didSet { updateFilterState() } }
-    var numberOfOwners: String = "Any" { didSet { updateFilterState() } }
-    
-    private(set) var isFilterApplied: Bool = false
-    
-    func updateModel(_ newModel: String) {
-        self.model = newModel
-        updateFilterState()
-    }
-    
-    func reset() {
-        make = "Any"
-        model = "Any"
-        body = "Any"
-        location = "Any"
-        selectedYear = "Any"
-        maxPrice = 100_000
-        condition = "Any"
-        maxMileage = 100_000
-        range = "Any"
-        colour = "Any"
-        maxPublicChargingTime = "Any"
-        maxHomeChargingTime = "Any"
-        batteryCapacity = "Any"
-        powerBhp = "Any"
-        regenBraking = "Any"
-        warranty = "Any"
-        serviceHistory = "Any"
-        numberOfOwners = "Any"
-    }
-    
-    private func updateFilterState() {
-        isFilterApplied = isAnyFilterActive()
-    }
-    
-    private func isAnyFilterActive() -> Bool {
-        return make != "Any" ||
-        model != "Any" ||
-        body != "Any" ||
-        location != "Any" ||
-        selectedYear != "Any" ||
-        maxPrice < 100_000 ||
-        condition != "Any" ||
-        maxMileage < 100_000 ||
-        range != "Any" ||
-        colour != "Any" ||
-        maxPublicChargingTime != "Any" ||
-        maxHomeChargingTime != "Any" ||
-        batteryCapacity != "Any" ||
-        powerBhp != "Any" ||
-        regenBraking != "Any" ||
-        warranty != "Any" ||
-        serviceHistory != "Any" ||
-        numberOfOwners != "Any"
-    }
-}
-
 final class SearchLogic {
     // MARK: - Dependencies
     @Injected(\.searchService) private var searchService
     
-    // MARK: - Search methods
+    // MARK: - Search functions
     func searchItems(searchText: String, from: Int, to: Int) async throws  -> [Listing] {
         let searchComponents = searchText.split(separator: " ").map { String($0) }
         
@@ -363,8 +296,8 @@ final class SearchLogic {
         if filters.model != "Any" { filterDict["model"] = filters.model }
         if filters.body != "Any" { filterDict["body_type"] = filters.body }
         if filters.selectedYear != "Any" { filterDict["year"] = filters.selectedYear }
-        if filters.maxPrice < 100000 { filterDict["price"] = filters.maxPrice }
-        if filters.maxMileage < 500000 { filterDict["mileage"] = filters.maxMileage }
+        if filters.maxPrice < 100_000 { filterDict["price"] = filters.maxPrice }
+        if filters.maxMileage < 300_000 { filterDict["mileage"] = filters.maxMileage }
         if filters.condition != "Any" { filterDict["condition"] = filters.condition }
         if filters.range != "Any" { filterDict["range"] = filters.range }
         if filters.colour != "Any" { filterDict["colour"] = filters.colour }

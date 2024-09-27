@@ -80,7 +80,7 @@ final class FavouriteViewModel {
             print("DEBUG: Listing added to favourites successfully.")
         } catch {
             print("DEBUG: Error creating listing: \(error)")
-            viewState = .error(AppError.ErrorType.generalError.message)
+            viewState = .error(MessageCenter.MessageType.generalError.message)
         }
     }
     
@@ -96,7 +96,7 @@ final class FavouriteViewModel {
             }
             print("DEBUG: Listing removed from favorites successfully.")
         } catch {
-            self.viewState = .error(AppError.ErrorType.generalError.message)
+            self.viewState = .error(MessageCenter.MessageType.generalError.message)
         }
     }
     
@@ -110,7 +110,7 @@ final class FavouriteViewModel {
             
             self.viewState = listings.isEmpty ? .empty : .loaded
         } catch {
-            viewState = .error(AppError.ErrorType.generalError.message)
+            viewState = .error(MessageCenter.MessageType.generalError.message)
         }
     }
     

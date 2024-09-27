@@ -9,7 +9,8 @@ import SwiftUI
 
 struct SearchView: View {
     @State private var viewModel = SearchViewModel()
-    @State private var showingFilterView: Bool = false
+    @State private var showFilterView: Bool = false
+    
     @FocusState private var isPresented: Bool
     let systemImageName: String = "slider.horizontal.3"
     
@@ -49,11 +50,10 @@ struct SearchView: View {
                 topBarTrailingToolbarContent
                 topBarLeadingToolbarContent
             }
-            .sheet(isPresented: $showingFilterView) {
-                FilterView(viewModel: viewModel) {
-                    showingFilterView = false
-                }
+            .sheet(isPresented: $showFilterView) {
+                FilterView(viewModel: viewModel)
                 .presentationDragIndicator(.visible)
+                .interactiveDismissDisabled(viewModel.isLoadingAppliedFilters)
             }
         }
     }
@@ -128,7 +128,7 @@ private extension SearchView {
     
     private var topBarTrailingToolbarContent: some ToolbarContent {
         ToolbarItem(placement: .topBarTrailing) {
-            Button(action: { showingFilterView = true }) {
+            Button(action: { showFilterView = true }) {
                 ZStack(alignment: .topTrailing) {
                     Image(systemName: systemImageName)
                         .padding(.horizontal, 12)

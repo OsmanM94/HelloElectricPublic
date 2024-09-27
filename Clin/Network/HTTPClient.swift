@@ -7,7 +7,7 @@
 
 import Foundation
 
-class HTTPDataDownloader: HTTPDataDownloaderProtocol {
+class HTTPClient: httpClientProtocol {
     
     func loadData<T: Decodable>(
             as type: T.Type,
@@ -16,7 +16,7 @@ class HTTPDataDownloader: HTTPDataDownloaderProtocol {
         ) async throws -> T {
             
             guard let url = URL(string: endpoint) else {
-                throw AppError.ErrorType.requestFailed(description: "Invalid URL")
+                throw MessageCenter.MessageType.requestFailed(description: "Invalid URL")
             }
             
             var request = URLRequest(url: url)
@@ -30,23 +30,23 @@ class HTTPDataDownloader: HTTPDataDownloaderProtocol {
             let (data, response) = try await URLSession.shared.data(for: request)
             
             guard let httpResponse = response as? HTTPURLResponse else {
-                throw AppError.ErrorType.requestFailed(description: "Request failed")
+                throw MessageCenter.MessageType.requestFailed(description: "Request failed")
             }
             
             guard httpResponse.statusCode == 200 else {
-                throw AppError.ErrorType.invalidStatusCode(statuscode: httpResponse.statusCode)
+                throw MessageCenter.MessageType.invalidStatusCode(statuscode: httpResponse.statusCode)
             }
             
             do {
                 return try JSONDecoder().decode(type, from: data)
             } catch {
-                throw AppError.ErrorType.decodingError(error: error)
+                throw MessageCenter.MessageType.decodingError(error: error)
             }
         }
     
     func postData<T: Decodable, U: Encodable>(as type: T.Type, to endpoint: String, body: U, headers: [String: String] = [:]) async throws -> T {
         guard let url = URL(string: endpoint) else {
-            throw AppError.ErrorType.requestFailed(description: "Invalid URL")
+            throw MessageCenter.MessageType.requestFailed(description: "Invalid URL")
         }
         
         var request = URLRequest(url: url)
@@ -61,26 +61,26 @@ class HTTPDataDownloader: HTTPDataDownloaderProtocol {
             let jsonData = try JSONEncoder().encode(body)
             request.httpBody = jsonData
         } catch {
-            throw AppError.ErrorType.encodingError(error: error)
+            throw MessageCenter.MessageType.encodingError(error: error)
         }
         
         let (data, response) = try await URLSession.shared.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse else {
-            throw AppError.ErrorType.requestFailed(description: "Request failed")
+            throw MessageCenter.MessageType.requestFailed(description: "Request failed")
         }
         guard httpResponse.statusCode == 200 else {
-            throw AppError.ErrorType.invalidStatusCode(statuscode: httpResponse.statusCode)
+            throw MessageCenter.MessageType.invalidStatusCode(statuscode: httpResponse.statusCode)
         }
         
         do {
             return try JSONDecoder().decode(type, from: data)
         } catch {
-            throw AppError.ErrorType.decodingError(error: error)
+            throw MessageCenter.MessageType.decodingError(error: error)
         }
     }
     
-    func fetchURL(from url: URL) async throws -> Data {
+    func loadURL(from url: URL) async throws -> Data {
         let (data, _) = try await URLSession.shared.data(from: url)
         return data
     }

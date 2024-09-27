@@ -9,7 +9,7 @@ import Foundation
 import Factory
 
 final class DvlaService: DvlaServiceProtocol {
-    @Injected(\.httpDataDownloader) var httpDataDownloader: HTTPDataDownloaderProtocol
+    @Injected(\.httpClient) var httpClient: httpClientProtocol
         
     private let apiKey = "32ajeg6zif8hoBN6pASIJ93uAzx9erA34jAoyLxA"
     private let baseURL = "https://driver-vehicle-licensing.api.gov.uk/vehicle-enquiry/v1/vehicles"
@@ -21,7 +21,7 @@ final class DvlaService: DvlaServiceProtocol {
             "Content-Type": "application/json"
         ]
         
-        return try await httpDataDownloader.postData(
+        return try await httpClient.postData(
             as: Dvla.self,
             to: baseURL,
             body: parameters,

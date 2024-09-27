@@ -48,21 +48,21 @@ final class CreateFormViewModel {
         }
     }
     
-    // MARK: - Main Actor Methods
+    // MARK: - Main Actor functions
     @MainActor
     func loadBulkData() async {
         do {
             try await dataLoader.loadBulkData()
             self.subFormViewState = .loaded
         } catch {
-            self.subFormViewState = .error(AppError.ErrorType.generalError.message)
+            self.subFormViewState = .error(MessageCenter.MessageType.generalError.message)
         }
     }
     
     @MainActor
     func createListing() async {
         guard isFormValid() else {
-            viewState = .error(AppError.ErrorType.formInvalid.message)
+            viewState = .error(MessageCenter.MessageType.formInvalid.message)
             return
         }
         guard await validateTextDescription() else { return }
@@ -71,7 +71,7 @@ final class CreateFormViewModel {
         
         do {
             guard let user = try? await supabaseService.client.auth.session.user else {
-                viewState = .error(AppError.ErrorType.noAuthUserFound.message)
+                viewState = .error(MessageCenter.MessageType.noAuthUserFound.message)
                 return
             }
             
@@ -80,10 +80,10 @@ final class CreateFormViewModel {
             try await listingService.createListing(listing)
             
             resetFormDataAndState()
-            viewState = .success(AppError.ErrorType.createSuccess.message)
+            viewState = .success(MessageCenter.MessageType.createSuccess.message)
         } catch {
             print("Error creating listing \(error)")
-            viewState = .error(AppError.ErrorType.generalError.message)
+            viewState = .error(MessageCenter.MessageType.generalError.message)
         }
     }
     
@@ -92,13 +92,13 @@ final class CreateFormViewModel {
         viewState = .loading
         do {
             let decodedCar = try await dvlaService.loadDetails(registrationNumber: registrationNumber)
-            viewState = decodedCar.fuelType.uppercased() == "ELECTRICITY" ? .loaded : .error(AppError.ErrorType.notElectric.message)
+            viewState = decodedCar.fuelType.uppercased() == "ELECTRICITY" ? .loaded : .error(MessageCenter.MessageType.notElectric.message)
         } catch {
-            viewState = .error(AppError.ErrorType.invalidRegistration.message)
+            viewState = .error(MessageCenter.MessageType.invalidRegistration.message)
         }
     }
     
-    // MARK: - Methods
+    // MARK: - Functions
     func isFormValid() -> Bool {
         return formData.isFormValid() && imageManager.hasValidImageSelection()
     }
@@ -115,11 +115,11 @@ final class CreateFormViewModel {
         formData.model = dataLoader.updateAvailableModels(make: formData.make, currentModel: formData.model)
     }
     
-    // MARK: - Private Methods
+    // MARK: - Private functions
     private func validateTextDescription() async -> Bool {
         let fieldsToCheck = formData.description
         guard !dataLoader.prohibitedWordsService.containsProhibitedWord(fieldsToCheck) else {
-            viewState = .error(AppError.ErrorType.inappropriateField.message)
+            viewState = .error(MessageCenter.MessageType.inappropriateField.message)
             return false
         }
         return true
@@ -259,7 +259,7 @@ final class CreateFormImageManager: ImagePickerProtocol {
         selectedImages.compactMap { $0 }.count
     }
     
-    // MARK: - Methods
+    // MARK: - Functions
     
     func resetState() {
         selectedImages = Array(repeating: nil, count: 10)
@@ -318,11 +318,11 @@ final class CreateFormImageManager: ImagePickerProtocol {
             let newSelectedImage = SelectedImage(data: selectedImage.data, id: UUID().uuidString, photosPickerItem: item)
             selectedImages[index] = newSelectedImage
         case .sensitiveContent:
-            imageViewState = .error(AppError.ErrorType.sensitiveContent.message)
+            imageViewState = .error(MessageCenter.MessageType.sensitiveContent.message)
         case .analysisError:
             imageViewState = .sensitiveApiNotEnabled
         case .loadingError:
-            imageViewState = .error(AppError.ErrorType.generalError.message)
+            imageViewState = .error(MessageCenter.MessageType.generalError.message)
         }
     }
     
@@ -361,7 +361,7 @@ final class CreateFormDataLoader {
     @ObservationIgnored @Injected(\.listingService) private var listingService
     @ObservationIgnored @Injected(\.prohibitedWordsService) var prohibitedWordsService
     
-    // MARK: - Methods
+    // MARK: - Functions
     func loadBulkData() async throws {
         try await loadProhibitedWords()
         try await loadModels()
@@ -381,7 +381,7 @@ final class CreateFormDataLoader {
         return modelOptions.contains(currentModel) ? currentModel : "Select"
     }
 
-    // MARK: - Private Methods
+    // MARK: - Private functions
     private func loadProhibitedWords() async throws {
         do {
             try await prohibitedWordsService.loadProhibitedWords()

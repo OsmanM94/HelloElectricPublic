@@ -34,7 +34,7 @@ final class StationViewModel {
     private let debounceDelay: TimeInterval = 0.5
     
     // MARK: - Dependencies
-    @ObservationIgnored @Injected(\.httpDataDownloader) private var httpDownloader
+    @ObservationIgnored @Injected(\.httpClient) private var httpDownloader
     
     // MARK: - Main actor functions
     @MainActor

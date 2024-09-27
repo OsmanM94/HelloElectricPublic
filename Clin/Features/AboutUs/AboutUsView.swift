@@ -82,7 +82,7 @@ struct AboutUsView: View {
     
     private var technologySection: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Built with Cutting-Edge Technology")
+            Text("Built in SwiftUI")
                 .font(.headline)
                 .foregroundStyle(.blue.gradient)
             

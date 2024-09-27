@@ -35,7 +35,7 @@ final class FaceID {
         var error: NSError?
         
         guard context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) else {
-            viewState = .error(AppError.ErrorType.biometricsNotAvailable.message)
+            viewState = .error(MessageCenter.MessageType.biometricsNotAvailable.message)
             return
         }
         
@@ -48,10 +48,10 @@ final class FaceID {
             if success {
                 viewState = .authenticated
             } else {
-                viewState = .error(AppError.ErrorType.authenticationFailed.message)
+                viewState = .error(MessageCenter.MessageType.authenticationFailed.message)
             }
         } catch {
-            viewState = .error(AppError.ErrorType.authenticationFailed.message)
+            viewState = .error(MessageCenter.MessageType.authenticationFailed.message)
         }
     }
     

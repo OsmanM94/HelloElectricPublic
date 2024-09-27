@@ -329,18 +329,12 @@ fileprivate struct EditFormSubview: View {
     
     private var topBarTrailingToolbarContent: some ToolbarContent {
         ToolbarItem(placement: .topBarTrailing) {
-            switch viewModel.retrieveImagesViewState {
-            case .loading:
-                ProgressView("Downloading...")
-                    .scaleEffect(0.8)
-                
-            case .loaded:
-                NavigationLink {
-                    ImagePickerGridView(viewModel: viewModel.imageManager)
-                } label: {
-                    ImageCounterView(count: viewModel.imageManager.totalImageCount)
-                }
+            NavigationLink {
+                ImagePickerGridView(viewModel: viewModel.imageManager)
+            } label: {
+                ImageCounterView(count: viewModel.imageManager.totalImageCount, isLoading: $viewModel.isRetrievingImage)
             }
+            .allowsHitTesting(!viewModel.isRetrievingImage)
         }
     }
     
@@ -355,11 +349,11 @@ fileprivate struct EditFormSubview: View {
                 }
             } label: {
                 Text("Apply changes")
-                    .foregroundStyle(listing == originalListing && !viewModel.imageManager.hasUserInitiatedChanges ? Color(.systemGray4).opacity(0.8) : .tabColour)
+                    .foregroundStyle(listing == originalListing && !viewModel.imageManager.hasUserInitiatedChanges ? .gray.opacity(0.3) : .tabColour)
                     .font(.headline)
                     .frame(maxWidth: .infinity)
             }
-            .disabled(listing == originalListing && !viewModel.imageManager.hasUserInitiatedChanges && viewModel.viewState == .uploading)
+            .disabled(listing == originalListing && !viewModel.imageManager.hasUserInitiatedChanges)
         }
     }
 }

@@ -34,6 +34,9 @@ struct AccountView: View {
                 }
             }
             .animation(.easeInOut(duration: 0.3), value: authViewModel.viewState)
+            .task {
+                await authViewModel.setupAuthStateListener()
+            }
         }
     }
     
@@ -117,13 +120,20 @@ struct AccountView: View {
     }
     
     private var whatsNextSection: some View {
-        Section("What's next?") {
-            NavigationLink {
-                UpdatesView()
-            } label: {
-                Label("Upcoming updates", systemImage: "chart.line.uptrend.xyaxis")
+        Section("Pool feature requests") {
+            DisclosureGroup("Features") {
+                NavigationLink {
+                    LazyView(UpdatesView())
+                } label: {
+                    Label("Approved features", systemImage: "chart.line.uptrend.xyaxis")
+                }
+                
+                NavigationLink {
+                    LazyView(FeatureRequestListView())
+                } label: {
+                    Label("Request feature", systemImage: "doc.badge.plus")
+                }
             }
-
         }
     }
     

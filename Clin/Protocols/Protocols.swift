@@ -75,13 +75,13 @@ protocol ImagePickerProtocol: Observable {
     func resetImageStateToIdle()
 }
 
-protocol HTTPDataDownloaderProtocol {
+protocol httpClientProtocol {
     func loadData <T: Decodable>(as type: T.Type, endpoint: String, headers: [String: String]?) async throws -> T
     func postData<T: Decodable, U: Encodable>(as type: T.Type, to endpoint: String, body: U, headers: [String: String]) async throws -> T
-    func fetchURL(from url: URL) async throws -> Data
+    func loadURL(from url: URL) async throws -> Data
 }
 
-extension HTTPDataDownloaderProtocol {
+extension httpClientProtocol {
     func loadData<T: Decodable>(as type: T.Type, endpoint: String) async throws -> T {
         try await loadData(as: type, endpoint: endpoint, headers: nil)
     }

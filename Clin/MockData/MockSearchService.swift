@@ -45,7 +45,7 @@ final class MockSearchService: SearchServiceProtocol {
           )
       ]
       
-      // Mock implementations of the SearchServiceProtocol methods
+      // Mock implementations of the SearchServiceProtocol functions
       func loadModels() async throws -> [EVModels] {
           return mockEVModels
       }

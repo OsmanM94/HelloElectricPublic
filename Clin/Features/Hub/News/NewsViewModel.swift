@@ -29,7 +29,7 @@ final class NewsViewModel {
     private let pageSize: Int = 25
     
     // MARK: - Dependencies
-    @ObservationIgnored @Injected(\.httpDataDownloader) private var dataDownloader
+    @ObservationIgnored @Injected(\.httpClient) private var httpClient
     private let apiKey = "35d7a26df33847f39edc3b50756f1a66"
     private let secondKey = "31c85cb62c3841e6b90d49b6977ff8f2"
     
@@ -57,7 +57,7 @@ final class NewsViewModel {
         let urlString = "https://newsapi.org/v2/everything?q=Electric+Vehicle+EV&language=en&sortBy=relevancy&pageSize=\(pageSize)&page=\(currentPage)&apiKey=\(secondKey)"
         
         do {
-            let newsResponse: NewsResponse = try await dataDownloader.loadData(as: NewsResponse.self, endpoint: urlString, headers: nil)
+            let newsResponse: NewsResponse = try await httpClient.loadData(as: NewsResponse.self, endpoint: urlString, headers: nil)
             
             if newsResponse.status == "ok" {
                 let newArticles = newsResponse.articles
@@ -70,10 +70,10 @@ final class NewsViewModel {
                 viewState = .loaded
                 print("DEBUG: Got articles from API for page \(currentPage - 1)")
             } else {
-                viewState = .error(AppError.ErrorType.failedToLoadNews.message)
+                viewState = .error(MessageCenter.MessageType.failedToLoadNews.message)
             }
         } catch {
-            viewState = .error(AppError.ErrorType.failedToLoadNews.message)
+            viewState = .error(MessageCenter.MessageType.failedToLoadNews.message)
         }
     }
     

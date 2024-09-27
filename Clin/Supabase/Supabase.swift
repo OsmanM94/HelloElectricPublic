@@ -29,7 +29,6 @@ extension SupabaseService {
     }
 }
 
-
 final class MockSupabaseService: SupabaseProtocol {
     var client: SupabaseClient {
         return SupabaseClient(supabaseURL: URL(string: "https://mock.supabase.co")!,

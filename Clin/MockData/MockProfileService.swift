@@ -38,7 +38,7 @@ class MockProfileService: ProfileServiceProtocol {
         return mockUserID
     }
 
-    // Helper methods for testing
+    // Helper functions for testing
     func setMockProfile(_ profile: Profile) {
         mockProfile = profile
     }

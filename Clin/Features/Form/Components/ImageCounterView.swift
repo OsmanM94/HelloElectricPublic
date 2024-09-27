@@ -9,27 +9,56 @@ import SwiftUI
 
 struct ImageCounterView: View {
     let count: Int
-    let isLoading: Bool = false
+    @Binding var isLoading: Bool
     
     var body: some View {
-        Image(systemName: count <= 0 ? "photo.badge.plus": "photo")
-            .foregroundStyle(.gray)
-            .font(.system(size: 24))
-            .symbolRenderingMode(.multicolor)
-            .overlay(alignment: .topTrailing) {
-                if count > 0 {
-                    Text("\(count)")
-                        .font(.system(size: 12).bold())
-                        .foregroundStyle(.white)
-                        .padding(5)
-                        .background(Color(.red))
-                        .clipShape(Circle())
-                        .offset(x: 2, y: -6)
-                }
+        ZStack {
+            if isLoading {
+                ProgressView()
+                    .scaleEffect(1.2)
+            } else {
+                Image(systemName: count <= 0 ? "photo.badge.plus" : "photo")
+                    .foregroundStyle(.gray)
+                    .font(.system(size: 25))
+                    .symbolRenderingMode(.multicolor)
             }
+            
+            if count > 0 {
+                Text("\(min(count, 99))")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundStyle(.white)
+                    .padding(5)
+                    .background(isLoading ? .orange : .tabColour)
+                    .clipShape(Circle())
+                    .offset(x: 15, y: -10)
+            }
+        }
+        .frame(width: 44, height: 44)
     }
 }
 
-#Preview {
-    ImageCounterView(count: 10)
+struct ImageCounterView_Previews: PreviewProvider {
+    static var previews: some View {
+        Group {
+            HStack(spacing: 20) {
+                ImageCounterView(count: 0, isLoading: .constant(false))
+                ImageCounterView(count: 5, isLoading: .constant(false))
+                ImageCounterView(count: 99, isLoading: .constant(false))
+                ImageCounterView(count: 3, isLoading: .constant(true))
+            }
+            .previewLayout(.sizeThatFits)
+            .padding()
+            
+            // Preview in a toolbar
+            NavigationStack {
+                Text("Content")
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            ImageCounterView(count: 5, isLoading: .constant(false))
+                        }
+                    }
+            }
+        }
+    }
 }
+

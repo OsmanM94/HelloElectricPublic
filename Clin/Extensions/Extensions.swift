@@ -9,7 +9,7 @@ import AVFoundation
 
 
 /// Resize image while keeping the aspect ratio. Original image is not modified.
-public extension UIImage {
+extension UIImage {
     func resize(_ width: Int, _ height: Int) -> UIImage? {
         // Return nil if the image has no valid size
         guard self.size.width > 0, self.size.height > 0 else {
@@ -17,26 +17,26 @@ public extension UIImage {
         }
         // Keep aspect ratio
         let maxSize = CGSize(width: width, height: height)
-
+        
         let availableRect = AVFoundation.AVMakeRect(
             aspectRatio: self.size,
             insideRect: .init(origin: .zero, size: maxSize)
         )
         let targetSize = availableRect.size
-
+        
         // Set scale of renderer so that 1pt == 1px
         let format = UIGraphicsImageRendererFormat()
-//        format.scale = UIScreen.main.scale
+        //        format.scale = UIScreen.main.scale
         format.scale = 3.0
         let renderer = UIGraphicsImageRenderer(size: targetSize, format: format)
-
+        
         // Resize the image
         let resized = renderer.image { _ in
             self.draw(in: CGRect(origin: .zero, size: targetSize))
         }
         return resized
     }
-        
+    
     func heicData(compressionQuality: CGFloat = 1.0) -> Data? {
         let destinationData = NSMutableData()
         
@@ -52,7 +52,7 @@ public extension UIImage {
 }
 
 /// Date formatter
-public extension String {
+extension String {
     // Converts the ISO 8601 date string to a Date object
     func toDate() -> Date? {
         let dateFormatter = DateFormatter()
@@ -77,7 +77,7 @@ public extension String {
 }
 
 /// Safely creates a `URL` instance from a `String`.
-public extension URL {
+extension URL {
     /// - Parameter urlString: The `String` representing the URL.
     /// - Returns: A `URL` instance if the string is valid, otherwise `nil`.
     static func from(_ urlString: String?) -> URL? {
@@ -86,13 +86,26 @@ public extension URL {
     }
 }
 
-/// Set time elapse eg. 3 days ago 
-public extension Date {
+extension Date {
+    /// Set time elapse eg. 3 days ago
     func timeElapsedString() -> String {
         let formatter = RelativeDateTimeFormatter()
         formatter.unitsStyle = .full
         return formatter.localizedString(for: self, relativeTo: Date())
     }
+    
+    /// Format date eg. 27 Sep 2024 at 16:05
+    func formattedString() -> String {
+        let formatter = Date.dateFormatter
+        return formatter.string(from: self)
+    }
+    
+    private static var dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .short
+        return formatter
+    }()
 }
 
 /// This computed property takes the current string, filters out non-numeric characters, and formats it as a UK phone number (assuming the format is 07700 900 000).

@@ -52,7 +52,7 @@ final class ProfileViewModel {
     // Tracks if the profile was updated so we don't update Supabase redundant
     var isProfileUpdated: Bool = false
     
-    // Companies house checks
+    // Companies house company checks
     var getCompanyNumber: String = ""
 
     // MARK: - Dependencies
@@ -75,7 +75,7 @@ final class ProfileViewModel {
             let companyInfo = try await companiesHouseService.loadCompanyDetails(companyNumber: getCompanyNumber)
             
             if companyInfo.companyStatus.lowercased() == "dissolved" {
-                self.viewState = .error(AppError.ErrorType.companyDissolved.message)
+                self.viewState = .error(MessageCenter.MessageType.companyDissolved.message)
                 return
             }
             
@@ -86,7 +86,7 @@ final class ProfileViewModel {
             self.companiesHouseViewState = .success
             self.viewState = .idle
         } catch {
-            self.viewState = .error(AppError.ErrorType.companyLoadingFailure.message)
+            self.viewState = .error(MessageCenter.MessageType.companyLoadingFailure.message)
         }
     }
     
@@ -162,7 +162,7 @@ final class ProfileViewModel {
             }
         } catch {
             print("Error loading profile \(error)")
-            self.viewState = .error(AppError.ErrorType.generalError.message)
+            self.viewState = .error(MessageCenter.MessageType.generalError.message)
         }
     }
     
@@ -188,7 +188,7 @@ final class ProfileViewModel {
                    let uploadedImageURL = URL(string: imageURLString) {
                     imageURL = uploadedImageURL
                 } else {
-                    self.viewState = .error(AppError.ErrorType.profileImageUploadFailed.message)
+                    self.viewState = .error(MessageCenter.MessageType.profileImageUploadFailed.message)
                 }
             }
             
@@ -214,9 +214,9 @@ final class ProfileViewModel {
             self.displayName = username
             isProfileUpdated = true
             
-            viewState = .success(AppError.ErrorType.profileUpdateSuccess.message)
+            viewState = .success(MessageCenter.MessageType.profileUpdateSuccess.message)
         } catch {
-            viewState = .error(AppError.ErrorType.sensitiveApiNotEnabled.message)
+            viewState = .error(MessageCenter.MessageType.sensitiveApiNotEnabled.message)
         }
     }
     
@@ -231,17 +231,17 @@ final class ProfileViewModel {
             self.imageViewState = .success
             
         case .sensitiveContent:
-            self.viewState = .error(AppError.ErrorType.sensitiveContent.message)
+            self.viewState = .error(MessageCenter.MessageType.sensitiveContent.message)
             
         case .analysisError:
             self.viewState = .sensitiveApiNotEnabled
             
         case .loadingError:
-            self.viewState = .error(AppError.ErrorType.generalError.message)
+            self.viewState = .error(MessageCenter.MessageType.generalError.message)
         }
     }
     
-    // MARK: - Private methods
+    // MARK: - Private functions
     
     private func checkForProhibitedWords() -> Bool {
         let fieldsToCheck = [
@@ -256,7 +256,7 @@ final class ProfileViewModel {
         
         if prohibitedWordsCheck.values.contains(true) {
             _ = prohibitedWordsCheck.filter { $0.value }.keys.joined(separator: ", ")
-            self.viewState = .error(AppError.ErrorType.inappropriateTextfieldInput.message)
+            self.viewState = .error(MessageCenter.MessageType.inappropriateTextfieldInput.message)
             return false
         }
         return true
@@ -277,7 +277,7 @@ final class ProfileViewModel {
         do {
             try await prohibitedWordsService.loadProhibitedWords()
         } catch {
-            self.viewState = .error(AppError.ErrorType.generalError.message)
+            self.viewState = .error(MessageCenter.MessageType.generalError.message)
         }
     }
     

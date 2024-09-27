@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct MockHTTPDataDownloader: HTTPDataDownloaderProtocol {
+struct MockHttpClient: httpClientProtocol {
     func loadData<T>(as type: T.Type, endpoint: String,  headers: [String : String]?) async throws -> T where T : Decodable {
         return try JSONDecoder().decode(T.self, from: Data())
     }
@@ -16,7 +16,7 @@ struct MockHTTPDataDownloader: HTTPDataDownloaderProtocol {
         return try JSONDecoder().decode(T.self, from: Data())
     }
     
-    func fetchURL(from url: URL) async throws -> Data {
+    func loadURL(from url: URL) async throws -> Data {
         return Data()
     }
     

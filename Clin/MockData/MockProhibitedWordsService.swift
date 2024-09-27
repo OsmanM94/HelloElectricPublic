@@ -22,8 +22,4 @@ struct MockProhibitedWordsService: ProhibitedWordsServiceProtocol {
     func containsProhibitedWord(_ text: String) -> Bool {
         return true
     }
-    
-    
-    
-    // Implement the required methods with mock behavior
 }

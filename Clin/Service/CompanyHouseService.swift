@@ -25,7 +25,7 @@ protocol CompaniesHouseServiceProtocol {
 }
 
 final class CompaniesHouseService: CompaniesHouseServiceProtocol {
-    @Injected(\.httpDataDownloader) var httpDataDownloader: HTTPDataDownloaderProtocol
+    @Injected(\.httpClient) var httpClient: httpClientProtocol
 
     private let apiKey = "1c1054e0-d0ac-4bb4-bbbd-5ba91352b0a3"
     private let baseURL = "https://api.company-information.service.gov.uk/company"
@@ -37,7 +37,7 @@ final class CompaniesHouseService: CompaniesHouseServiceProtocol {
             "Content-Type": "application/json"
         ]
         
-        return try await httpDataDownloader.loadData(
+        return try await httpClient.loadData(
             as: CompanyInfo.self,
             endpoint: endpoint,
             headers: headers

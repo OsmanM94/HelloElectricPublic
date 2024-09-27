@@ -62,7 +62,7 @@ struct Favourite: Codable, Identifiable, Hashable {
         case warranty
         case serviceHistory = "service_history"
         case numberOfOwners = "owners"
-        case createdAt = "created_at"
+        case createdAt = "refreshed_at"
         case userID = "user_id"
         case listingID = "listing_id"
         case isPromoted = "is_promoted"

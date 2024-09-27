@@ -60,10 +60,10 @@ final class ChartViewModel {
             registrationsCache.set(loadedData, forKey: cacheKey)
             processData(loadedData)
             
-            viewState = loadedData.isEmpty ? .empty(AppError.ErrorType.noAvailableData.message) : .loaded
+            viewState = loadedData.isEmpty ? .empty(MessageCenter.MessageType.noAvailableData.message) : .loaded
             print("DEBUG: Got data from API.")
         } catch {
-            viewState = .error(AppError.ErrorType.generalError.message)
+            viewState = .error(MessageCenter.MessageType.generalError.message)
         }
     }
     
