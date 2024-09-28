@@ -7,7 +7,6 @@
 
 import Foundation
 import Factory
-import PostgREST
 
 enum DatabaseFilter: String, CaseIterable {
     case all = "All"
@@ -136,7 +135,6 @@ final class EVDataViewModel {
         
         isSearching = false
     }
-    
     
     @MainActor
     func clearSearch() {
