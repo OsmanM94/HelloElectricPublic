@@ -95,7 +95,6 @@ final class EVDataViewModel {
     
     // MARK: - Dependencies
     @ObservationIgnored @Injected(\.evDatabase) private var evDatabaseService
-    @ObservationIgnored @Injected(\.supabaseService) private var supabaseService
     
     private let table: String = "ev_database"
     
@@ -116,7 +115,7 @@ final class EVDataViewModel {
         isSearching = true
         
         do {
-            let newEVs = try await searchEVs(
+            let newEVs = try await evDatabaseService.searchEVs(
                 searchText: currentSearchText,
                 from: currentPage * pageSize,
                 to: (currentPage + 1) * pageSize - 1
@@ -137,6 +136,7 @@ final class EVDataViewModel {
         
         isSearching = false
     }
+    
     
     @MainActor
     func clearSearch() {
@@ -177,33 +177,21 @@ final class EVDataViewModel {
     }
     
     // MARK: - Private functions
+    
     private func resetPagination() {
         self.currentPage = 0
         self.hasMoreListings = true
         self.evDatabase = []
         self.viewState = .loading
     }
-    
-    private func searchEVs(searchText: String, from: Int, to: Int) async throws -> [EVDatabase] {
-        let searchComponents = searchText.split(separator: " ").map { String($0) }
         
-        let orConditions = searchComponents.map { component in
-            "car_name.ilike.%\(component)%"
-        }.joined(separator: ",")
-        
-        return try await supabaseService.client
-            .from(table)
-            .select()
-            .or(orConditions)
-            .range(from: from, to: to)
-            .order("car_name", ascending: false)
-            .execute()
-            .value
-    }
-    
     private func loadEVs() async {
         do {
-            let newEVs = try await searchDatabaseWithFilter()
+            let newEVs = try await evDatabaseService.loadEVs(
+                filter: databaseFilter,
+                from: currentPage * pageSize,
+                to: (currentPage + 1) * pageSize - 1
+            )
             
             if newEVs.isEmpty {
                 hasMoreListings = false
@@ -216,33 +204,6 @@ final class EVDataViewModel {
         } catch {
             print("Error loading EV database \(error)")
             viewState = .error(MessageCenter.MessageType.generalError.message)
-        }
-    }
-        
-    private func searchDatabaseWithFilter() async throws -> [EVDatabase] {
-        do {
-            let filterValues = self.databaseFilter.databaseValues
-            
-            var query = supabaseService.client
-                .from(table)
-                .select()
-            
-            // Apply order for multiple columns
-            for filter in filterValues {
-                let column = filter["column"] ?? "car_name"
-                let order = filter["order"] ?? "asc"
-                query = query.order(column, ascending: order == "asc") as! PostgrestFilterBuilder
-            }
-            
-            // Apply pagination
-            let result: [EVDatabase] = try await query
-                .range(from: currentPage * pageSize, to: (currentPage + 1) * pageSize - 1)
-                .execute()
-                .value
-            
-            return result
-        } catch {
-            throw error
         }
     }
 }
