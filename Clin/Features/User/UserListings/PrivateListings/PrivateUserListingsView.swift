@@ -141,9 +141,7 @@ struct PrivateUserListingsView: View {
             }
         }) {
             if !viewModel.canRefreshListing(listing) {
-                Text("Refresh not available")
-                    .font(.caption2)
-                    .multilineTextAlignment(.center)
+                Label("Refresh", systemImage: "nosign")
             } else {
                 Label("Refresh", systemImage: "arrow.clockwise")
             }

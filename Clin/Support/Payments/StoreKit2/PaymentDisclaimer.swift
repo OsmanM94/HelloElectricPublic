@@ -19,16 +19,13 @@ struct PaymentDisclaimer: View {
                 .padding()
                 .background(Color.yellow.opacity(0.1))
                 .clipShape(RoundedRectangle(cornerRadius: 8))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(Color.yellow.opacity(0.5), lineWidth: 1)
-                )
+               
             HStack {
                 Image(systemName: termsAcknowledged ? "checkmark.square.fill" : "square")
-                    .foregroundColor(termsAcknowledged ? .tabColour : .secondary)
+                    .foregroundStyle(termsAcknowledged ? .tabColour : .secondary)
                 Text("I acknowledge that this purchase is non-refundable")
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
             }
             .onTapGesture {
                 termsAcknowledged.toggle()

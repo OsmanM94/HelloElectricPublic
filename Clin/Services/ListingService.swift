@@ -13,7 +13,7 @@ final class ListingService: ListingServiceProtocol {
         
     func loadListing(id: Int) async throws -> Listing {
         try await databaseService
-            .loadByID(
+            .loadItemByID(
                 from: "car_listing",
                 id: id
             )
@@ -23,12 +23,12 @@ final class ListingService: ListingServiceProtocol {
         let now = Date()
         
         // Update the listing
-        try await databaseService.update(["refreshed_at": now], in: "car_listing", id: id)
+        try await databaseService.updateItemByID(["refreshed_at": now], in: "car_listing", id: id)
     }
     
     func loadUserListings(userID: UUID) async throws -> [Listing] {
         try await databaseService
-            .loadMultipleItems(
+            .loadItemsByField(
                 from: "car_listing",
                 orderBy: "refreshed_at",
                 ascending: false,
@@ -39,22 +39,22 @@ final class ListingService: ListingServiceProtocol {
     
     func loadModels() async throws -> [EVModels] {
         try await databaseService
-            .loadAll(from: "ev_make", orderBy: "make", ascending: true)
+            .loadAllItems(from: "ev_make", orderBy: "make", ascending: true)
     }
     
     func loadLocations() async throws -> [Cities] {
         try await databaseService
-            .loadAll(from: "uk_cities", orderBy: "city", ascending: true)
+            .loadAllItems(from: "uk_cities", orderBy: "city", ascending: true)
     }
     
     func loadEVfeatures() async throws -> [EVFeatures] {
         try await databaseService
-            .loadAll(from: "ev_features", orderBy: "id", ascending: true)
+            .loadAllItems(from: "ev_features", orderBy: "id", ascending: true)
     }
     
     func createListing(_ listing: Listing) async throws {
         try await databaseService
-            .insert(
+            .insertItem(
                 listing,
                 into: "car_listing"
             )
@@ -62,12 +62,12 @@ final class ListingService: ListingServiceProtocol {
     
     func updateListing(_ listing: Listing) async throws {
         guard let id = listing.id else { return }
-        try await databaseService.update(listing, in: "car_listing", id: id)
+        try await databaseService.updateItemByID(listing, in: "car_listing", id: id)
     }
     
     func deleteListing(at id: Int) async throws {
         try await databaseService
-            .delete(
+            .deleteItemByID(
                 from: "car_listing",
                 id: id
             )
@@ -75,7 +75,7 @@ final class ListingService: ListingServiceProtocol {
     
     func loadListingsByVehicleType(type: [String], column: String, from: Int, to: Int) async throws -> [Listing] {
         try await databaseService
-            .loadPaginatedDataWithListFilter(
+            .loadPaginatedItemsWithListFilter(
                 from: "car_listing",
                 filter: column, values: type,
                 orderBy: "is_promoted",
@@ -87,7 +87,7 @@ final class ListingService: ListingServiceProtocol {
     }
         
     func loadFilteredListings(vehicleType: [String], orderBy: String, ascending: Bool, from: Int, to: Int) async throws -> [Listing] {
-        try await databaseService.loadPaginatedDataWithListFilter(
+        try await databaseService.loadPaginatedItemsWithListFilter(
             from: "car_listing",
             filter: "body_type",
             values: vehicleType,

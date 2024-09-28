@@ -38,7 +38,7 @@ final class FeatureRequestViewModel {
     var userViewState : UserViewState = .loading
     var newRequestViewState : NewRequestViewState = .loaded
     
-    var name: String = ""
+    var name: String = "Annonymous"
     var title: String = ""
     var description: String = ""
     
@@ -82,7 +82,7 @@ final class FeatureRequestViewModel {
                 votedUserIds: []
             )
             
-            try await databaseService.insert(newFeature, into: "feature_request")
+            try await databaseService.insertItem(newFeature, into: "feature_request")
             
             self.features.append(newFeature)
             
@@ -97,7 +97,7 @@ final class FeatureRequestViewModel {
             self.newRequestViewState = .error(MessageCenter.MessageType.generalError.message)
         }
     }
-    
+        
     @MainActor
     func vote(for featureRequest: FeatureRequest) async {
         do {
@@ -116,7 +116,7 @@ final class FeatureRequestViewModel {
                 updatedRequest.voteCount += 1
                 updatedRequest.votedUserIds.append(user.id)
                 
-                try await databaseService.update(updatedRequest, in: "feature_request", id: id)
+                try await databaseService.updateItemByID(updatedRequest, in: "feature_request", id: id)
                 
                 if let index = features.firstIndex(where: { $0.id == id }) {
                     features[index] = updatedRequest
@@ -134,7 +134,6 @@ final class FeatureRequestViewModel {
             self.viewState = .error(MessageCenter.MessageType.generalError.message)
         }
     }
-    
     
     @MainActor
     func unvote(for featureRequest: FeatureRequest) async {
@@ -154,7 +153,7 @@ final class FeatureRequestViewModel {
                 updatedRequest.voteCount -= 1
                 updatedRequest.votedUserIds.removeAll { $0 == user.id }
                 
-                try await databaseService.update(updatedRequest, in: "feature_request", id: id)
+                try await databaseService.updateItemByID(updatedRequest, in: "feature_request", id: id)
                 
                 if let index = features.firstIndex(where: { $0.id == id }) {
                     features[index] = updatedRequest
@@ -192,7 +191,7 @@ final class FeatureRequestViewModel {
         self.viewState = .loading
         
         do {
-            let loadedFeatures: [FeatureRequest] = try await databaseService.loadAll(from: "feature_request", orderBy: "vote_count", ascending: false)
+            let loadedFeatures: [FeatureRequest] = try await databaseService.loadAllItems(from: "feature_request", orderBy: "vote_count", ascending: false)
             
             self.features = loadedFeatures
             self.viewState = .loaded
@@ -212,7 +211,7 @@ final class FeatureRequestViewModel {
                 return
             }
             
-            let userFeatures: [FeatureRequest] = try await databaseService.loadMultipleItems(
+            let userFeatures: [FeatureRequest] = try await databaseService.loadItemsByField(
                 from: "feature_request",
                 orderBy: "created_at",
                 ascending: false,
@@ -237,7 +236,7 @@ final class FeatureRequestViewModel {
                 return
             }
             
-            try await databaseService.delete(from: "feature_request", id: id)
+            try await databaseService.deleteItemByID(from: "feature_request", id: id)
             
             // Remove the deleted feature from both arrays
             self.features.removeAll { $0.id == id }

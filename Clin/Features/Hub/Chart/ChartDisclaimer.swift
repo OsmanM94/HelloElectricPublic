@@ -12,6 +12,7 @@ struct ChartDisclaimer: View {
         DisclosureGroup("Disclaimer") {
             disclaimerContent
         }
+        .tint(.primary)
         .padding()
         .background(Color.lightGrayBackground)
         .clipShape(RoundedRectangle(cornerRadius: 10))
@@ -28,10 +29,6 @@ struct ChartDisclaimer: View {
         .padding()
         .background(Color.yellow.opacity(0.1))
         .clipShape(RoundedRectangle(cornerRadius: 8))
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(Color.yellow.opacity(0.5), lineWidth: 1)
-        )
     }
 }
 

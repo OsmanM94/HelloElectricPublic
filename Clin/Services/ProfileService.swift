@@ -13,7 +13,7 @@ final class ProfileService: ProfileServiceProtocol {
     @Injected(\.supabaseService) private var supabaseService
     
     func loadProfile(for userID: UUID) async throws -> Profile {
-        let profile: Profile = try await databaseService.loadSingleItem(
+        let profile: Profile = try await databaseService.loadSingleItemByField(
             from: "profiles",
             field: "user_id",
             uuid: userID
@@ -23,7 +23,7 @@ final class ProfileService: ProfileServiceProtocol {
     
     func updateProfile(_ profile: Profile) async throws {
         try await databaseService
-            .updateByUUID(
+            .updateItemByUserID(
                 profile,
                 in: "profiles",
                 userID: profile.userID

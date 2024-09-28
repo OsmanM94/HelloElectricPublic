@@ -60,6 +60,7 @@ struct FeatureRequestRow: View {
     }
 }
 
+
 #Preview {
     FeatureRequestRow(viewModel: FeatureRequestViewModel(), request: FeatureRequest(id: 1, name: "John", title: "Chat", description: "I would like a chat messaging", status: FeatureRequestStatus(rawValue: "Approved")!, createdAt: Date.now, comments: "I will implement this feature, thanks", userId: UUID(), voteCount: 1, votedUserIds: []))
 }

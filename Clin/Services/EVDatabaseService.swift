@@ -9,11 +9,19 @@ import Foundation
 import Factory
 
 final class EVDatabaseService: EVDatabaseServiceProtocol {
+    func searchEVs(searchText: String, from: Int, to: Int) async throws -> [EVDatabase] {
+        <#code#>
+    }
+    
+    func loadEVs(filter: DatabaseFilter, from: Int, to: Int) async throws -> [EVDatabase] {
+        <#code#>
+    }
+    
     @Injected(\.databaseService) private var databaseService
     
     func loadPaginatedEVs(from: Int,to: Int) async throws -> [EVDatabase] {
         try await databaseService
-            .loadPaginatedData(
+            .loadPaginatedItems(
                 from: "ev_database",
                 orderBy: "car_name",
                 ascending: true,

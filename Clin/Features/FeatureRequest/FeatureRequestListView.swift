@@ -15,7 +15,7 @@ struct FeatureRequestListView: View {
             VStack {
                 switch viewModel.viewState {
                 case .loading:
-                    CustomProgressView(message: "Loading...")
+                    CustomProgressView(message: "")
                     
                 case .loaded:
                     MainContentView(viewModel: viewModel)

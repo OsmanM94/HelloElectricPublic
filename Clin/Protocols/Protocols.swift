@@ -8,19 +8,19 @@ import SwiftUI
 import PhotosUI
 
 protocol DatabaseServiceProtocol {
-    func loadPaginatedData<T: Decodable>(from table: String, orderBy: String, ascending: Bool, from: Int, to: Int) async throws -> [T]
-    func loadPaginatedDataWithListFilter<T: Decodable>(from table: String, filter: String, values: [String], orderBy: String, orderBy2: String, ascending: Bool, from: Int, to: Int) async throws -> [T]
-    func searchPaginatedDataWithOrFilter<T: Decodable> (from table: String, filter: String, from: Int, to: Int, orderBy: String, ascending: Bool) async throws -> [T]
-    func searchWithComplexFilter<T: Decodable>(from table: String,filters: [String: Any],from: Int,to: Int, orderBy:String, ascending: Bool) async throws -> [T]
-    func loadAll<T: Decodable>(from table: String, orderBy: String, ascending: Bool) async throws -> [T]
-    func loadByID<T: Decodable>(from table: String, id: Int) async throws -> T
-    func loadMultipleItems<T: Decodable>(from table: String, orderBy: String, ascending: Bool, field: String, uuid: UUID) async throws -> [T]
-    func loadSingleItem<T: Decodable>(from table: String, field: String, uuid: UUID) async throws -> T
-    func insert<T: Encodable>(_ item: T, into table: String) async throws
-    func update<T: Encodable>(_ item: T, in table: String, id: Int) async throws
-    func updateByUUID<T: Encodable>(_ item: T, in table: String, userID: UUID) async throws
-    func delete(from table: String, id: Int) async throws
-    func deleteByField(from table: String, field: String , value: Int, field2: String, value2: UUID) async throws
+    func loadPaginatedItems<T: Decodable>(from table: String, orderBy: String, ascending: Bool, from: Int, to: Int) async throws -> [T]
+    func loadPaginatedItemsWithListFilter<T: Decodable>(from table: String, filter: String, values: [String], orderBy: String, orderBy2: String, ascending: Bool, from: Int, to: Int) async throws -> [T]
+    func searchPaginatedItemsWithOrFilter<T: Decodable> (from table: String, filter: String, from: Int, to: Int, orderBy: String, ascending: Bool) async throws -> [T]
+    func searchItemsWithComplexFilter<T: Decodable>(from table: String,filters: [String: Any],from: Int,to: Int, orderBy:String, ascending: Bool) async throws -> [T]
+    func loadAllItems<T: Decodable>(from table: String, orderBy: String, ascending: Bool) async throws -> [T]
+    func loadItemByID<T: Decodable>(from table: String, id: Int) async throws -> T
+    func loadItemsByField<T: Decodable>(from table: String, orderBy: String, ascending: Bool, field: String, uuid: UUID) async throws -> [T]
+    func loadSingleItemByField<T: Decodable>(from table: String, field: String, uuid: UUID) async throws -> T
+    func insertItem<T: Encodable>(_ item: T, into table: String) async throws
+    func updateItemByID<T: Encodable>(_ item: T, in table: String, id: Int) async throws
+    func updateItemByUserID<T: Encodable>(_ item: T, in table: String, userID: UUID) async throws
+    func deleteItemByID(from table: String, id: Int) async throws
+    func deleteItemByFields(from table: String, field: String , value: Int, field2: String, value2: UUID) async throws
 }
 
 protocol ListingServiceProtocol {
@@ -39,7 +39,8 @@ protocol ListingServiceProtocol {
 }
 
 protocol EVDatabaseServiceProtocol {
-    func loadPaginatedEVs(from: Int, to: Int) async throws -> [EVDatabase]
+    func searchEVs(searchText: String, from: Int, to: Int) async throws -> [EVDatabase]
+    func loadEVs(filter: DatabaseFilter, from: Int, to: Int) async throws -> [EVDatabase]
 }
 
 protocol FavouriteServiceProtocol {

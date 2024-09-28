@@ -13,22 +13,22 @@ final class SearchService: SearchServiceProtocol {
     
     func loadModels() async throws -> [EVModels] {
         try await databaseService
-            .loadAll(from: "ev_make", orderBy: "make", ascending: true)
+            .loadAllItems(from: "ev_make", orderBy: "make", ascending: true)
     }
     
     func loadCities() async throws -> [Cities] {
         try await databaseService
-            .loadAll(from: "uk_cities", orderBy: "id", ascending: true)
+            .loadAllItems(from: "uk_cities", orderBy: "id", ascending: true)
     }
     
     func loadEVfeatures() async throws -> [EVFeatures] {
         try await databaseService
-            .loadAll(from: "ev_features", orderBy: "id", ascending: true)
+            .loadAllItems(from: "ev_features", orderBy: "id", ascending: true)
     }
     
     func searchWithPaginationAndFilter(or: String, from: Int, to: Int) async throws -> [Listing] {
         try await databaseService
-            .searchPaginatedDataWithOrFilter(
+            .searchPaginatedItemsWithOrFilter(
                 from: "car_listing",
                 filter: or,
                 from: from,
@@ -40,7 +40,7 @@ final class SearchService: SearchServiceProtocol {
     
     func searchFilteredItems(filters: [String: Any], from: Int, to: Int) async throws -> [Listing] {
         try await databaseService
-            .searchWithComplexFilter(
+            .searchItemsWithComplexFilter(
                 from: "car_listing",
                 filters: filters,
                 from: from,

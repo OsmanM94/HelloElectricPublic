@@ -13,7 +13,7 @@ final class FavouriteService: FavouriteServiceProtocol {
     
     func loadUserFavourites(userID: UUID) async throws -> [Favourite] {
         try await databaseService
-            .loadMultipleItems(
+            .loadItemsByField(
                 from: "favourite_listing",
                 orderBy: "refreshed_at",
                 ascending: false,
@@ -23,12 +23,12 @@ final class FavouriteService: FavouriteServiceProtocol {
     }
     
     func addToFavorites(_ favourite: Favourite) async throws {
-        try await databaseService.insert(favourite, into: "favourite_listing")
+        try await databaseService.insertItem(favourite, into: "favourite_listing")
     }
     
     func removeFromFavorites(_ favourite: Favourite, for userID: UUID) async throws {
         try await databaseService
-            .deleteByField(
+            .deleteItemByFields(
                 from: "favourite_listing",
                 field: "listing_id",
                 value: favourite.listingID,

@@ -98,7 +98,7 @@ enum MessageCenter: Error, LocalizedError {
             case .noAuthUserFound:
                 return "You need to be signed in to perform this action. Please sign in and try again."
             case .deleteSuccess:
-                return "The item was successfully deleted."
+                return "The listing was successfully deleted."
             case .refreshSuccess:
                 return "The data was successfully refreshed."
             case .inappropriateTextfieldInput, .inappropriateField:
@@ -110,13 +110,13 @@ enum MessageCenter: Error, LocalizedError {
             case .profileUpdateSuccess:
                 return "Your profile has been successfully updated."
             case .updateSuccess:
-                return "The item has been successfully updated."
+                return "The listing has been successfully updated."
             case .createSuccess:
-                return "The new item has been successfully created."
+                return "The listing has been successfully created."
             case .notElectric:
-                return "This feature is only available for electric vehicles. Please check your vehicle information."
+                return "This feature is only available for electric vehicles."
             case .invalidRegistration:
-                return "The entered registration number is not valid. Please double-check and try again."
+                return "Registration number is not valid."
             case .errorDownloadingImages:
                 return "There was an issue downloading images. Please check your internet connection and try again."
             case .formInvalid:
@@ -128,15 +128,15 @@ enum MessageCenter: Error, LocalizedError {
             case .profileImageUploadFailed:
                 return "We couldn't upload your profile image. Please try again or choose a different image."
             case .companyDissolved:
-                return "The requested company is no longer active. Please check the company details."
+                return "The requested company is no longer active."
             case .companyLoadingFailure:
-                return "We couldn't find information for the requested company. Please verify the company details and try again."
+                return "We couldn't find information for the requested company."
             case .errorSigningOut:
                 return "There was an issue signing you out. Please close the app, reopen it, and try again."
             case .errorDeletingAccount:
                 return "We encountered an issue while trying to delete your account. Please try again or contact support for assistance."
             case .failedToLoadNews:
-                return "We couldn't load the latest news. Please check your internet connection and try again."
+                return "We couldn't load the latest news."
             case .biometricsNotAvailable:
                 return "Biometric authentication is not available on this device. Please use an alternative authentication method."
             case .authenticationFailed:

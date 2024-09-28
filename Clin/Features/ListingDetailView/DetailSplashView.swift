@@ -11,29 +11,35 @@ struct DetailSplashView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text("Used")
+                    .font(.title)
+                    .fontWeight(.bold)
+                
+                Spacer()
+                
+                Image(systemName: "heart")
+            }
             Text("Tesla Model 3 2024")
-                .font(.title)
-                .fontWeight(.bold)
-            Text("Used")
                 .font(.title2)
-                .foregroundStyle(.secondary)
+            
             Text("120,000 miles")
                 .font(.title3)
+            
+            Divider()
+            
             Text("£17,000")
                 .font(.title2)
                 .fontWeight(.bold)
             
-            Divider()
-            
             HStack(spacing: 15) {
                 Image(systemName: "gauge.with.needle")
                     .font(.system(size: 24))
-                    .foregroundStyle(.secondary)
-                
+                   
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Mileage")
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                   
                     Text("120.000 miles")
                         .font(.headline)
                         .fontWeight(.semibold)
@@ -49,9 +55,8 @@ struct DetailSplashView: View {
                         .clipShape(UnevenRoundedRectangle(topLeadingRadius: 12, bottomLeadingRadius: 0, bottomTrailingRadius: 0, topTrailingRadius: 12, style: .continuous))
                 }
             }
-            .foregroundStyle(.gray.opacity(0.5))
+            .foregroundStyle(.gray.opacity(0.3))
         }
-        .shimmer(when: $isAnimating)
         .padding()
         .onAppear {
             isAnimating.toggle()
@@ -59,9 +64,18 @@ struct DetailSplashView: View {
         .onDisappear {
             isAnimating = false
         }
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Text("Listing ID")
+                    .font(.caption)
+            }
+        }
+        .redacted(reason: .placeholder)
     }
 }
 
 #Preview {
-    DetailSplashView()
+    NavigationStack {
+        DetailSplashView()
+    }
 }

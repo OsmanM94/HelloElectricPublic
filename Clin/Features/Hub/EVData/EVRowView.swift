@@ -17,7 +17,6 @@ struct EVRowView: View {
             VStack(alignment: .leading, spacing: 12) {
                 carNameAndYear
                 specsView
-                secondSpecsView
             }
         }
     }
@@ -55,7 +54,7 @@ struct EVRowView: View {
     }
     
     private var priceView: some View {
-        VStack(spacing: 4) {
+        VStack(alignment: .leading, spacing: 2) {
             Text("Price")
                 .font(.caption)
                 .fontWeight(.semibold)
@@ -66,24 +65,21 @@ struct EVRowView: View {
     }
     
     private var specsView: some View {
-        HStack {
-            specItem(text: "Top Speed", value: ev.performanceTopSpeed ?? "N/A")
-            Spacer()
+        HStack(spacing: 10) {
+            VStack(alignment: .leading, spacing: 5) {
+                specItem(text: "Top Speed", value: ev.performanceTopSpeed ?? "N/A")
+                specItemNumeric(text: "Rapid Charge", value: ev.chargingRapidChargeSpeed ?? 0, type: "mph")
+            }
             
-            specItemNumeric(text: "Range", value: ev.electricRange ?? 0, type: "mi")
-            Spacer()
-            
-            specItemNumeric(text: "0-62", value: ev.performanceAcceleration0_62_Mph ?? 0, type: "sec")
-        }
-    }
-    
-    private var secondSpecsView: some View {
-        HStack {
-            specItemNumeric(text: "Rapid Charge", value: ev.chargingRapidChargeSpeed ?? 0, type: "mph")
-            Spacer()
-            specItemNumeric(text: "Efficiency", value: ev.efficiencyRealRangeConsumption ?? 0, type: "Wh/mi")
-            Spacer()
-            priceView
+            VStack(alignment: .leading, spacing: 5) {
+                specItemNumeric(text: "Range", value: ev.electricRange ?? 0, type: "mi")
+                specItemNumeric(text: "Efficiency", value: ev.efficiencyRealRangeConsumption ?? 0, type: "Wh/mi")
+            }
+           
+            VStack(alignment: .leading, spacing: 5) {
+                specItemNumeric(text: "0-62", value: ev.performanceAcceleration0_62_Mph ?? 0, type: "sec")
+                priceView
+            }
         }
     }
     

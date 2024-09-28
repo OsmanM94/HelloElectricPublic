@@ -63,6 +63,7 @@ struct NewsDetailView: View {
                 DisclosureGroup("Disclaimer") {
                     NewsDisclaimer()
                 }
+                .tint(.primary)
                 .padding()
                 .background(Color.lightGrayBackground)
                 .clipShape(RoundedRectangle(cornerRadius: 10))

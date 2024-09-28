@@ -124,7 +124,7 @@ struct DetailView<T: DetailItem>: View {
     private var splashView: some View {
         DetailSplashView()
             .onAppear {
-                performAfterDelay(1.5) {
+                performAfterDelay(0.5) {
                     withAnimation {
                         showSplash = false
                     }
@@ -221,7 +221,7 @@ struct DetailView<T: DetailItem>: View {
             
             Text("Promoted")
                 .padding(10)
-                .foregroundStyle(.tabColour.gradient)
+                .foregroundStyle(.orange.gradient)
                 .background(Color.lightGrayBackground)
                 .clipShape(RoundedRectangle(cornerRadius: 5))
                 .opacity(item.isPromoted ? 1 : 0)
@@ -299,6 +299,7 @@ struct DetailView<T: DetailItem>: View {
             .fontWeight(.regular)
             .padding(.top, 10)
         }
+        .tint(.primary)
         .padding()
         .background(Color.lightGrayBackground)
         .clipShape(RoundedRectangle(cornerRadius: 10))
@@ -311,6 +312,7 @@ struct DetailView<T: DetailItem>: View {
                 .fontWeight(.regular)
                 .padding(.top, 10)
         }
+        .tint(.primary)
         .padding()
         .background(Color.lightGrayBackground)
         .clipShape(RoundedRectangle(cornerRadius: 10))
@@ -346,6 +348,7 @@ struct DetailView<T: DetailItem>: View {
                 EmptyView()
             }
         }
+        .tint(.primary)
         .padding()
         .background(Color.lightGrayBackground)
         .clipShape(RoundedRectangle(cornerRadius: 10))
@@ -394,6 +397,7 @@ struct DetailView<T: DetailItem>: View {
         DisclosureGroup("Disclaimer") {
             ListingDisclaimerView()
         }
+        .tint(.primary)
         .padding()
         .background(Color.lightGrayBackground)
         .clipShape(RoundedRectangle(cornerRadius: 10))

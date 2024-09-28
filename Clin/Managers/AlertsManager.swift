@@ -23,7 +23,7 @@ struct AlertsManager<Item: Identifiable>: ViewModifier {
                     isPresented = false
                 }
                 Button(deleteButtonText, role: .destructive) {
-                    Task {
+                    Task { 
                         await action(item)
                         isPresented = false
                     }

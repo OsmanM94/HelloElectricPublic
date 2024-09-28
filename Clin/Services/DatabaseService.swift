@@ -11,7 +11,7 @@ import Factory
 final class DatabaseService: DatabaseServiceProtocol {
     @Injected(\.supabaseService) private var supabaseService
     
-    func loadPaginatedData<T: Decodable>(from table: String, orderBy: String, ascending: Bool = true, from: Int, to: Int) async throws -> [T] {
+    func loadPaginatedItems<T: Decodable>(from table: String, orderBy: String, ascending: Bool = true, from: Int, to: Int) async throws -> [T] {
             do {
                 let result: [T] = try await supabaseService.client
                     .from(table)
@@ -26,7 +26,7 @@ final class DatabaseService: DatabaseServiceProtocol {
             }
         }
     
-    func loadPaginatedDataWithListFilter<T: Decodable>(from table: String, filter: String ,values: [String], orderBy: String, orderBy2: String, ascending: Bool, from: Int, to: Int) async throws -> [T] {
+    func loadPaginatedItemsWithListFilter<T: Decodable>(from table: String, filter: String ,values: [String], orderBy: String, orderBy2: String, ascending: Bool, from: Int, to: Int) async throws -> [T] {
         do {
             let result: [T] = try await supabaseService.client
                 .from(table)
@@ -43,7 +43,7 @@ final class DatabaseService: DatabaseServiceProtocol {
         }
     }
     
-    func searchPaginatedDataWithOrFilter<T: Decodable> (from table: String, filter: String, from: Int, to: Int, orderBy: String, ascending: Bool) async throws -> [T] {
+    func searchPaginatedItemsWithOrFilter<T: Decodable> (from table: String, filter: String, from: Int, to: Int, orderBy: String, ascending: Bool) async throws -> [T] {
         do {
             let result: [T] = try await supabaseService.client
                 .from(table)
@@ -59,7 +59,7 @@ final class DatabaseService: DatabaseServiceProtocol {
         }
     }
     
-    func loadAll<T: Decodable>(from table: String, orderBy: String, ascending: Bool = true) async throws -> [T] {
+    func loadAllItems<T: Decodable>(from table: String, orderBy: String, ascending: Bool = true) async throws -> [T] {
         do {
             let result: [T] = try await supabaseService.client
                 .from(table)
@@ -73,7 +73,7 @@ final class DatabaseService: DatabaseServiceProtocol {
         }
     }
     
-    func loadByID<T: Decodable>(from table: String, id: Int) async throws -> T {
+    func loadItemByID<T: Decodable>(from table: String, id: Int) async throws -> T {
         do {
             let result: T = try await supabaseService.client
                 .from(table)
@@ -88,7 +88,7 @@ final class DatabaseService: DatabaseServiceProtocol {
         }
     }
     
-    func loadMultipleItems<T: Decodable>(from table: String, orderBy: String, ascending: Bool = true, field: String, uuid: UUID) async throws -> [T] {
+    func loadItemsByField<T: Decodable>(from table: String, orderBy: String, ascending: Bool = true, field: String, uuid: UUID) async throws -> [T] {
         do {
             let result: [T] = try await supabaseService.client
                 .from(table)
@@ -103,7 +103,7 @@ final class DatabaseService: DatabaseServiceProtocol {
         }
     }
     
-    func loadSingleItem<T: Decodable>(from table: String, field: String, uuid: UUID) async throws -> T {
+    func loadSingleItemByField<T: Decodable>(from table: String, field: String, uuid: UUID) async throws -> T {
         do {
             let result: T = try await supabaseService.client
                 .from(table)
@@ -118,7 +118,7 @@ final class DatabaseService: DatabaseServiceProtocol {
         }
     }
     
-    func insert<T: Encodable>(_ item: T, into table: String) async throws {
+    func insertItem<T: Encodable>(_ item: T, into table: String) async throws {
         do {
             try await supabaseService.client
                 .from(table)
@@ -130,7 +130,7 @@ final class DatabaseService: DatabaseServiceProtocol {
         }
     }
     
-    func update<T: Encodable>(_ item: T, in table: String, id: Int) async throws {
+    func updateItemByID<T: Encodable>(_ item: T, in table: String, id: Int) async throws {
         do {
             try await supabaseService.client
                 .from(table)
@@ -143,7 +143,7 @@ final class DatabaseService: DatabaseServiceProtocol {
         }
     }
     
-    func updateByUUID<T: Encodable>(_ item: T, in table: String, userID: UUID) async throws {
+    func updateItemByUserID<T: Encodable>(_ item: T, in table: String, userID: UUID) async throws {
         do {
             try await supabaseService.client
                 .from(table)
@@ -156,7 +156,7 @@ final class DatabaseService: DatabaseServiceProtocol {
         }
     }
     
-    func delete(from table: String, id: Int) async throws {
+    func deleteItemByID(from table: String, id: Int) async throws {
         do {
             try await supabaseService.client
                 .from(table)
@@ -169,7 +169,7 @@ final class DatabaseService: DatabaseServiceProtocol {
         }
     }
     
-    func deleteByField(from table: String, field: String, value: Int, field2: String, value2: UUID) async throws {
+    func deleteItemByFields(from table: String, field: String, value: Int, field2: String, value2: UUID) async throws {
         do {
             try await supabaseService.client
                 .from(table)
@@ -183,7 +183,7 @@ final class DatabaseService: DatabaseServiceProtocol {
         }
     }
     
-    func searchWithComplexFilter<T: Decodable>(
+    func searchItemsWithComplexFilter<T: Decodable>(
            from table: String,
            filters: [String: Any],
            from: Int,
