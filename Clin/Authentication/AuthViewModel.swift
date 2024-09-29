@@ -26,6 +26,7 @@ final class AuthViewModel {
     var displayName: String = ""
     var user: User? = nil
     var showDeleteAlert: Bool = false
+    var signInAppleButtonId = UUID().uuidString
     
     init() {
         Task {

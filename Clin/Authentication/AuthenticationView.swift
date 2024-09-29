@@ -11,7 +11,6 @@ import AuthenticationServices
 struct AuthenticationView: View {
     @Environment(AuthViewModel.self) private var viewModel
     @Environment(\.colorScheme) private var colorScheme
-    @State private var signInAppleButtonId = UUID().uuidString
     
     var body: some View {
         NavigationStack {
@@ -43,10 +42,10 @@ struct AuthenticationView: View {
         } onCompletion: { result in
             viewModel.handleAppleSignInCompletion(result: result)
         }
-        .id(signInAppleButtonId)
+        .id(viewModel.signInAppleButtonId)
         .signInWithAppleButtonStyle(colorScheme == .light ? .black : .white)
         .onChange(of: colorScheme) { _, _ in
-            signInAppleButtonId = UUID().uuidString
+            viewModel.signInAppleButtonId = UUID().uuidString
         }
         .frame(maxWidth: .infinity)
         .frame(height: 55)
@@ -60,6 +59,7 @@ struct AuthenticationView: View {
             Text("Terms and Conditions")
                 .font(.subheadline)
         }
+        .tint(.primary)
         .padding(.top)
     }
     
