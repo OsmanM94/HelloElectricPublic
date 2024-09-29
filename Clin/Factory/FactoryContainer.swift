@@ -63,6 +63,10 @@ extension Container {
     var evDatabase: Factory<EVDatabaseServiceProtocol> {
         Factory(self) { EVDatabaseService() }
     }
+    
+    var authService: Factory<AuthServiceProtocol> {
+        Factory(self) { AuthenticationService() }
+    }
         
     /// ViewModels
     var createFormDataModel: Factory<CreateFormDataModel> {

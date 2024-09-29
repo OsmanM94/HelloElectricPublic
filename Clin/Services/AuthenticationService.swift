@@ -9,7 +9,7 @@ import Foundation
 import Supabase
 import Factory
 
-class SupabaseAuthService: AuthServiceProtocol {
+class AuthenticationService: AuthServiceProtocol {
     @Injected(\.supabaseService) private var supabaseService
     
     func signOut() async throws {
