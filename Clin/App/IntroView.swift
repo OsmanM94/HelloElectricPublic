@@ -19,7 +19,7 @@ struct IntroView: View {
                         videoName: "introvideo",
                         fileExtension: "mov"
                     )
-                    .scaleEffect(1.9)
+                    .scaleEffect(1.8)
                 } else {
                     MarketView()
                 }
