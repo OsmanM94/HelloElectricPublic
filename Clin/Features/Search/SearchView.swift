@@ -12,7 +12,6 @@ struct SearchView: View {
     @State private var showFilterView: Bool = false
     
     @FocusState private var isPresented: Bool
-    let systemImageName: String = "slider.horizontal.3"
     
     var body: some View {
         NavigationStack {
@@ -130,11 +129,15 @@ private extension SearchView {
         ToolbarItem(placement: .topBarTrailing) {
             Button(action: { showFilterView = true }) {
                 ZStack(alignment: .topTrailing) {
-                    Image(systemName: systemImageName)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                        .background(Color(.systemGray6))
-                        .clipShape(Capsule())
+                    HStack {
+                        Image(systemName: "slider.horizontal.3")
+                        Text("Filter")
+                    }
+                    .tint(.primary)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(Color(.systemGray6))
+                    .clipShape(Capsule())
                     
                     if viewModel.filters.isFilterApplied {
                         Circle()

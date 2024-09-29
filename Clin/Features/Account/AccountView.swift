@@ -120,10 +120,10 @@ struct AccountView: View {
     }
     
     private var whatsNextSection: some View {
-        Section("Pool feature requests") {
+        Section("Feature requests") {
             DisclosureGroup("Features") {
                 NavigationLink {
-                    LazyView(UpdatesView())
+                    LazyView(ApprovedFeaturesView())
                 } label: {
                     Label("Approved features", systemImage: "chart.line.uptrend.xyaxis")
                 }

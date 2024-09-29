@@ -60,6 +60,7 @@ struct ListingView: View {
                     Image(systemName: "line.3.horizontal.decrease.circle")
                     Text("Sort")
                 }
+                .tint(.primary)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
                 .background(Color(.systemGray6))
@@ -75,6 +76,7 @@ struct ListingView: View {
                 shouldScrollToTop.toggle()
             } label: {
                 Image(systemName: "iphone.radiowaves.left.and.right")
+                    .tint(.primary)
             }
             .disabled(viewModel.viewState == .loading)
             .popoverTip(ScrollToTopTip(), arrowEdge: .bottom)
@@ -88,7 +90,7 @@ struct ListingView: View {
         switch viewModel.viewState {
         case .loading:
             Spacer()
-            CustomProgressView(message: "Loading...")
+            CustomProgressView(message: "")
             Spacer()
             
         case .loaded:

@@ -54,6 +54,7 @@
 		6217F3222C288A6100EF8B2D /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				ApprovedFeature.swift,
 				ChartData.swift,
 				Cities.swift,
 				Dvla.swift,
@@ -74,6 +75,7 @@
 		6217F3452C2977D200EF8B2D /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				AuthenticationServices.swift,
 				CompanyHouseService.swift,
 				DatabaseService.swift,
 				DvlaService.swift,
@@ -92,6 +94,9 @@
 				AboutUs/AboutUsView.swift,
 				Account/AccountView.swift,
 				Account/AccountViewModel.swift,
+				ApprovedFeatures/ApprovedFeatureRow.swift,
+				ApprovedFeatures/ApprovedFeaturesView.swift,
+				ApprovedFeatures/ApprovedFeaturesViewModel.swift,
 				Favourites/AddToFavouritesButton.swift,
 				Favourites/FavouriteListingView.swift,
 				Favourites/FavouriteRowView.swift,
@@ -147,7 +152,6 @@
 				Search/SearchView.swift,
 				Search/SearchViewModel.swift,
 				SupportCenter/SupportCenterView.swift,
-				UpdatesWall/UpdatesView.swift,
 				User/Profile/Components/CircularProfileView.swift,
 				User/Profile/ListingProfile/ListingProfileView.swift,
 				User/Profile/ListingProfile/ListingProfileViewModel.swift,

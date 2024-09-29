@@ -94,13 +94,48 @@ final class PrivateUserListingsViewModel {
             return
         }
         
+        self.viewState = .loading
+        
         do {
+            // Delete the listing from the database
             try await listingService.deleteListing(at: id)
+            
+            // Delete associated main images and thumbnails from storage
+            let allImageUrls = listing.imagesURL + listing.thumbnailsURL
+            let imagePaths = allImageUrls.compactMap { extractImagePath($0) }
+            
+            if !imagePaths.isEmpty {
+                try await listingService.deleteImagesFromStorage(from: "car_images", path: imagePaths)
+            }
+            
+            // Remove the deleted listing from the local array
+            if let index = listings.firstIndex(where: { $0.id == id }) {
+                listings.remove(at: index)
+            }
+            
+            self.viewState = .success
         } catch {
             self.viewState = .error(MessageCenter.MessageType.generalError.message)
         }
     }
     
+    private func extractImagePath(_ imageUrl: URL) -> String? {
+        let bucket = "car_images"
+        
+        guard let pathComponents = URLComponents(url: imageUrl, resolvingAgainstBaseURL: false)?.path.components(separatedBy: "/"),
+              let carImagesIndex = pathComponents.firstIndex(of: bucket),
+              carImagesIndex < pathComponents.count - 1 else {
+            
+            print("DEBUG: Failed to extract image path from URL: \(imageUrl)")
+            return nil
+        }
+        
+        let folderPath = pathComponents[carImagesIndex + 1] // This should be the user ID
+        let fileName = pathComponents.last ?? ""
+        
+        return "\(folderPath)/\(fileName)"
+    }
+        
     // MARK: - Functions
     func showRefreshRestrictionAlert(for listing: Listing) {
         let nextRefreshDate = Calendar.current.date(byAdding: .day, value: 30, to: listing.createdAt)
@@ -116,8 +151,6 @@ final class PrivateUserListingsViewModel {
 
             Your listing was last refreshed on \(dateFormatter.string(from: listing.createdAt)).
             You'll be able to refresh it again on \(dateFormatter.string(from: nextRefreshDate ?? Date.now)).
-
-            Thank you
             """
             showRefreshRestrictionAlert = true
         }

@@ -183,6 +183,16 @@ final class DatabaseService: DatabaseServiceProtocol {
         }
     }
     
+    func deleteItemFromStorage(from table: String, path: [String]) async throws {
+        do {
+            _ = try await supabaseService.client.storage
+                .from(table)
+                .remove(paths: path)
+        } catch {
+            throw error
+        }
+    }
+    
     func searchItemsWithComplexFilter<T: Decodable>(
            from table: String,
            filters: [String: Any],

@@ -291,7 +291,7 @@ fileprivate struct EVGlossaryView: View {
     var body: some View {
         VStack {
             if showSplashView {
-                CustomProgressView(message: "Loading...")
+                CustomProgressView(message: "")
             } else {
                 List(termExplanations, id: \.term) { termExplanation in
                     VStack(alignment: .leading) {

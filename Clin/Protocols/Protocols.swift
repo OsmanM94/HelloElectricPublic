@@ -6,6 +6,7 @@
 //
 import SwiftUI
 import PhotosUI
+import Supabase
 
 protocol DatabaseServiceProtocol {
     func loadPaginatedItems<T: Decodable>(from table: String, orderBy: String, ascending: Bool, from: Int, to: Int) async throws -> [T]
@@ -21,6 +22,17 @@ protocol DatabaseServiceProtocol {
     func updateItemByUserID<T: Encodable>(_ item: T, in table: String, userID: UUID) async throws
     func deleteItemByID(from table: String, id: Int) async throws
     func deleteItemByFields(from table: String, field: String , value: Int, field2: String, value2: UUID) async throws
+    func deleteItemFromStorage(from table: String, path: [String]) async throws
+}
+
+protocol AuthServiceProtocol {
+    func signOut() async throws
+    func signInWithApple(idToken: String) async throws
+    func deleteUserListing(userId: UUID) async throws
+    func deleteUserProfile(userId: UUID) async throws
+    func deleteUserImages(userId: UUID) async throws
+    func setupAuthStateListener(completion: @Sendable @escaping (AuthChangeEvent, Session?) -> Void) async throws
+    func getCurrentUser() async throws -> User?
 }
 
 protocol ListingServiceProtocol {
@@ -32,10 +44,10 @@ protocol ListingServiceProtocol {
     func loadModels() async throws -> [EVModels]
     func loadLocations() async throws -> [Cities]
     func loadEVfeatures() async throws -> [EVFeatures]
-//    func searchListings(vehicleType: VehicleType, from: Int, to: Int) async throws -> [Listing]
     func loadListingsByVehicleType(type: [String], column: String, from: Int, to: Int) async throws -> [Listing]
     func loadFilteredListings(vehicleType: [String], orderBy: String, ascending: Bool, from: Int, to: Int) async throws -> [Listing]
     func refreshListings(id: Int) async throws
+    func deleteImagesFromStorage(from table: String, path: [String]) async throws
 }
 
 protocol EVDatabaseServiceProtocol {

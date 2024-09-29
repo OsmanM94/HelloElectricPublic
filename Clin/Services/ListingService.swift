@@ -10,7 +10,7 @@ import Factory
 
 final class ListingService: ListingServiceProtocol {
     @Injected(\.databaseService) private var databaseService
-        
+    
     func loadListing(id: Int) async throws -> Listing {
         try await databaseService
             .loadItemByID(
@@ -71,6 +71,10 @@ final class ListingService: ListingServiceProtocol {
                 from: "car_listing",
                 id: id
             )
+    }
+    
+    func deleteImagesFromStorage(from table: String, path: [String]) async throws {
+        try await databaseService.deleteItemFromStorage(from: table, path: path)
     }
     
     func loadListingsByVehicleType(type: [String], column: String, from: Int, to: Int) async throws -> [Listing] {
