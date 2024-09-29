@@ -23,7 +23,7 @@ final class FeatureRequestViewModel {
         case error(String)
     }
     
-    enum UserViewState: Equatable {
+    enum UserRequestViewState: Equatable {
         case empty
         case loading
         case success
@@ -35,7 +35,7 @@ final class FeatureRequestViewModel {
     var selectedStatus: FeatureRequestStatus = .pending
     
     var viewState: ViewState = .loading
-    var userViewState : UserViewState = .loading
+    var userViewState : UserRequestViewState = .loading
     var newRequestViewState : NewRequestViewState = .loaded
     
     var name: String = "Annonymous"
@@ -63,7 +63,7 @@ final class FeatureRequestViewModel {
         self.newRequestViewState = .loaded
         do {
             guard let user = try? await supabaseService.client.auth.session.user else {
-                print("DEBUG: User not authenticated")
+                self.userViewState = .error(MessageCenter.MessageType.noAuthUserFound.message)
                 return
             }
             
@@ -102,7 +102,7 @@ final class FeatureRequestViewModel {
     func vote(for featureRequest: FeatureRequest) async {
         do {
             guard let user = try? await supabaseService.client.auth.session.user else {
-                print("DEBUG: User not authenticated")
+                self.userViewState = .error(MessageCenter.MessageType.noAuthUserFound.message)
                 return
             }
             
@@ -139,7 +139,7 @@ final class FeatureRequestViewModel {
     func unvote(for featureRequest: FeatureRequest) async {
         do {
             guard let user = try? await supabaseService.client.auth.session.user else {
-                print("DEBUG: User not authenticated")
+                self.userViewState = .error(MessageCenter.MessageType.noAuthUserFound.message)
                 return
             }
             
@@ -207,7 +207,7 @@ final class FeatureRequestViewModel {
         self.userViewState = .loading
         do {
             guard let user = try? await supabaseService.client.auth.session.user else {
-                print("DEBUG: User not authenticated")
+                self.userViewState = .error(MessageCenter.MessageType.noAuthUserFound.message)
                 return
             }
             

@@ -30,7 +30,6 @@ final class EditFormViewModel {
     // MARK: - Dependencies
     // Services
     @ObservationIgnored @Injected(\.listingService) private var listingService
-    @ObservationIgnored @Injected(\.supabaseService) private var supabaseService
     // ViewModels
     @ObservationIgnored @Injected(\.editFormImageManager) var imageManager
     @ObservationIgnored @Injected(\.editFormDataLoader) var dataLoader
@@ -50,7 +49,7 @@ final class EditFormViewModel {
     func updateUserListing(_ listing: Listing) async {
         viewState = .uploading
         do {
-            guard let user = try? await supabaseService.client.auth.session.user else {
+            guard let user = try await listingService.getCurrentUser() else {
                 viewState = .error(MessageCenter.MessageType.noAuthUserFound.message)
                 return
             }
@@ -184,7 +183,7 @@ final class EditFormImageManager: ImagePickerProtocol {
             // Convert image URLs to SelectedImage instances and update the images
             await loadImagesFromURLs(newImageUrls)
         } catch {
-            print("DEBUG: Failed to load listing or load images: \(error)")
+            imageViewState = .error(MessageCenter.MessageType.generalError.message)
         }
     }
 

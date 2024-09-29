@@ -21,7 +21,7 @@ struct AboutUsView: View {
             }
             .fontDesign(.rounded)
             .padding()
-            .navigationTitle("About Us")
+            .navigationTitle("About us")
         }
         .withBackgroundStyle()
     }

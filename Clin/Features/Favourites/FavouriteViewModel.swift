@@ -25,12 +25,10 @@ final class FavouriteViewModel {
     
     // MARK: - Dependencies
     @ObservationIgnored @Injected(\.favouriteService) private var favouriteService
-    @ObservationIgnored @Injected(\.supabaseService) private var supabaseService
-    
+  
     init() {
         Task {
             await loadUserFavourites()
-//            print("DEBUG: Initialising user favourites...")
         }
     }
     
@@ -38,42 +36,47 @@ final class FavouriteViewModel {
     
     @MainActor
     func addToFavorites(listing: Listing) async  {
-        guard let user = try? await supabaseService.client.auth.session.user else { return }
-        
-        guard let id = listing.id else {
-            print("DEBUG: Listing ID is missing for favourites.")
-            return
-        }
-        
-        let favourite = Favourite(
-            createdAt: listing.createdAt,
-            imagesURL: listing.imagesURL,
-            thumbnailsURL: listing.thumbnailsURL,
-            make: listing.make,
-            model: listing.model,
-            bodyType: listing.bodyType,
-            condition: listing.condition,
-            mileage: listing.mileage,
-            location: listing.location,
-            yearOfManufacture: listing.yearOfManufacture,
-            price: listing.price,
-            phoneNumber: listing.phoneNumber,
-            textDescription: listing.textDescription,
-            range: listing.range,
-            colour: listing.colour,
-            publicChargingTime: listing.publicChargingTime,
-            homeChargingTime: listing.homeChargingTime,
-            batteryCapacity: listing.batteryCapacity,
-            powerBhp: listing.powerBhp,
-            regenBraking: listing.regenBraking,
-            warranty: listing.warranty,
-            serviceHistory: listing.serviceHistory,
-            numberOfOwners: listing.numberOfOwners,
-            userID: user.id,
-            listingID: id,
-            isPromoted: listing.isPromoted
-        )
         do {
+            
+            guard let user = try await favouriteService.getCurrentUser() else {
+                self.viewState = .error(MessageCenter.MessageType.noAuthUserFound.message)
+                return
+            }
+            
+            guard let id = listing.id else {
+                print("DEBUG: Listing ID is missing for favourites.")
+                return
+            }
+            
+            let favourite = Favourite(
+                createdAt: listing.createdAt,
+                imagesURL: listing.imagesURL,
+                thumbnailsURL: listing.thumbnailsURL,
+                make: listing.make,
+                model: listing.model,
+                bodyType: listing.bodyType,
+                condition: listing.condition,
+                mileage: listing.mileage,
+                location: listing.location,
+                yearOfManufacture: listing.yearOfManufacture,
+                price: listing.price,
+                phoneNumber: listing.phoneNumber,
+                textDescription: listing.textDescription,
+                range: listing.range,
+                colour: listing.colour,
+                publicChargingTime: listing.publicChargingTime,
+                homeChargingTime: listing.homeChargingTime,
+                batteryCapacity: listing.batteryCapacity,
+                powerBhp: listing.powerBhp,
+                regenBraking: listing.regenBraking,
+                warranty: listing.warranty,
+                serviceHistory: listing.serviceHistory,
+                numberOfOwners: listing.numberOfOwners,
+                userID: user.id,
+                listingID: id,
+                isPromoted: listing.isPromoted
+            )
+            
             try await favouriteService.addToFavorites(favourite)
             favoriteListings.append(favourite)
             
@@ -86,9 +89,9 @@ final class FavouriteViewModel {
     
     @MainActor
     func removeFromFavorites(favourite: Favourite) async  {
-        guard let user = try? await supabaseService.client.auth.session.user else { return }
-        
         do {
+            guard let user = try await favouriteService.getCurrentUser() else { return }
+            
             try await favouriteService.removeFromFavorites(favourite, for: user.id)
             
             if let index = favoriteListings.firstIndex(where: { $0.id == favourite.id }) {
@@ -102,9 +105,9 @@ final class FavouriteViewModel {
     
     @MainActor
     func loadUserFavourites() async  {
-        guard let user = try? await supabaseService.client.auth.session.user else { return }
-        
         do {
+            guard let user = try await favouriteService.getCurrentUser() else { return }
+            
             let listings = try await favouriteService.loadUserFavourites(userID: user.id)
             self.favoriteListings = listings
             

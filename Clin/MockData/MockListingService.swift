@@ -6,9 +6,10 @@
 //
 
 import Foundation
+import Supabase
 
 struct MockListingService: ListingServiceProtocol {
-  
+   
     static let mockUserID = UUID(uuidString: "123e4567-e89b-12d3-a456-426614174000")!
     
     static var modelsSample: [EVModels] = [EVModels(id: 1, make: "Tesla", models: ["Model2","Model3"])]
@@ -223,5 +224,9 @@ struct MockListingService: ListingServiceProtocol {
     
     func loadFilteredListings(vehicleType: [String], orderBy: String, ascending: Bool, from: Int, to: Int) async throws -> [Listing] {
         return MockListingService.sampleData
+    }
+    
+    func getCurrentUser() async throws -> User? {
+        return nil
     }
 }

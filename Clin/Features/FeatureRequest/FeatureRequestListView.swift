@@ -46,7 +46,7 @@ struct FeatureRequestListView: View {
                         .foregroundStyle(.tabColour)
                 }
             }
-            .navigationTitle("Feature Requests")
+            .navigationTitle("Feature requests")
         }
         .task {
             if viewModel.features.isEmpty {

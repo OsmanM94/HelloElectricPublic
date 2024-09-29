@@ -28,7 +28,7 @@ protocol DatabaseServiceProtocol {
 protocol AuthServiceProtocol {
     func signOut() async throws
     func signInWithApple(idToken: String) async throws
-    func deleteUserListing(userId: UUID) async throws
+    func deleteUserTable(from table: String, userId: UUID) async throws
     func deleteUserProfile(userId: UUID) async throws
     func deleteUserImages(userId: UUID) async throws
     func setupAuthStateListener(completion: @Sendable @escaping (AuthChangeEvent, Session?) -> Void) async throws
@@ -48,6 +48,7 @@ protocol ListingServiceProtocol {
     func loadFilteredListings(vehicleType: [String], orderBy: String, ascending: Bool, from: Int, to: Int) async throws -> [Listing]
     func refreshListings(id: Int) async throws
     func deleteImagesFromStorage(from table: String, path: [String]) async throws
+    func getCurrentUser() async throws -> User?
 }
 
 protocol EVDatabaseServiceProtocol {
@@ -59,6 +60,7 @@ protocol FavouriteServiceProtocol {
     func loadUserFavourites(userID: UUID) async throws -> [Favourite]
     func addToFavorites(_ favourite: Favourite) async throws
     func removeFromFavorites(_ favourite: Favourite, for userID: UUID) async throws
+    func getCurrentUser() async throws -> User?
 }
 
 protocol ImageManagerProtocol {

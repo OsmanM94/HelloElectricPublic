@@ -33,7 +33,6 @@ final class CreateFormViewModel {
     // Services
     @ObservationIgnored @Injected(\.listingService) private var listingService
     @ObservationIgnored @Injected(\.dvlaService) private var dvlaService
-    @ObservationIgnored @Injected(\.supabaseService) private var supabaseService
     // ViewModels
     @ObservationIgnored @Injected(\.createFormDataModel) var formData
     @ObservationIgnored @Injected(\.createFormImageManager) var imageManager
@@ -70,12 +69,12 @@ final class CreateFormViewModel {
         viewState = .uploading
         
         do {
-            guard let user = try? await supabaseService.client.auth.session.user else {
+            guard let user = try await listingService.getCurrentUser() else {
                 viewState = .error(MessageCenter.MessageType.noAuthUserFound.message)
                 return
             }
             
-            try await imageManager.uploadSelectedImages(for: supabaseService.client.auth.session.user.id)
+            try await imageManager.uploadSelectedImages(for: user.id)
             let listing = buildListing(userID: user.id)
             try await listingService.createListing(listing)
             

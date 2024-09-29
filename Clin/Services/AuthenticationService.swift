@@ -11,7 +11,7 @@ import Factory
 
 class AuthenticationService: AuthServiceProtocol {
     @Injected(\.supabaseService) private var supabaseService
-    
+   
     func signOut() async throws {
         try await supabaseService.client.auth.signOut()
     }
@@ -25,9 +25,9 @@ class AuthenticationService: AuthServiceProtocol {
         )
     }
     
-    func deleteUserListing(userId: UUID) async throws {
+    func deleteUserTable(from table: String, userId: UUID) async throws {
         try await supabaseService.client
-            .from("car_listing")
+            .from(table)
             .delete()
             .eq("user_id", value: userId)
             .execute()

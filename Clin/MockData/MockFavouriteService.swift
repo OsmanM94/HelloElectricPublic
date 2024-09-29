@@ -6,9 +6,9 @@
 //
 
 import Foundation
+import Supabase
 
 struct MockFavouriteService: FavouriteServiceProtocol {
-    
     static let mockUserID = UUID(uuidString: "123e4567-e89b-12d3-a456-426614174000")!
     
     // Sample data for Favourite
@@ -161,5 +161,9 @@ struct MockFavouriteService: FavouriteServiceProtocol {
     
     func removeFromFavorites(_ favourite: Favourite, for userID: UUID) async throws {
         MockFavouriteService.sampleData.removeAll { $0.id == favourite.id && $0.userID == userID }
+    }
+    
+    func getCurrentUser() async throws -> User? {
+        return nil
     }
 }

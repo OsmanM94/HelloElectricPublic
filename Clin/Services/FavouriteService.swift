@@ -7,9 +7,11 @@
 
 import Foundation
 import Factory
+import Supabase
 
 final class FavouriteService: FavouriteServiceProtocol {
     @Injected(\.databaseService) var databaseService: DatabaseServiceProtocol
+    @Injected(\.supabaseService) private var supabaseService
     
     func loadUserFavourites(userID: UUID) async throws -> [Favourite] {
         try await databaseService
@@ -35,6 +37,10 @@ final class FavouriteService: FavouriteServiceProtocol {
                 field2: "user_id",
                 value2: userID
             )
+    }
+    
+    func getCurrentUser() async throws -> User? {
+        try await supabaseService.client.auth.session.user
     }
 }
 

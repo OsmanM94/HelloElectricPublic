@@ -57,7 +57,10 @@ final class AuthViewModel {
             guard let user = try await authService.getCurrentUser() else { return }
             
             // Delete the user's listing from database
-            try await authService.deleteUserListing(userId: user.id)
+            try await authService.deleteUserTable(from: "car_listing", userId: user.id)
+            
+            // Delete the user's favourites
+            try await authService.deleteUserTable(from: "favourite_listing", userId: user.id)
             
             // Delete user images from storage
             try await authService.deleteUserImages(userId: user.id)

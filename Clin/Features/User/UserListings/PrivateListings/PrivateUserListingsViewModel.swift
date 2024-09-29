@@ -34,7 +34,6 @@ final class PrivateUserListingsViewModel {
     
     // MARK: - Dependencies
     @ObservationIgnored @Injected(\.listingService) private var listingService
-    @ObservationIgnored @Injected(\.supabaseService) private var supabaseService
     
     init() {
         print("DEBUG: Did init user listings viewmodel")
@@ -44,12 +43,12 @@ final class PrivateUserListingsViewModel {
     @MainActor
     func loadListings() async {
         do {
-            guard let currentUser = try? await supabaseService.client.auth.session.user else {
+            guard let user = try await listingService.getCurrentUser() else {
                 viewState = .error(MessageCenter.MessageType.noAuthUserFound.message)
                 return
             }
             
-            let listings = try await listingService.loadUserListings(userID: currentUser.id)
+            let listings = try await listingService.loadUserListings(userID: user.id)
             
             self.listings = listings
             self.viewState = listings.isEmpty ? .empty : .success

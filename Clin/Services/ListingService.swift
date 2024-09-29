@@ -7,9 +7,11 @@
 
 import Foundation
 import Factory
+import Supabase
 
 final class ListingService: ListingServiceProtocol {
     @Injected(\.databaseService) private var databaseService
+    @Injected(\.supabaseService) private var supabaseService
     
     func loadListing(id: Int) async throws -> Listing {
         try await databaseService
@@ -101,6 +103,10 @@ final class ListingService: ListingServiceProtocol {
             from: from,
             to: to
         )
+    }
+    
+    func getCurrentUser() async throws -> User? {
+        try await supabaseService.client.auth.session.user
     }
 }
 
