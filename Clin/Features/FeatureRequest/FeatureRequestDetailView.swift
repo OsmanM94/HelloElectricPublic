@@ -38,9 +38,15 @@ struct FeatureRequestDetailView: View {
                     Text("Submitted on: \(request.createdAt.formattedString())")
                         .font(.subheadline)
                     
-                    Text("Request ID: \(request.id ?? 0)")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    HStack {
+                        Text("Request ID: \(request.id ?? 0)")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        
+                        Spacer()
+                        
+                        ReportButton(itemId: request.id ?? 0, itemType: "request", iconSize: 15)
+                    }
                 }
                 
                 Divider()

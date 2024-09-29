@@ -16,7 +16,7 @@ struct FilterView: View {
                 VStack {
                     switch viewModel.filterViewState {
                     case .loading:
-                        CustomProgressView(message: "Loading...")
+                        CustomProgressView(message: "")
                         
                     case .loaded:
                         FilterSubView(viewModel: viewModel)
