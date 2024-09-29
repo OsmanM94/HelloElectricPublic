@@ -44,7 +44,7 @@ struct ApprovedFeaturesView: View {
             }
         }
         .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
-        .navigationTitle("Approved Features")
+        .navigationTitle("Approved features")
         .task {
             if viewModel.features.isEmpty {
                 await viewModel.loadFeatures()
