@@ -35,3 +35,17 @@ struct RefreshListingTip: Tip {
         Image(systemName: "arrow.clockwise")
     }
 }
+
+struct DragDropImageTip: Tip {
+    var title: Text {
+        Text("Rearrange Your Images")
+    }
+    
+    var message: Text? {
+        Text("You can drag and drop images to reorder them.")
+    }
+    
+    var image: Image? {
+        Image(systemName: "hand.draw")
+    }
+}

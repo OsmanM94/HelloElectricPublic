@@ -12,6 +12,9 @@ struct ErrorView: View {
     let refreshMessage: String
     let retryAction: () async -> Void
     let systemImage: String
+    
+    @State private var triggerFeedback: Bool = false
+    
     var body: some View {
         VStack {
             ContentUnavailableView {
@@ -29,6 +32,15 @@ struct ErrorView: View {
                 .buttonStyle(.bordered)
                 .controlSize(.large)
             }
+        }
+        .onAppear(perform: triggerErrorFeedback)
+        .sensoryFeedback(.error, trigger: triggerFeedback)
+        .onDisappear { triggerFeedback = false }
+    }
+    
+    private func triggerErrorFeedback() {
+        performAfterDelay(0.1) {
+            triggerFeedback.toggle()
         }
     }
 }

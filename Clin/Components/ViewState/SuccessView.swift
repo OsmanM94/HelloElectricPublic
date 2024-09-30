@@ -11,6 +11,7 @@ struct SuccessView: View {
     var message: String
     var doneAction: () -> Void
     
+    @State private var triggerFeedback: Bool = false
     @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
@@ -37,6 +38,9 @@ struct SuccessView: View {
         }
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .onAppear(perform: triggerSuccessFeedback)
+        .sensoryFeedback(.success, trigger: triggerFeedback)
+        .onDisappear { triggerFeedback = false }
     }
     
     private var iconColor: Color {
@@ -45,6 +49,12 @@ struct SuccessView: View {
     
     private var buttonColor: Color {
         colorScheme == .dark ? Color.tabColour.opacity(0.8) : Color.tabColour
+    }
+    
+    private func triggerSuccessFeedback() {
+        performAfterDelay(0.1) {
+            triggerFeedback.toggle()
+        }
     }
 }
 

@@ -13,7 +13,7 @@ struct EditFormView: View {
     
     @State private var isPromotionFinished: Bool = false
     @State var listing: Listing
-    
+        
     var body: some View {
         NavigationStack {
             VStack {

@@ -256,6 +256,7 @@
 				SDWebImage/ImageLoader.swift,
 				SensitiveContentAnalysis/SensitiveContentAnalysis.swift,
 				ShakeGesture/ShakeGesture.swift,
+				TipKit/CustomTipView.swift,
 				TipKit/TipContainer.swift,
 				VideoPlayer/VideoPlayerView.swift,
 				VideoPlayer/VideoPlayerViewModel.swift,

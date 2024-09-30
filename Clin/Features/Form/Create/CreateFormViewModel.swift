@@ -102,6 +102,7 @@ final class CreateFormViewModel {
         return formData.isFormValid() && imageManager.hasValidImageSelection()
     }
     
+    @MainActor
     func resetFormDataAndState() {
         formData.resetState()
         imageManager.resetState()
@@ -240,7 +241,7 @@ final class CreateFormDataModel {
 }
 
 @Observable
-final class CreateFormImageManager: ImagePickerProtocol {
+final class CreateFormImageManager: ImageManagerFormProtocol {
     // MARK: - Image properties
     var selectedImages: [SelectedImage?] = Array(repeating: nil, count: 10)
     var imageSelections: [PhotosPickerItem?] = Array(repeating: nil, count: 10)
@@ -248,6 +249,8 @@ final class CreateFormImageManager: ImagePickerProtocol {
     var imagesURLs: [URL] = []
     var thumbnailsURLs: [URL] = []
     private(set) var uploadingProgress: Double = 0.0
+    
+    var hasUserInitiatedChanges: Bool = true
     
     // MARK: - Dependencies
     @ObservationIgnored @Injected(\.imageManager) var imageManager
@@ -258,25 +261,9 @@ final class CreateFormImageManager: ImagePickerProtocol {
         selectedImages.compactMap { $0 }.count
     }
     
-    // MARK: - Functions
+    // MARK: - Main actor functions
     
-    func resetState() {
-        selectedImages = Array(repeating: nil, count: 10)
-        imageSelections = Array(repeating: nil, count: 10)
-        imagesURLs.removeAll()
-        thumbnailsURLs.removeAll()
-        uploadingProgress = 0.0
-        imageViewState = .idle
-    }
-    
-    func resetImageStateToIdle() {
-        imageViewState = .idle
-    }
-    
-    func hasValidImageSelection() -> Bool {
-        return !selectedImages.compactMap({ $0 }).isEmpty // Ensure at least one image is selected
-    }
-    
+    @MainActor
     func uploadSelectedImages(for userId: UUID) async throws {
         imagesURLs.removeAll()
         thumbnailsURLs.removeAll()
@@ -325,6 +312,25 @@ final class CreateFormImageManager: ImagePickerProtocol {
         }
     }
     
+    // MARK: Functions
+    
+    func resetState() {
+        selectedImages = Array(repeating: nil, count: 10)
+        imageSelections = Array(repeating: nil, count: 10)
+        imagesURLs.removeAll()
+        thumbnailsURLs.removeAll()
+        uploadingProgress = 0.0
+        imageViewState = .idle
+    }
+    
+    func resetImageStateToIdle() {
+        imageViewState = .idle
+    }
+    
+    func hasValidImageSelection() -> Bool {
+        return !selectedImages.compactMap({ $0 }).isEmpty // Ensure at least one image is selected
+    }
+    
     func deleteImage(id: String) {
         if let index = selectedImages.firstIndex(where: { $0?.id == id }) {
             selectedImages[index] = nil
@@ -333,6 +339,8 @@ final class CreateFormImageManager: ImagePickerProtocol {
     }
     
     func retrieveImages(listing: Listing, id: Int) async throws {}
+    
+    func updateAfterReorder() {}
 }
 
 @Observable

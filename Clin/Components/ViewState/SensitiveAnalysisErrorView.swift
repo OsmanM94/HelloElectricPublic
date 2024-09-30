@@ -10,8 +10,13 @@ import SwiftUI
 struct SensitiveAnalysisErrorView: View {
     @Environment(\.colorScheme) private var colorScheme
     @State private var showPopover: Bool = false
+    @State private var triggerFeedback: Bool = false
     
-    let columns = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
+    let columns = [
+        GridItem(.flexible()),
+        GridItem(.flexible()),
+        GridItem(.flexible())
+    ]
     let retryAction: () -> Void
     
     var body: some View {
@@ -31,6 +36,15 @@ struct SensitiveAnalysisErrorView: View {
             .sensitiveContentAnalysisCheck()
             .navigationTitle("Sensitive content")
             .navigationBarTitleDisplayMode(.inline)
+            .onAppear(perform: triggerApiNotEnabledFeedback)
+            .sensoryFeedback(.warning, trigger: triggerFeedback)
+            .onDisappear { triggerFeedback = false }
+        }
+    }
+    
+    private func triggerApiNotEnabledFeedback() {
+        performAfterDelay(0.1) {
+            triggerFeedback.toggle()
         }
     }
     

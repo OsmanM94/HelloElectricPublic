@@ -90,6 +90,12 @@ protocol ImagePickerProtocol: Observable {
     func resetImageStateToIdle()
 }
 
+protocol ImageManagerFormProtocol: ImagePickerProtocol {
+    var selectedImages: [SelectedImage?] { get set }
+    var hasUserInitiatedChanges: Bool { get }
+    func updateAfterReorder()
+}
+
 protocol httpClientProtocol {
     func loadData <T: Decodable>(as type: T.Type, endpoint: String, headers: [String: String]?) async throws -> T
     func postData<T: Decodable, U: Encodable>(as type: T.Type, to endpoint: String, body: U, headers: [String: String]) async throws -> T

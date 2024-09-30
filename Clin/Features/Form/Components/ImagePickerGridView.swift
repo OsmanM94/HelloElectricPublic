@@ -14,9 +14,10 @@ enum ImageViewState: Equatable {
     case error(String)
 }
 
-struct ImagePickerGridView<ViewModel: ImagePickerProtocol>: View {
+struct ImagePickerGridView<ViewModel: ImageManagerFormProtocol>: View {
     @State var viewModel: ViewModel
     @State private var draggedItem: SelectedImage?
+    @State private var dragDropTip = DragDropImageTip()
     
     let columns = [
         GridItem(.flexible()),
@@ -57,21 +58,27 @@ struct ImagePickerGridView<ViewModel: ImagePickerProtocol>: View {
 
 extension ImagePickerGridView {
     var gridView: some View {
-        ScrollView {
-            LazyVGrid(columns: columns, spacing: 10) {
-                ForEach(Array(viewModel.selectedImages.enumerated()), id: \.offset) { index, image in
-                    ImagePickerCell(viewModel: viewModel, index: index, number: index + 1)
-                        .frame(width: 100, height: 100)
-                        .onDrag {
-                            self.draggedItem = image
-                            return NSItemProvider(object: String(image?.id ?? UUID().uuidString) as NSString)
-                        }
-                        .onDrop(of: [.text], delegate: DropViewDelegate(item: image, items: $viewModel.selectedImages, draggedItem: $draggedItem))
+        VStack {
+            CustomTipView(tip: dragDropTip)
+                .padding()
+            
+            ScrollView {
+                LazyVGrid(columns: columns, spacing: 10) {
+                    ForEach(Array(viewModel.selectedImages.enumerated()), id: \.offset) { index, image in
+                        ImagePickerCell(viewModel: viewModel, index: index, number: index + 1)
+                            .frame(width: 100, height: 100)
+                            .onDrag {
+                                self.draggedItem = image
+                                return NSItemProvider(object: String(image?.id ?? UUID().uuidString) as NSString)
+                            }
+                            .onDrop(of: [.text], delegate: DropViewDelegate(item: image, items: $viewModel.selectedImages, draggedItem: $draggedItem, imageManager: viewModel, dragDropTip: dragDropTip))
+                            .sensoryFeedback(.impact, trigger: draggedItem)
+                    }
                 }
+                .padding()
             }
-            .padding()
+            .scrollIndicators(.hidden)
         }
-        .scrollIndicators(.hidden)
     }
 }
 
@@ -79,6 +86,9 @@ fileprivate struct DropViewDelegate: DropDelegate {
     let item: SelectedImage?
     @Binding var items: [SelectedImage?]
     @Binding var draggedItem: SelectedImage?
+    
+    var imageManager: ImageManagerFormProtocol
+    var dragDropTip: DragDropImageTip
 
     func performDrop(info: DropInfo) -> Bool {
         guard let draggedItem = self.draggedItem,
@@ -89,12 +99,15 @@ fileprivate struct DropViewDelegate: DropDelegate {
         
         if fromIndex != toIndex {
             withAnimation {
-                // Swap the items directly
                 items.swapAt(fromIndex, toIndex)
+            }
+            imageManager.updateAfterReorder()
+            
+            Task {
+                dragDropTip.invalidate(reason: .actionPerformed)
             }
         }
 
-        // Reset draggedItem after the drop
         self.draggedItem = nil
         return true
     }

@@ -105,7 +105,7 @@ final class EditFormViewModel {
 }
 
 @Observable
-final class EditFormImageManager: ImagePickerProtocol {
+final class EditFormImageManager: ImageManagerFormProtocol {
     var selectedImages: [SelectedImage?] = Array(repeating: nil, count: 10)
     var imageSelections: [PhotosPickerItem?] = Array(repeating: nil, count: 10)
     var isLoadingImages: [Bool] = Array(repeating: false, count: 10)
@@ -117,6 +117,9 @@ final class EditFormImageManager: ImagePickerProtocol {
     
     // New property to track changed images
     private var changedImageIndices: Set<Int> = []
+    
+    // New property to track original image order
+    private var originalImageOrder: [String?] = []
     
     // MARK: - Image view state
     var imageViewState: ImageViewState = .idle
@@ -162,9 +165,31 @@ final class EditFormImageManager: ImagePickerProtocol {
         }
     }
     
+    // Modify the resetChangeFlag method
     func resetChangeFlag() {
         hasUserInitiatedChanges = false
-        changedImageIndices.removeAll()  // Reset changed indices
+        changedImageIndices.removeAll()
+        setOriginalImageOrder()  // Reset the original order
+    }
+    
+    //  set the original image order
+    func setOriginalImageOrder() {
+        originalImageOrder = selectedImages.map { $0?.id }
+    }
+    
+    //  check for reordering
+    func checkForChanges() {
+        let currentOrder = selectedImages.map { $0?.id }
+        if currentOrder != originalImageOrder {
+            hasUserInitiatedChanges = true
+            // Mark all non-nil indices as changed
+            changedImageIndices = Set(selectedImages.enumerated().compactMap { $1 != nil ? $0 : nil })
+        }
+    }
+    
+    // Call this method after drag and drop operations
+    func updateAfterReorder() {
+        checkForChanges()
     }
     
     func retrieveImages(listing: Listing, id: Int) async throws {
