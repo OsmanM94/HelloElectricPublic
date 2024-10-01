@@ -51,7 +51,6 @@ final class StationViewModel {
     
      private func loadStations(in region: MKCoordinateRegion?) async {
         guard let region = region else {
-            print("DEBUG: No valid region provided")
             return
         }
         
@@ -66,7 +65,6 @@ final class StationViewModel {
             self.stations = stations
             applyFilter()
             isLoading = false
-//            print("DEBUG: Loaded data from network.")
         } catch {
             print("Error loading or decoding chargers: \(error)")
         }

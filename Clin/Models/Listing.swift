@@ -14,6 +14,7 @@ struct Listing: Identifiable, Codable, Hashable {
     var thumbnailsURL: [URL]
     var make: String
     var model: String
+    var subTitle: String?
     var bodyType: String
     var condition: String
     var mileage: Double
@@ -35,8 +36,8 @@ struct Listing: Identifiable, Codable, Hashable {
     var userID: UUID
     var isPromoted: Bool
     var promotionActivated: Date?
-    var latitude: Double?    // Latitude for location
-    var longitude: Double?   // Longitude for location
+    var latitude: Double?
+    var longitude: Double?
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -44,6 +45,7 @@ struct Listing: Identifiable, Codable, Hashable {
         case thumbnailsURL = "thumbnails"
         case make
         case model
+        case subTitle = "subtitle"
         case bodyType = "body_type"
         case condition
         case mileage

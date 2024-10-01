@@ -39,9 +39,7 @@ struct ReportButton: View {
         if let url = URL(string: urlString),
            UIApplication.shared.canOpenURL(url) {
             UIApplication.shared.open(url)
-        } else {
-            print("Cannot open e-mail...")
-        }
+        } 
     }
 }
 

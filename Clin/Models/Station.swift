@@ -48,26 +48,21 @@ struct Station: Identifiable, Codable, Hashable {
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
-        // Decode ID as an Int
         id = try container.decode(Int.self, forKey: .id)
 
         let addressContainer = try container.nestedContainer(keyedBy: AddressInfoKeys.self, forKey: .addressInfo)
         name = try addressContainer.decode(String.self, forKey: .title)
         
-        // Safely decode latitude and longitude
         if let latitude = try? addressContainer.decode(Double.self, forKey: .latitude),
            let longitude = try? addressContainer.decode(Double.self, forKey: .longitude) {
             coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
         } else {
             // Provide a default coordinate or throw an error
             coordinate = CLLocationCoordinate2D(latitude: 0, longitude: 0)
-            print("DEBUG: Warning: Invalid coordinates for charger \(name)")
-            
         }
-        // Decode connections
+  
         connections = try container.decode([Connection].self, forKey: .connections)
         
-        // Decode operator info
         operatorInfo = try container.decodeIfPresent(OperatorInfo.self, forKey: .operatorInfo)
     }
     func encode(to encoder: Encoder) throws {

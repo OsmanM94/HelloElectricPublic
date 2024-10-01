@@ -61,10 +61,6 @@ final class ProfileViewModel {
     @ObservationIgnored @Injected(\.profileService) private var profileService
     @ObservationIgnored @Injected(\.companiesHouse) private var companiesHouseService
     
-    init() {
-        print("DEBUG: Did init profile vm")
-    }
-    
     // MARK: - Main actor functions
     
     @MainActor
@@ -161,7 +157,6 @@ final class ProfileViewModel {
                 self.viewState = .idle
             }
         } catch {
-            print("Error loading profile \(error)")
             self.viewState = .error(MessageCenter.MessageType.generalError.message)
         }
     }
@@ -252,7 +247,7 @@ final class ProfileViewModel {
             "companyNumber": companyNumber,
             "website": website
         ]
-        let prohibitedWordsCheck = prohibitedWordsService.containsProhibitedWords(in: fieldsToCheck)
+        let prohibitedWordsCheck = prohibitedWordsService.containsProhibitedWordsDictionary(in: fieldsToCheck)
         
         if prohibitedWordsCheck.values.contains(true) {
             _ = prohibitedWordsCheck.filter { $0.value }.keys.joined(separator: ", ")

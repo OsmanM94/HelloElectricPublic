@@ -44,7 +44,6 @@ final class FavouriteViewModel {
             }
             
             guard let id = listing.id else {
-                print("DEBUG: Listing ID is missing for favourites.")
                 return
             }
             
@@ -80,9 +79,7 @@ final class FavouriteViewModel {
             try await favouriteService.addToFavorites(favourite)
             favoriteListings.append(favourite)
             
-            print("DEBUG: Listing added to favourites successfully.")
         } catch {
-            print("DEBUG: Error creating listing: \(error)")
             viewState = .error(MessageCenter.MessageType.generalError.message)
         }
     }
@@ -97,7 +94,6 @@ final class FavouriteViewModel {
             if let index = favoriteListings.firstIndex(where: { $0.id == favourite.id }) {
                 favoriteListings.remove(at: index)
             }
-            print("DEBUG: Listing removed from favorites successfully.")
         } catch {
             self.viewState = .error(MessageCenter.MessageType.generalError.message)
         }

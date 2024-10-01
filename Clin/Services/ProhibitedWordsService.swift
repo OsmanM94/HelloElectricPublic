@@ -25,11 +25,20 @@ final class ProhibitedWordsService: ProhibitedWordsServiceProtocol {
         return words.contains { prohibitedWords.contains(String($0)) }
     }    
     
-    func containsProhibitedWords(in fields: [String: String]) -> [String: Bool] {
-        var results: [String: Bool] = [:]
-        for (fieldName, fieldValue) in fields {
-            results[fieldName] = containsProhibitedWord(fieldValue)
+    func containsProhibitedWords(in texts: [String]) -> Bool {
+        for text in texts {
+            if containsProhibitedWord(text) {
+                return true
+            }
         }
-        return results
+        return false
     }
+    
+    func containsProhibitedWordsDictionary(in fields: [String: String]) -> [String: Bool] {
+           var results: [String: Bool] = [:]
+           for (fieldName, fieldValue) in fields {
+               results[fieldName] = containsProhibitedWord(fieldValue)
+           }
+           return results
+       }
 }

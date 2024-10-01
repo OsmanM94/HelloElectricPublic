@@ -46,7 +46,6 @@ final class ChartViewModel {
         if let cachedData = registrationsCache.get(forKey: cacheKey) {
             processData(cachedData)
             viewState = .loaded
-            print("DEBUG: Got data from Cache.")
             return
         }
         
@@ -61,7 +60,6 @@ final class ChartViewModel {
             processData(loadedData)
             
             viewState = loadedData.isEmpty ? .empty(MessageCenter.MessageType.noAvailableData.message) : .loaded
-            print("DEBUG: Got data from API.")
         } catch {
             viewState = .error(MessageCenter.MessageType.generalError.message)
         }

@@ -58,10 +58,6 @@ final class SearchViewModel {
     @ObservationIgnored @Injected(\.searchDataLoader) var dataLoader
     @ObservationIgnored @Injected(\.searchLogic) private var searchLogic
     
-    init() {
-        Logger.debug("SearchViewModel initialized")
-    }
-    
     // MARK: - Main actor functions
     
     @MainActor

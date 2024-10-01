@@ -28,7 +28,6 @@ final class ListingProfileViewModel {
     
     init(sellerID: UUID) {
         self.sellerID = sellerID
-        print("DEBUG: Did init Public profile vm")
         Task {
             await loadPublicProfile(for: sellerID)
         }
@@ -39,7 +38,6 @@ final class ListingProfileViewModel {
     func loadPublicProfile(for sellerID: UUID) async {
         // Attempt to load from cache first
         if let cachedProfile = cacheManager.cache(for: Profile.self).get(forKey: sellerID.uuidString) {
-            print("DEBUG: Loaded public profile from cache")
             self.profile = cachedProfile
             self.displayName = cachedProfile.username ?? ""
             self.memberSince = profile?.createdAt ?? Date.now
@@ -53,7 +51,6 @@ final class ListingProfileViewModel {
         
         // Load from API if not cached
         do {
-            print("DEBUG: Loading public profile from API")
             let profile = try await profileService.loadProfile(for: sellerID)
             self.profile = profile
             self.displayName = profile.username ?? ""
@@ -67,8 +64,7 @@ final class ListingProfileViewModel {
             // Cache the profile
             cacheManager.cache(for: Profile.self).set(profile, forKey: sellerID.uuidString)
         } catch {
-            debugPrint(error)
-            print("DEBUG: Unable to get public profile")
+           print("Error loading profile.")
         }
     }
 }

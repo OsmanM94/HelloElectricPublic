@@ -129,7 +129,6 @@ final class EVDataViewModel {
             
             viewState = evDatabase.isEmpty ? .empty : .loaded
         } catch {
-            print("Error searching EV database: \(error)")
             viewState = .error(MessageCenter.MessageType.generalError.message)
         }
         
@@ -200,7 +199,6 @@ final class EVDataViewModel {
             
             viewState = evDatabase.isEmpty ? .empty : .loaded
         } catch {
-            print("Error loading EV database \(error)")
             viewState = .error(MessageCenter.MessageType.generalError.message)
         }
     }

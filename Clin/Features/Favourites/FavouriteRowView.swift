@@ -111,9 +111,14 @@ struct FavouriteRowView: View {
     }
     
     private var headerView: some View {
-        Text("\(favourite.make) \(favourite.model)")
-            .font(.headline)
-            .lineLimit(2)
+        VStack(alignment: .leading) {
+            Text("\(favourite.make) \(favourite.model)")
+                .font(.headline)
+                .lineLimit(2)
+            Text("\(favourite.subTitle ?? "")")
+                .foregroundStyle(.secondary)
+                .font(.footnote)
+        }
     }
     
     private var deleteButton: some View {

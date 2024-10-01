@@ -35,10 +35,6 @@ final class PrivateUserListingsViewModel {
     // MARK: - Dependencies
     @ObservationIgnored @Injected(\.listingService) private var listingService
     
-    init() {
-        print("DEBUG: Did init user listings viewmodel")
-    }
-    
     // MARK: - Main actor functions
     @MainActor
     func loadListings() async {
@@ -125,7 +121,6 @@ final class PrivateUserListingsViewModel {
               let carImagesIndex = pathComponents.firstIndex(of: bucket),
               carImagesIndex < pathComponents.count - 1 else {
             
-            print("DEBUG: Failed to extract image path from URL: \(imageUrl)")
             return nil
         }
         

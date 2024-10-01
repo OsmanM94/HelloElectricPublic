@@ -54,12 +54,6 @@ final class EditFormViewModel {
                 return
             }
             
-            let fieldToCheck = listing.textDescription
-            guard !dataLoader.prohibitedWordsService.containsProhibitedWord(fieldToCheck) else {
-                viewState = .error(MessageCenter.MessageType.inappropriateField.message)
-                return
-            }
-            
             try await imageManager.uploadSelectedImages(for: user.id)
             
             var listingToUpdate = listing
@@ -76,7 +70,6 @@ final class EditFormViewModel {
             
             viewState = .success(MessageCenter.MessageType.updateSuccess.message)
         } catch {
-            print("Error updating user listing \(error)")
             viewState = .error(MessageCenter.MessageType.generalError.message)
         }
     }
@@ -287,7 +280,7 @@ final class EditFormImageManager: ImageManagerFormProtocol {
                 
                 selectedImages[urlIndex] = selectedImage
             } catch {
-                print("DEBUG: Error downloading image data from URL: \(url) - \(error)")
+                imageViewState = .error(MessageCenter.MessageType.errorDownloadingImages.message)
             }
         }
     }

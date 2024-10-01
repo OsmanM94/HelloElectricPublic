@@ -91,9 +91,8 @@ final class FeatureRequestViewModel {
             self.description = ""
             
             self.newRequestViewState = .success
-            print("DEBUG: Feature request successfully added")
+        
         } catch {
-            print("DEBUG: Error adding a feature request: \(error)")
             self.newRequestViewState = .error(MessageCenter.MessageType.generalError.message)
         }
     }
@@ -107,7 +106,6 @@ final class FeatureRequestViewModel {
             }
             
             guard let id = featureRequest.id else {
-                print("DEBUG: Cannot vote for feature request without an ID")
                 return
             }
             
@@ -124,13 +122,8 @@ final class FeatureRequestViewModel {
                 if let userIndex = userFeatures.firstIndex(where: { $0.id == id }) {
                     userFeatures[userIndex] = updatedRequest
                 }
-                
-                print("DEBUG: Vote recorded successfully")
-            } else {
-                print("DEBUG: User has already voted for this feature request")
             }
         } catch {
-            print("DEBUG: Error voting for feature request: \(error)")
             self.viewState = .error(MessageCenter.MessageType.generalError.message)
         }
     }
@@ -144,7 +137,6 @@ final class FeatureRequestViewModel {
             }
             
             guard let id = featureRequest.id else {
-                print("DEBUG: Cannot unvote for feature request without an ID")
                 return
             }
             
@@ -161,13 +153,8 @@ final class FeatureRequestViewModel {
                 if let userIndex = userFeatures.firstIndex(where: { $0.id == id }) {
                     userFeatures[userIndex] = updatedRequest
                 }
-                
-                print("DEBUG: Unvote recorded successfully")
-            } else {
-                print("DEBUG: User hasn't voted for this feature request")
             }
         } catch {
-            print("DEBUG: Error unvoting for feature request: \(error)")
             self.viewState = .error(MessageCenter.MessageType.generalError.message)
         }
     }
@@ -197,7 +184,6 @@ final class FeatureRequestViewModel {
             self.viewState = .loaded
             
         } catch {
-            print("Error loading feature requests: \(error)")
             self.viewState = .error(MessageCenter.MessageType.generalError.message)
         }
     }
@@ -222,9 +208,7 @@ final class FeatureRequestViewModel {
             self.userFeatures = userFeatures
             self.userViewState = userFeatures.isEmpty ? .empty : .success
             
-            print("DEBUG: User feature requests loaded successfully")
         } catch {
-            print("DEBUG: Error loading user feature requests: \(error)")
             self.userViewState = .error(MessageCenter.MessageType.generalError.message)
         }
     }
@@ -232,7 +216,6 @@ final class FeatureRequestViewModel {
     private func deleteFeatureRequest(_ feature: FeatureRequest) async {
         do {
             guard let id = feature.id else {
-                print("DEBUG: Cannot delete feature request without an ID")
                 return
             }
             
@@ -245,9 +228,7 @@ final class FeatureRequestViewModel {
             if self.userFeatures.isEmpty {
                 self.userViewState = .empty
             }
-            print("DEBUG: Feature request deleted successfully")
         } catch {
-            print("DEBUG: Error deleting feature request: \(error)")
             self.userViewState = .error(MessageCenter.MessageType.generalError.message)
         }
     }

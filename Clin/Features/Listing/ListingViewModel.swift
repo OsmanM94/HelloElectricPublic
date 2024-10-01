@@ -115,10 +115,6 @@ final class ListingViewModel {
     // MARK: - Dependencies
     @ObservationIgnored @Injected(\.listingService) private var listingService
     
-    init() {
-        print("DEBUG: Did init listing viewmodel.")
-    }
-    
     // MARK: - Main actor functions
     
     @MainActor
@@ -129,20 +125,21 @@ final class ListingViewModel {
             let newListings: [Listing]
             let vehicleTypeFilter = selectedVehicleType.databaseValues
             
+            // Always use the current filter, even during pagination
             if quickFilter != .all, let orderBy = quickFilter.databaseValue {
                 newListings = try await listingService.loadFilteredListings(
                     vehicleType: vehicleTypeFilter,
                     orderBy: orderBy,
                     ascending: quickFilter.ascending,
                     from: currentPage * pageSize,
-                    to: currentPage * pageSize + pageSize - 1
+                    to: (currentPage + 1) * pageSize - 1
                 )
             } else {
                 newListings = try await listingService.loadListingsByVehicleType(
                     type: vehicleTypeFilter,
                     column: "body_type",
                     from: currentPage * pageSize,
-                    to: currentPage * pageSize + pageSize - 1
+                    to: (currentPage + 1) * pageSize - 1
                 )
             }
             
@@ -167,29 +164,42 @@ final class ListingViewModel {
         self.currentPage = 0
         self.hasMoreListings = true
     }
-    
+        
     private func updateListings(with newListings: [Listing], isRefresh: Bool) {
-        // Check if there are more listings to load
-        if newListings.count < pageSize {
-            self.hasMoreListings = false
-        }
-        
-        // Combine listings while maintaining uniqueness using a dictionary
-        if isRefresh {
-            self.listings = newListings
-        } else {
-            var uniqueListings = Dictionary(uniqueKeysWithValues: self.listings.map { ($0.id, $0) })
-            for listing in newListings {
-                uniqueListings[listing.id] = listing
-            }
-            self.listings = Array(uniqueListings.values).sorted { $0.id ?? 0 < $1.id ?? 0 }
-        }
-        
-        // Increment page count
-        self.currentPage += 1
-        
-        // Debug log
-        print("DEBUG: \(isRefresh ? "Refreshed" : "Loaded") \(newListings.count) listings...")
-    }
+           if newListings.count < pageSize {
+               self.hasMoreListings = false
+           }
+           
+           if isRefresh {
+               self.listings = newListings
+           } else {
+               var uniqueListings = Dictionary(uniqueKeysWithValues: self.listings.map { ($0.id, $0) })
+               for listing in newListings {
+                   uniqueListings[listing.id] = listing
+               }
+               
+               // Sort based on the current quickFilter
+               if quickFilter != .all, let orderBy = quickFilter.databaseValue {
+                   self.listings = Array(uniqueListings.values).sorted { (lhs: Listing, rhs: Listing) -> Bool in
+                       switch orderBy {
+                       case "price":
+                           return quickFilter.ascending ? (lhs.price) < (rhs.price ) : (lhs.price ) > (rhs.price)
+                       case "mileage":
+                           return quickFilter.ascending ? (lhs.mileage) < (rhs.mileage) : (lhs.mileage) > (rhs.mileage)
+                       case "range":
+                           return quickFilter.ascending ? (lhs.range) < (rhs.range) : (lhs.range) > (rhs.range)
+                       case "power_bhp":
+                           return quickFilter.ascending ? (lhs.powerBhp) < (rhs.powerBhp) : (lhs.powerBhp) > (rhs.powerBhp)
+                       default:
+                           return (lhs.id ?? 0) > (rhs.id ?? 0)
+                       }
+                   }
+               } else {
+                   self.listings = Array(uniqueListings.values).sorted { ($0.id ?? 0) > ($1.id ?? 0) }
+               }
+           }
+           
+           self.currentPage += 1
+       }
 }
 

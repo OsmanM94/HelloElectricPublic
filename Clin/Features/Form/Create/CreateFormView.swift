@@ -18,7 +18,7 @@ struct CreateFormView: View {
                 switch authViewModel.viewState {
                 case .unauthenticated:
                     AuthenticationView()
-                 
+                
                 case .loading:
                     CustomProgressView(message: "Authenticating...")
                  
@@ -187,6 +187,7 @@ fileprivate struct CreateFormSubview: View {
             case .loaded:
                 Form {
                     makeModelSection
+                    subTitleSection
                     bodyTypeSection
                     yearConditionSection
                     mileageSection
@@ -242,6 +243,14 @@ fileprivate struct CreateFormSubview: View {
             
         }
         .pickerStyle(.navigationLink)
+    }
+    
+    private var subTitleSection: some View {
+        Section(header: Text("Optional"), footer: Text("\(viewModel.formData.subtitleText.count)/20")) {
+            TextField("Short subtitle", text: $viewModel.formData.subtitleText)
+                .characterLimit($viewModel.formData.subtitleText, limit: 20)
+                .autocorrectionDisabled()
+        }
     }
     
     private var makeModelFooter: some View {
@@ -466,7 +475,7 @@ fileprivate struct CreateFormSubview: View {
     
     private var additionalDataSection: some View {
         Section {
-            Picker("Power BHP", selection: $viewModel.formData.powerBhp) {
+            Picker("Power", selection: $viewModel.formData.powerBhp) {
                 ForEach(viewModel.dataLoader.powerBhpOptions, id: \.self) { power in
                     Text(power).tag(power)
                 }

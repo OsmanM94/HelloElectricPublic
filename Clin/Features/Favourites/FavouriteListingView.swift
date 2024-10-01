@@ -41,7 +41,6 @@ struct FavouriteListingView: View {
         }
         .task {
             await viewModel.loadUserFavourites()
-            print("DEBUG: Loading user favourites via task modifier...")
         }
     }
 }

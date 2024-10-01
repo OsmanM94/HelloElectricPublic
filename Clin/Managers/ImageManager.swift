@@ -31,7 +31,6 @@ final class ImageManager: ImageManagerProtocol {
     
     func uploadImage(_ data: Data, from bucket: String, to folder: String, targetWidth: Int, targetHeight: Int, compressionQuality: CGFloat = 0.1) async throws -> String? {
         guard let uiImage = UIImage(data: data) else {
-            print("DEBUG: Failed to create UIImage from data.")
             return nil
         }
         
@@ -39,7 +38,6 @@ final class ImageManager: ImageManagerProtocol {
         if let resized = uiImage.resize(targetWidth, targetHeight) {
             resizedImage = resized
         } else {
-            print("DEBUG: Failed to resize image.")
             return nil
         }
         
@@ -51,16 +49,13 @@ final class ImageManager: ImageManagerProtocol {
             compressedData = resizedImage.heicData(compressionQuality: compressionQuality)
             filePath = "\(folder)/\(UUID().uuidString).heic"
             contentType = "image/heic"
-            print("DEBUG: HEIC is supported.")
         } else {
             compressedData = resizedImage.jpegData(compressionQuality: compressionQuality)
             filePath = "\(folder)/\(UUID().uuidString).jpeg"
             contentType = "image/jpeg"
-            print("DEBUG: JPEG is supported.")
         }
       
         guard let finalData = compressedData else {
-            print("DEBUG: Failed to compress image.")
             return nil
         }
         
@@ -72,8 +67,6 @@ final class ImageManager: ImageManagerProtocol {
                 options: FileOptions(contentType: contentType)
             )
         
-        print("DEBUG: Image uploaded to Supabase Storage at path: \(filePath)")
-        
         let url = try supabaseService.client.storage.from(bucket).getPublicURL(path: filePath, download: true)
         return url.absoluteString
     }
@@ -82,9 +75,7 @@ final class ImageManager: ImageManagerProtocol {
         do {
             let fileName = URL(string: path)?.lastPathComponent ?? ""
             _ = try await supabaseService.client.storage.from(folder).remove(paths: [fileName])
-            print("DEBUG: Image deleted from Supabase Storage at path: \(path)")
         } catch {
-            print("DEBUG: Error deleting image from database: \(error)")
             throw error
         }
     }

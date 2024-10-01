@@ -105,7 +105,7 @@ struct ListingRowView: View {
                                    )
                     )
             } else {
-                Text("\(listing.condition)")
+                Text("\(listing.subTitle ?? listing.condition)")
                     .foregroundStyle(.secondary)
                     .font(.subheadline)
             }

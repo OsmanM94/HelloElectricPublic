@@ -94,7 +94,7 @@ enum MessageCenter: Error, LocalizedError {
             case .unknownAuthError(let error):
                 return "An unexpected authentication error occurred: \(error). Please try again or contact support."
             case .generalError:
-                return "An unexpected error occurred. Please try again or contact support if the issue persists."
+                return "An unexpected error occurred. Please try again."
             case .noAuthUserFound:
                 return "You need to be signed in to perform this action. Please sign in and try again."
             case .deleteSuccess:
@@ -104,7 +104,7 @@ enum MessageCenter: Error, LocalizedError {
             case .inappropriateTextfieldInput, .inappropriateField:
                 return "Please review your input. Some fields contain inappropriate content."
             case .sensitiveContent:
-                return "The selected image contains sensitive content. Please choose a different image or contact support for assistance."
+                return "The selected image contains sensitive content."
             case .sensitiveApiNotEnabled:
                 return "Sensitive content checking is not enabled. Please enable it in Settings > Privacy & Security > Sensitive Content Warning."
             case .profileUpdateSuccess:

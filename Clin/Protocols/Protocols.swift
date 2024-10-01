@@ -75,7 +75,8 @@ protocol ProhibitedWordsServiceProtocol {
     var prohibitedWords: Set<String> { get }
     func loadProhibitedWords() async throws
     func containsProhibitedWord(_ text: String) -> Bool
-    func containsProhibitedWords(in fields: [String: String]) -> [String: Bool]
+    func containsProhibitedWords(in texts: [String]) -> Bool
+    func containsProhibitedWordsDictionary(in fields: [String: String]) -> [String: Bool]
 }
 
 protocol ImagePickerProtocol: Observable {

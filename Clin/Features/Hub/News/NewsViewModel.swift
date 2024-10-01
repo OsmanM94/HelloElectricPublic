@@ -50,7 +50,6 @@ final class NewsViewModel {
             articles.append(contentsOf: cachedArticles)
             currentPage += 1
             viewState = .loaded
-            print("DEBUG: Got articles from Cache for page \(currentPage - 1)")
             return
         }
         
@@ -68,7 +67,6 @@ final class NewsViewModel {
                 articlesCache.set(newArticles, forKey: cacheKey)
                 currentPage += 1
                 viewState = .loaded
-                print("DEBUG: Got articles from API for page \(currentPage - 1)")
             } else {
                 viewState = .error(MessageCenter.MessageType.failedToLoadNews.message)
             }

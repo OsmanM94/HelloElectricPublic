@@ -30,7 +30,6 @@ final class SensitiveContentAnalysis {
         let policy = analyzer.analysisPolicy
         
         if policy == .disabled {
-            print("DEBUG: Sensitive Content Analysis policy is disabled")
             analysisState = .error(message: "Policy is disabled")
             return
         }
@@ -46,7 +45,6 @@ final class SensitiveContentAnalysis {
             analysisState = response.isSensitive ? .isSensitive : .notSensitive
         } catch {
             analysisState = .error(message: error.localizedDescription)
-            print("Unable to get a response", error)
         }
     }
 }

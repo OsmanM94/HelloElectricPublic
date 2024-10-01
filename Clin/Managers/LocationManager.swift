@@ -41,7 +41,5 @@ final class LocationManager: NSObject, CLLocationManagerDelegate {
         userLocation = locations.last?.coordinate
     }
 
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print("Error getting location: \(error.localizedDescription)")
-    }
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {}
 }

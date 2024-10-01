@@ -46,7 +46,6 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				ClinApp.swift,
-				IntroView.swift,
 			);
 			target = 62C448FC2C26CDC2009650A3 /* Clin */;
 		};
@@ -638,7 +637,7 @@
 				INFOPLIST_FILE = Clin/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = HelloElectric;
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "We need to unlock your data.";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We need to know your location to proceed.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Show your approximate location to the users";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -683,7 +682,7 @@
 				INFOPLIST_FILE = Clin/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = HelloElectric;
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "We need to unlock your data.";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We need to know your location to proceed.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Show your approximate location to the users";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;

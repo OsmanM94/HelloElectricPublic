@@ -16,7 +16,7 @@ struct ClinApp: App {
     
     var body: some Scene {
         WindowGroup {
-            IntroView()
+            MarketView()
                 .environment(authViewModel)
                 .environment(favouriteViewModel)
                 .environment(accountViewModel)

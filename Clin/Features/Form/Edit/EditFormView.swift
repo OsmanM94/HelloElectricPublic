@@ -93,6 +93,7 @@ fileprivate struct EditFormSubview: View {
                 Form {
                     makeSection
                     modelSection
+                    subTitleSection
                     bodyTypeSection
                     yearConditionSection
                     mileageLocationSection
@@ -130,6 +131,20 @@ fileprivate struct EditFormSubview: View {
     private var modelSection: some View {
         Section("Model") {
             Label(listing.model, systemImage: "lock.fill")
+        }
+    }
+    
+    private var subTitleSection: some View {
+        Section(header: Text("Optional")) {
+            TextField("Short subtitle", text: Binding(
+                get: { self.listing.subTitle ?? "" },
+                set: { self.listing.subTitle = $0.isEmpty ? nil : $0 }
+            ))
+            .characterLimit(Binding(
+                get: { self.listing.subTitle ?? "" },
+                set: { self.listing.subTitle = $0.isEmpty ? nil : $0 }
+            ), limit: 20)
+            .autocorrectionDisabled()
         }
     }
 

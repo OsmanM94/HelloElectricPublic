@@ -124,7 +124,6 @@ final class DatabaseService: DatabaseServiceProtocol {
                 .from(table)
                 .insert(item)
                 .execute()
-            print("DEBUG: Item inserted successfully into \(table).")
         } catch {
             throw error
         }
@@ -137,7 +136,6 @@ final class DatabaseService: DatabaseServiceProtocol {
                 .update(item)
                 .eq("id", value: id)
                 .execute()
-            print("DEBUG: Item updated successfully in \(table).")
         } catch {
             throw error
         }
@@ -150,7 +148,6 @@ final class DatabaseService: DatabaseServiceProtocol {
                 .update(item)
                 .eq("user_id", value: userID)
                 .execute()
-            print("DEBUG: Item updated successfully in \(table).")
         } catch {
             throw error
         }
@@ -163,7 +160,6 @@ final class DatabaseService: DatabaseServiceProtocol {
                 .delete()
                 .eq("id", value: id)
                 .execute()
-            print("DEBUG: Item deleted successfully from \(table).")
         } catch {
             throw error
         }
@@ -177,7 +173,6 @@ final class DatabaseService: DatabaseServiceProtocol {
                 .eq(field, value: value)
                 .eq(field2, value: value2)
                 .execute()
-            print("DEBUG: Item deleted successfully from \(table).")
         } catch {
             throw error
         }

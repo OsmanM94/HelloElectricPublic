@@ -8,10 +8,13 @@
 import Foundation
 
 struct MockProhibitedWordsService: ProhibitedWordsServiceProtocol {
-    func containsProhibitedWords(in fields: [String : String]) -> [String : Bool] {
-        return [:]
+    func containsProhibitedWords(in texts: [String]) -> Bool {
+        return true
     }
     
+    func containsProhibitedWordsDictionary(in fields: [String : String]) -> [String : Bool] {
+        return [:]
+    }
     
     var prohibitedWords: Set<String>
     

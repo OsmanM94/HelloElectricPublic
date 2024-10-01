@@ -25,7 +25,7 @@ final class CreateFormViewModel {
     // View States
     private(set) var viewState: ViewState = .idle
     private(set) var subFormViewState: SubFormViewState = .loading
-
+    
     // MARK: - DVLA Check
     var registrationNumber: String = ""
     
@@ -64,8 +64,7 @@ final class CreateFormViewModel {
             viewState = .error(MessageCenter.MessageType.formInvalid.message)
             return
         }
-        guard await validateTextDescription() else { return }
-        
+       
         viewState = .uploading
         
         do {
@@ -81,7 +80,6 @@ final class CreateFormViewModel {
             resetFormDataAndState()
             viewState = .success(MessageCenter.MessageType.createSuccess.message)
         } catch {
-            print("Error creating listing \(error)")
             viewState = .error(MessageCenter.MessageType.generalError.message)
         }
     }
@@ -115,16 +113,6 @@ final class CreateFormViewModel {
         formData.model = dataLoader.updateAvailableModels(make: formData.make, currentModel: formData.model)
     }
     
-    // MARK: - Private functions
-    private func validateTextDescription() async -> Bool {
-        let fieldsToCheck = formData.description
-        guard !dataLoader.prohibitedWordsService.containsProhibitedWord(fieldsToCheck) else {
-            viewState = .error(MessageCenter.MessageType.inappropriateField.message)
-            return false
-        }
-        return true
-    }
-    
     private func buildListing(userID: UUID) -> Listing {
         
         let userLocation = locationManager.userLocation
@@ -135,6 +123,7 @@ final class CreateFormViewModel {
             thumbnailsURL: imageManager.thumbnailsURLs,
             make: formData.make,
             model: formData.model,
+            subTitle: formData.subtitleText,
             bodyType: formData.body,
             condition: formData.condition,
             mileage: formData.mileage,
@@ -165,6 +154,7 @@ final class CreateFormViewModel {
 final class CreateFormDataModel {
     var make: String = "Select"
     var model: String = "Select"
+    var subtitleText: String = ""
     var body: String = "Select"
     var condition: String = "Select"
     var mileage: Double = 500
@@ -191,6 +181,7 @@ final class CreateFormDataModel {
         make = "Select"
         model = "Select"
         body = "Select"
+        subtitleText = ""
         condition = "Select"
         mileage = 500
         location = "Select"

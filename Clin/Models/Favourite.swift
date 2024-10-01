@@ -14,6 +14,7 @@ struct Favourite: Codable, Identifiable, Hashable {
     var thumbnailsURL: [URL]
     var make: String
     var model: String
+    var subTitle: String?
     var bodyType: String
     var condition: String
     var mileage: Double
@@ -44,6 +45,7 @@ struct Favourite: Codable, Identifiable, Hashable {
         case thumbnailsURL = "thumbnails"
         case make
         case model
+        case subTitle = "subtitle"
         case bodyType = "body_type"
         case condition
         case mileage
