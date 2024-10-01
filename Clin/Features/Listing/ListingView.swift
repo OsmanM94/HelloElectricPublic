@@ -21,7 +21,7 @@ struct ListingView: View {
             .animation(.easeInOut(duration: 0.3), value: viewModel.viewState)
             .navigationTitle("Listings")
             .toolbar {
-                quickFilterPicker
+                listFilterSection
                 scrollToTopButton
             }
         }
@@ -46,12 +46,12 @@ struct ListingView: View {
         .disabled(viewModel.viewState == .loading)
     }
     
-    private var quickFilterPicker: some ToolbarContent {
+    private var listFilterSection: some ToolbarContent {
         ToolbarItem(placement: .topBarTrailing) {
             Menu {
-                Picker("Quick Filter", selection: $viewModel.quickFilter) {
-                    ForEach(QuickFilter.allCases, id: \.id) { filter in
-                        Label(filter.displayName, systemImage: "arrow.up.arrow.down")
+                Picker("Quick Filter", selection: $viewModel.listingFilter) {
+                    ForEach(ListingFilter.allCases, id: \.self) { filter in
+                        Label(filter.rawValue, systemImage: viewModel.filterSystemImage(for: filter))
                             .tag(filter)
                     }
                 }
