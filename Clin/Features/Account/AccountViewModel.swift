@@ -1,9 +1,3 @@
-//
-//  AccountViewModel.swift
-//  Clin
-//
-//  Created by asia on 16/09/2024.
-//
 
 import SwiftUI
 import Factory

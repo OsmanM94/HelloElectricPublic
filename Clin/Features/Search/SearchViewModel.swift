@@ -197,12 +197,10 @@ final class SearchDataLoader {
     var bodyTypeOptions: [String] = []
     var yearOptions: [String] = []
     var conditionOptions: [String] = []
-    var rangeOptions: [String] = []
     var colourOptions: [String] = []
     var publicChargingTimeOptions: [String] = []
     var homeChargingTimeOptions: [String] = []
     var batteryCapacityOptions: [String] = []
-    var powerBhpOptions: [String] = []
     var regenBrakingOptions: [String] = []
     var warrantyOptions: [String] = []
     var serviceHistoryOptions: [String] = []
@@ -255,7 +253,6 @@ final class SearchDataLoader {
         bodyTypeOptions = ["Any"] + loadedData.flatMap { $0.bodyType }
         yearOptions = ["Any"] + loadedData.flatMap { $0.yearOfManufacture }
         conditionOptions = ["Any"] + loadedData.flatMap { $0.condition }
-        rangeOptions = ["Any"] + loadedData.flatMap { $0.range }
         homeChargingTimeOptions = ["Any"] + loadedData.flatMap { $0.homeChargingTime }
         publicChargingTimeOptions = ["Any"] + loadedData.flatMap { $0.publicChargingTime }
         batteryCapacityOptions = ["Any"] + loadedData.flatMap { $0.batteryCapacity }
@@ -263,7 +260,6 @@ final class SearchDataLoader {
         warrantyOptions = ["Any"] + loadedData.flatMap { $0.warranty }
         serviceHistoryOptions = ["Any"] + loadedData.flatMap { $0.serviceHistory }
         numberOfOwnersOptions = ["Any"] + loadedData.flatMap { $0.owners }
-        powerBhpOptions = ["Any"] + loadedData.flatMap { $0.powerBhp }
         colourOptions = ["Any"] + loadedData.flatMap { $0.colours }
     }
 }
@@ -295,12 +291,12 @@ final class SearchLogic {
         if filters.maxPrice < 100_000 { filterDict["price"] = filters.maxPrice }
         if filters.maxMileage < 300_000 { filterDict["mileage"] = filters.maxMileage }
         if filters.condition != "Any" { filterDict["condition"] = filters.condition }
-        if filters.range != "Any" { filterDict["range"] = filters.range }
+        if filters.range < 1000 { filterDict["range"] = filters.range }
         if filters.colour != "Any" { filterDict["colour"] = filters.colour }
         if filters.maxPublicChargingTime != "Any" { filterDict["public_charging"] = filters.maxPublicChargingTime }
         if filters.maxHomeChargingTime != "Any" { filterDict["home_charging"] = filters.maxHomeChargingTime }
         if filters.batteryCapacity != "Any" { filterDict["battery_capacity"] = filters.batteryCapacity }
-        if filters.powerBhp != "Any" { filterDict["power_bhp"] = filters.powerBhp }
+        if filters.powerBhp < 1000 { filterDict["power_bhp"] = filters.powerBhp }
         if filters.regenBraking != "Any" { filterDict["regen_braking"] = filters.regenBraking }
         if filters.warranty != "Any" { filterDict["warranty"] = filters.warranty }
         if filters.serviceHistory != "Any" { filterDict["service_history"] = filters.serviceHistory }

@@ -69,7 +69,7 @@ struct CircularProgressBarPreview: View {
     var body: some View {
         CircularProgressBar(progress: progress)
             .onAppear {
-                withAnimation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true)) {
+                withAnimation(.easeInOut(duration: 1.0)) {
                     progress = 1.0
                 }
             }

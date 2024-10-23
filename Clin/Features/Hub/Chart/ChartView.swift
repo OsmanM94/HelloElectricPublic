@@ -96,6 +96,7 @@ fileprivate struct YearlyChartView: View {
                     "Diesel": .gray,
                     "Petrol": .blue
                 ])
+                .chartLegend(.hidden)
                 .frame(height: 300)
                 .padding()
                 .background(Color.lightGrayBackground)
@@ -172,6 +173,7 @@ fileprivate struct MonthlyChartView: View {
                     "Diesel": .gray,
                     "Petrol": .blue
                 ])
+                .chartLegend(.hidden)
                 .frame(height: 300)
                 .padding()
                 .background(Color.lightGrayBackground)

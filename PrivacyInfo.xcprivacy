@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>NSPrivacyAccessedAPITypes</key>
+    <array>
+        <dict>
+            <key>NSPrivacyAccessedAPIType</key>
+            <string>NSPrivacyAccessedAPICategoryUserDefaults</string>
+            <key>NSPrivacyAccessedAPITypeReasons</key>
+            <array>
+                <string>CA92.1</string>
+            </array>
+        </dict>
+    </array>
+    <key>NSPrivacyCollectedDataTypes</key>
+    <array>
+        <dict>
+            <key>NSPrivacyCollectedDataType</key>
+            <string>NSPrivacyCollectedDataTypeUserDefaults</string>
+            <key>NSPrivacyCollectedDataTypeLinked</key>
+            <true/>
+            <key>NSPrivacyCollectedDataTypeTracking</key>
+            <false/>
+            <key>NSPrivacyCollectedDataTypePurposes</key>
+            <array>
+                <string>2</string>
+            </array>
+        </dict>
+    </array>
+    <key>NSPrivacyTrackingDomains</key>
+    <array>
+        <string>supabase.co</string>
+    </array>
+    <key>NSPrivacyTracking</key>
+    <true/>
+    <key>NSPrivacyUsageDescriptionDictionary</key>
+    <dict>
+        <key>NSLocationWhenInUseUsageDescription</key>
+        <string>This app requires access to your location to provide latitude and longitude information.</string>
+    </dict>
+    <key>NSPrivacyThirdPartyLibraries</key>
+    <array>
+        <dict>
+            <key>Name</key>
+            <string>SDWebImage</string>
+            <key>Privacy Policy URL</key>
+            <string>https://github.com/SDWebImage/SDWebImage/blob/master/LICENSE</string>
+        </dict>
+        <dict>
+            <key>Name</key>
+            <string>Charts</string>
+            <key>Privacy Policy URL</key>
+            <string>https://github.com/danielgindi/Charts/blob/master/LICENSE</string>
+        </dict>
+        <dict>
+            <key>Name</key>
+            <string>Factory</string>
+            <key>Privacy Policy URL</key>
+            <string>https://github.com/hmlongco/Factory/blob/main/LICENSE</string>
+        </dict>
+    </array>
+</dict>
+</plist>

@@ -54,7 +54,7 @@ struct StoreKitView: View {
                     Button {
                         showPayment.toggle()
                     } label: {
-                        Text("Promote")
+                        Text("Buy")
                             .bold()
                     }
                     .buttonStyle(.bordered)

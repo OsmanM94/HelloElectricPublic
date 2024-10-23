@@ -80,6 +80,7 @@ struct NewsView: View {
                         shouldScrollToTop.toggle()
                     } label: {
                         Image(systemName: "iphone.radiowaves.left.and.right")
+                            .tint(.primary)
                     }
                     .disabled(viewModel.viewState == .idle)
                 }

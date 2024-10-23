@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		625735382CBD966B006B3E1E /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 625735372CBD966B006B3E1E /* PrivacyInfo.xcprivacy */; };
 		629185B82C31614500DA4BAA /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 629185B72C31614500DA4BAA /* SDWebImageSwiftUI */; };
 		62BE33342C72500D006C0584 /* Factory in Frameworks */ = {isa = PBXBuildFile; productRef = 62BE33332C72500D006C0584 /* Factory */; };
 		62C449052C26CDC4009650A3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 62C449042C26CDC4009650A3 /* Assets.xcassets */; };
@@ -34,6 +35,7 @@
 
 /* Begin PBXFileReference section */
 		620D1CED2C86F836005B17E2 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		625735372CBD966B006B3E1E /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		626973352C8B528B00690EF9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		62C448FD2C26CDC2009650A3 /* Clin.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Clin.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		62C449042C26CDC4009650A3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -359,6 +361,7 @@
 		62C448F42C26CDC2009650A3 = {
 			isa = PBXGroup;
 			children = (
+				625735372CBD966B006B3E1E /* PrivacyInfo.xcprivacy */,
 				62C448FF2C26CDC2009650A3 /* Clin */,
 				62C448FE2C26CDC2009650A3 /* Products */,
 				620D1ACA2C867AA5005B17E2 /* Frameworks */,
@@ -486,6 +489,7 @@
 			files = (
 				62C449092C26CDC4009650A3 /* Preview Assets.xcassets in Resources */,
 				62C449052C26CDC4009650A3 /* Assets.xcassets in Resources */,
+				625735382CBD966B006B3E1E /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -627,7 +631,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Clin/Clin.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Clin/Preview Content\"";
 				DEVELOPMENT_TEAM = VNS8ZUW75C;
@@ -636,6 +640,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Clin/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = HelloElectric;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.shopping";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "We need to unlock your data.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Show your approximate location to the users";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -672,7 +677,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Clin/Clin.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Clin/Preview Content\"";
 				DEVELOPMENT_TEAM = VNS8ZUW75C;
@@ -681,6 +686,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Clin/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = HelloElectric;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.shopping";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "We need to unlock your data.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Show your approximate location to the users";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;

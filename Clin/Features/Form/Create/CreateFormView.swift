@@ -18,7 +18,7 @@ struct CreateFormView: View {
                 switch authViewModel.viewState {
                 case .unauthenticated:
                     AuthenticationView()
-                
+                 
                 case .loading:
                     CustomProgressView(message: "Authenticating...")
                  
@@ -192,10 +192,12 @@ fileprivate struct CreateFormSubview: View {
                     yearConditionSection
                     mileageSection
                     locationSection
-                    colourRangeSection
+                    colourSection
+                    rangeSection
                     priceSection
                     phoneSection
                     descriptionSection
+                    powerSection
                     featuresSection
                     paymentSection
                     
@@ -297,6 +299,7 @@ fileprivate struct CreateFormSubview: View {
                 Image(systemName: "gauge.with.needle")
                     .imageScale(.large)
                     .foregroundStyle(viewModel.formData.condition == "Select" ? .accent.opacity(0.5) : .accent)
+                
                 TextField("Current mileage", value: $viewModel.formData.mileage, format: .number)
                     .keyboardType(.decimalPad)
                     .foregroundStyle(viewModel.formData.condition == "Select" ? .gray : .primary)
@@ -315,7 +318,7 @@ fileprivate struct CreateFormSubview: View {
                     }
                 }
                 .pickerStyle(.navigationLink)
-                .disabled(viewModel.formData.mileage == 500)
+                .disabled(viewModel.formData.mileage == 0)
             }
         }
     }
@@ -350,32 +353,35 @@ fileprivate struct CreateFormSubview: View {
         .frame(width: 300)
     }
     
-    private var colourRangeSection: some View {
-        Section("Colour and range") {
+    private var colourSection: some View {
+        Section("Colour") {
             Picker("Colour", systemImage: "paintpalette.fill" ,selection: $viewModel.formData.colour) {
                 ForEach(viewModel.dataLoader.colourOptions, id: \.self) { colour in
                     Text(colour).tag(colour)
                 }
             }
             .disabled(viewModel.formData.location == "Select")
-            
-            Picker("Driving range", systemImage: "road.lanes", selection: $viewModel.formData.range) {
-                ForEach(viewModel.dataLoader.rangeOptions, id: \.self) { range in
-                    Text(range).tag(range)
-                }
-            }
-            .disabled(viewModel.formData.colour == "Select")
         }
         .pickerStyle(.navigationLink)
+    }
+    
+    private var rangeSection: some View {
+        Section("Range") {
+            TextField("Driving range", value: $viewModel.formData.range, format: .number)
+                .disabled(viewModel.formData.colour == "Select")
+                .keyboardType(.decimalPad)
+                .foregroundStyle(viewModel.formData.colour == "Select" ? .gray : .primary)
+                .opacity(viewModel.formData.colour == "Select" ? 0.8 : 1)
+        }
     }
     
     private var priceSection: some View {
         Section("Price") {
             TextField("Asking price", value: $viewModel.formData.price, format: .currency(code: "GBP").precision(.fractionLength(0)))
                 .keyboardType(.decimalPad)
-                .foregroundStyle(viewModel.formData.range == "Select" ? .gray : .primary)
-                .opacity(viewModel.formData.range == "Select" ? 0.8 : 1)
-                .disabled(viewModel.formData.range == "Select")
+                .foregroundStyle(viewModel.formData.range == 0 ? .gray : .primary)
+                .opacity(viewModel.formData.range == 0 ? 0.8 : 1)
+                .disabled(viewModel.formData.range == 0)
         }
     }
     
@@ -383,9 +389,9 @@ fileprivate struct CreateFormSubview: View {
         Section(header: Text("Contact number"), footer: phoneSectionFooter) {
             TextField("Phone", text: $viewModel.formData.phoneNumber)
                 .keyboardType(.phonePad)
-                .foregroundStyle(viewModel.formData.price == 500 ? .gray : .primary)
-                .opacity(viewModel.formData.price == 500 ? 0.8 : 1)
-                .disabled(viewModel.formData.price == 500)
+                .foregroundStyle(viewModel.formData.price == 0 ? .gray : .primary)
+                .opacity(viewModel.formData.price == 0 ? 0.8 : 1)
+                .disabled(viewModel.formData.price == 0)
                 .onChange(of: viewModel.formData.phoneNumber) { _, newValue in
                     viewModel.formData.phoneNumber = newValue.formattedPhoneNumber
                 }
@@ -396,7 +402,7 @@ fileprivate struct CreateFormSubview: View {
         Text("Please enter a valid 11-digit phone number")
             .foregroundStyle(.red.gradient)
             .opacity(!viewModel.formData.phoneNumber.isValidPhoneNumber ? 1 : 0)
-            .opacity(viewModel.formData.price == 500 ? 0 : 1)
+            .opacity(viewModel.formData.price == 0 ? 0 : 1)
     }
 
     private var descriptionSection: some View {
@@ -473,21 +479,24 @@ fileprivate struct CreateFormSubview: View {
         .disabled(viewModel.formData.homeChargingTime == "Select")
     }
     
+    private var powerSection: some View {
+        Section("HP") {
+            TextField("HP", value: $viewModel.formData.powerBhp, format: .number)
+                .keyboardType(.decimalPad)
+                .disabled(viewModel.formData.description.isEmpty)
+                .foregroundStyle(viewModel.formData.description.isEmpty ? .gray : .primary)
+                .opacity(viewModel.formData.description.isEmpty ? 0.8 : 1)
+        }
+    }
+    
     private var additionalDataSection: some View {
         Section {
-            Picker("Power", selection: $viewModel.formData.powerBhp) {
-                ForEach(viewModel.dataLoader.powerBhpOptions, id: \.self) { power in
-                    Text(power).tag(power)
-                }
-            }
-            .disabled(viewModel.formData.publicChargingTime == "Select")
-            
             Picker("Battery capacity", selection: $viewModel.formData.batteryCapacity) {
                 ForEach(viewModel.dataLoader.batteryCapacityOptions, id: \.self) { battery in
                     Text(battery).tag(battery)
                 }
             }
-            .disabled(viewModel.formData.powerBhp == "Select")
+            .disabled(viewModel.formData.powerBhp == 0)
             
             Picker("Regenerative braking", selection: $viewModel.formData.regenBraking) {
                 ForEach(viewModel.dataLoader.regenBrakingOptions, id: \.self) { regen in

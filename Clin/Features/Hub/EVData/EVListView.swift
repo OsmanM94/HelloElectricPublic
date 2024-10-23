@@ -76,14 +76,8 @@ struct EVListView: View {
             }
             
         } label: {
-            HStack {
-                Image(systemName: "line.3.horizontal.decrease.circle")
-                Text("Menu")
-            }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .background(Color(.systemGray6).opacity(0.8))
-            .clipShape(Capsule())
+            Image(systemName: "ellipsis.circle.fill")
+                .tint(.primary)
         }
         .onChange(of: viewModel.databaseFilter) { _, newValue in
             Task { await viewModel.loadEVDatabase() }

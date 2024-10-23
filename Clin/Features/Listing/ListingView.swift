@@ -56,15 +56,8 @@ struct ListingView: View {
                     }
                 }
             } label: {
-                HStack {
-                    Image(systemName: "line.3.horizontal.decrease.circle")
-                    Text("Sort")
-                }
-                .tint(.primary)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
-                .background(Color(.systemGray6))
-                .clipShape(Capsule())
+                Image(systemName: "line.3.horizontal.decrease.circle.fill")
+                    .tint(.primary)
             }
             .disabled(viewModel.viewState == .loading)
         }
@@ -82,6 +75,7 @@ struct ListingView: View {
             .popoverTip(ScrollToTopTip(), arrowEdge: .bottom)
             .onAppear { showScrollToTopTip = true }
             .onDisappear { showScrollToTopTip = false }
+            .opacity(0)
         }
     }
     

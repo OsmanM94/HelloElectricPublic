@@ -100,10 +100,10 @@ struct ApprovedFeaturesView: View {
                 SupportCenterView()
             } label: {
                 Text("Get in touch")
-                    .foregroundStyle(.tabColour)
+                    .tint(.blue)
                     .padding()
-                    .background(Color.tabColour.opacity(0.1))
-                    .cornerRadius(8)
+                    .background(Color.lightGrayBackground)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
             }
         }
     }

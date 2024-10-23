@@ -43,7 +43,7 @@ struct EducationItem<Destination: View>: View {
                 
                 Text(title)
                     .font(.headline)
-                    .foregroundStyle(.primary)
+                    .tint(.primary)
                     .multilineTextAlignment(.center)
             }
             .frame(maxWidth: .infinity, minHeight: 120)

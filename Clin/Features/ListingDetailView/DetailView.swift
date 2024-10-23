@@ -1,9 +1,4 @@
-//
-//  DetailView.swift
-//  Clin
-//
-//  Created by asia on 09/09/2024.
-//
+
 
 import SwiftUI
 import MapKit
@@ -21,10 +16,10 @@ protocol DetailItem {
     var mileage: Double { get }
     var imagesURL: [URL] { get }
     var bodyType: String { get }
-    var range: String { get }
+    var range: Int { get }
     var publicChargingTime: String { get }
     var homeChargingTime: String { get }
-    var powerBhp: String { get }
+    var powerBhp: Int { get }
     var serviceHistory: String { get }
     var numberOfOwners: String { get }
     var batteryCapacity: String { get }
@@ -69,12 +64,18 @@ enum DetailFeatures: String, CaseIterable {
     
     func value(for item: DetailItem) -> String {
         switch self {
-        case .bodyType: return item.bodyType
-        case .range: return item.range
-        case .publicChargingTime: return item.publicChargingTime
-        case .homeChargingTime: return item.homeChargingTime
-        case .powerBhp: return item.powerBhp
-        case .serviceHistory: return item.serviceHistory
+        case .bodyType:
+            return item.bodyType
+        case .range:
+            return "\(item.range) miles"
+        case .publicChargingTime:
+            return item.publicChargingTime
+        case .homeChargingTime:
+            return item.homeChargingTime
+        case .powerBhp:
+            return "\(item.powerBhp) HP"
+        case .serviceHistory:
+            return item.serviceHistory
         }
     }
 }

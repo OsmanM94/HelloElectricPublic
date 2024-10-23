@@ -49,6 +49,8 @@ fileprivate struct FilterSubView: View {
             YearConditionSection(viewModel: viewModel)
             LocationSection(viewModel: viewModel)
             PriceMileageSection(viewModel: viewModel)
+            RangeSection(viewModel: viewModel)
+            HpSection(viewModel: viewModel)
             OtherSpecificationsSection(viewModel: viewModel)
             EVSpecificationsSection(viewModel: viewModel)
         }
@@ -198,6 +200,28 @@ fileprivate struct PriceMileageSection: View {
     }
 }
 
+fileprivate struct RangeSection: View {
+    @Bindable var viewModel: SearchViewModel
+    
+    var body: some View {
+        Section("Range up to 1000") {
+            TextField("Range", value: $viewModel.filters.range, format: .number.precision(.fractionLength(0)))
+                .keyboardType(.numberPad)
+        }
+    }
+}
+
+fileprivate struct HpSection: View {
+    @Bindable var viewModel: SearchViewModel
+    
+    var body: some View {
+        Section("HP up to 1000") {
+            TextField("HP", value: $viewModel.filters.powerBhp, format: .number.precision(.fractionLength(0)))
+                .keyboardType(.numberPad)
+        }
+    }
+}
+
 fileprivate struct OtherSpecificationsSection: View {
     @Bindable var viewModel: SearchViewModel
     
@@ -235,11 +259,6 @@ fileprivate struct EVSpecificationsSection: View {
     
     var body: some View {
         DisclosureGroup {
-            Picker("Driving range", selection: $viewModel.filters.range) {
-                ForEach(viewModel.dataLoader.rangeOptions, id: \.self) { range in
-                    Text(range).tag(range)
-                }
-            }
             Picker("Public charging time", selection: $viewModel.filters.maxPublicChargingTime) {
                 ForEach(viewModel.dataLoader.publicChargingTimeOptions, id: \.self) { time in
                     Text(time).tag(time)
@@ -248,11 +267,6 @@ fileprivate struct EVSpecificationsSection: View {
             Picker("Home charging time", selection: $viewModel.filters.maxHomeChargingTime) {
                 ForEach(viewModel.dataLoader.homeChargingTimeOptions, id: \.self) { time in
                     Text(time).tag(time)
-                }
-            }
-            Picker("Power BHP", selection: $viewModel.filters.powerBhp) {
-                ForEach(viewModel.dataLoader.powerBhpOptions, id: \.self) { power in
-                    Text(power).tag(power)
                 }
             }
             Picker("Battery capacity", selection: $viewModel.filters.batteryCapacity) {

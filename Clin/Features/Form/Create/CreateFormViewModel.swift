@@ -157,18 +157,16 @@ final class CreateFormDataModel {
     var subtitleText: String = ""
     var body: String = "Select"
     var condition: String = "Select"
-    var mileage: Double = 500
+    var mileage: Double = 0
     var location: String = "Select"
     var selectedYear: String = "Select"
-    var price: Double = 500
+    var price: Double = 0
     var phoneNumber: String = "07"
     var description: String = ""
-    var range: String = "Select"
     var colour: String = "Select"
     var publicChargingTime: String = "Select"
     var homeChargingTime: String = "Select"
     var batteryCapacity: String = "Select"
-    var powerBhp: String = "Select"
     var regenBraking: String = "Select"
     var warranty: String = "Select"
     var serviceHistory: String = "Select"
@@ -176,25 +174,27 @@ final class CreateFormDataModel {
     var isPromoted: Bool = false
     var latitude: Double?
     var longitude: Double?
-    
+    var range: Int = 0
+    var powerBhp: Int = 0
+
     func resetState() {
         make = "Select"
         model = "Select"
         body = "Select"
         subtitleText = ""
         condition = "Select"
-        mileage = 500
+        mileage = 0
         location = "Select"
         selectedYear = "Select"
-        price = 500
+        price = 0
         phoneNumber = "07"
         description = ""
-        range = "Select"
+        range = 0
         colour = "Select"
         publicChargingTime = "Select"
         homeChargingTime = "Select"
         batteryCapacity = "Select"
-        powerBhp = "Select"
+        powerBhp = 0
         regenBraking = "Select"
         warranty = "Select"
         serviceHistory = "Select"
@@ -207,18 +207,18 @@ final class CreateFormDataModel {
         model != "Select" &&
         body != "Select" &&
         condition != "Select" &&
-        mileage > 500 &&
+        mileage > 0 &&
         location != "Select" &&
         selectedYear != "Select" &&
-        price > 500 &&
+        price > 0 &&
         phoneNumber.isValidPhoneNumber &&
         !description.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
-        range != "Select" &&
+        range > 0 &&
         colour != "Select" &&
         publicChargingTime != "Select" &&
         homeChargingTime != "Select" &&
         batteryCapacity != "Select" &&
-        powerBhp != "Select" &&
+        powerBhp > 0 &&
         regenBraking != "Select" &&
         warranty != "Select" &&
         serviceHistory != "Select" &&
@@ -344,12 +344,10 @@ final class CreateFormDataLoader {
     var bodyTypeOptions: [String] = []
     var yearOptions: [String] = []
     var conditionOptions: [String] = []
-    var rangeOptions: [String] = []
     var colourOptions: [String] = []
     var publicChargingTimeOptions: [String] = []
     var homeChargingTimeOptions: [String] = []
     var batteryCapacityOptions: [String] = []
-    var powerBhpOptions: [String] = []
     var regenBrakingOptions: [String] = []
     var warrantyOptions: [String] = []
     var serviceHistoryOptions: [String] = []
@@ -408,7 +406,6 @@ final class CreateFormDataLoader {
         bodyTypeOptions = ["Select"] + loadedData.flatMap { $0.bodyType }
         yearOptions = ["Select"] + loadedData.flatMap { $0.yearOfManufacture }
         conditionOptions = ["Select"] + loadedData.flatMap { $0.condition }
-        rangeOptions = ["Select"] + loadedData.flatMap { $0.range }
         homeChargingTimeOptions = ["Select"] + loadedData.flatMap { $0.homeChargingTime }
         publicChargingTimeOptions = ["Select"] + loadedData.flatMap { $0.publicChargingTime }
         batteryCapacityOptions = ["Select"] + loadedData.flatMap { $0.batteryCapacity }
@@ -416,7 +413,6 @@ final class CreateFormDataLoader {
         warrantyOptions = ["Select"] + loadedData.flatMap { $0.warranty }
         serviceHistoryOptions = ["Select"] + loadedData.flatMap { $0.serviceHistory }
         numberOfOwnersOptions = ["Select"] + loadedData.flatMap { $0.owners }
-        powerBhpOptions = ["Select"] + loadedData.flatMap { $0.powerBhp }
         colourOptions = ["Select"] + loadedData.flatMap { $0.colours }
     }
 }

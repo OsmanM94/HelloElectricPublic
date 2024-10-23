@@ -292,12 +292,10 @@ final class EditFormDataLoader {
     var bodyTypeOptions: [String] = []
     var yearOptions: [String] = []
     var conditionOptions: [String] = []
-    var rangeOptions: [String] = []
     var colourOptions: [String] = []
     var publicChargingTimeOptions: [String] = []
     var homeChargingTimeOptions: [String] = []
     var batteryCapacityOptions: [String] = []
-    var powerBhpOptions: [String] = []
     var regenBrakingOptions: [String] = []
     var warrantyOptions: [String] = []
     var serviceHistoryOptions: [String] = []
@@ -337,7 +335,6 @@ final class EditFormDataLoader {
         bodyTypeOptions = ["Select"] + loadedData.flatMap { $0.bodyType }
         yearOptions = ["Select"] + loadedData.flatMap { $0.yearOfManufacture }
         conditionOptions = ["Select"] + loadedData.flatMap { $0.condition }
-        rangeOptions = ["Select"] + loadedData.flatMap { $0.range }
         homeChargingTimeOptions = ["Select"] + loadedData.flatMap { $0.homeChargingTime }
         publicChargingTimeOptions = ["Select"] + loadedData.flatMap { $0.publicChargingTime }
         batteryCapacityOptions = ["Select"] + loadedData.flatMap { $0.batteryCapacity }
@@ -345,7 +342,6 @@ final class EditFormDataLoader {
         warrantyOptions = ["Select"] + loadedData.flatMap { $0.warranty }
         serviceHistoryOptions = ["Select"] + loadedData.flatMap { $0.serviceHistory }
         numberOfOwnersOptions = ["Select"] + loadedData.flatMap { $0.owners }
-        powerBhpOptions = ["Select"] + loadedData.flatMap { $0.powerBhp }
         colourOptions = ["Select"] + loadedData.flatMap { $0.colours }
     }
 }

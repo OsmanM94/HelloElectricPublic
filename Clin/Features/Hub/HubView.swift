@@ -110,7 +110,7 @@ fileprivate struct EVDatabaseContainer: View {
 fileprivate struct HubItemView: View {
     let title: String
     let imageName: String
-    @Environment(\.colorScheme) var colorScheme
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         VStack {

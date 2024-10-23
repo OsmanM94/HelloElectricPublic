@@ -23,12 +23,12 @@ struct Listing: Identifiable, Codable, Hashable {
     var price: Double
     var phoneNumber: String
     var textDescription: String
-    var range: String
+    var range: Int
     var colour: String
     var publicChargingTime: String
     var homeChargingTime: String
     var batteryCapacity: String
-    var powerBhp: String
+    var powerBhp: Int
     var regenBraking: String
     var warranty: String
     var serviceHistory: String

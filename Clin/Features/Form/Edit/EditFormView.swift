@@ -97,10 +97,12 @@ fileprivate struct EditFormSubview: View {
                     bodyTypeSection
                     yearConditionSection
                     mileageLocationSection
-                    colourRangeSection
+                    colourSection
+                    rangeSection
                     priceSection
                     phoneSection
                     descriptionSection
+                    powerSection
                     featuresSection
                     promoteListingSection
                     applyButtonSection
@@ -193,20 +195,20 @@ fileprivate struct EditFormSubview: View {
         }
     }
 
-    private var colourRangeSection: some View {
+    private var colourSection: some View {
         Section("Colour and range") {
             Picker("Colour", selection: $listing.colour) {
                 ForEach(viewModel.dataLoader.colourOptions, id: \.self) { colour in
                     Text(colour).tag(colour)
                 }
             }
-            Picker("Driving range", selection: $listing.range) {
-                ForEach(viewModel.dataLoader.rangeOptions, id: \.self) { range in
-                    Text(range).tag(range)
-                }
-            }
         }
         .pickerStyle(.navigationLink)
+    }
+    
+    private var rangeSection: some View {
+        TextField("Driving range", value: $listing.range, format: .number)
+            .keyboardType(.decimalPad)
     }
     
     private var priceSection: some View {
@@ -281,14 +283,15 @@ fileprivate struct EditFormSubview: View {
         .pickerStyle(.navigationLink)
     }
     
+    private var powerSection: some View {
+        Section("HP") {
+            TextField("HP", value: $listing.powerBhp, format: .number)
+                .keyboardType(.numberPad)
+        }
+    }
+    
     private var additionalDataSection: some View {
         Section {
-            Picker("Power BHP", selection: $listing.powerBhp) {
-                ForEach(viewModel.dataLoader.powerBhpOptions, id: \.self) { power in
-                    Text(power).tag(power)
-                }
-            }
-            
             Picker("Battery capacity", selection: $listing.batteryCapacity) {
                 ForEach(viewModel.dataLoader.batteryCapacityOptions, id: \.self) { battery in
                     Text(battery).tag(battery)
